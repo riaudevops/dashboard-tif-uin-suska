@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import ProtectedRoute from "./protected.router";
 import LandingPage from "@/pages/publics/landing.page";
 import ForbiddenPage from "@/pages/publics/forbidden.page";
-import MahasiswaDashboardPage from "@/pages/mahasiswa/dashboard/setoran-hafalan/page";
+import MahasiswaDashboardPage from "@/pages/mahasiswa/setoran-hafalan/page";
 
 const router = createBrowserRouter([
 	{
@@ -14,7 +14,7 @@ const router = createBrowserRouter([
 		element: <ForbiddenPage />,
 	},
 	{
-		path: "/mahasiswa/dashboard/setoran-hafalan/statistik",
+		path: "/mahasiswa/setoran-hafalan/statistik",
 		element: <MahasiswaDashboardPage />
 	},
 	{

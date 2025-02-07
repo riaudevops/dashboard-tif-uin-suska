@@ -1,5 +1,5 @@
-import HeaderComponent from "@/components/globals/headers/header";
-import { AppSidebar } from "@/components/globals/sidebar/app-sidebar";
+import { AppSidebar } from "@/components/globals/sidebars/app-sidebar";
+import { ModeToggle } from "@/components/themes/mode-toggle";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -14,6 +14,7 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { capitalizeFirstLetter } from "@/helpers/global.helper";
 import { useEffect, useState } from "react";
 
 import { useLocation } from "react-router-dom";
@@ -27,11 +28,9 @@ export default function MahasiswaDashboardPage() {
 	useEffect(() => {
 		const pathParts = location.pathname
 			.split("/")
-			.filter((part) => part !== "");
 
 		// hanya ambil data ke index ke 2 dst
 		const newPathParts = pathParts.splice(2);
-
 
 		setBreadcrumbs(
 			newPathParts.map((part, index) => ({
@@ -43,27 +42,27 @@ export default function MahasiswaDashboardPage() {
 
 	return (
 		<>
-			<HeaderComponent />
 			<SidebarProvider>
 				<AppSidebar />
 				<SidebarInset>
-					<header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+					<header className="flex h-16 shrink-0 items-center justify-between pr-4 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
 						<div className="flex items-center gap-2 px-4">
 							<SidebarTrigger className="-ml-1" />
 							<Separator orientation="vertical" className="mr-2 h-4" />
-							<Breadcrumb>
+							<span className="text-base font-semibold block md:hidden">
+								dashboard<span className="italic font-medium">.tif-usr</span>
+							</span>
+							<Breadcrumb className="hidden md:block">
 								<BreadcrumbList>
 									{breadcrumbs.map((breadcrumb, index) => (
 										<BreadcrumbItem key={index}>
 											{index === breadcrumbs.length - 1 ? (
 												<BreadcrumbPage>
-													{breadcrumb.name.charAt(0).toUpperCase() +
-														breadcrumb.name.slice(1)}
+													{capitalizeFirstLetter(breadcrumb.name)}
 												</BreadcrumbPage>
 											) : (
-												<BreadcrumbLink href={breadcrumb.link}>
-													{breadcrumb.name.charAt(0).toUpperCase() +
-														breadcrumb.name.slice(1)}
+												<BreadcrumbLink className={index === 0 ? "hover:text-muted-foreground hover:cursor-not-allowed" : ""} href={index === 0 ? "#" : breadcrumb.link}>
+													{capitalizeFirstLetter(breadcrumb.name)}
 												</BreadcrumbLink>
 											)}
 											{index < breadcrumbs.length - 1 && (
@@ -74,6 +73,7 @@ export default function MahasiswaDashboardPage() {
 								</BreadcrumbList>
 							</Breadcrumb>
 						</div>
+						<ModeToggle />
 					</header>
 					<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
 						<div className="grid auto-rows-min gap-4 md:grid-cols-3">

@@ -10,34 +10,28 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SideBarNavMenuGroupCollapsible } from "./side-bar-nav-menu-group-collapsible";
 import { SideBarNavMenuGroup } from "./side-bar-nav-menu-group";
+import React from "react";
 
 export function SideBarNavMenu({
-	sidebarNavMenuItems,
+	sideBarNavMenuItems,
 }: SideBarNavMenuItemsProps) {
-
-	return (
-		<>
-			{sidebarNavMenuItems.map(({ label, menus }) => (
-				<>
-					<SidebarGroup
-						key={label}
-						// className="group-data-[collapsible=icon]:hidden"
-						// className={state === "collapsed" ? "py-2" : ""}
-					>
-						<SidebarGroupLabel>{label}</SidebarGroupLabel>
-						<SidebarMenu>
-							{menus.map((item: SideBarNavMenuEachItemProps) =>
-								item.items ? (
-									<SideBarNavMenuGroupCollapsible key={item.title} {...item} />
-								) : (
-									<SideBarNavMenuGroup key={item.title} {...item} />
-								)
-							)}
-						</SidebarMenu>
-					</SidebarGroup>
-					<Separator orientation="horizontal" className="px-4" />
-				</>
-			))}
-		</>
-	);
+	return sideBarNavMenuItems.map(({ label, menus }) => (
+		<React.Fragment key={`rf-${label}`}>
+			<SidebarGroup
+				key={label}
+			>
+				<SidebarGroupLabel>{label}</SidebarGroupLabel>
+				<SidebarMenu>
+					{menus.map((item: SideBarNavMenuEachItemProps) =>
+						item.items ? (
+							<SideBarNavMenuGroupCollapsible key={item.title} {...item} />
+						) : (
+							<SideBarNavMenuGroup key={item.title} {...item} />
+						)
+					)}
+				</SidebarMenu>
+			</SidebarGroup>
+			<Separator orientation="horizontal" className="px-4" />
+		</React.Fragment>
+	));
 }

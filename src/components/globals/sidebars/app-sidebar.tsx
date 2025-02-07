@@ -30,7 +30,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			</SidebarHeader>
 			<Separator orientation="horizontal" className="px-4" />
 			<SidebarContent className="gap-0">
-				<SideBarNavMenu sidebarNavMenuItems={SideBarNavMenuItems.mahasiswa} />
+				<SideBarNavMenu sideBarNavMenuItems={SideBarNavMenuItems.mahasiswa} />
 			</SidebarContent>
 			
 			<SidebarFooter>

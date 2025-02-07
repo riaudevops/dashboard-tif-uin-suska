@@ -1,17 +1,14 @@
 import {
-	BadgeCheck,
 	Bell,
 	ChevronsUpDown,
-	CreditCard,
+	Edit,
 	LogOut,
-	Sparkles,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
@@ -24,7 +21,7 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 
-export function NavUser({
+export function SideBarFooter({
 	user,
 }: {
 	user: {
@@ -46,7 +43,8 @@ export function NavUser({
 						>
 							<Avatar className="h-8 w-8 rounded-lg">
 								<AvatarImage src={user.avatar} alt={user.name} />
-								<AvatarFallback className="rounded-lg">CN</AvatarFallback>
+								{/* GET USER 2 WORD FALLBACK NAME BY USER.NAME */}
+								<AvatarFallback className="rounded-lg">{ user.name.split(" ").slice(0, 2).map((word) => word.charAt(0)).join("")}</AvatarFallback>
 							</Avatar>
 							<div className="grid flex-1 text-left text-sm leading-tight">
 								<span className="truncate font-semibold">{user.name}</span>
@@ -56,7 +54,7 @@ export function NavUser({
 						</SidebarMenuButton>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
-						className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+						className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg ml-3"
 						side={isMobile ? "bottom" : "right"}
 						align="end"
 						sideOffset={4}
@@ -74,31 +72,19 @@ export function NavUser({
 							</div>
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
-						<DropdownMenuGroup>
-							<DropdownMenuItem>
-								<Sparkles />
-								Upgrade to Pro
-							</DropdownMenuItem>
-						</DropdownMenuGroup>
+						{/* FOR EDIT PROFILE */}
+						<DropdownMenuItem className="cursor-pointer">
+							<Bell />
+							Notifikasi
+						</DropdownMenuItem>
+						<DropdownMenuItem className="cursor-pointer">
+							<Edit />
+							Perbarui Profil
+						</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuGroup>
-							<DropdownMenuItem>
-								<BadgeCheck />
-								Account
-							</DropdownMenuItem>
-							<DropdownMenuItem>
-								<CreditCard />
-								Billing
-							</DropdownMenuItem>
-							<DropdownMenuItem>
-								<Bell />
-								Notifications
-							</DropdownMenuItem>
-						</DropdownMenuGroup>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem>
-							<LogOut />
-							Log out
+						<DropdownMenuItem className="cursor-pointer">
+							<LogOut color="#dc2626" />
+							<span className="text-red-600">Log out</span>
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

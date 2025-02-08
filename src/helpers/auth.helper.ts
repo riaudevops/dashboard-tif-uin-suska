@@ -18,6 +18,6 @@ export const hasRole = ({ token, roles }: HasRoleProps) => {
 		return false;
 	}
 
-	const userRoles = decodedToken.roles || [];
+	const userRoles = decodedToken.realm_access.roles || [];
 	return roles.some((role) => userRoles.includes(role));
 };

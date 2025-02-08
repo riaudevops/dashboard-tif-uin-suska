@@ -5,13 +5,15 @@ interface LoadingProps {
 	primaryColor?: string;
 	secondaryColor?: string;
 	textColor?: string;
+	className?: string;
 }
 
 const LoadingComponent: React.FC<LoadingProps> = ({
-	children = "Loading",
-	primaryColor = "#031B29",
-	secondaryColor = "#010B13",
-	textColor = "text-gray-700",
+	children = "Sedang Memuat",
+	primaryColor = "#AFFF9F",
+	secondaryColor = "#F2F2F2",
+	textColor = "#F2F2F2",
+	className
 }) => {
 	const [dots, setDots] = useState("");
 
@@ -24,7 +26,7 @@ const LoadingComponent: React.FC<LoadingProps> = ({
 	}, []);
 
 	return (
-		<div className="flex flex-col items-center justify-center min-h-screen gap-4">
+		<div className={`${className} flex flex-col items-center justify-center gap-4`}>
 			<div className="relative">
 				<div
 					className="w-12 h-12 rounded-full border-4 border-t-transparent animate-spin"
@@ -40,7 +42,7 @@ const LoadingComponent: React.FC<LoadingProps> = ({
 				/>
 			</div>
 			<div className="relative">
-				<span className={`text-sm font-medium ${textColor} tracking-wide`}>
+				<span style={{ color: textColor }} className={`text-sm font-normal italic tracking-wide`}>
 					{children}
 					<span className="animate-pulse">{dots}</span>
 				</span>

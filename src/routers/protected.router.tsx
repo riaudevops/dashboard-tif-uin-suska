@@ -10,7 +10,7 @@ const ProtectedRoute = ({ children, roles }: ProtectedRouteProps) => {
 
 	// Tampilkan loading atau null hingga Keycloak siap
 	if (auth.isLoading) {
-		return <div className="w-screen h-screen"><LoadingComponent /></div>;
+		return <LoadingComponent className="w-screen h-screen bg-black bg-opacity-50 z-50 absolute flex items-center justify-center"/>;
 	}
 
 	// Periksa apakah pengguna sudah terautentikasi

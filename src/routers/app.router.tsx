@@ -15,15 +15,11 @@ const router = createBrowserRouter([
 	},
 	{
 		path: "/mahasiswa/setoran-hafalan/statistik",
-		element: <MahasiswaDashboardPage />
-	},
-	{
-		path: "/dosen-pa",
 		element: (
-			<ProtectedRoute roles={["dosen-pa"]}>
-				<p>This is protected routes.</p>
+			<ProtectedRoute roles={["mahasiswa"]}>
+				<MahasiswaDashboardPage />
 			</ProtectedRoute>
-		),
+		)
 	}
 ]);
 

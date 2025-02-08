@@ -43,7 +43,7 @@ const ForbiddenPage = () => {
 					className="flex active:scale-105 hover:scale-95 py-4 items-center justify-center gap-2 font-bold transition duration-300 shadow-md hover:shadow-lg"
 				>
 					<PanelLeftCloseIcon />
-                    Kembali
+                    Kembali ke Beranda
 				</Button>
 			</motion.div>
 		</div>

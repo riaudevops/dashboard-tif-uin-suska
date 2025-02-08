@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { SideBarNavMenuEachItemProps } from "@/interfaces/components/globals/sidebars/side-bar-nav-menu.interface";
 import React from "react";
+import { NavLink } from "react-router-dom";
 
 export const SideBarNavMenuGroupCollapsible = ({
 	title,
@@ -41,9 +42,9 @@ export const SideBarNavMenuGroupCollapsible = ({
 						{items?.map((subItem: SideBarNavMenuEachItemProps) => (
 							<SidebarMenuSubItem key={subItem.title}>
 								<SidebarMenuSubButton asChild>
-									<a href={subItem.url}>
+									<NavLink to={subItem.url}>
 										<span>{subItem.title}</span>
-									</a>
+									</NavLink>
 								</SidebarMenuSubButton>
 							</SidebarMenuSubItem>
 						))}

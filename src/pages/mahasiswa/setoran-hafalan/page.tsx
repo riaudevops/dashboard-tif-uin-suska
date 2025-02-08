@@ -3,7 +3,6 @@ import { ModeToggle } from "@/components/themes/mode-toggle";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
-	BreadcrumbLink,
 	BreadcrumbList,
 	BreadcrumbPage,
 	BreadcrumbSeparator,
@@ -17,7 +16,7 @@ import {
 import { capitalizeFirstLetter } from "@/helpers/global.helper";
 import { useEffect, useState } from "react";
 
-import { useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 export default function MahasiswaDashboardPage() {
 	const location = useLocation();
@@ -26,8 +25,7 @@ export default function MahasiswaDashboardPage() {
 	>([]);
 
 	useEffect(() => {
-		const pathParts = location.pathname
-			.split("/")
+		const pathParts = location.pathname.split("/");
 
 		// hanya ambil data ke index ke 2 dst
 		const newPathParts = pathParts.splice(2);
@@ -54,6 +52,13 @@ export default function MahasiswaDashboardPage() {
 							</span>
 							<Breadcrumb className="hidden md:block">
 								<BreadcrumbList>
+									<NavLink
+										to={"/"}
+										className={"hover:text-foreground/75"}
+									>
+										Beranda
+									</NavLink>								
+									<BreadcrumbSeparator className="hidden md:block" />
 									{breadcrumbs.map((breadcrumb, index) => (
 										<BreadcrumbItem key={index}>
 											{index === breadcrumbs.length - 1 ? (
@@ -61,9 +66,16 @@ export default function MahasiswaDashboardPage() {
 													{capitalizeFirstLetter(breadcrumb.name)}
 												</BreadcrumbPage>
 											) : (
-												<BreadcrumbLink className={index === 0 ? "hover:text-muted-foreground hover:cursor-not-allowed" : ""} href={index === 0 ? "#" : breadcrumb.link}>
+												<NavLink
+													to={index === 0 ? "" : breadcrumb.link}
+													className={
+														index === 0
+															? "hover:text-muted-foreground hover:cursor-not-allowed"
+															: "hover:text-foreground/75"
+													}
+												>
 													{capitalizeFirstLetter(breadcrumb.name)}
-												</BreadcrumbLink>
+												</NavLink>
 											)}
 											{index < breadcrumbs.length - 1 && (
 												<BreadcrumbSeparator className="hidden md:block" />

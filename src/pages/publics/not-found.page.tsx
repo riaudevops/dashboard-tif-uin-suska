@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Lock, LucideBadgeHelp, PanelLeftCloseIcon } from "lucide-react";
+import { LucideBadgeHelp, PanelLeftCloseIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const NotFoundPage = () => {

@@ -3,6 +3,7 @@ import ProtectedRoute from "./protected.router";
 import LandingPage from "@/pages/publics/landing.page";
 import ForbiddenPage from "@/pages/publics/forbidden.page";
 import MahasiswaDashboardPage from "@/pages/mahasiswa/setoran-hafalan/page";
+import NotFoundPage from "@/pages/publics/not-found.page";
 
 const router = createBrowserRouter([
 	{
@@ -12,6 +13,10 @@ const router = createBrowserRouter([
 	{
 		path: "/forbidden",
 		element: <ForbiddenPage />,
+	},	
+	{
+		path: "*",
+		element: <NotFoundPage />,
 	},
 	{
 		path: "/mahasiswa/setoran-hafalan/statistik",

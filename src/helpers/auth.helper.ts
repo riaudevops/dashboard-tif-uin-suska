@@ -4,20 +4,16 @@ import { jwtDecode } from "jwt-decode";
 // Helper function to decode JWT token
 export const decodeToken = ({token}: DecodeTokenProps) => {
 	try {
-		return jwtDecode(token) as CustomJwtPayload;
+		return jwtDecode(token!) as CustomJwtPayload;
 	} catch (error) {
-		console.error("Invalid token:", error);
 		return null;
 	}
 };
 
 // Helper function to check if the user has a specific role
 export const hasRole = ({ token, roles }: HasRoleProps) => {
-	const decodedToken = decodeToken({token});
-	if (!decodedToken) {
-		return false;
-	}
-
-	const userRoles = decodedToken.realm_access.roles || [];
+	const userRoles = getRoles({ token });
 	return roles.some((role) => userRoles.includes(role));
 };
+
+export const getRoles = ({ token }: DecodeTokenProps) => decodeToken({token})?.realm_access?.roles || [];

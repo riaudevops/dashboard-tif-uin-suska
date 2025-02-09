@@ -4,6 +4,8 @@
 
 @layer base {
 	:root {
+		--thumb-color: #E4E4E7;
+		--thumb-color-hover: #d0d0d5;
 		--background: 0 0% 100%;
 		--foreground: 240 10% 3.9%;
 		--card: 0 0% 100%;
@@ -39,6 +41,8 @@
 		--sidebar-ring: 217.2 91.2% 59.8%;
 	}
 	.dark {
+		--thumb-color: #27272A;
+		--thumb-color-hover: #333333;
 		--background: 240 10% 3.9%;
 		--foreground: 0 0% 98%;
 		--card: 240 10% 3.9%;
@@ -83,5 +87,40 @@
 }
 
 body {
-	font-family: 'Geist Sans';
+	font-family: "Geist Sans";
+}
+
+/* Mengatur scroll bar secara keseluruhan */
+::-webkit-scrollbar {
+	width: 7px; /* Lebar scroll bar */
+	height: 7px; /* Tinggi scroll bar untuk elemen horizontal */
+}
+
+/* Mengatur track (bagian belakang) dari scroll bar */
+::-webkit-scrollbar-track {
+	background-color: transparent; /* Transparan */
+}
+
+/* Mengatur thumb (bagian yang digerakkan) dari scroll bar */
+::-webkit-scrollbar-thumb {
+	background-color: var(--thumb-color); /* Warna thumb */
+	border-radius: 25px; /* Sudut yang sedikit membulat */
+}
+
+/* Mengatur thumb saat hover */
+::-webkit-scrollbar-thumb:hover {
+	background-color: var(--thumb-color-hover); /* Warna thumb saat hover */
+	cursor: pointer;
+}
+
+::-webkit-scrollbar-button:vertical:increment {
+	background: transparent;
+	height: 10px;
+	width: 7px;
+}
+
+::-webkit-scrollbar-button:vertical:decrement {
+	background: transparent;
+	height: 10px;
+	width: 7px;
 }

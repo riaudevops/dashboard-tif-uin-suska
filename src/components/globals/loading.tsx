@@ -9,7 +9,7 @@ interface LoadingProps {
 }
 
 const LoadingComponent: React.FC<LoadingProps> = ({
-	children = "Sedang Memuat",
+	children = "Sedang Proses",
 	primaryColor = "#AFFF9F",
 	secondaryColor = "#F2F2F2",
 	textColor = "#F2F2F2",

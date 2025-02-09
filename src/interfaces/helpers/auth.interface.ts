@@ -7,7 +7,7 @@ export interface CustomJwtPayload extends JwtPayload {
 }
 
 export interface DecodeTokenProps {
-    token: string;
+    token?: string;
 }
 
 export interface HasRoleProps {

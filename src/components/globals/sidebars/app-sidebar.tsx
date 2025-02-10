@@ -34,7 +34,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			avatar: auth.user?.profile.picture || "/avatars/shadcn.jpg",
 		});
 		const token = auth.user?.access_token;
-		if (token) setRoles(getRoles({ token }));
+		const userRole = getRoles({ token });
+		let rolesToRemove = ["offline_access", "uma_authorization", "default-roles-tif"];
+		let updatedRoles = userRole.filter(role => !rolesToRemove.includes(role));		
+		if (token) setRoles(updatedRoles);
 	}, []);
 
 	const [roleBasedSideBarNavMenuItems, setRoleBasedSideBarNavMenuItems] =
@@ -54,7 +57,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			<SidebarHeader className="mt-1.5">
 				<SideBarHeader
 					role={capitalizeFirstLetter(
-						roles.slice(0, -3).join(" & ") || "No Role Specified"
+						roles.join(" & ") || "No Role Specified"
 					)}
 				/>
 			</SidebarHeader>

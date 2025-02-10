@@ -1,8 +1,8 @@
 import { SideBarNavMenuItemsProps } from "@/interfaces/components/globals/sidebars/side-bar-nav-menu.interface";
-import { BookOpen, LayoutGridIcon, LucideHistory, PieChart, UserRoundPenIcon } from "lucide-react";
+import { BackpackIcon, BookOpen, ChartColumnIcon, LayoutGridIcon, LucideHistory, PieChart, UserRoundPenIcon } from "lucide-react";
 
 export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
-	mahasiswa: [
+	"mahasiswa": [
 		{
 			label: "Setoran Hafalan",
 			menus: [
@@ -65,6 +65,30 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 					title: "Daftar SEM-KP",
 					url: "/mahasiswa/seminar/daftar-sem-kp",
 					icon: LayoutGridIcon,
+				},
+			],
+		},
+	],
+	"dosen": [
+		{
+			label: "Setoran Hafalan",
+			menus: [
+				{
+					title: "Mahasiswa PA",
+					url: "/dosen/setoran-hafalan/mahasiswa-pa",
+					icon: BackpackIcon,
+				},
+			],
+		},
+	],
+	"koordinator-kp": [
+		{
+			label: "Kerja Praktek",
+			menus: [
+				{
+					title: "Verifikasi KP",
+					url: "/koordinator-kp/kerja-praktek/verifikasi-kp",
+					icon: ChartColumnIcon,
 				},
 			],
 		},

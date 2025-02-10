@@ -1,6 +1,6 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 
-export default function MahasiswaDashboardPage() {
+export default function MahasiswaSetoranHafalanStatistikPage() {
 	return (
 		<>
 			<DashboardLayout>

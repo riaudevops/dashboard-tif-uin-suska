@@ -53,38 +53,30 @@ const features = [
       <Terminal>
         <TypingAnimation>&gt; tif setoran-hafalan@latest</TypingAnimation>
         <AnimatedSpan delay={1500} className="text-green-500">
-          <span>✔ Memeriksa kesiapan modul.</span>
+          <span>✔ Memeriksa modul.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={2000} className="text-green-500">
           <span>✔ Menginisialisasi modul hafalan.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={2500} className="text-green-500">
           <span>✔ Memuat database surah.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={3000} className="text-green-500">
-          <span>✔ Mengaktifkan fitur tracking progress.</span>
+          <span>✔ Menginstall komponen setoran.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={3500} className="text-green-500">
-          <span>✔ Mengatur notifikasi pengingat.</span>
+          <span>✔ Memperbarui komponen setoran.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={4000} className="text-green-500">
-          <span>✔ Menyiapkan komponen setoran.</span>
+          <span>✔ Menyiapkan sistem.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={4500} className="py-2 text-blue-500">
           <span>ℹ Updated 1 file:</span>
           <span className="pl-2">- lib/setoran-hafalan.ts</span>
         </AnimatedSpan>
-
         <TypingAnimation delay={5000} className="text-yellow-500">
           Alhamdulillah! Sistem siap digunakan.
         </TypingAnimation>
-
         <TypingAnimation delay={5500} className="text-muted-foreground">
           Silakan mulai setoran hafalan Anda.
         </TypingAnimation>
@@ -99,42 +91,30 @@ const features = [
       <Terminal>
         <TypingAnimation>&gt; tif kerja-praktik@latest</TypingAnimation>
         <AnimatedSpan delay={1500} className="text-green-500">
-          <span>✔ Memeriksa kesiapan modul.</span>
+          <span>✔ Memeriksa modul.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={2000} className="text-green-500">
           <span>✔ Menginisialisasi modul kerja praktik.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={2500} className="text-green-500">
           <span>✔ Memuat database kerja praktik.</span>
         </AnimatedSpan>
-
-        <AnimatedSpan delay={4000} className="text-green-500">
-          <span>✔ Menyiapkan komponen daily report.</span>
-        </AnimatedSpan>
-
         <AnimatedSpan delay={3000} className="text-green-500">
-          <span>✔ Mengaktifkan fitur tracking progress.</span>
+          <span>✔ Menginstall komponen kerja praktik.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={3500} className="text-green-500">
-          <span>✔ Mengatur notifikasi pengingat.</span>
+          <span>✔ Memperbarui komponen kerja praktik.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={4000} className="text-green-500">
-          <span>✔ Menginstall komponen.</span>
+          <span>✔ Menyiapkan sistem.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={4500} className="py-2 text-blue-500">
           <span>ℹ Updated 1 file:</span>
           <span className="pl-2">- lib/kerja-praktik.ts</span>
         </AnimatedSpan>
-
         <TypingAnimation delay={5000} className="text-yellow-500">
           Success! Sistem siap digunakan.
         </TypingAnimation>
-
         <TypingAnimation delay={5500} className="text-muted-foreground">
           Silakan mulai kerja praktik Anda.
         </TypingAnimation>
@@ -150,31 +130,25 @@ const features = [
       <Terminal>
         <TypingAnimation>&gt; tif seminar@latest</TypingAnimation>
         <AnimatedSpan delay={1500} className="text-green-500">
-          <span>✔ Memeriksa kesiapan modul.</span>
+          <span>✔ Memeriksa modul.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={2000} className="text-green-500">
           <span>✔ Menginisialisasi modul seminar.</span>
         </AnimatedSpan>
-
-        <AnimatedSpan delay={3500} className="text-green-500">
-          <span>✔ Mengatur notifikasi pengingat.</span>
-        </AnimatedSpan>
-
         <AnimatedSpan delay={2500} className="text-green-500">
-          <span>✔ Menginstall komponen.</span>
+          <span>✔ Menginstall komponen seminar.</span>
         </AnimatedSpan>
-
-        <AnimatedSpan delay={4500} className="py-2 text-blue-500">
+        <AnimatedSpan delay={3000} className="text-green-500">
+          <span>✔ Menyiapkan sistem.</span>
+        </AnimatedSpan>
+        <AnimatedSpan delay={3500} className="py-2 text-blue-500">
           <span>ℹ Updated 1 file:</span>
           <span className="pl-2">- lib/seminar.ts</span>
         </AnimatedSpan>
-
-        <TypingAnimation delay={5000} className="text-yellow-500">
+        <TypingAnimation delay={4000} className="text-yellow-500">
           Success! Sistem siap digunakan.
         </TypingAnimation>
-
-        <TypingAnimation delay={5500} className="text-muted-foreground">
+        <TypingAnimation delay={4500} className="text-muted-foreground">
           Silakan mulai seminar Anda.
         </TypingAnimation>
       </Terminal>
@@ -182,12 +156,11 @@ const features = [
   },
   {
     name: "Coming soon...",
-    description: "🚀 Nantikan fitur-fitur menarik lainnya...",
+    description: "🚀 Nantikan fitur-fitur menarik lainnya.",
     className: "col-span-3 lg:col-span-1",
     background: (
       <Terminal>
         <TypingAnimation>&gt; tif update --all </TypingAnimation>
-
         <TypingAnimation delay={1500} className="pt-4 text-muted-foreground">
           Up-to-date
         </TypingAnimation>
@@ -253,11 +226,11 @@ const LandingPage = () => {
           <div className="absolute w-full top-0 bg-gradient-to-t from-background to-transparent to-90% dark:from-background pointer-events-none h-[55%]" />
           <div className="relative">
             <motion.div
-              className="absolute left-0 -top-36 lg:-top-32"
+              className="absolute hidden left-3 lg:-top-28 lg:block"
               animate={v1FloatingAnimation.animate}
             >
               <AnimatedContent
-                distance={150}
+                distance={0}
                 direction="horizontal"
                 reverse={true}
                 config={{ tension: 80, friction: 20 }}
@@ -274,11 +247,11 @@ const LandingPage = () => {
             </motion.div>
 
             <motion.div
-              className="absolute right-0 -top-36 lg:-top-32"
+              className="absolute right-0 hidden lg:-top-28 lg:block"
               animate={v2FloatingAnimation.animate}
             >
               <AnimatedContent
-                distance={150}
+                distance={0}
                 direction="horizontal"
                 reverse={false}
                 config={{ tension: 80, friction: 20 }}
@@ -295,11 +268,11 @@ const LandingPage = () => {
             </motion.div>
 
             <motion.div
-              className="absolute left-0 md:left-16 -bottom-28 lg:-bottom-16"
+              className="absolute left-0 hidden md:left-20 lg:-bottom-16 lg:block"
               animate={v2FloatingAnimation.animate}
             >
               <AnimatedContent
-                distance={150}
+                distance={0}
                 direction="horizontal"
                 reverse={true}
                 config={{ tension: 80, friction: 20 }}
@@ -316,11 +289,11 @@ const LandingPage = () => {
             </motion.div>
 
             <motion.div
-              className="absolute right-0 md:right-16 -bottom-28 lg:-bottom-16"
+              className="absolute right-0 hidden md:right-20 lg:-bottom-16 lg:block"
               animate={v1FloatingAnimation.animate}
             >
               <AnimatedContent
-                distance={150}
+                distance={0}
                 direction="horizontal"
                 reverse={false}
                 config={{ tension: 80, friction: 20 }}
@@ -345,11 +318,11 @@ const LandingPage = () => {
               delay={200}
               animateBy="words"
               direction="top"
-              className="mx-auto mb-8 text-5xl font-extrabold md:text-6xl md:max-w-7xl lg:text-7xl"
+              className="mx-auto mb-8 text-5xl font-extrabold md:px-12 lg:px-32 lg:text-6xl md:max-w-7xl "
             />
 
             <AnimatedContent
-              distance={150}
+              distance={0}
               direction="vertical"
               reverse={false}
               config={{ tension: 80, friction: 20 }}
@@ -359,7 +332,7 @@ const LandingPage = () => {
             >
               <SplitText
                 text="Mudah, Cepat, Informatif dan Terintegrasi Banyak Layanan Bisa Diselesaikan Dalam Satu Waktu."
-                className="max-w-2xl mx-auto mb-8 text-xl font-medium md:text-2xl"
+                className="max-w-2xl px-2 mx-auto mb-8 text-xl font-medium md:text-2xl"
                 delay={55}
                 animationFrom={{
                   opacity: 0,
@@ -681,8 +654,8 @@ const LandingPage = () => {
             style={{
               position: "absolute",
               overflow: "hidden",
-              minHeight: "475px",
-              maxHeight: "475px",
+              minHeight: "500px",
+              maxHeight: "500px",
               width: "100%",
             }}
           >

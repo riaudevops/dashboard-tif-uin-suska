@@ -220,17 +220,17 @@ const LandingPage = () => {
       <div className="w-full h-full">
         <div
           id="beranda"
-          className="flex items-center justify-center w-screen h-screen text-center"
+          className="flex items-center justify-center w-screen h-screen text-center lg:pt-8"
         >
           <RetroGrid />
           <div className="absolute w-full top-0 bg-gradient-to-t from-background to-transparent to-90% dark:from-background pointer-events-none h-[55%]" />
           <div className="relative">
             <motion.div
-              className="absolute hidden left-3 lg:-top-28 lg:block"
+              className="absolute hidden left-1 lg:-top-32 lg:block"
               animate={v1FloatingAnimation.animate}
             >
               <AnimatedContent
-                distance={0}
+                distance={50}
                 direction="horizontal"
                 reverse={true}
                 config={{ tension: 80, friction: 20 }}
@@ -247,11 +247,11 @@ const LandingPage = () => {
             </motion.div>
 
             <motion.div
-              className="absolute right-0 hidden lg:-top-28 lg:block"
+              className="absolute right-0 hidden lg:-top-32 lg:block"
               animate={v2FloatingAnimation.animate}
             >
               <AnimatedContent
-                distance={0}
+                distance={50}
                 direction="horizontal"
                 reverse={false}
                 config={{ tension: 80, friction: 20 }}
@@ -268,11 +268,11 @@ const LandingPage = () => {
             </motion.div>
 
             <motion.div
-              className="absolute left-0 hidden md:left-20 lg:-bottom-16 lg:block"
+              className="absolute hidden lg:left-24 lg:-bottom-14 lg:block"
               animate={v2FloatingAnimation.animate}
             >
               <AnimatedContent
-                distance={0}
+                distance={50}
                 direction="horizontal"
                 reverse={true}
                 config={{ tension: 80, friction: 20 }}
@@ -289,11 +289,11 @@ const LandingPage = () => {
             </motion.div>
 
             <motion.div
-              className="absolute right-0 hidden md:right-20 lg:-bottom-16 lg:block"
+              className="absolute hidden lg:right-[88px] lg:-bottom-14 lg:block"
               animate={v1FloatingAnimation.animate}
             >
               <AnimatedContent
-                distance={0}
+                distance={50}
                 direction="horizontal"
                 reverse={false}
                 config={{ tension: 80, friction: 20 }}
@@ -318,11 +318,11 @@ const LandingPage = () => {
               delay={200}
               animateBy="words"
               direction="top"
-              className="mx-auto mb-8 text-5xl font-extrabold md:px-12 lg:px-32 lg:text-6xl md:max-w-7xl "
+              className="mx-auto mb-8 text-5xl font-extrabold md:px-12 lg:px-32 lg:text-7xl md:max-w-7xl "
             />
 
             <AnimatedContent
-              distance={0}
+              distance={50}
               direction="vertical"
               reverse={false}
               config={{ tension: 80, friction: 20 }}
@@ -331,7 +331,7 @@ const LandingPage = () => {
               delay={1500}
             >
               <SplitText
-                text="Mudah, Cepat, Informatif dan Terintegrasi Banyak Layanan Bisa Diselesaikan Dalam Satu Waktu."
+                text="Mudah, Cepat, Informatif dan Terintegrasi Banyak Layanan Bisa Diselesaikan dalam Satu Waktu."
                 className="max-w-2xl px-2 mx-auto mb-8 text-xl font-medium md:text-2xl"
                 delay={55}
                 animationFrom={{
@@ -345,13 +345,13 @@ const LandingPage = () => {
             </AnimatedContent>
 
             <AnimatedContent
-              distance={150}
+              distance={50}
               direction="vertical"
               reverse={false}
               config={{ tension: 80, friction: 20 }}
               animateOpacity
               threshold={0.2}
-              delay={4500}
+              delay={3750}
             >
               <div className="flex items-center justify-center transition duration-300 hover:-translate-y-1">
                 <CustomGradientText
@@ -399,7 +399,7 @@ const LandingPage = () => {
               delay={200}
               animateBy="words"
               direction="top"
-              className="max-w-4xl mx-auto mb-16 text-5xl font-extrabold lg:text-7xl"
+              className="max-w-4xl mx-auto mb-12 text-5xl font-extrabold md:mb-16 lg:text-7xl"
             />
             <BentoGrid>
               {features.map((feature, idx) => (
@@ -447,7 +447,7 @@ const LandingPage = () => {
             delay={200}
             animateBy="words"
             direction="top"
-            className="max-w-4xl mx-auto mt-6 mb-8 text-6xl font-extrabold lg:text-7xl"
+            className="max-w-4xl mx-auto mt-6 mb-8 text-5xl font-extrabold lg:text-7xl"
           />
           <CircularGallery bend={3} textColor="#FFBE7B" borderRadius={0.05} />
           <div className="h-20" />
@@ -459,31 +459,25 @@ const LandingPage = () => {
               delay={200}
               animateBy="words"
               direction="top"
-              className="max-w-4xl mx-auto mb-8 text-6xl font-extrabold lg:text-7xl"
+              className="max-w-4xl mx-auto mb-8 text-5xl font-extrabold lg:text-7xl"
             />
-            <AnimatedContent
-              distance={150}
-              direction="vertical"
-              reverse={false}
-              config={{ tension: 80, friction: 20 }}
-              animateOpacity
+            <SplitText
+              text="Mudah, Cepat, Informatif dan Terintegrasi Banyak Layanan Bisa Diselesaikan dalam Satu Waktu."
+              className="max-w-2xl px-2 mx-auto mb-12 text-xl font-medium text-gray-400 md:mb-16 md:text-2xl"
+              delay={50}
+              animationFrom={{
+                opacity: 0,
+                transform: "translate3d(0,50px,0)",
+              }}
+              animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}
               threshold={0.2}
-              delay={1500}
+              rootMargin="-50px"
+            />
+            <Accordion
+              type="single"
+              collapsible
+              className="w-3/4 space-y-4 lg:w-2/3"
             >
-              <SplitText
-                text="Mudah, Cepat, Informatif dan Terintegrasi Banyak Layanan Bisa Diselesaikan Dalam Satu Waktu."
-                className="max-w-2xl mx-auto mb-16 text-xl font-medium text-gray-400 md:text-2xl"
-                delay={50}
-                animationFrom={{
-                  opacity: 0,
-                  transform: "translate3d(0,50px,0)",
-                }}
-                animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}
-                threshold={0.2}
-                rootMargin="-50px"
-              />
-            </AnimatedContent>
-            <Accordion type="single" collapsible className="w-2/3 space-y-4">
               <AccordionItem
                 value="item-1"
                 className="px-4 shadow-md rounded-xl bg-background [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)] transform-gpu dark:bg-background dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]"
@@ -524,9 +518,9 @@ const LandingPage = () => {
         </WarpBackground>
         <footer className="flex flex-col border-t">
           <div className="z-10 px-16 pt-14">
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-8 text-center md:text-start md:grid-cols-3">
               {/* Logo and Copyright Section */}
-              <div className="space-y-4">
+              <div className="flex flex-col items-center space-y-4 md:items-start">
                 <div className="flex items-center gap-1.5 rounded-xl">
                   {theme === "dark" ? (
                     <DarkLogoUSR className="w-8 h-8" />
@@ -571,7 +565,7 @@ const LandingPage = () => {
 
               {/* Contact Section */}
               <div>
-                <div className="space-y-4">
+                <div className="flex flex-col items-center space-y-4 md:items-start">
                   <div className="flex items-center gap-2">
                     <PhoneCall className="w-5 h-5 " />
                     <span className="">+62878-6868-5950</span>
@@ -591,7 +585,7 @@ const LandingPage = () => {
             </div>
 
             {/* Social Media Icons */}
-            <div className="flex justify-end gap-4 mt-8">
+            <div className="flex justify-center gap-4 mt-8 md:justify-end ">
               <a href="#">
                 <span className="sr-only">Facebook</span>
                 <svg
@@ -654,13 +648,13 @@ const LandingPage = () => {
             style={{
               position: "absolute",
               overflow: "hidden",
-              minHeight: "500px",
-              maxHeight: "500px",
+              minHeight: "525px",
+              maxHeight: "525px",
               width: "100%",
             }}
           >
             <Ballpit
-              count={75}
+              count={100}
               gravity={0.7}
               friction={0.8}
               wallBounce={0.95}

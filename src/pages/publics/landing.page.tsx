@@ -203,7 +203,7 @@ const LandingPage = () => {
   const handleKeycloakAuth = () =>
     auth.isAuthenticated
       ? void auth.signoutRedirect()
-      : void auth.signinPopup();
+      : void auth.signinRedirect();
 
   const [dashboardURL, setDashboardURL] = useState("/");
 

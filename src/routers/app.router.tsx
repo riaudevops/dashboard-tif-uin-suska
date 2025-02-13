@@ -12,6 +12,10 @@ const router = createBrowserRouter([
 		element: <LandingPage />,
 	},
 	{
+		path: "/beranda",
+		element: <LandingPage />,
+	},
+	{
 		path: "/forbidden",
 		element: <ForbiddenPage />,
 	},	

@@ -505,40 +505,40 @@ class App {
   ) {
     const defaultItems = [
       {
-        image: `https://res.cloudinary.com/dbsltir7r/image/upload/v1739349011/photo_6152020174954414239_m_eetxk9.jpg`,
-        text: "M. Rafly Wirayuda",
+        image: `https://storage.ruanjipos.id/image/gasd`,
+        text: "Nama Kontributor",
       },
       {
-        image: `https://res.cloudinary.com/dbsltir7r/image/upload/v1739349011/photo_6152020174954414239_m_eetxk9.jpg`,
-        text: "M. Rafly Wirayuda",
+        image: `https://storage.ruanjipos.id/image/gasd`,
+        text: "Nama Kntributor",
       },
       {
-        image: `https://res.cloudinary.com/dbsltir7r/image/upload/v1739349011/photo_6152020174954414239_m_eetxk9.jpg`,
-        text: "M. Rafly Wirayuda",
+        image: `https://storage.ruanjipos.id/image/gasd`,
+        text: "Nama Kntributor",
       },
       {
-        image: `https://res.cloudinary.com/dbsltir7r/image/upload/v1739349011/photo_6152020174954414239_m_eetxk9.jpg`,
-        text: "M. Rafly Wirayuda",
+        image: `https://storage.ruanjipos.id/image/gasd`,
+        text: "Nama Kntributor",
       },
       {
-        image: `https://res.cloudinary.com/dbsltir7r/image/upload/v1739349011/photo_6152020174954414239_m_eetxk9.jpg`,
-        text: "M. Rafly Wirayuda",
+        image: `https://storage.ruanjipos.id/image/gasd`,
+        text: "Nama Kntributor",
       },
       {
-        image: `https://res.cloudinary.com/dbsltir7r/image/upload/v1739349011/photo_6152020174954414239_m_eetxk9.jpg`,
-        text: "M. Rafly Wirayuda",
+        image: `https://storage.ruanjipos.id/image/gasd`,
+        text: "Nama Kntributor",
       },
       {
-        image: `https://res.cloudinary.com/dbsltir7r/image/upload/v1739349011/photo_6152020174954414239_m_eetxk9.jpg`,
-        text: "M. Rafly Wirayuda",
+        image: `https://storage.ruanjipos.id/image/gasd`,
+        text: "Nama Kntributor",
       },
       {
-        image: `https://res.cloudinary.com/dbsltir7r/image/upload/v1739349011/photo_6152020174954414239_m_eetxk9.jpg`,
-        text: "M. Rafly Wirayuda",
+        image: `https://storage.ruanjipos.id/image/gasd`,
+        text: "Nama Kntributor",
       },
       {
-        image: `https://res.cloudinary.com/dbsltir7r/image/upload/v1739349011/photo_6152020174954414239_m_eetxk9.jpg`,
-        text: "M. Rafly Wirayuda",
+        image: `https://storage.ruanjipos.id/image/gasd`,
+        text: "Nama Kntributor",
       },
     ];
 

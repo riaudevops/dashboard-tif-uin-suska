@@ -97,8 +97,34 @@ interface TerminalProps {
 }
 
 export const Terminal = ({ children, className }: TerminalProps) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const terminalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect(); // Stop observing once visible
+        }
+      },
+      {
+        threshold: 0.1, // Trigger when 10% of the element is visible
+      }
+    );
+
+    if (terminalRef.current) {
+      observer.observe(terminalRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
     <div
+      ref={terminalRef}
       className={cn(
         "z-0 h-full max-h-[400px] w-full rounded-xl border bg-background",
         className
@@ -112,7 +138,9 @@ export const Terminal = ({ children, className }: TerminalProps) => {
         </div>
       </div>
       <pre className="p-4">
-        <code className="grid overflow-auto gap-y-1">{children}</code>
+        <code className="grid overflow-auto gap-y-1">
+          {isVisible && children}
+        </code>
       </pre>
     </div>
   );

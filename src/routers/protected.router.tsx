@@ -6,33 +6,33 @@ import { useAuth } from "react-oidc-context";
 import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children, roles }: ProtectedRouteProps) => {
-	const auth = useAuth();
-	const [loading, setLoading] = useState(true);
+  const auth = useAuth();
+  const [loading, setLoading] = useState(true);
 
-	useEffect(() => {
-		auth.signinSilent().finally(() => setLoading(false));
-	}, []);
+  useEffect(() => {
+    auth.signinSilent().finally(() => setLoading(false));
+  }, []);
 
-	useEffect(() => {
-		if (auth.error) {
-			auth.signoutRedirect();
-		}
-	}, [auth.error]);
+  useEffect(() => {
+    if (auth.error) {
+      auth.signoutRedirect();
+    }
+  }, [auth.error]);
 
-	// Tampilkan loading hingga Keycloak siap
-	if (auth.isLoading || loading)
-		return (
-			<LoadingComponent className="w-screen h-screen bg-black bg-opacity-50 z-50 absolute flex items-center justify-center" />
-		);
+  // Tampilkan loading hingga Keycloak siap
+  if (auth.isLoading || loading)
+    return (
+      <LoadingComponent className="absolute z-50 flex items-center justify-center w-full h-full bg-black bg-opacity-50" />
+    );
 
-	// Periksa apakah pengguna sudah terautentikasi atau sesi telah habis
-	if (!auth.isAuthenticated) return <Navigate to="/" />;
+  // Periksa apakah pengguna sudah terautentikasi atau sesi telah habis
+  if (!auth.isAuthenticated) return <Navigate to="/" />;
 
-	// Periksa apakah pengguna memiliki salah satu dari peran yang diizinkan
-	if (!hasRole({ token: auth.user!.access_token, roles }))
-		return <Navigate to="/forbidden" />;
+  // Periksa apakah pengguna memiliki salah satu dari peran yang diizinkan
+  if (!hasRole({ token: auth.user!.access_token, roles }))
+    return <Navigate to="/forbidden" />;
 
-	return children;
+  return children;
 };
 
 export default ProtectedRoute;

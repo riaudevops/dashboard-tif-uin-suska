@@ -155,7 +155,7 @@ const features = [
     ),
   },
   {
-    name: "Coming soon...",
+    name: "Coming Soon...",
     description: "🚀 Nantikan fitur-fitur menarik lainnya.",
     className: "col-span-3 lg:col-span-1",
     background: (
@@ -176,7 +176,7 @@ const LandingPage = () => {
   const handleKeycloakAuth = () =>
     auth.isAuthenticated
       ? void auth.signoutRedirect()
-      : void auth.signinPopup();
+      : void auth.signinRedirect();
 
   const [dashboardURL, setDashboardURL] = useState("/");
 
@@ -210,7 +210,7 @@ const LandingPage = () => {
   return (
     <div className="w-screen h-screen">
       {auth.isLoading && (
-        <LoadingComponent className="absolute z-50 w-screen h-screen bg-black bg-opacity-60" />
+        <LoadingComponent className="absolute z-50 w-full h-full bg-black bg-opacity-60" />
       )}
       <HeaderLandingPageComponent
         isAuthenticated={auth.isAuthenticated}
@@ -533,13 +533,12 @@ const LandingPage = () => {
                   </span>
                 </div>
                 <p className="text-sm">
-                  Teknik Informatika. 2025. All rights reserved.
+                  Teknik Informatika. © 2025. All rights reserved.
                 </p>
               </div>
-
               {/* Pages Section */}
               <div>
-                <ul className="space-y-2">
+                <ul className="space-y-4">
                   <li>
                     <HashLink smooth to="/#beranda">
                       Beranda
@@ -562,7 +561,6 @@ const LandingPage = () => {
                   </li>
                 </ul>
               </div>
-
               {/* Contact Section */}
               <div>
                 <div className="flex flex-col items-center space-y-4 md:items-start">
@@ -577,13 +575,12 @@ const LandingPage = () => {
                     </a>
                   </div>
                   <div className="flex items-start gap-2">
-                    <MapPin className="w-5 h-5 " />
+                    <MapPin className="hidden w-5 h-5 md:block" />
                     <p className="">Jl. HR. Soebrantas No.155 KM 18</p>
                   </div>
                 </div>
               </div>
             </div>
-
             {/* Social Media Icons */}
             <div className="flex justify-center gap-4 mt-8 md:justify-end ">
               <a href="#">

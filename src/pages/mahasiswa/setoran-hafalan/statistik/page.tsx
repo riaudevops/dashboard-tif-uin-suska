@@ -2,7 +2,7 @@ import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import BarChartSetoran from "@/components/mahasiswa/setoran-hafalan/statistik/BarChartSetoranHafalan";
 import apiSetoran from "@/services/api/setoran-hafalan/mahasiswa.service";
 import { useQuery } from "@tanstack/react-query";
-import LoadingComponent from "@/components/globals/loading.tsx";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface MahasiswaSetoranHafalanStatistikPageProps {
   label: string;
@@ -14,7 +14,8 @@ interface MahasiswaSetoranHafalanStatistikPageProps {
 export default function MahasiswaSetoranHafalanStatistikPage() {
   const { data: dataRingkasan, isLoading } = useQuery({
     queryKey: ["setoran-saya"],
-    queryFn: () => apiSetoran.getDataMysetoran().then((data) => data.data.setoran.ringkasan),
+    queryFn: () =>
+      apiSetoran.getDataMysetoran().then((data) => data.data.setoran.ringkasan),
     staleTime: Infinity,
   });
   return (
@@ -29,7 +30,13 @@ export default function MahasiswaSetoranHafalanStatistikPage() {
             akademik di UIN Suska Riau, Semangat terus ya... 💙❤️
           </div>
           <div className="flex flex-col gap-4">
-            {isLoading && <LoadingComponent />}
+            {isLoading && (
+              <>
+                <Skeleton className="rounded-xl px-5 py-9" />
+                <Skeleton className="rounded-xl w-[80%] py-9" />
+                <Skeleton className="rounded-xl w-[60%] py-9" />
+              </>
+            )}
             {dataRingkasan?.map(
               (item: MahasiswaSetoranHafalanStatistikPageProps) => (
                 <BarChartSetoran

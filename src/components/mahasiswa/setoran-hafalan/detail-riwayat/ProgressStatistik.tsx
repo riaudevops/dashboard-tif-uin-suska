@@ -16,7 +16,7 @@ export default function ProgressStatistik({
     { name: "Remaining", value: totalDocs - uploadedDocs },
   ];
   return (
-    <ResponsiveContainer width="40%" height="100%">
+    <ResponsiveContainer width="40%" className={'-ml-12'} height="100%">
       <PieChart>
       <defs>
           {/* Gradient untuk bagian Uploaded */}
@@ -42,7 +42,7 @@ export default function ProgressStatistik({
           endAngle={-270}
           dataKey="value"
         >
-           {data.map((entry, index) => (
+           {data.map((_entry, index) => (
             <Cell
               key={`cell-${index}`}
               fill={`url(#${

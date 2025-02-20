@@ -1,4 +1,4 @@
-import uinsuskalogo from "@/assets/uin-suska-logo.png";
+import uinsuskalogo from "@/assets/uin_suska_logo.jpg";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { colourLabelingCategory } from "@/helpers/colour-labeling-category";
@@ -32,14 +32,17 @@ export const GeneratePDF = ({
   nip_dosen: string;
 }) => {
   const formatDate = (isoDate: string) => {
-    return new Date(isoDate).toLocaleDateString("id-ID", {
-      day: "2-digit",
-      month: "long", // Ubah format bulan menjadi nama bulan
-      year: "numeric",
-    });
+    return new Date(isoDate)
+      .toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "long", // Ubah format bulan menjadi nama bulan
+        year: "numeric",
+      })
+      .replace(/^(\d+)\s(\w+)\s(\d+)$/, "$1 $2, $3");
   };
   const doc = new jsPDF({
     encryption: {
+      // userPassword: nim,
       userPermissions: ["print", "modify", "annot-forms"],
     },
   });
@@ -47,8 +50,8 @@ export const GeneratePDF = ({
   // **1. Tambahkan Header (Kop Surat)**
   const pageWidth = doc.internal.pageSize.width; // Lebar halaman
   const margin = 15; // Margin kiri & kanan
-  const lineY = 48; // Posisi garis pemisah pertama
-  const sizeLogoUin = 36;
+  const lineY = 45; // Posisi garis pemisah pertama
+  const sizeLogoUin = 32;
   const textStart = 20; // Posisi awal teks
   const lineSpacing = 6; // Jarak vertikal antar teks
   const pageHeight = doc.internal.pageSize.height;
@@ -56,20 +59,22 @@ export const GeneratePDF = ({
   // **Tambahkan Logo**
   doc.addImage(uinsuskalogo, "PNG", margin, 10, sizeLogoUin, sizeLogoUin);
 
-  doc.setFont("arial", "bold");
+  // doc.addFont("src\components\mahasiswa\setoran-hafalan\detail-riwayat\Geist-Regular-normal.json", "Geist-Regular", "normal");
   // **Judul**
+  doc.setFont("Geist-Bold", "normal");
   doc.setFontSize(16);
   doc.text(
-    "Kartu Setoran Hafalan Juz 30",
+    "KARTU SETORAN HAFALAN JUZ 30",
     margin + sizeLogoUin + 5,
     textStart,
     {
       align: "left",
     }
   );
+  doc.setFont("Geist-Regular", "normal");
 
   // **Teks Lainnya dengan Jarak Konsisten**
-  doc.setFont("arial", "normal");
+  // doc.setFont("arial", "normal");
   doc.setFontSize(14);
   let textY = textStart + lineSpacing; // Posisi awal untuk teks berikutnya
 
@@ -90,10 +95,10 @@ export const GeneratePDF = ({
   // **3. Identitas Mahasiswa**
   let textStartY = lineY + 6; // Mulai teks setelah garis pemisah pertama
   const labelX = margin; // Posisi label
-  const valueX = margin + 45; // Posisi value agar sejajar
+  const valueX = margin + 50; // Posisi value agar sejajar
 
   doc.setFontSize(12);
-  doc.setFont("arial", "normal");
+  // doc.setFont("arial", "normal");
 
   doc.text("Nama", labelX, textStartY);
   doc.text(":", valueX - 1, textStartY);
@@ -201,7 +206,7 @@ export const GeneratePDF = ({
     },
   });
   // template tanda tangan di sebelah kanan dan nama dosen dan kota dan juga tanggal
-  const offsetX = 55; // Geser ke kanan sejauh 20px
+  const offsetX = 61; // Geser ke kanan sejauh 20px
   const finalY = pageHeight - 48; // Posisikan tanda tangan 50px dari bawah
   const textX = pageWidth / 2 + offsetX; // Pusat halaman + offset ke kanan
 
@@ -217,15 +222,14 @@ export const GeneratePDF = ({
     finalY,
     { align: "center" } // Pastikan teks tetap sejajar
   );
-
   // Tambahkan teks "Pembimbing Akademik,"
-  doc.text("Pembimbing Akademik,", textX, finalY + 6, { align: "center" });
+  doc.text("Pembimbing Akademik,", textX + 18, finalY + 6, { align: "right" });
 
   // Tambahkan nama dosen setelah tanda tangan
   doc.text(dosen_pa, textX, finalY + 26, { align: "center" });
 
   // Tambahkan garis bawah nama dosen
-  const textWidth = doc.getTextWidth("NIP. " +nip_dosen); // Lebar teks
+  const textWidth = doc.getTextWidth(dosen_pa); // Lebar teks
   doc.line(
     textX - textWidth / 2,
     finalY + 27,
@@ -238,5 +242,5 @@ export const GeneratePDF = ({
 
   // Tambahkan nip dosen setelah tanda tangan (di tengah garis)'
 
-  doc.save(`Kartu Setoran Hafalan-${nama}.pdf`);
+  doc.save(`[Kartu Setoran Hafalan] ${nama}.pdf`);
 };

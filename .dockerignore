@@ -1,0 +1,34 @@
+# Node.js dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Logs
+logs
+*.log
+*.log.*
+
+# Build output
+dist
+build
+.vite
+*.cache
+*.tmp
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE and editor settings
+.vscode
+.idea
+*.swp
+
+# Misc
+.DS_Store
+Thumbs.db
+
+# Typescript
+*.tsbuildinfo

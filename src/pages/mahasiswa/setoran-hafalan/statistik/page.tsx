@@ -27,7 +27,7 @@ export default function MahasiswaSetoranHafalanStatistikPage() {
         <div className="flex flex-col gap-4">
           <div className="select-none ml-1 md:text-base text-sm">
             Berikut stastistik dari setoran hafalan kamu untuk persyaratan
-            akademik di UIN Suska Riau, Semangat terus ya... 💙❤️
+            akademik di UIN Suska Riau, semangat terus ya... 💙❤️
           </div>
           <div className="flex flex-col gap-4">
             {isLoading && (

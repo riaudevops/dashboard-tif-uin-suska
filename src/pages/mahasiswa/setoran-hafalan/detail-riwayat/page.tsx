@@ -17,29 +17,57 @@ import { useFilteringSetoranSurat } from "@/hooks/use-filtering-setor-surat";
 import { colourLabelingCategory } from "@/helpers/colour-labeling-category";
 import { GeneratePDF } from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/generate-pdf-setoran-hafalan";
 import { Skeleton } from "@/components/ui/skeleton";
+import ModalBoxDetailSetoran from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/ModalBoxDetailSetoran";
+import { useState } from "react";
 export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
-  const {
-    data: dataRingkasan,
-    isLoading,
-  } = useQuery({
+  const { data: dataRingkasan, isLoading } = useQuery({
     queryKey: ["setoran-saya-detail"],
     queryFn: () => apiSetoran.getDataMysetoran().then((data) => data.data),
     staleTime: Infinity,
   });
 
-  const { dataCurrent, setTabState } = useFilteringSetoranSurat(
+  const { dataCurrent, setTabState, tabState } = useFilteringSetoranSurat(
     dataRingkasan?.setoran.detail,
     "default"
   );
 
-
+  const [openDialog, setOpenDialog] = useState(false);
+  const [dataModal, setDataModal] = useState({
+    nama_surah: "",
+    tanggal_setoran: "",
+    sudah_setoran: false as boolean,
+    dosen_mengesahkan: "",
+  });
+  console.log(dataModal);
   return (
     <>
       <DashboardLayout>
+        <ModalBoxDetailSetoran
+          openDialog={openDialog}
+          setOpenDialog={() => {
+            setOpenDialog(!openDialog);
+            setDataModal({
+              nama_surah: "",
+              tanggal_setoran: "",
+              sudah_setoran: false,
+              dosen_mengesahkan: "",
+            });
+          }}
+          nama_surah={dataModal.nama_surah}
+          tanggal_setoran={dataModal?.tanggal_setoran}
+          dosen_mengesahkan={dataModal?.dosen_mengesahkan}
+          sudah_setor={dataModal.sudah_setoran}
+        />
         <div className="flex flex-col gap-3">
           {/* judul */}
-          <div className="text-3xl font-bold select-none">
-            Detail Riwayat Setoran Hafalan
+          <div className="flex flex-col gap-1.5 -mb-2">
+            <div className="text-lg md:text-3xl font-bold select-none -ml-1">
+              ✨ Detail Riwayat Setoran Hafalanmu...
+            </div>
+            <div className="select-none ml-1 md:text-base text-sm">
+              Berikut detail riwayat setoran hafalan kamu untuk persyaratan
+              akademik di UIN Suska Riau, semangat terus ya... 💙❤️
+            </div>
           </div>
           {/* statistik && user info */}
           <div className="flex gap-2">
@@ -48,7 +76,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
               totalDocs={dataRingkasan?.setoran.info_dasar.total_wajib_setor}
             />
             {/* <ProgressStatistik uploadedDocs={5} totalDocs={10} /> */}
-            <div className="flex flex-col gap-1 h-full justify-center py-14">
+            <div className="-ml-28 flex flex-col gap-1 h-full justify-center py-14">
               <div className="flex items-center">
                 {/* Bagian kiri */}
                 <div className="flex items-center gap-1 min-w-40">
@@ -67,7 +95,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                 {/* Bagian kiri */}
                 <div className="flex items-center gap-1 min-w-40">
                   <FileDigit size={19} />
-                  <span className="font-medium">Nim</span>
+                  <span className="font-medium">NIM</span>
                 </div>
 
                 {/* Titik dua dan nilai */}
@@ -110,7 +138,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
             </div>
           </div>
           {/* table and button  */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2.5">
             <div className="flex justify-between">
               <div>
                 <Tabs defaultValue="tab1" className="w-full">
@@ -118,21 +146,30 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                     <TabsTrigger
                       value="tab1"
                       onClick={() => setTabState("default")}
-                      className="data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold hover:bg-blue-100"
+                      className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+                        tabState !== "default" &&
+                        "hover:bg-blue-100 dark:hover:bg-background/20"
+                      }`}
                     >
-                      Default
+                      Semua Riwayat
                     </TabsTrigger>
                     <TabsTrigger
                       value="tab2"
                       onClick={() => setTabState("sudah_setor")}
-                      className="data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold hover:bg-blue-100"
+                      className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+                        tabState !== "sudah_setor" &&
+                        "hover:bg-blue-100 dark:hover:bg-background/20"
+                      }`}
                     >
-                      Disetor
+                      Sudah Disetor
                     </TabsTrigger>
                     <TabsTrigger
                       value="tab3"
                       onClick={() => setTabState("belum_setor")}
-                      className="data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold hover:bg-blue-100"
+                      className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+                        tabState !== "belum_setor" &&
+                        "hover:bg-blue-100 dark:hover:bg-background/20"
+                      }`}
                     >
                       Belum Disetor
                     </TabsTrigger>
@@ -141,7 +178,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
               </div>
               <Button
                 variant={"default"}
-                className="bg-blue-500"
+                className="bg-blue-500 hover:scale-[106%] text-white hover:bg-blue-700 active:scale-95"
                 onClick={() =>
                   GeneratePDF({
                     nama: dataRingkasan?.info.nama,
@@ -152,14 +189,14 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                   })
                 }
               >
-                <Printer /> Cetak
+                <Printer /> Cetak Kartu Setoran
               </Button>
             </div>
 
             <div>
               <Table>
                 <TableHeader>
-                  <TableRow className="border border-solid border-secondary bg-muted">
+                  <TableRow className="border hover:bg-muted border-solid border-secondary bg-muted">
                     <TableHead className="text-center">No</TableHead>
                     <TableHead>Nama Surah</TableHead>
                     <TableHead className="text-center">
@@ -177,7 +214,20 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                   {dataCurrent?.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={6} className="text-center">
-                        Anda Belum Menyetor Satu pun Hafalan Surah
+                        {tabState === "sudah_setor"
+                          ? "❌ Anda Belum Menyetor Satu pun Hafalan Surah"
+                          : "✔️ Anda Sudah Menyetor semua Hafalan Surah"}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {isLoading && (
+                    <TableRow>
+                      <TableCell colSpan={6}>
+                        <div className="flex flex-col gap-2">
+                          <Skeleton className="h-8 w-full" />
+                          <Skeleton className="h-8 w-[90%]" />
+                          <Skeleton className="h-8 w-[60%]" />
+                        </div>
                       </TableCell>
                     </TableRow>
                   )}
@@ -186,12 +236,35 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                       key={surah.nomor}
                       className={
                         index % 2 !== 0
-                          ? "bg-secondary hover:bg-secondary"
-                          : "bg-background hover:bg-background"
+                          ? "bg-secondary cursor-pointer"
+                          : "bg-background cursor-pointer"
                       }
+                      onClick={() => {
+                        console.log(surah.nama);
+                        setOpenDialog(true);
+                        setDataModal({
+                          nama_surah: surah.nama,
+                          tanggal_setoran:
+                            new Date(surah.setoran[0]?.tgl_setoran)
+                              .toLocaleDateString("id-ID", {
+                                day: "2-digit",
+                                month: "long",
+                                year: "numeric",
+                              })
+                              .replace(/^(\d+)\s(\w+)\s(\d+)$/, "$1 $2, $3") ||
+                            "-",
+                          dosen_mengesahkan:
+                            surah.setoran[0]?.dosen.nama || "-",
+                          sudah_setoran: surah.sudah_setor,
+                        });
+                      }}
                     >
                       <TableCell className="text-center">
-                        {surah.setoran.length > 0 && "✔️ "}
+                        {surah.setoran.length > 0 && (
+                          <span className="text-green-500 text-xl font-bold">
+                            ✓{" "}
+                          </span>
+                        )}
                         {index + 1}.
                       </TableCell>
                       <TableCell>{surah.nama}</TableCell>
@@ -199,13 +272,13 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                         {surah.setoran.length > 0 ? (
                           <div>
                             <p>
-                              {new Date(
-                                surah.setoran[0].tgl_setoran
-                              ).toLocaleDateString("id-ID", {
-                                day: "2-digit",
-                                month: "long",
-                                year: "numeric",
-                              })}
+                              {new Date(surah.setoran[0].tgl_setoran)
+                                .toLocaleDateString("id-ID", {
+                                  day: "2-digit",
+                                  month: "long",
+                                  year: "numeric",
+                                })
+                                .replace(/^(\d+)\s(\w+)\s(\d+)$/, "$1 $2, $3")}
                             </p>
                           </div>
                         ) : (
@@ -214,7 +287,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                       </TableCell>
                       <TableCell>
                         <div
-                          className={`py-2 px-6 rounded-md text-center text-white font-semibold ${
+                          className={`py-2 px-6 rounded-md text-center text-white font-medium ${
                             colourLabelingCategory(surah.label)[1]
                           }`}
                         >

@@ -15,30 +15,66 @@ import { useFilteredMahasiswa } from "@/hooks/use-filtering-searching";
 import colourfulProgress from "@/helpers/colourful-progress";
 import apiSetoran from "@/services/api/setoran-hafalan/dosen.service";
 import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useEffect, useState } from "react";
+import { SquareArrowOutUpRightIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface tabListStateProps {
   tahun: string;
   total: string;
 }
-export default function DosenSetoranHafalanMahasiswaPAPage() {
-  const { data: dataMahasiswa_1 } = useQuery({
-      queryKey: ["mahasiswa-pa-saya"],
-      queryFn: () => apiSetoran.getDataMyMahasiswa().then((res) => res.data),
-      staleTime: Infinity,
-    });
 
-    console.log(dataMahasiswa_1);
-  const dataMahaiswa =
-    dataMahasiswa_1?.info_mahasiswa_pa.daftar_mahasiswa;
-  const tabListState = dataMahasiswa_1?.info_mahasiswa_pa.ringkasan;
+export default function DosenSetoranHafalanMahasiswaPAPage() {
+  const navigate = useNavigate();
+  const { data: dataMahasiswa, isLoading } = useQuery({
+    queryKey: ["mahasiswa-pa-saya"],
+    queryFn: () => apiSetoran.getDataMyMahasiswa().then((res) => res.data),
+    staleTime: Infinity,
+  });
+  const dataMahaiswa = dataMahasiswa?.info_mahasiswa_pa.daftar_mahasiswa;
+  const tabListState = dataMahasiswa?.info_mahasiswa_pa.ringkasan;
   const { dataCurrent, setSearch, setTabState } = useFilteredMahasiswa(
     dataMahaiswa,
     "semua"
   );
+  const [date, setDate] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setDate(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+  const formatNumber = (num: number) => {
+    return num.toString().padStart(2, "0");
+  };
   return (
     <>
       <DashboardLayout>
-        <div className="flex flex-col gap-3 pt-11">
+        <div className="flex flex-col gap-3 pt-1 pb-3 w-full">
+          <div className="flex justify-start gap-2">
+            <div className="">
+              <span className="text-2xl">
+                {date.toLocaleDateString("id-ID", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </span>
+            </div>
+            <div className="">
+              <span className="text-2xl font-bold italic">
+                ({formatNumber(date.getHours())}:
+                {formatNumber(date.getMinutes())}:
+                {formatNumber(date.getSeconds())})
+              </span>
+            </div>
+          </div>
           <div className="flex bg-[#86A7FC] px-4 py-2 relative rounded-lg">
             <div className="flex flex-col gap-1 py-10 w-[70%]">
               <div className="font-bold text-3xl">Hello, Dosen PA!</div>
@@ -56,41 +92,52 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1.5 w-full">
+          <div className="flex flex-col gap-3 w-full">
+            <div className="flex flex-col gap-2">
+              <div className="w-full select-none">
+                <Tabs defaultValue="tab1" className="w-full h-full">
+                  <ScrollArea
+                    className="h-full py-3"
+                    style={{ width: `calc(100vw - 288px)` }}
+                  >
+                    <TabsList className="flex gap-1.5 whitespace-nowrap justify-start px-3 w-max">
+                      <TabsTrigger
+                        value="tab1"
+                        onClick={() => setTabState("semua")}
+                        className="data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold hover:bg-blue-100 dark:hover:bg-background/20"
+                      >
+                        Semua Angkatan
+                      </TabsTrigger>
+                      {tabListState?.map((item:tabListStateProps) => (
+                        <TabsTrigger
+                          key={item.tahun}
+                          onClick={() => setTabState(item.tahun)}
+                          value={item.tahun}
+                          className="data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold hover:bg-blue-100 dark:hover:bg-background/20"
+                        >
+                          {item.tahun}{" "}
+                          <span className="ml-2 px-2 rounded-xl bg-yellow-500 text-white">
+                            {item.total} mhs
+                          </span>
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                    <ScrollBar
+                      orientation="horizontal"
+                      className="cursor-pointer"
+                    />
+                  </ScrollArea>
+                </Tabs>
+              </div>
+
               <div>
                 <Input
-                  placeholder="Cari mahasiswa..."
+                  placeholder="Cari mahasiswa berdasarkan nama ataupun NIM..."
                   onChange={(e) => {
                     setSearch(e.target.value);
                   }}
+                  className="w-full"
                 />
-              </div>
-              <div className="flex justify-start">
-                <Tabs defaultValue="tab1">
-                  <TabsList className="gap-1.5 overflow-x-auto flex-wrap">
-                    <TabsTrigger
-                      value="tab1"
-                      onClick={() => setTabState("semua")}
-                      className="data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold hover:bg-blue-100"
-                    >
-                      Semua Angkatan
-                    </TabsTrigger>
-                    {tabListState?.map((item : tabListStateProps) => (
-                      <TabsTrigger
-                        key={item.tahun}
-                        onClick={() => setTabState(item.tahun)}
-                        value={item.tahun}
-                        className="data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold hover:bg-blue-100"
-                      >
-                        {item.tahun}{" "}
-                        <span className="ml-1 px-1 text-primary rounded-xl bg-muted">
-                          {item.total} mhs
-                        </span>
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </Tabs>
               </div>
             </div>
 
@@ -102,7 +149,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                     <TableHead className="text-center">
                       Nama Mahasiswa
                     </TableHead>
-                    <TableHead className="text-center">Nim</TableHead>
+                    <TableHead className="text-center">NIM</TableHead>
                     <TableHead className="text-center">Semester</TableHead>
                     <TableHead className="text-center">
                       Progres Hafalan
@@ -110,13 +157,25 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                     <TableHead className="text-center">
                       Terakhir Setor
                     </TableHead>
+                    <TableHead className="text-center">Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody className="border border-solid border-secondary">
                   {dataCurrent?.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center">
-                        Data tidak ditemukan
+                      <TableCell colSpan={7} className="text-center">
+                        ❌ Data tidak ditemukan
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {isLoading && (
+                    <TableRow>
+                      <TableCell colSpan={7}>
+                        <div className="flex flex-col gap-2">
+                          <Skeleton className="h-8 w-full" />
+                          <Skeleton className="h-8 w-[90%]" />
+                          <Skeleton className="h-8 w-[60%]" />
+                        </div>
                       </TableCell>
                     </TableRow>
                   )}
@@ -125,47 +184,56 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                       key={item.nim}
                       className={
                         index % 2 !== 0
-                          ? "bg-secondary hover:bg-secondary hover:underline cursor-pointer"
-                          : "bg-background hover:bg-background hover:underline cursor-pointer"
+                          ? "bg-secondary hover:bg-secondary"
+                          : "bg-background hover:bg-background"
                       }
-                      onClick={() => {
-                        window.location.href = `/dosen/setoran-hafalan/mahasiswa-pa/${item.email}`;
-                      }}
                     >
-                        <TableCell>{index + 1}.</TableCell>
-                        <TableCell className="text-center">
-                          {item.nama}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {item.nim}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {item.semester}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-1 items-center w-full">
-                            <div className="w-[90%]">
-                              <Progress
-                                value={
-                                  item.info_setoran.persentase_progress_setor
-                                }
-                                color={colourfulProgress(
-                                  item.info_setoran.persentase_progress_setor
-                                )}
-                                className="h-3"
-                                style={{ maxWidth: "100%" }}
-                              />
-                            </div>
+                      <TableCell>{index + 1}.</TableCell>
+                      <TableCell className="text-center">{item.nama}</TableCell>
+                      <TableCell className="text-center">{item.nim}</TableCell>
+                      <TableCell className="text-center">
+                        {item.semester}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2 items-center w-full">
+                          <div className="w-[90%]">
+                            <Progress
+                              value={
+                                item.info_setoran.persentase_progress_setor
+                              }
+                              color={colourfulProgress(
+                                item.info_setoran.persentase_progress_setor
+                              )}
+                              className="h-3"
+                              style={{ maxWidth: "100%" }}
+                            />
+                          </div>
+                          <div>
                             <span className="w-[10%] text-center">
                               {item.info_setoran.persentase_progress_setor}%
                             </span>
                           </div>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {item.info_setoran.terakhir_setor || "-"}
-                        </TableCell>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {item.info_setoran.terakhir_setor || "-"}
+                      </TableCell>
+                      <TableCell className="text-center w-40">
+                        <Button
+                          variant={"outline"}
+                          className="border-secondary border-2 rounded-xl text-foreground hover:scale-105 active:scale-95"
+                          onClick={() =>
+                            navigate(
+                              `/dosen/setoran-hafalan/mahasiswa-pa/detail?email=${item.email}`
+                            )
+                          }
+                        >
+                          <SquareArrowOutUpRightIcon />
+                          Lihat Detail
+                        </Button>
+                      </TableCell>
                     </TableRow>
-                      // </Link>
+                    // </Link>
                   ))}
                 </TableBody>
               </Table>

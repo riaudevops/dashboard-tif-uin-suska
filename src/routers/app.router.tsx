@@ -46,7 +46,7 @@ const router = createBrowserRouter([
 		)
 	},
 	{
-		path: "/dosen/setoran-hafalan/mahasiswa-pa/:email",
+		path: "/dosen/setoran-hafalan/mahasiswa-pa/detail",
 		element: (
 			<ProtectedRoute roles={["dosen"]}>
 				<DetailMahasiswaSetoran />

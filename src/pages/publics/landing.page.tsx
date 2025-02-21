@@ -206,11 +206,10 @@ const LandingPage = () => {
       },
     },
   };
-  const example = true;
   return (
     <div className="w-screen h-screen">
-      {example && (
-        <LoadingComponent className="fixed z-50 w-full h-full bg-red-600 bg-opacity-60" />
+      {auth.isLoading && (
+        <LoadingComponent className="fixed z-50 w-full h-full bg-black bg-opacity-60" />
       )}
       <HeaderLandingPageComponent
         isAuthenticated={auth.isAuthenticated}

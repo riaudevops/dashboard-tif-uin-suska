@@ -77,7 +77,7 @@ export default function BarChartSetoran({
 
       <div
       className="bg-secondary whitespace-nowrap w-full h-full shadow-md rounded-xl">
-        <MagicCard gradientColor="dark:#262626 #D9D9D955" className="bg-secondary flex flex-col p-4 w-full h-full justify-center">
+        <MagicCard gradientColor="dark:#262626 #D9D9D955" className="bg-secondary flex flex-col p-4 2xl:p-[1.4rem] w-full h-full justify-center">
           <div className="flex justify-start text-primary">
             {labelBerdasarkanKategori()}
           </div>

@@ -137,7 +137,9 @@ function ModalBoxValidasiSetoran({
             className="bg-green-500 hover:bg-green-400 w-full text-white"
             onClick={() => {
               validasiSetoran(dateSetoran);
-              setCheckBoxState(false);
+              setTimeout(() => {                
+                setCheckBoxState(false);
+              }, 1000);            
             }}
           >
             {buttonLoading && <Loader2 className="animate-spin" />}

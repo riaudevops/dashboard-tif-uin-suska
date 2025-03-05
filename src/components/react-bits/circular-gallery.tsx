@@ -510,35 +510,35 @@ class App {
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kntributor",
+        text: "Nama Kontributor",
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kntributor",
+        text: "Nama Kontributor",
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kntributor",
+        text: "Nama Kontributor",
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kntributor",
+        text: "Nama Kontributor",
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kntributor",
+        text: "Nama Kontributor",
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kntributor",
+        text: "Nama Kontributor",
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kntributor",
+        text: "Nama Kontributor",
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kntributor",
+        text: "Nama Kontributor",
       },
     ];
 

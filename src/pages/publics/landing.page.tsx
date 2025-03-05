@@ -53,38 +53,30 @@ const features = [
       <Terminal>
         <TypingAnimation>&gt; tif setoran-hafalan@latest</TypingAnimation>
         <AnimatedSpan delay={1500} className="text-green-500">
-          <span>✔ Memeriksa kesiapan modul.</span>
+          <span>✔ Memeriksa modul.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={2000} className="text-green-500">
           <span>✔ Menginisialisasi modul hafalan.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={2500} className="text-green-500">
           <span>✔ Memuat database surah.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={3000} className="text-green-500">
-          <span>✔ Mengaktifkan fitur tracking progress.</span>
+          <span>✔ Menginstall komponen setoran.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={3500} className="text-green-500">
-          <span>✔ Mengatur notifikasi pengingat.</span>
+          <span>✔ Memperbarui komponen setoran.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={4000} className="text-green-500">
-          <span>✔ Menyiapkan komponen setoran.</span>
+          <span>✔ Menyiapkan sistem.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={4500} className="py-2 text-blue-500">
           <span>ℹ Updated 1 file:</span>
           <span className="pl-2">- lib/setoran-hafalan.ts</span>
         </AnimatedSpan>
-
         <TypingAnimation delay={5000} className="text-yellow-500">
           Alhamdulillah! Sistem siap digunakan.
         </TypingAnimation>
-
         <TypingAnimation delay={5500} className="text-muted-foreground">
           Silakan mulai setoran hafalan Anda.
         </TypingAnimation>
@@ -99,42 +91,30 @@ const features = [
       <Terminal>
         <TypingAnimation>&gt; tif kerja-praktik@latest</TypingAnimation>
         <AnimatedSpan delay={1500} className="text-green-500">
-          <span>✔ Memeriksa kesiapan modul.</span>
+          <span>✔ Memeriksa modul.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={2000} className="text-green-500">
           <span>✔ Menginisialisasi modul kerja praktik.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={2500} className="text-green-500">
           <span>✔ Memuat database kerja praktik.</span>
         </AnimatedSpan>
-
-        <AnimatedSpan delay={4000} className="text-green-500">
-          <span>✔ Menyiapkan komponen daily report.</span>
-        </AnimatedSpan>
-
         <AnimatedSpan delay={3000} className="text-green-500">
-          <span>✔ Mengaktifkan fitur tracking progress.</span>
+          <span>✔ Menginstall komponen kerja praktik.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={3500} className="text-green-500">
-          <span>✔ Mengatur notifikasi pengingat.</span>
+          <span>✔ Memperbarui komponen kerja praktik.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={4000} className="text-green-500">
-          <span>✔ Menginstall komponen.</span>
+          <span>✔ Menyiapkan sistem.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={4500} className="py-2 text-blue-500">
           <span>ℹ Updated 1 file:</span>
           <span className="pl-2">- lib/kerja-praktik.ts</span>
         </AnimatedSpan>
-
         <TypingAnimation delay={5000} className="text-yellow-500">
           Success! Sistem siap digunakan.
         </TypingAnimation>
-
         <TypingAnimation delay={5500} className="text-muted-foreground">
           Silakan mulai kerja praktik Anda.
         </TypingAnimation>
@@ -150,44 +130,37 @@ const features = [
       <Terminal>
         <TypingAnimation>&gt; tif seminar@latest</TypingAnimation>
         <AnimatedSpan delay={1500} className="text-green-500">
-          <span>✔ Memeriksa kesiapan modul.</span>
+          <span>✔ Memeriksa modul.</span>
         </AnimatedSpan>
-
         <AnimatedSpan delay={2000} className="text-green-500">
           <span>✔ Menginisialisasi modul seminar.</span>
         </AnimatedSpan>
-
-        <AnimatedSpan delay={3500} className="text-green-500">
-          <span>✔ Mengatur notifikasi pengingat.</span>
-        </AnimatedSpan>
-
         <AnimatedSpan delay={2500} className="text-green-500">
-          <span>✔ Menginstall komponen.</span>
+          <span>✔ Menginstall komponen seminar.</span>
         </AnimatedSpan>
-
-        <AnimatedSpan delay={4500} className="py-2 text-blue-500">
+        <AnimatedSpan delay={3000} className="text-green-500">
+          <span>✔ Menyiapkan sistem.</span>
+        </AnimatedSpan>
+        <AnimatedSpan delay={3500} className="py-2 text-blue-500">
           <span>ℹ Updated 1 file:</span>
           <span className="pl-2">- lib/seminar.ts</span>
         </AnimatedSpan>
-
-        <TypingAnimation delay={5000} className="text-yellow-500">
+        <TypingAnimation delay={4000} className="text-yellow-500">
           Success! Sistem siap digunakan.
         </TypingAnimation>
-
-        <TypingAnimation delay={5500} className="text-muted-foreground">
+        <TypingAnimation delay={4500} className="text-muted-foreground">
           Silakan mulai seminar Anda.
         </TypingAnimation>
       </Terminal>
     ),
   },
   {
-    name: "Coming soon...",
-    description: "🚀 Nantikan fitur-fitur menarik lainnya...",
+    name: "Coming Soon...",
+    description: "🚀 Nantikan fitur-fitur menarik lainnya.",
     className: "col-span-3 lg:col-span-1",
     background: (
       <Terminal>
         <TypingAnimation>&gt; tif update --all </TypingAnimation>
-
         <TypingAnimation delay={1500} className="pt-4 text-muted-foreground">
           Up-to-date
         </TypingAnimation>
@@ -237,7 +210,7 @@ const LandingPage = () => {
   return (
     <div className="w-screen h-screen">
       {auth.isLoading && (
-        <LoadingComponent className="absolute z-50 w-screen h-screen bg-black bg-opacity-60" />
+        <LoadingComponent className="absolute z-50 w-full h-full bg-black bg-opacity-60" />
       )}
       <HeaderLandingPageComponent
         isAuthenticated={auth.isAuthenticated}
@@ -247,17 +220,17 @@ const LandingPage = () => {
       <div className="w-full h-full">
         <div
           id="beranda"
-          className="flex items-center justify-center w-screen h-screen text-center"
+          className="flex items-center justify-center w-screen h-screen text-center lg:pt-8"
         >
           <RetroGrid />
           <div className="absolute w-full top-0 bg-gradient-to-t from-background to-transparent to-90% dark:from-background pointer-events-none h-[55%]" />
           <div className="relative">
             <motion.div
-              className="absolute left-0 -top-36 lg:-top-32"
+              className="absolute hidden left-1 lg:-top-32 lg:block"
               animate={v1FloatingAnimation.animate}
             >
               <AnimatedContent
-                distance={150}
+                distance={50}
                 direction="horizontal"
                 reverse={true}
                 config={{ tension: 80, friction: 20 }}
@@ -274,11 +247,11 @@ const LandingPage = () => {
             </motion.div>
 
             <motion.div
-              className="absolute right-0 -top-36 lg:-top-32"
+              className="absolute right-0 hidden lg:-top-32 lg:block"
               animate={v2FloatingAnimation.animate}
             >
               <AnimatedContent
-                distance={150}
+                distance={50}
                 direction="horizontal"
                 reverse={false}
                 config={{ tension: 80, friction: 20 }}
@@ -295,11 +268,11 @@ const LandingPage = () => {
             </motion.div>
 
             <motion.div
-              className="absolute left-0 md:left-16 -bottom-28 lg:-bottom-16"
+              className="absolute hidden lg:left-24 lg:-bottom-14 lg:block"
               animate={v2FloatingAnimation.animate}
             >
               <AnimatedContent
-                distance={150}
+                distance={50}
                 direction="horizontal"
                 reverse={true}
                 config={{ tension: 80, friction: 20 }}
@@ -316,11 +289,11 @@ const LandingPage = () => {
             </motion.div>
 
             <motion.div
-              className="absolute right-0 md:right-16 -bottom-28 lg:-bottom-16"
+              className="absolute hidden lg:right-[88px] lg:-bottom-14 lg:block"
               animate={v1FloatingAnimation.animate}
             >
               <AnimatedContent
-                distance={150}
+                distance={50}
                 direction="horizontal"
                 reverse={false}
                 config={{ tension: 80, friction: 20 }}
@@ -345,11 +318,11 @@ const LandingPage = () => {
               delay={200}
               animateBy="words"
               direction="top"
-              className="mx-auto mb-8 text-5xl font-extrabold md:text-6xl md:max-w-7xl lg:text-7xl"
+              className="mx-auto mb-8 text-5xl font-extrabold md:px-12 lg:px-32 lg:text-7xl md:max-w-7xl "
             />
 
             <AnimatedContent
-              distance={150}
+              distance={50}
               direction="vertical"
               reverse={false}
               config={{ tension: 80, friction: 20 }}
@@ -358,8 +331,8 @@ const LandingPage = () => {
               delay={1500}
             >
               <SplitText
-                text="Mudah, Cepat, Informatif dan Terintegrasi Banyak Layanan Bisa Diselesaikan Dalam Satu Waktu."
-                className="max-w-2xl mx-auto mb-8 text-xl font-medium md:text-2xl"
+                text="Mudah, Cepat, Informatif dan Terintegrasi Banyak Layanan Bisa Diselesaikan dalam Satu Waktu."
+                className="max-w-2xl px-2 mx-auto mb-8 text-xl font-medium md:text-2xl"
                 delay={55}
                 animationFrom={{
                   opacity: 0,
@@ -372,13 +345,13 @@ const LandingPage = () => {
             </AnimatedContent>
 
             <AnimatedContent
-              distance={150}
+              distance={50}
               direction="vertical"
               reverse={false}
               config={{ tension: 80, friction: 20 }}
               animateOpacity
               threshold={0.2}
-              delay={4500}
+              delay={3750}
             >
               <div className="flex items-center justify-center transition duration-300 hover:-translate-y-1">
                 <CustomGradientText
@@ -426,7 +399,7 @@ const LandingPage = () => {
               delay={200}
               animateBy="words"
               direction="top"
-              className="max-w-4xl mx-auto mb-16 text-5xl font-extrabold lg:text-7xl"
+              className="max-w-4xl mx-auto mb-12 text-5xl font-extrabold md:mb-16 lg:text-7xl"
             />
             <BentoGrid>
               {features.map((feature, idx) => (
@@ -474,7 +447,7 @@ const LandingPage = () => {
             delay={200}
             animateBy="words"
             direction="top"
-            className="max-w-4xl mx-auto mt-6 mb-8 text-6xl font-extrabold lg:text-7xl"
+            className="max-w-4xl mx-auto mt-6 mb-8 text-5xl font-extrabold lg:text-7xl"
           />
           <CircularGallery bend={3} textColor="#FFBE7B" borderRadius={0.05} />
           <div className="h-20" />
@@ -486,31 +459,25 @@ const LandingPage = () => {
               delay={200}
               animateBy="words"
               direction="top"
-              className="max-w-4xl mx-auto mb-8 text-6xl font-extrabold lg:text-7xl"
+              className="max-w-4xl mx-auto mb-8 text-5xl font-extrabold lg:text-7xl"
             />
-            <AnimatedContent
-              distance={150}
-              direction="vertical"
-              reverse={false}
-              config={{ tension: 80, friction: 20 }}
-              animateOpacity
+            <SplitText
+              text="Mudah, Cepat, Informatif dan Terintegrasi Banyak Layanan Bisa Diselesaikan dalam Satu Waktu."
+              className="max-w-2xl px-2 mx-auto mb-12 text-xl font-medium text-gray-400 md:mb-16 md:text-2xl"
+              delay={50}
+              animationFrom={{
+                opacity: 0,
+                transform: "translate3d(0,50px,0)",
+              }}
+              animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}
               threshold={0.2}
-              delay={1500}
+              rootMargin="-50px"
+            />
+            <Accordion
+              type="single"
+              collapsible
+              className="w-3/4 space-y-4 lg:w-2/3"
             >
-              <SplitText
-                text="Mudah, Cepat, Informatif dan Terintegrasi Banyak Layanan Bisa Diselesaikan Dalam Satu Waktu."
-                className="max-w-2xl mx-auto mb-16 text-xl font-medium text-gray-400 md:text-2xl"
-                delay={50}
-                animationFrom={{
-                  opacity: 0,
-                  transform: "translate3d(0,50px,0)",
-                }}
-                animationTo={{ opacity: 1, transform: "translate3d(0,0,0)" }}
-                threshold={0.2}
-                rootMargin="-50px"
-              />
-            </AnimatedContent>
-            <Accordion type="single" collapsible className="w-2/3 space-y-4">
               <AccordionItem
                 value="item-1"
                 className="px-4 shadow-md rounded-xl bg-background [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)] transform-gpu dark:bg-background dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]"
@@ -551,9 +518,9 @@ const LandingPage = () => {
         </WarpBackground>
         <footer className="flex flex-col border-t">
           <div className="z-10 px-16 pt-14">
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-8 text-center md:text-start md:grid-cols-3">
               {/* Logo and Copyright Section */}
-              <div className="space-y-4">
+              <div className="flex flex-col items-center space-y-4 md:items-start">
                 <div className="flex items-center gap-1.5 rounded-xl">
                   {theme === "dark" ? (
                     <DarkLogoUSR className="w-8 h-8" />
@@ -566,13 +533,12 @@ const LandingPage = () => {
                   </span>
                 </div>
                 <p className="text-sm">
-                  Teknik Informatika. 2025. All rights reserved.
+                  Teknik Informatika. © 2025. All rights reserved.
                 </p>
               </div>
-
               {/* Pages Section */}
               <div>
-                <ul className="space-y-2">
+                <ul className="space-y-4">
                   <li>
                     <HashLink smooth to="/#beranda">
                       Beranda
@@ -595,10 +561,9 @@ const LandingPage = () => {
                   </li>
                 </ul>
               </div>
-
               {/* Contact Section */}
               <div>
-                <div className="space-y-4">
+                <div className="flex flex-col items-center space-y-4 md:items-start">
                   <div className="flex items-center gap-2">
                     <PhoneCall className="w-5 h-5 " />
                     <span className="">+62878-6868-5950</span>
@@ -610,15 +575,14 @@ const LandingPage = () => {
                     </a>
                   </div>
                   <div className="flex items-start gap-2">
-                    <MapPin className="w-5 h-5 " />
+                    <MapPin className="hidden w-5 h-5 md:block" />
                     <p className="">Jl. HR. Soebrantas No.155 KM 18</p>
                   </div>
                 </div>
               </div>
             </div>
-
             {/* Social Media Icons */}
-            <div className="flex justify-end gap-4 mt-8">
+            <div className="flex justify-center gap-4 mt-8 md:justify-end ">
               <a href="#">
                 <span className="sr-only">Facebook</span>
                 <svg
@@ -681,13 +645,13 @@ const LandingPage = () => {
             style={{
               position: "absolute",
               overflow: "hidden",
-              minHeight: "475px",
-              maxHeight: "475px",
+              minHeight: "525px",
+              maxHeight: "525px",
               width: "100%",
             }}
           >
             <Ballpit
-              count={75}
+              count={100}
               gravity={0.7}
               friction={0.8}
               wallBounce={0.95}

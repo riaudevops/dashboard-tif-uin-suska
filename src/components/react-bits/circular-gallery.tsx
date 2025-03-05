@@ -41,7 +41,8 @@ function createTextTexture(
   gl: GL,
   text: string,
   font: string = "bold 30px monospace",
-  color: string = "#FFBE7B"
+  color: string = "#FFBE7B",
+  roles: string,
 ): { texture: Texture; width: number; height: number } {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
@@ -53,8 +54,8 @@ function createTextTexture(
   const fontSize = getFontSize(font);
   const textHeight = Math.ceil(fontSize * 1.2);
 
-  canvas.width = textWidth + 20;
-  canvas.height = textHeight + 20;
+  canvas.width = textWidth + 40;
+  canvas.height = textHeight + 40;
 
   context.font = font;
   context.fillStyle = color;
@@ -62,6 +63,7 @@ function createTextTexture(
   context.textAlign = "center";
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.fillText(text, canvas.width / 2, canvas.height / 2);
+  context.fillText(roles, canvas.width / 2, canvas.height / 2 + 30);
 
   const texture = new Texture(gl, { generateMipmaps: false });
   texture.image = canvas;
@@ -75,6 +77,7 @@ interface TitleProps {
   text: string;
   textColor?: string;
   font?: string;
+  roles: string;
 }
 
 class Title {
@@ -85,6 +88,7 @@ class Title {
   textColor: string;
   font: string;
   mesh!: Mesh;
+  roles: string;
 
   constructor({
     gl,
@@ -93,6 +97,7 @@ class Title {
     text,
     textColor = "#FFBE7B",
     font = "30px sans-serif",
+    roles,
   }: TitleProps) {
     autoBind(this);
     this.gl = gl;
@@ -101,6 +106,7 @@ class Title {
     this.text = text;
     this.textColor = textColor;
     this.font = font;
+    this.roles = roles;
     this.createMesh();
   }
 
@@ -109,7 +115,8 @@ class Title {
       this.gl,
       this.text,
       this.font,
-      this.textColor
+      this.textColor,
+      this.roles,
     );
     const geometry = new Plane(this.gl);
     const program = new Program(this.gl, {
@@ -173,6 +180,7 @@ interface MediaProps {
   textColor: string;
   borderRadius?: number;
   font?: string;
+  roles: string;
 }
 
 class Media {
@@ -202,6 +210,7 @@ class Media {
   speed: number = 0;
   isBefore: boolean = false;
   isAfter: boolean = false;
+  roles: string;
 
   constructor({
     geometry,
@@ -218,6 +227,7 @@ class Media {
     textColor,
     borderRadius = 0,
     font,
+    roles
   }: MediaProps) {
     this.geometry = geometry;
     this.gl = gl;
@@ -233,6 +243,7 @@ class Media {
     this.textColor = textColor;
     this.borderRadius = borderRadius;
     this.font = font;
+    this.roles = roles;
     this.createShader();
     this.createMesh();
     this.createTitle();
@@ -330,6 +341,7 @@ class Media {
       plane: this.plane,
       renderer: this.renderer,
       text: this.text,
+      roles: this.roles,
       textColor: this.textColor,
       font: this.font,
     });
@@ -411,7 +423,7 @@ class Media {
 }
 
 interface AppConfig {
-  items?: { image: string; text: string }[];
+  items?: { image: string; text: string; roles: string }[];
   bend?: number;
   textColor?: string;
   borderRadius?: number;
@@ -434,7 +446,7 @@ class App {
   scene!: Transform;
   planeGeometry!: Plane;
   medias: Media[] = [];
-  mediasImages: { image: string; text: string }[] = [];
+  mediasImages: { image: string; text: string; roles: string }[] = [];
   screen!: { width: number; height: number };
   viewport!: { width: number; height: number };
   raf: number = 0;
@@ -497,7 +509,7 @@ class App {
   }
 
   createMedias(
-    items: { image: string; text: string }[] | undefined,
+    items: { image: string; text: string, roles: string }[] | undefined,
     bend: number = 1,
     textColor: string,
     borderRadius: number,
@@ -506,39 +518,48 @@ class App {
     const defaultItems = [
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kontributor",
+        text: "M. Farhan Aulia Pratama",
+        roles: "(BackEnd & DevOps Engineer)",
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kontributor",
+        text: "Muh. Zaki Erbai Syas",
+        roles: "(BackEnd Engineer)",
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kontributor",
+        text: "Ahmad Kurniawan",
+        roles: "(FrontEnd Engineer)",
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kontributor",
+        text: "Farhan Fadhila",
+        roles: "(FrontEnd Engineer)",
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kontributor",
+        text: "Gilang Ramadhan Indra",
+        roles: "(BackEnd Engineer)",
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kontributor",
+        text: "Hafidz Alhadid Rahman",
+        roles: "(BackEnd Engineer)",
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kontributor",
+        text: "M. Rafly Wirayudha",
+        roles: "(FrontEnd Engineer)",
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kontributor",
+        text: "M. Nabil Dawami",
+        roles: "(UI/UX Designer)",
       },
       {
         image: `https://storage.ruanjipos.id/image/gasd`,
-        text: "Nama Kontributor",
+        text: "Abmi Sukma Edri",
+        roles: "(UI/UX Designer)",
       },
     ];
 
@@ -561,6 +582,7 @@ class App {
         textColor,
         borderRadius,
         font,
+        roles: data.roles
       });
     });
   }
@@ -672,7 +694,7 @@ class App {
 }
 
 interface CircularGalleryProps {
-  items?: { image: string; text: string }[];
+  items?: { image: string; text: string; roles: string }[];
   bend?: number;
   textColor?: string;
   borderRadius?: number;

@@ -1,5 +1,5 @@
 # Stage 1: Builder
-FROM node:18-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -12,15 +12,17 @@ COPY . .
 ARG VITE_AUTHORITY
 ARG VITE_CLIENT_ID
 ARG VITE_CLIENT_SECRET
+ARG VITE_API_URL
 ENV VITE_AUTHORITY=$VITE_AUTHORITY
 ENV VITE_CLIENT_ID=$VITE_CLIENT_ID
 ENV VITE_CLIENT_SECRET=$VITE_CLIENT_SECRET
+ENV VITE_API_URL=$VITE_API_URL
 
 # Build application
 RUN npm run build
 
 # Stage 2: Production
-FROM node:18-alpine AS production
+FROM node:22-alpine AS production
 
 WORKDIR /app
 

@@ -33,8 +33,10 @@ export default function MahasiswaSetoranHafalanStatistikPage() {
             {isLoading && (
               <>
                 <Skeleton className="rounded-xl px-5 py-9" />
-                <Skeleton className="rounded-xl w-[80%] py-9" />
-                <Skeleton className="rounded-xl w-[60%] py-9" />
+                <Skeleton className="rounded-xl px-5 py-9" />
+                <Skeleton className="rounded-xl px-5 py-9" />
+                <Skeleton className="rounded-xl px-5 py-9" />
+                <Skeleton className="rounded-xl px-5 py-9" />
               </>
             )}
             {dataRingkasan?.map(

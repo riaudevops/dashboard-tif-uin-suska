@@ -19,6 +19,7 @@ import { GeneratePDF } from "@/components/mahasiswa/setoran-hafalan/detail-riway
 import { Skeleton } from "@/components/ui/skeleton";
 import ModalBoxDetailSetoran from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/ModalBoxDetailSetoran";
 import { useState } from "react";
+
 export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
   const { data: dataRingkasan, isLoading } = useQuery({
     queryKey: ["setoran-saya-detail"],
@@ -181,11 +182,13 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                 className="bg-blue-500 hover:scale-[106%] text-white hover:bg-blue-700 active:scale-95"
                 onClick={() =>
                   GeneratePDF({
-                    nama: dataRingkasan?.info.nama,
-                    nim: dataRingkasan?.info.nim,
-                    dataSurah: dataRingkasan?.setoran.detail,
-                    dosen_pa: dataRingkasan?.info.dosen_pa.nama,
-                    nip_dosen: dataRingkasan?.info.dosen_pa.nip,
+                    props: {
+                      nama: dataRingkasan?.info.nama,
+                      nim: dataRingkasan?.info.nim,
+                      dataSurah: dataRingkasan?.setoran.detail,
+                      dosen_pa: dataRingkasan?.info.dosen_pa.nama,
+                      nip_dosen: dataRingkasan?.info.dosen_pa.nip,
+                    },
                   })
                 }
               >

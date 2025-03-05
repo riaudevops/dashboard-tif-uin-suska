@@ -206,11 +206,10 @@ const LandingPage = () => {
       },
     },
   };
-
   return (
     <div className="w-screen h-screen">
       {auth.isLoading && (
-        <LoadingComponent className="absolute z-50 w-full h-full bg-black bg-opacity-60" />
+        <LoadingComponent className="fixed z-50 w-full h-full bg-black bg-opacity-60" />
       )}
       <HeaderLandingPageComponent
         isAuthenticated={auth.isAuthenticated}
@@ -449,7 +448,7 @@ const LandingPage = () => {
             direction="top"
             className="max-w-4xl mx-auto mt-6 mb-8 text-5xl font-extrabold lg:text-7xl"
           />
-          <CircularGallery bend={3} textColor="#FFBE7B" borderRadius={0.05} />
+          <CircularGallery font="bold 35px monospace" bend={2} textColor="#FFBE7B" borderRadius={0.05} />
           <div className="h-20" />
         </div>
         <WarpBackground id="faqs">

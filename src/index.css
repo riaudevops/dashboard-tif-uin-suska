@@ -210,3 +210,20 @@ body {
   width: 100%;
   height: 100%;
 }
+
+/* Menyembunyikan ikon default */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0; /* Menyembunyikan ikon */
+    position: absolute;
+    width: 100%;
+}
+
+/* Menambahkan ikon kustom */
+.date-input {
+    position: relative;
+    display: inline-block;
+}
+
+.date-input input {
+    padding-right: 30px; /* Ruang untuk ikon */
+}

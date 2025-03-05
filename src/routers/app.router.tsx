@@ -5,6 +5,8 @@ import ForbiddenPage from "@/pages/publics/forbidden.page";
 import NotFoundPage from "@/pages/publics/not-found.page";
 import MahasiswaSetoranHafalanStatistikPage from "@/pages/mahasiswa/setoran-hafalan/statistik/page";
 import DosenSetoranHafalanMahasiswaPAPage from "@/pages/dosen/setoran-hafalan/mahasiswa-pa/page";
+import MahasiswaSetoranHafalanDetailRiwayatPage from "@/pages/mahasiswa/setoran-hafalan/detail-riwayat/page";
+import DetailMahasiswaSetoran from "@/pages/dosen/setoran-hafalan/mahasiswa-pa/DetailMahasiswaSetoran";
 
 const router = createBrowserRouter([
 	{
@@ -32,10 +34,26 @@ const router = createBrowserRouter([
 		)
 	},
 	{
+		path: "/mahasiswa/setoran-hafalan/detail-riwayat",
+		element: (
+			<ProtectedRoute roles={["mahasiswa"]}>
+				<MahasiswaSetoranHafalanDetailRiwayatPage />
+			</ProtectedRoute>
+		)
+	},
+	{
 		path: "/dosen/setoran-hafalan/mahasiswa-pa",
 		element: (
 			<ProtectedRoute roles={["dosen"]}>
 				<DosenSetoranHafalanMahasiswaPAPage />
+			</ProtectedRoute>
+		)
+	},
+	{
+		path: "/dosen/setoran-hafalan/mahasiswa-pa/detail",
+		element: (
+			<ProtectedRoute roles={["dosen"]}>
+				<DetailMahasiswaSetoran />
 			</ProtectedRoute>
 		)
 	}

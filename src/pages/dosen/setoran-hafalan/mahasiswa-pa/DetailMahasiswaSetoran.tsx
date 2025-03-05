@@ -10,14 +10,10 @@ import {
 } from "@/components/ui/table";
 import { colourLabelingCategory } from "@/helpers/colour-labeling-category";
 import { Button } from "@/components/ui/button";
-// import { Input } from "@/components/ui/input";
-// import { Checkbox } from "@/components/ui/checkbox";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import apiSetoran from "@/services/api/setoran-hafalan/dosen.service";
-// import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-// import ModalBox from "@/components/dosen/setoran-hafalan/ModalBox";
 import ModalBoxDosen from "@/components/dosen/setoran-hafalan/ModalBoxValidasiSetoran";
 import ModalBoxBatalSetoran from "@/components/dosen/setoran-hafalan/ModalBoxBatalSetoran";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -60,13 +56,14 @@ function DetailMahasiswaSetoran() {
   const { data: dataInfoSetoran, isLoading } = useQuery({
     queryKey: ["info-mahasiswa-by-email"],
     queryFn: () =>
-      apiSetoran.getDataMahasiswaByEmail(email!).then((res) => res.data),
-    staleTime: Infinity,
+      apiSetoran.getDataMahasiswaByEmail(email!).then((res) => res.data)
   });
+
   const { dataCurrent, setTabState, tabState } = useFilteringSetoranSurat(
     dataInfoSetoran?.setoran.detail,
     "default"
   );
+
   // post data Setoran with mutation
   const mutation = useMutation({
     mutationFn: apiSetoran.postSetoranSurah,
@@ -191,14 +188,14 @@ function DetailMahasiswaSetoran() {
       <div className="flex flex-col gap-4">
         {/* judul */}
         <div className="flex flex-col gap-1.5 -mb-2">
-            <div className="text-lg md:text-3xl font-bold select-none -ml-1">
-              ✨ Detail Riwayat Setoran Hafalan Mahasiswa PA-mu...
-            </div>
-            <div className="select-none ml-1 md:text-base text-sm">
-              Berikut detail riwayat setoran hafalan mahasiswa PA kamu untuk persyaratan
-              akademik di UIN Suska Riau... 💙❤️
-            </div>
+          <div className="text-lg md:text-3xl font-bold select-none -ml-1">
+            ✨ Detail Riwayat Setoran Hafalan Mahasiswa PA-mu...
           </div>
+          <div className="select-none ml-1 md:text-base text-sm">
+            Berikut detail riwayat setoran hafalan mahasiswa PA kamu untuk
+            persyaratan akademik di UIN Suska Riau... 💙❤️
+          </div>
+        </div>
         <div className="flex gap-2">
           <ProgressStatistik
             uploadedDocs={dataInfoSetoran?.setoran.info_dasar.total_sudah_setor}
@@ -341,7 +338,9 @@ function DetailMahasiswaSetoran() {
               {dataCurrent?.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center">
-                    {tabState === "sudah_setor" ? '❌ Mahasiswa ini Belum Menyetor Satu pun Hafalan Surah' : '✔️ Mahasiswa ini Sudah Menyetor semua Hafalan Surah'}
+                    {tabState === "sudah_setor"
+                      ? "❌ Mahasiswa ini Belum Menyetor Satu pun Hafalan Surah"
+                      : "✔️ Mahasiswa ini Sudah Menyetor semua Hafalan Surah"}
                   </TableCell>
                 </TableRow>
               )}

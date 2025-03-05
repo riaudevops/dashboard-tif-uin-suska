@@ -115,7 +115,7 @@ const addSignature = (
 
   // Set posisi awal blok tanda tangan dari tengah halaman
   const startX = pageWidth / 2 + 33; // Mulai dari tengah + offset
-  const finalY = pageHeight - 46;
+  const finalY = pageHeight - 53;
 
   // Render teks tanpa alignment right
   doc.text(`Pekanbaru, ${currentDate}`, startX, finalY);
@@ -160,7 +160,7 @@ export const GeneratePDF = ({ props }: { props: PDFGeneratorProps }) => {
   ]);
 
   autoTable(doc, {
-    startY: tableStartY + 3,
+    startY: tableStartY - 3,
     head: [
       [
         "No",

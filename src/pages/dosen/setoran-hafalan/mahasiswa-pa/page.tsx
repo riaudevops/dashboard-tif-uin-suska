@@ -32,7 +32,6 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
   const { data: dataMahasiswa, isLoading } = useQuery({
     queryKey: ["mahasiswa-pa-saya"],
     queryFn: () => apiSetoran.getDataMyMahasiswa().then((res) => res.data),
-    staleTime: Infinity,
   });
   const dataMahaiswa = dataMahasiswa?.info_mahasiswa_pa.daftar_mahasiswa;
   const tabListState = dataMahasiswa?.info_mahasiswa_pa.ringkasan;
@@ -98,7 +97,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                 <Tabs defaultValue="tab1" className="w-full h-full">
                   <ScrollArea
                     className="h-full py-3"
-                    style={{ width: `calc(100vw - 288px)` }}
+                    style={{ width: `calc(100vw - 295px)` }}
                   >
                     <TabsList className="flex gap-1.5 whitespace-nowrap justify-start px-3 w-max">
                       <TabsTrigger
@@ -141,7 +140,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
               </div>
             </div>
 
-            <div>
+            <div className="">
               <Table>
                 <TableHeader>
                   <TableRow className="border border-solid border-secondary bg-muted">
@@ -208,8 +207,8 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                               style={{ maxWidth: "100%" }}
                             />
                           </div>
-                          <div>
-                            <span className="w-[10%] text-center">
+                          <div className="w-[10%]">
+                            <span className="text-center">
                               {item.info_setoran.persentase_progress_setor}%
                             </span>
                           </div>

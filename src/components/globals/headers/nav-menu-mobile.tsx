@@ -5,12 +5,12 @@ import {
 import { useLocation } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 
-export const NavMenu = ({ navMenu }: NavMenuProps) => {
+export const NavMenuMobile = ({ navMenu }: NavMenuProps) => {
   const location = useLocation();
 
   return (
-    <nav className="flex mt-[0.20rem] justify-center items-center text-sm text-muted-foreground">
-      <ul className="flex space-x-5">
+    <nav className="flex mt-[0.20rem] justify-start items-center text-sm text-muted-foreground">
+      <ul className="flex flex-col space-y-5">
         {navMenu.map((item: NavMenuItemsProps) => {
           return (
             <li

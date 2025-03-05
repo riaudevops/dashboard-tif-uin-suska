@@ -22,8 +22,8 @@ const ProtectedRoute = ({ children, roles }: ProtectedRouteProps) => {
   // Tampilkan loading hingga Keycloak siap
   if (auth.isLoading || loading)
     return (
-    <LoadingComponent className="w-screen h-screen bg-black bg-opacity-50 z-50 absolute flex items-center justify-center" />
-    )
+      <LoadingComponent className="absolute z-50 flex items-center justify-center w-full h-full bg-black bg-opacity-50" />
+    );
 
   // Periksa apakah pengguna sudah terautentikasi atau sesi telah habis
   if (!auth.isAuthenticated) return <Navigate to="/" />;

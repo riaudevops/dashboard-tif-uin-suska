@@ -1,6 +1,6 @@
 export const accessToken = () => {
   const data = sessionStorage.getItem(
-    "oidc.user:https://id.tif.uin-suska.ac.id/realms/tif:iMemoraise"
+    `oidc.user:https://id.tif.uin-suska.ac.id/realms/tif:${import.meta.env.VITE_CLIENT_ID}`
   );
   if(!data){
     return "";

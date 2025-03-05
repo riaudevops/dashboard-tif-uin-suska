@@ -36,7 +36,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
   });
   const dataMahaiswa = dataMahasiswa?.info_mahasiswa_pa.daftar_mahasiswa;
   const tabListState = dataMahasiswa?.info_mahasiswa_pa.ringkasan;
-  const { dataCurrent, setSearch, setTabState } = useFilteredMahasiswa(
+  const { dataCurrent, setSearch, setTabState, tabState } = useFilteredMahasiswa(
     dataMahaiswa,
     "semua"
   );
@@ -71,17 +71,17 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
               <span className="text-2xl font-bold italic">
                 ({formatNumber(date.getHours())}:
                 {formatNumber(date.getMinutes())}:
-                {formatNumber(date.getSeconds())})
+                {formatNumber(date.getSeconds())} WIB)
               </span>
             </div>
           </div>
           <div className="flex bg-[#86A7FC] px-4 py-2 relative rounded-lg">
-            <div className="flex flex-col gap-1 py-10 w-[70%]">
-              <div className="font-bold text-3xl">Hello, Dosen PA!</div>
+            <div className="flex flex-col text-black gap-1 py-10 w-[70%]">
+              <div className="font-bold text-3xl">Halo, Dosen PA!</div>
               <div>
-                Selamat! 🎉 Tahun ini kamu membimbing {dataMahaiswa?.length}{" "}
-                mahasiswa PA. Berikut adalah daftar mahasiswa yang akan kamu
-                dampingi. Ayo, mari kita mulai bekerja
+                Semangat bertugas! 🎉 Tahun ini kamu membimbing {dataMahaiswa?.length}{" "}
+                mahasiswa PA. Berikut adalah daftar mahasiswa yang sedang kamu
+                dampingi. Ayo, mari kita mulai bekerja.
               </div>
             </div>
 
@@ -104,7 +104,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                       <TabsTrigger
                         value="tab1"
                         onClick={() => setTabState("semua")}
-                        className="data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold hover:bg-blue-100 dark:hover:bg-background/20"
+                        className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${tabState !== "semua" && "hover:bg-blue-100 dark:hover:bg-background/20"}`}
                       >
                         Semua Angkatan
                       </TabsTrigger>
@@ -113,10 +113,10 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                           key={item.tahun}
                           onClick={() => setTabState(item.tahun)}
                           value={item.tahun}
-                          className="data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold hover:bg-blue-100 dark:hover:bg-background/20"
+                          className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${tabState !== item.tahun && "hover:bg-blue-100 dark:hover:bg-background/20"}`}
                         >
                           {item.tahun}{" "}
-                          <span className="ml-2 px-2 rounded-xl bg-yellow-500 text-white">
+                          <span className="ml-2 px-2 rounded-xl bg-yellow-600 text-white">
                             {item.total} mhs
                           </span>
                         </TabsTrigger>
@@ -145,7 +145,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="border border-solid border-secondary bg-muted">
-                    <TableHead>No</TableHead>
+                    <TableHead className="text-center">No.</TableHead>
                     <TableHead className="text-center">
                       Nama Mahasiswa
                     </TableHead>
@@ -188,7 +188,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                           : "bg-background hover:bg-background"
                       }
                     >
-                      <TableCell>{index + 1}.</TableCell>
+                      <TableCell className="text-center">{index + 1}.</TableCell>
                       <TableCell className="text-center">{item.nama}</TableCell>
                       <TableCell className="text-center">{item.nim}</TableCell>
                       <TableCell className="text-center">

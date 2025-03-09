@@ -2,7 +2,7 @@ import { ContributorListItemProps } from "@/interfaces/components/globals/contri
 
 export const ContributorListItems: ContributorListItemProps[] = [
 	{
-		image: `https://media.licdn.com/dms/image/v2/D5603AQFBqeEgL4w0yQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1724323203741?e=1747267200&v=beta&t=CynRuEChOGplaFmA1rg4wZ-n9BQcav2y7hvptQlmxpA`,
+		image: "https://res.cloudinary.com/dbsltir7r/image/upload/v1741517480/1724323203741_ctteha.jpg",
 		name: "M. Farhan Aulia Pratama",
 		roles: "FullStack & DevOps Engineer",
 		socialProfiles: {
@@ -58,7 +58,7 @@ export const ContributorListItems: ContributorListItemProps[] = [
 	},
 	{
 		image:
-			"https://res.cloudinary.com/nabildawami/image/upload/v1741496937/hod4nkhprfjlaf1xzd36.jpg",
+			"https://res.cloudinary.com/nabildawami/image/upload/v1741518144/hod4nkhprfjlaf1xzd36.jpg",
 		name: "M. Nabil Dawami",
 		roles: "UI/UX Designer",
 		socialProfiles: {

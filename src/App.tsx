@@ -11,7 +11,7 @@ const App = () => {
 	return (
 		<AuthProvider userManager={userManager} onSigninCallback={onSigninCallback}>
 			<QueryClientProvider client={queryClient}>
-				<ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+				<ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
 					<AlertDialog>
 						<RouterProvider router={router} />
 						<Toaster />

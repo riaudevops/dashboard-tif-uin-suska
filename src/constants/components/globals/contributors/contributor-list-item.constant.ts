@@ -80,7 +80,7 @@ export const ContributorListItems: ContributorListItemProps[] = [
 	},
 	{
 		image:
-			"https://res.cloudinary.com/dm8ryfdi4/image/upload/v1741499861/Ahmad_K_de6d5d.jpg",
+			"https://res.cloudinary.com/dm8ryfdi4/image/upload/v1741522588/Ahmad_K_chdu2z.jpg",
 		name: "Ahmad Kurniawan",
 		roles: "FrontEnd Engineer",
 		socialProfiles: {

@@ -242,7 +242,7 @@ const LandingPage = () => {
 					<GridPattern
 						className={cn(
 							"[mask-image:radial-gradient(700px_circle_at_center,white,transparent)]",
-							"h-[45%] top-14 opacity-60 z-10"
+							"h-[47%] top-12 opacity-60 z-10"
 						)}
 					/>
 					<RetroGrid />
@@ -339,7 +339,7 @@ const LandingPage = () => {
 						<HashLink
 							smooth
 							to={"#kontributor"}
-							className="flex -mt-16 mb-12 justify-center"
+							className="flex -mt-28 md:-mt-16 mb-12 justify-center"
 						>
 							<div className="cursor-pointer inline-flex items-center gap-x-2 bg-background border border-foreground/30 text-xs text-foreground/80 p-2 px-3 rounded-full transition hover:border-foreground/70">
 								{" "}
@@ -552,7 +552,7 @@ const LandingPage = () => {
 						Kontributor
 					</GradientText>
 					<div className="w-full z-30 text-center text-foreground flex flex-col items-center pt-7 bg-background leading-8 sm:leading-10">
-						<span className="lg:inline flex flex-col tracking-tighter text-3xl md:text-5xl font-semibold px-6 md:px-16 leading-8 sm:leading-6">
+						<span className="lg:inline flex flex-col tracking-tighter text-3xl md:text-5xl font-semibold px-3 md:px-16 leading-8 sm:leading-6">
 							<span>Siapa saja sih </span>
 							<div className="relative -left-1.5 sm:left-0 text-center inline px-1.5">
 								<div className="relative z-10 inline">

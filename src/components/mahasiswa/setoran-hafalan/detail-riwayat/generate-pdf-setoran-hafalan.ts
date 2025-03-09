@@ -2,6 +2,8 @@ import uinsuskalogo from "@/assets/uin_suska_logo.jpg";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { colourLabelingCategory } from "@/helpers/colour-labeling-category";
+import { GeistSansBold, GeistSansRegular } from "./jsPDFCustomFont";
+
 interface Setoran {
   id: string;
   tgl_setoran: string;
@@ -52,17 +54,17 @@ const addHeader = (doc: jsPDF) => {
 
   doc.addImage(uinsuskalogo, "PNG", margin, 10, sizeLogoUin, sizeLogoUin);
 
-  doc.setFont("Geist-Bold", "normal");
+  doc.setFont("Geist-Bold", "bold");
   doc.setFontSize(PDF_CONFIG.fontSize.header);
   doc.text("KARTU SETORAN HAFALAN JUZ 30", margin + sizeLogoUin + 5, textStart);
 
-  doc.setFont("Geist-Regular", "normal");
+  doc.setFont("Geist-Regular", "regular");
   doc.setFontSize(PDF_CONFIG.fontSize.subHeader);
 
   const texts = [
-    "Program Studi Teknik Informatika",
-    "Fakultas Sains dan Teknologi",
-    "Universitas Islam Negeri Sultan Syarif Kasim Riau",
+    "PROGRAM STUDI TEKNIK INFORMATIKA",
+    "FAKULTAS SAINS DAN TEKNOLOGI",
+    "UNIVERSITAS ISLAM NEGERI SULTAN SYARIF KASIM RIAU",
   ];
 
   texts.forEach((text, index) => {
@@ -80,7 +82,7 @@ const addStudentInfo = (
   const { margin, lineY } = PDF_CONFIG;
   const labelX = margin;
   const valueX = margin + 50;
-  const textStartY = lineY + 6;
+  const textStartY = lineY + 8;
 
   doc.setFontSize(PDF_CONFIG.fontSize.body);
 
@@ -115,7 +117,7 @@ const addSignature = (
 
   // Set posisi awal blok tanda tangan dari tengah halaman
   const startX = pageWidth / 2 + 33; // Mulai dari tengah + offset
-  const finalY = pageHeight - 53;
+  const finalY = pageHeight - 46;
 
   // Render teks tanpa alignment right
   doc.text(`Pekanbaru, ${currentDate}`, startX, finalY);
@@ -142,6 +144,11 @@ export const GeneratePDF = ({ props }: { props: PDFGeneratorProps }) => {
     },
   });
 
+  doc.addFileToVFS("Geist-Bold.ttf", GeistSansBold);
+  doc.addFileToVFS("Geist-Regular.ttf", GeistSansRegular);
+  doc.addFont("Geist-Bold.ttf", "Geist-Bold", "bold");
+  doc.addFont("Geist-Regular.ttf", "Geist-Regular", "regular");
+
   addHeader(doc);
   doc.line(
     PDF_CONFIG.margin,
@@ -152,18 +159,19 @@ export const GeneratePDF = ({ props }: { props: PDFGeneratorProps }) => {
 
   const tableStartY = addStudentInfo(doc, props);
   const tableData = props.dataSurah.map((surah, index) => [
-    index + 1,
+    `${index + 1}.`,
     surah.nama,
     surah.setoran.length > 0 ? formatDate(surah.setoran[0].tgl_setoran) : "-",
     colourLabelingCategory(surah.label)[0],
     surah.setoran.length > 0 ? surah.setoran[0].dosen.nama : "-",
   ]);
 
+  doc.setFont("Geist-Regular", "regular");
   autoTable(doc, {
-    startY: tableStartY - 3,
+    startY: tableStartY - 2,
     head: [
       [
-        "No",
+        "No.",
         "Surah",
         "Tanggal Setoran",
         "Persyaratan Setoran",
@@ -177,6 +185,7 @@ export const GeneratePDF = ({ props }: { props: PDFGeneratorProps }) => {
       textColor: [255, 255, 255],
       halign: "center",
       fontStyle: "bold",
+      font: "Geist-Bold",
     },
     bodyStyles: {
       halign: "center",
@@ -187,6 +196,8 @@ export const GeneratePDF = ({ props }: { props: PDFGeneratorProps }) => {
     styles: {
       fontSize: 9,
       cellPadding: 1,
+      font: "Geist-Regular",
+      textColor: [0, 0, 0],
     },
     didParseCell: function (data) {
       if (data.section === "body" && data.column.index === 3) {

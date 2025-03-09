@@ -423,7 +423,6 @@ function DetailMahasiswaSetoran() {
                         variant={"outline"}
                         className="rounded-full border-2 border-solid border-green-400 hover:scale-[105%] active:scale-95"
                         onClick={() => {
-                          console.log(surah.nama);
                           setDetailSurah({
                             nomor: surah.nomor,
                             nama: surah.nama,

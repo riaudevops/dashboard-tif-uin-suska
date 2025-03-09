@@ -1,4 +1,5 @@
 import { api } from "@/lib/axios-instance";
+
 const getDataMyMahasiswa = async () => {
   const axios = api();
   const response = await axios.get(`imemoraise/v1/dosen/pa-saya`);
@@ -34,12 +35,12 @@ const postSetoranSurah = async ({
   return request.data;
 };
 
-
 const pembatalanSetoranSurah = async ({id }: {id: string}) => {
   const axios = api();
   const request =await axios.delete(`imemoraise/v1/dosen/setor/${id}`);
   return request.data
 };
+
 export default {
   getDataMyMahasiswa,
   getDataMahasiswaByEmail,

@@ -2,24 +2,13 @@ import { ContributorListItemProps } from "@/interfaces/components/globals/contri
 
 export const ContributorListItems: ContributorListItemProps[] = [
 	{
-		image: `https://previews.dropbox.com/p/thumb/ACkd0WWP_LsXxwxzzVOM15WejtMpXJuYqcBq9FXRekfVQ7xj7q3P1xi-Eq7YLMXdrdCfeaoK63u8hKsFP5y36r6Dnq6IyEhdkNkelDYdXHstFOZwDZK_kEZs1rXetRhra2357FLU3RupselLx83ihRDTxPwXnQUSMBRkgCmnE8NYzX0_SMt6xqPdeiqFAaSsOP-gS7kSbDr4oFWvePOOjkV0Ved1VUYr7CpwKU_YPlAIUrKHNvyTRTIAUyj0d_MmLuPg0LOGkfe7ZxV7azLkbMMmI72BxmqBDunt-8gc-s5ITcoDCqNgHH5kjQvmkwZ5HtqqEsdS7JOrKg-7hT3-2mwR/p.jpeg?is_prewarmed=true`,
+		image: `https://media.licdn.com/dms/image/v2/D5603AQFBqeEgL4w0yQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1724323203741?e=1747267200&v=beta&t=CynRuEChOGplaFmA1rg4wZ-n9BQcav2y7hvptQlmxpA`,
 		name: "M. Farhan Aulia Pratama",
-		roles: "BackEnd & DevOps Engineer",
+		roles: "FullStack & DevOps Engineer",
 		socialProfiles: {
 			github: "https://github.com/mfarhanz1",
 			linkedIn: "https://id.linkedin.com/in/m-farhan-aulia-pratama-3a5b1a323",
 			instagram: "https://www.instagram.com/mfarhanz1",
-		},
-	},
-	{
-		image:
-			"https://res.cloudinary.com/ddjyfjtsq/image/upload/v1741464541/gilang_ez2aio.jpg",
-		name: "Gilang Ramadhan Indra",
-		roles: "BackEnd Engineer",
-		socialProfiles: {
-			github: "https://github.com/gindra-o7",
-			linkedIn: "www.linkedin.com/in/gilang-ramadhan-indra",
-			instagram: "https://www.instagram.com/gilanginr_",
 		},
 	},
 	{
@@ -31,6 +20,28 @@ export const ContributorListItems: ContributorListItemProps[] = [
 			github: "https://github.com/AbmiSukma",
 			linkedIn: "https://www.linkedin.com/in/abmi-sukma-1948ab250/",
 			instagram: "https://www.instagram.com/abmisukma/",
+		},
+	},
+	{
+		image:
+			"https://res.cloudinary.com/dxr2nnuji/image/upload/v1741500446/my-photo/clv6b7niymirovzzy9zj.jpg",
+		name: "Farhan Fadhila",
+		roles: "FrontEnd Engineer",
+		socialProfiles: {
+			github: "https://github.com/FARHANFADHILA ",
+			linkedIn: "https://www.linkedin.com/in/farhan-fadhila-53a6a0355/",
+			instagram: "https://www.instagram.com/frhan_fdh",
+		},
+	},
+	{
+		image:
+			"https://res.cloudinary.com/ddjyfjtsq/image/upload/v1741464541/gilang_ez2aio.jpg",
+		name: "Gilang Ramadhan Indra",
+		roles: "BackEnd Engineer",
+		socialProfiles: {
+			github: "https://github.com/gindra-o7",
+			linkedIn: "www.linkedin.com/in/gilang-ramadhan-indra",
+			instagram: "https://www.instagram.com/gilanginr_",
 		},
 	},
 	{
@@ -60,27 +71,32 @@ export const ContributorListItems: ContributorListItemProps[] = [
 		image:
 			"https://res.cloudinary.com/dbsltir7r/image/upload/v1741497104/c45fccd6-ac7d-4f2e-80f4-b305e526a4b5_uxodiz.png",
 		name: "Muh. Zaki Erbai Syas",
-		roles: "BackEnd Engineer",
+		roles: "FullStack Engineer",
 		socialProfiles: {
 			github: "https://github.com/rel1vee",
-			linkedIn:
-				"https://www.linkedin.com/in/muhzakierbaisyas",
+			linkedIn: "https://www.linkedin.com/in/muhzakierbaisyas",
 			instagram: "https://www.linkedin.com/in/muhzakierbaisyas/",
 		},
 	},
 	{
-		image: `https://storage.ruanjipos.id/image/gasd`,
-		name: "Farhan Fadhila",
-		roles: "FrontEnd Engineer",
-	},
-	{
-		image: `https://storage.ruanjipos.id/image/gasd`,
+		image:
+			"https://res.cloudinary.com/dm8ryfdi4/image/upload/v1741499861/Ahmad_K_de6d5d.jpg",
 		name: "Ahmad Kurniawan",
 		roles: "FrontEnd Engineer",
+		socialProfiles: {
+			github: "https://github.com/Ahmad-Kurniawan ",
+			linkedIn: "https://www.linkedin.com/in/ahmad-kurniawan-2100a0330/",
+			instagram: "https://www.instagram.com/ahmadkrniwn_",
+		},
 	},
 	{
-		image: `https://storage.ruanjipos.id/image/gasd`,
+		image: "https://res.cloudinary.com/doa2hsfra/image/upload/v1741504025/uiw2sahgmj9zpmm7iv7u.jpg",
 		name: "Hafidz Alhadid Rahman",
-		roles: "BackEnd Engineer",
+		roles: "FullStack Engineer",
+		socialProfiles: {
+			github: "https://github.com/hafidzrahman",
+			linkedIn: "https://id.linkedin.com/in/hafidz-rahman-4b146a258?trk=people-guest_people_search-card&original_referer=https%3A%2F%2Fwww.linkedin.com%2F",
+			instagram: "https://www.instagram.com/hfdzrhmn_/",
+		}
 	},
 ];

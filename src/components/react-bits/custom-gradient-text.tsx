@@ -31,12 +31,12 @@ export default function CustomGradientText({
       {showBorder && (
         <div className="gradient-overlay" style={gradientStyle}></div>
       )}
-      <div className="text-content" style={gradientStyle}>
+      <div className="text-content text-sm md:text-xl tracking-tight" style={gradientStyle}>
         {!isAuthenticated ? (
-          <div onClick={onContinueWithKeycloakClicked}>Mulai Sekarang</div>
+          <div onClick={onContinueWithKeycloakClicked}><span className="text-foreground">✨&nbsp;</span> Mulai Sekarang <span className="text-foreground">&nbsp;✨</span></div>
         ) : (
           <NavLink to={dashboardURL}>
-            <div>Pergi Ke Dashboard</div>
+            <div><span className="text-foreground">🔥&nbsp;</span> Pergi Ke Dashboard <span className="text-foreground">&nbsp;🔥</span></div>
           </NavLink>
         )}
       </div>

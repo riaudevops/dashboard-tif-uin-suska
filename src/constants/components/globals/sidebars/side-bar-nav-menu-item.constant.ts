@@ -29,15 +29,11 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 					items: [
 						{
 							title: "Permohonan",
-							url: "/mahasiswa/kerja-praktek/permohonan",
+							url: "/mahasiswa/kerja-praktik/daftar-kp/permohonan",
 						},
 						{
 							title: "Kelengkapan Berkas",
-							url: "/mahasiswa/kerja-praktek/kelengkapan-berkas",
-						},
-						{
-							title: "Detail Riwayat",
-							url: "/mahasiswa/kerja-praktek/detail-riwayat",
+							url: "/mahasiswa/kerja-praktik/daftar-kp/kelengkapan-berkas",
 						},
 					],
 				},
@@ -48,11 +44,11 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 					items: [
 						{
 							title: "Isi Agenda",
-							url: "/mahasiswa/daily-report/isi-agenda",
+							url: "/mahasiswa/kerja-praktik/daily-report/isi-agenda",
 						},
 						{
 							title: "Riwayat Bimbingan",
-							url: "/mahasiswa/daily-report/riwayat-bimbingan",
+							url: "/mahasiswa/kerja-praktik/daily-report/riwayat-bimbingan",
 						},
 					],
 				},

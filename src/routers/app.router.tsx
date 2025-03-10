@@ -5,6 +5,8 @@ import ForbiddenPage from "@/pages/publics/forbidden.page";
 import NotFoundPage from "@/pages/publics/not-found.page";
 import MahasiswaSetoranHafalanStatistikPage from "@/pages/mahasiswa/setoran-hafalan/statistik/page";
 import DosenSetoranHafalanMahasiswaPAPage from "@/pages/dosen/setoran-hafalan/mahasiswa-pa/page";
+import MahasiswaSetoranHafalanDetailRiwayatPage from "@/pages/mahasiswa/setoran-hafalan/detail-riwayat/page";
+import DetailMahasiswaSetoran from "@/pages/dosen/setoran-hafalan/mahasiswa-pa/DetailMahasiswaSetoran";
 import MahasiswaKerjaPraktekDailyReportIsiAgendaPage from "@/pages/mahasiswa/kerja-praktik/daily-report/isi-agenda/page";
 import MahasiswaKerjaPraktekDaftarKpPermohonanPage from "@/pages/mahasiswa/kerja-praktik/daftar-kp/permohonan/page";
 import MahasiswaKerjaPraktikDailyReportRiwayatBimbinganPage from "@/pages/mahasiswa/kerja-praktik/daily-report/riwayat-bimbingan/page";
@@ -16,6 +18,10 @@ import MahasiswaKerjaPraktekDailyReportIsiAgendaDetailPage from "@/pages/mahasis
 const router = createBrowserRouter([
 	{
 		path: "/",
+		element: <LandingPage />,
+	},
+	{
+		path: "/beranda",
 		element: <LandingPage />,
 	},
 	{
@@ -31,6 +37,14 @@ const router = createBrowserRouter([
 		element: (
 			<ProtectedRoute roles={["mahasiswa"]}>
 				<MahasiswaSetoranHafalanStatistikPage />
+			</ProtectedRoute>
+		)
+	},
+	{
+		path: "/mahasiswa/setoran-hafalan/detail-riwayat",
+		element: (
+			<ProtectedRoute roles={["mahasiswa"]}>
+				<MahasiswaSetoranHafalanDetailRiwayatPage />
 			</ProtectedRoute>
 		)
 	},
@@ -95,6 +109,14 @@ const router = createBrowserRouter([
 		element: (
 			<ProtectedRoute roles={["dosen"]}>
 				<DosenSetoranHafalanMahasiswaPAPage />
+			</ProtectedRoute>
+		)
+	},
+	{
+		path: "/dosen/setoran-hafalan/mahasiswa-pa/detail",
+		element: (
+			<ProtectedRoute roles={["dosen"]}>
+				<DetailMahasiswaSetoran />
 			</ProtectedRoute>
 		)
 	}

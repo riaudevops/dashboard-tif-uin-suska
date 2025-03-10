@@ -11,8 +11,8 @@ import MahasiswaKerjaPraktekDailyReportIsiAgendaPage from "@/pages/mahasiswa/ker
 import MahasiswaKerjaPraktekDaftarKpPermohonanPage from "@/pages/mahasiswa/kerja-praktik/daftar-kp/permohonan/page";
 import MahasiswaKerjaPraktikDailyReportRiwayatBimbinganPage from "@/pages/mahasiswa/kerja-praktik/daily-report/riwayat-bimbingan/page";
 import MahasiswaKerjaPraktekDaftarKpKelengkapanBerkasPage from "@/pages/mahasiswa/kerja-praktik/daftar-kp/kelengkapan-berkas/page";
-import MahasiswaKerjaPraktekDaftarKpPermohonanFormPendaftaranPage from "@/pages/mahasiswa/kerja-praktik/daftar-kp/permohonan/Form-Pendaftaran/page";
-import MahasiswaKerjaPraktekDaftarKpPermohonanFormDaftarInstansiPage from "@/pages/mahasiswa/kerja-praktik/daftar-kp/permohonan/Form-Daftar-Instansi/page";
+import MahasiswaKerjaPraktekDaftarKpPermohonanFormPendaftaranPage from "@/pages/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-pendaftaran/page";
+import MahasiswaKerjaPraktekDaftarKpPermohonanFormDaftarInstansiPage from "@/pages/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-daftar-instansi/page";
 import MahasiswaKerjaPraktekDailyReportIsiAgendaDetailPage from "@/pages/mahasiswa/kerja-praktik/daily-report/isi-agenda/detail/page";
 
 const router = createBrowserRouter([
@@ -57,7 +57,7 @@ const router = createBrowserRouter([
 		)
 	},
 	{
-		path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan/Form-Pendaftaran",
+		path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-pendaftaran",
 		element: (
 			<ProtectedRoute roles={["mahasiswa"]}>
 				<MahasiswaKerjaPraktekDaftarKpPermohonanFormPendaftaranPage />
@@ -65,7 +65,7 @@ const router = createBrowserRouter([
 		)
 	},
 	{
-		path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan/Form-Daftar-Instansi",
+		path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-daftar-instansi",
 		element: (
 			<ProtectedRoute roles={["mahasiswa"]}>
 				<MahasiswaKerjaPraktekDaftarKpPermohonanFormDaftarInstansiPage />

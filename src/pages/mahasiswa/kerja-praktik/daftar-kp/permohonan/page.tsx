@@ -36,7 +36,7 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
       if (savedSubmission) {
         const data = JSON.parse(savedSubmission);
         if (data.submitted) {
-          setHasSubmission(true);
+          setHasSubmission(false);
           setSubmissionData(data);
         }
       }
@@ -345,7 +345,7 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
                 Silakan Lakukan Pendaftaran Kerja Praktik Pada Tombol Dibawah
                 ini ⬇
               </p>
-              <Link to="/mahasiswa/kerja-praktik/daftar-kp/permohonan/Form-Pendaftaran">
+              <Link to="/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-pendaftaran">
                 <Button className="bg-white text-black hover:bg-gray-100 border-black border group">
                   Buat Permohonan
                   <CircleFadingArrowUp className="h-4 w-4 ml-2 group-hover:animate-bounce" />

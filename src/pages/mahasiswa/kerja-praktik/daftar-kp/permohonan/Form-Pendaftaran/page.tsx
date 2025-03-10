@@ -172,7 +172,7 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage = () => {
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
                         ⚠️ Instansi Belum Terdaftar? Segera Daftarkan{" "}
                         <Link
-                          to="/mahasiswa/kerja-praktik/daftar-kp/permohonan/Form-Daftar-Instansi"
+                          to="/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-daftar-instansi"
                           className="text-blue-600 hover:underline"
                         >
                           Disini 📝

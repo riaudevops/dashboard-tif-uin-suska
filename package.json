@@ -34,6 +34,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
+    "embla-carousel-react": "^8.5.2",
     "framer-motion": "^12.0.6",
     "gsap": "^3.12.7",
     "jspdf": "^2.5.2",

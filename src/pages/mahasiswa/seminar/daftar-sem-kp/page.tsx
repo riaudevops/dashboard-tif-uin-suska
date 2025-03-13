@@ -12,7 +12,6 @@ import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-b
 import {
   Building2Icon,
   CalendarIcon,
-  ChevronRight,
   ClipboardIcon,
   TriangleAlertIcon,
 } from "lucide-react";
@@ -21,19 +20,9 @@ import Stepper from "@/components/mahasiswa/seminar/stepper";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 export default function MahasiswaSeminarDaftarPage() {
   interface entry {
-    id: number;
     status: string;
     company: string;
     date: string;
@@ -41,30 +30,17 @@ export default function MahasiswaSeminarDaftarPage() {
     title: string;
   }
 
-  const entry = [
-    {
-      id: 2,
-      status: "Baru",
-      company: "PT RAPP",
-      date: "2025-02-28",
-      historyStatus: "Proses Validasi Berkas",
-      title: "Pendaftaran Sem-KP #2",
-    },
-    {
-      id: 1,
-      status: "Gagal",
-      company: "PT Telkom",
-      date: "2025-01-15",
-      historyStatus: "Gagal",
-      title: "Pendaftaran Sem-KP #1",
-    },
-  ];
-  const infoPengajuanSeminar = {
-    step: 0,
+  const entry = {
+    status: "Baru",
+    company: "PT RAPP",
+    date: "2025-02-28",
+    historyStatus: "Proses Validasi Berkas",
+    title: "Pendaftaran Sem-KP #2",
   };
-  // Filter entries based on status
-  const activeEntries = entry.filter((entry) => entry.status !== "Gagal");
-  const previousEntries = entry.filter((entry) => entry.status === "Gagal");
+
+  const infoPengajuanSeminar = {
+    step: 5,
+  };
 
   const navigate = useNavigate();
 
@@ -91,50 +67,6 @@ export default function MahasiswaSeminarDaftarPage() {
       </CardHeader>
       <CardContent className="flex justify-between items-center pt-2">
         <CardTitle className="text-lg font-semibold">{entry.title}</CardTitle>
-        {entry.status === "Gagal" && (
-          <Dialog>
-            <DialogTrigger asChild>
-              <button className="px-3 py-1.5 bg-white text-purple-800 rounded-md hover:bg-gray-100 transition-colors flex items-center gap-1">
-                View
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </DialogTrigger>
-            <DialogContent className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
-              <DialogHeader>
-                <DialogTitle className="text-lg font-bold text-red-700">
-                  Pengajuan Pendaftaran Kerja Praktik Anda{" "}
-                  <span className="text-red-700">Ditolak!</span>
-                </DialogTitle>
-              </DialogHeader>
-              <div className="mt-4 space-y-2 text-sm">
-                <div>
-                  <span className="font-semibold">
-                    Nama Instansi Pengajuan:
-                  </span>
-                  <p className="text-gray-700">{entry.company}</p>
-                </div>
-                <div>
-                  <span className="font-semibold">Alur Progress Ditolak:</span>
-                  <p className="text-gray-700">Surat pengantar dan jawaban</p>
-                </div>
-                <div>
-                  <span className="font-semibold">Waktu Ditolak:</span>
-                  <p className="text-gray-700">
-                    Senin / 09-03-2025 / 07.00 WIB
-                  </p>
-                </div>
-              </div>
-              <div className="mt-4">
-                <h2 className="text-red-700 font-semibold">Catatan:</h2>
-                <Textarea
-                  placeholder="melewati masa waktu pendaftaran kp"
-                  readOnly
-                  className="w-full text-black border border-red-900 resize-none bg-white"
-                />
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
       </CardContent>
     </Card>
   );
@@ -145,7 +77,9 @@ export default function MahasiswaSeminarDaftarPage() {
         <h1 className="text-2xl font-bold">Seminar Kerja Praktik</h1>
         <Card>
           <CardHeader>
-            <CardTitle>Form Pendaftaran Seminar Kerja Praktik </CardTitle>
+            <CardTitle className="text-2xl">
+              Form Pendaftaran Seminar Kerja Praktik{" "}
+            </CardTitle>
             <CardDescription>
               Silakan Lakukan Pendaftaran Seminar Kerja Praktik Pada Tombol
               Dibawah ini:
@@ -163,31 +97,12 @@ export default function MahasiswaSeminarDaftarPage() {
             <CardTitle>Detail Riwayat</CardTitle>
           </CardHeader>
 
-          {activeEntries.length > 0 && (
-            <CardContent>
-              <CardDescription className="py-2 font-bold">
-                Aktif
-              </CardDescription>
-              <div className="flex flex-col gap-4">
-                {activeEntries.map((entry) => (
-                  <KPCard key={entry.id} entry={entry} />
-                ))}
-              </div>
-            </CardContent>
-          )}
-
-          {previousEntries.length > 0 && (
-            <CardContent>
-              <CardDescription className="py-2 font-bold">
-                Riwayat Sebelumnya
-              </CardDescription>
-              <div className="flex flex-col gap-4">
-                {previousEntries.map((entry) => (
-                  <KPCard key={entry.id} entry={entry} />
-                ))}
-              </div>
-            </CardContent>
-          )}
+          <CardContent>
+            <CardDescription className="py-2 font-bold">Aktif</CardDescription>
+            <div className="flex flex-col gap-4">
+              <KPCard entry={entry} />
+            </div>
+          </CardContent>
         </Card>
 
         <Separator className="mt-96" />
@@ -195,17 +110,29 @@ export default function MahasiswaSeminarDaftarPage() {
         <h1 className="text-2xl font-bold">Seminar Kerja Praktik</h1>
         <Card>
           <CardHeader>
-            <CardTitle>Progress Seminar Kerja Praktik</CardTitle>
+            <CardTitle className="text-2xl">
+              Progress Seminar Kerja Praktik
+            </CardTitle>
             <CardDescription>
               Pengajuan pendaftaran kerja praktik anda dalam proses kelengkapan
               berkas......
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Stepper activeStep={infoPengajuanSeminar.step} />
+          <CardContent className=" flex justify-between">
+            <div className="flex flex-col gap-2  w-fit">
+              <div>
+                <h3 className="font-bold">Nama Instansi Pengajuan</h3>
+                <p className="text-sm">PT.RAPP</p>
+              </div>
+              <div>
+                <h3 className="font-bold">Proses Validasi Terkini pada Alur</h3>
+                <p className="text-sm">Validasi Surat Undangan</p>
+              </div>
+            </div>
+            <Stepper activeStep={infoPengajuanSeminar.step} variant="section" />
           </CardContent>
           <CardFooter className="flex justify-center">
-            <div className="flex border border-black rounded-full px-7 py-2 gap-4 items-center">
+            <div className="flex border border-black dark:border-white rounded-full px-7 py-2 gap-4 items-center">
               <p className="text-xs">
                 Silahkan lanjut Untuk Validasi Kelengkapan Berkas !
               </p>
@@ -224,31 +151,12 @@ export default function MahasiswaSeminarDaftarPage() {
             <CardTitle>Detail Riwayat</CardTitle>
           </CardHeader>
 
-          {activeEntries.length > 0 && (
-            <CardContent>
-              <CardDescription className="py-2 font-bold">
-                Aktif
-              </CardDescription>
-              <div className="flex flex-col gap-4">
-                {activeEntries.map((entry) => (
-                  <KPCard key={entry.id} entry={entry} />
-                ))}
-              </div>
-            </CardContent>
-          )}
-
-          {previousEntries.length > 0 && (
-            <CardContent>
-              <CardDescription className="py-2 font-bold">
-                Riwayat Sebelumnya
-              </CardDescription>
-              <div className="flex flex-col gap-4">
-                {previousEntries.map((entry) => (
-                  <KPCard key={entry.id} entry={entry} />
-                ))}
-              </div>
-            </CardContent>
-          )}
+          <CardContent>
+            <CardDescription className="py-2 font-bold">Aktif</CardDescription>
+            <div className="flex flex-col gap-4">
+              <KPCard entry={entry} />
+            </div>
+          </CardContent>
         </Card>
 
         <Separator className="mt-96" />
@@ -282,7 +190,9 @@ melanjutkan nya , silahkan daftar ulang Anda."
 
         <Card>
           <CardHeader>
-            <CardTitle>Form Pendaftaran Seminar Kerja Praktik </CardTitle>
+            <CardTitle className="text-2xl">
+              Form Pendaftaran Seminar Kerja Praktik{" "}
+            </CardTitle>
             <CardDescription>
               Silakan Lakukan Pendaftaran Seminar Kerja Praktik Pada Tombol
               Dibawah ini:
@@ -299,31 +209,12 @@ melanjutkan nya , silahkan daftar ulang Anda."
             <CardTitle>Detail Riwayat</CardTitle>
           </CardHeader>
 
-          {activeEntries.length > 0 && (
-            <CardContent>
-              <CardDescription className="py-2 font-bold">
-                Aktif
-              </CardDescription>
-              <div className="flex flex-col gap-4">
-                {activeEntries.map((entry) => (
-                  <KPCard key={entry.id} entry={entry} />
-                ))}
-              </div>
-            </CardContent>
-          )}
-
-          {previousEntries.length > 0 && (
-            <CardContent>
-              <CardDescription className="py-2 font-bold">
-                Riwayat Sebelumnya
-              </CardDescription>
-              <div className="flex flex-col gap-4">
-                {previousEntries.map((entry) => (
-                  <KPCard key={entry.id} entry={entry} />
-                ))}
-              </div>
-            </CardContent>
-          )}
+          <CardContent>
+            <CardDescription className="py-2 font-bold">Aktif</CardDescription>
+            <div className="flex flex-col gap-4">
+              <KPCard entry={entry} />
+            </div>
+          </CardContent>
         </Card>
       </DashboardLayout>
     </>

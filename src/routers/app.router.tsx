@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import ProtectedRoute from "./protected.router";
 import LandingPage from "@/pages/publics/landing.page";
 import ForbiddenPage from "@/pages/publics/forbidden.page";
@@ -47,6 +47,10 @@ const router = createBrowserRouter([
 				<MahasiswaSetoranHafalanDetailRiwayatPage />
 			</ProtectedRoute>
 		)
+	},	
+	{
+		path: "/mahasiswa/kerja-praktik/daftar-kp",
+		element: <Navigate to="/mahasiswa/kerja-praktik/daftar-kp/permohonan" />
 	},
 	{
 		path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan",
@@ -79,6 +83,10 @@ const router = createBrowserRouter([
 				<MahasiswaKerjaPraktekDaftarKpKelengkapanBerkasPage />
 			</ProtectedRoute>
 		)
+	},
+	{
+		path: "/mahasiswa/kerja-praktik/daily-report",
+		element: <Navigate to="/mahasiswa/kerja-praktik/daily-report/isi-agenda" />
 	},
 	{
 		path: "/mahasiswa/kerja-praktik/daily-report/isi-agenda",

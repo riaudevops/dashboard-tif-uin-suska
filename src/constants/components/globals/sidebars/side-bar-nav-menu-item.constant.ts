@@ -41,6 +41,7 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 					title: "Daily Report",
 					url: "#",
 					icon: BookOpen,
+					isActive: true,
 					items: [
 						{
 							title: "Isi Agenda",

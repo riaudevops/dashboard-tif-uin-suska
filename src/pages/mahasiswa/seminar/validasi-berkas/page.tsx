@@ -10,7 +10,7 @@ export const infoPengajuanSeminar = {
   dosenPembimbing: "Pizaini, ST., M.Kom",
   dosenPenguji: "Iwan Iskandar,M.T",
   judul: "Analisis Sistem Keamanan Sistem Perencanaan Divisi Sdm PT RAPP",
-  step: 0, // 0 - 5
+  step: 5, // 0 - 5
 };
 
 const stepComponents = [Step1, Step2, Step3, Step4, Step5, Step6];

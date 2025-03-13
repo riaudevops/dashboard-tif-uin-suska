@@ -14,7 +14,7 @@ const MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage = () => {
     },
     {
       number: 1,
-      title: "Id Pengajuan Dosen Pembimbing",
+      title: "ID Pengajuan Dosen Pembimbing",
       status: "Input",
       action: "Not Action"
     },

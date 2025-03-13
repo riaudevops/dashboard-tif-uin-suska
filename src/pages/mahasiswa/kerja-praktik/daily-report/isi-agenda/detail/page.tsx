@@ -13,9 +13,10 @@ import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocation } from "react-router-dom";
 // Import the TambahAgendaModal component
-import TambahAgendaModal from "@/pages/mahasiswa/kerja-praktik/daily-report/AddTaskModal";
+import TambahAgendaModal from "@/components/mahasiswa/daily-report/isi-agenda/AddTaskModal";
 import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
 import { ShinyButton } from "@/components/magicui/shiny-button";
+import DetailAgendaModal from "@/components/mahasiswa/daily-report/isi-agenda/ReviewDailyReport";
 
 const MahasiswaKerjaPraktekDailyReportIsiAgendaDetailPage = () => {
   const { search } = useLocation();
@@ -25,6 +26,7 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaDetailPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   // Add state to control modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedRows] = useState([1, 2, 3]);
 
   useEffect(() => {
@@ -147,9 +149,19 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaDetailPage = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex justify-center">
-                            <AnimatedShinyText className="flex items-center gap-2 cursor-pointer border border-gray-600  gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:border-purple-400  rounded-md px-3 py-1 transition-colors ">
+                            <AnimatedShinyText
+                              className="flex items-center gap-2 cursor-pointer border border-gray-600  gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:border-purple-400  rounded-md px-3 py-1 transition-colors "
+                              onClick={() => setIsDetailModalOpen(true)}
+                            >
                               ✨ Lihat Detail
                               <ArrowUpRight className="h-4 w-4" />
+
+                              <DetailAgendaModal
+                                isOpen={isDetailModalOpen}
+                                onClose={() => setIsDetailModalOpen(false)}
+                                
+                              />
+
                             </AnimatedShinyText>
                           </div>
                         </TableCell>

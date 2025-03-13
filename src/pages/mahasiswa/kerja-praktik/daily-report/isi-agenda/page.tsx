@@ -16,6 +16,8 @@ import {
   Clock,
   Lock,
   CheckCircle,
+  AlertTriangle,
+  X,
 } from "lucide-react";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,15 +32,27 @@ import {
 
 const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const internshipStartDate = new Date("2025-02-01");
-  const internshipEndDate = new Date("2025-02-01");
+  const internshipStartDate = new Date("2025-03-13");
+  const internshipEndDate = new Date("2025-03-30");
   const [isAnimating, setIsAnimating] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
 
   useEffect(() => {
+    const hasShownNotification = localStorage.getItem('kpNotificationShown');
+
     const timer = setTimeout(() => {
       setIsLoading(false);
       // Trigger animation after loading
       setTimeout(() => setIsAnimating(true), 300);
+
+      // Show notification after loading is complete
+      const internshipProgress = calculateInternshipProgress();
+      if (!internshipProgress.isCompleted) {
+        setTimeout(() => setShowNotification(true), 500);
+
+        // Auto-dismiss notification after 10 seconds
+        setTimeout(() => setShowNotification(false), 7000);
+      }
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
@@ -57,6 +71,7 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
       Math.max((elapsedDays / totalDays) * 100, 0),
       100
     );
+
 
     return {
       totalDays,
@@ -118,6 +133,11 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
     }
   };
 
+  // Function to handle closing the notification manually
+  const handleCloseNotification = () => {
+    setShowNotification(false);
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-4 sm:space-y-6">
@@ -131,6 +151,47 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
           )}
         </CardHeader>
         <CardContent>
+          {/* Notification for incomplete progress */}
+          {!isLoading &&
+            !internshipProgress.isCompleted &&
+            showNotification && (
+              <div
+                className="fixed top-4 right-4 z-50 max-w-md transform transition-all duration-500 ease-in-out"
+                style={{
+                  animation: "slideIn 0.5s ease-out, pulse 2s infinite",
+                  opacity: showNotification ? 1 : 0,
+                  transform: showNotification
+                    ? "translateX(0)"
+                    : "translateX(100%)",
+                }}
+              >
+                <div className="bg-gradient-to-r from-amber-50 to-amber-100 border-l-4 border-amber-500 text-amber-700 p-4 rounded-md shadow-lg flex items-start justify-between">
+                  <div className="flex gap-3">
+                    <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h3 className="font-bold text-sm">Pengingat Penting</h3>
+                      <p className="text-sm">
+                        Anda harus menyelesaikan 100% periode KP untuk dapat
+                        mencetak laporan.
+                        {internshipProgress.daysRemaining > 0 && (
+                          <span className="block mt-1 font-medium">
+                            Masih tersisa {internshipProgress.daysRemaining}{" "}
+                            hari lagi.
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleCloseNotification}
+                    className="text-amber-500 hover:text-amber-700 ml-2 flex-shrink-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+
           {/* Internship Progress Section */}
           <div className="mb-6 sm:mb-8">
             {isLoading ? (
@@ -365,30 +426,6 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Notifikasi ketika belum 100% selesai */}
-                {!internshipProgress.isCompleted && (
-                  <div className="mt-3 text-xs text-amber-600 bg-amber-50 p-2 rounded-md border border-amber-200 flex items-center gap-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="lucide lucide-alert-triangle"
-                    >
-                      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
-                      <path d="M12 9v4"></path>
-                      <path d="M12 17h.01"></path>
-                    </svg>
-                    Anda harus menyelesaikan 100% periode KP untuk dapat
-                    mencetak laporan.
-                  </div>
-                )}
               </div>
             )}
           </div>
@@ -495,6 +532,31 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
           </div>
         </CardContent>
       </div>
+
+      {/* Add the CSS animation */}
+      <style>{`
+        @keyframes slideIn {
+          0% {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          100% {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+         @keyframes slideOut {
+          0% {
+            transform: translateX(100%);
+            opacity: 1;
+          }
+          100% {
+            transform: translateX(0);
+            opacity: 0;
+          }
+        }
+      `}</style>
     </DashboardLayout>
   );
 };

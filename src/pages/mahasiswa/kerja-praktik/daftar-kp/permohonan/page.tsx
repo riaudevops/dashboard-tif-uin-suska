@@ -315,7 +315,7 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
 
   const renderInitialState = () => (
     <div className="p-4 space-y-4">
-      <CardHeader>
+      <CardHeader className="p-0 pb-2.5">
         <CardTitle className="text-4xl font-bold">
           {isLoading ? (
             <Skeleton className="h-8 w-64" />
@@ -342,13 +342,13 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
           ) : (
             <>
               <p className="text-muted-foreground mb-4">
-                Silakan Lakukan Pendaftaran Kerja Praktik Pada Tombol Dibawah
-                ini ⬇
+                Silakan Ajukan Permohonan Pendaftaran Kerja Praktik Pada Tombol Dibawah
+                ini!
               </p>
               <Link to="/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-pendaftaran">
                 <Button className="bg-white text-black hover:bg-gray-100 border-black border group">
                   Buat Permohonan
-                  <CircleFadingArrowUp className="h-4 w-4 ml-2 group-hover:animate-bounce" />
+                  <CircleFadingArrowUp className="h-4 w-4 group-hover:animate-bounce" />
                 </Button>
               </Link>
             </>

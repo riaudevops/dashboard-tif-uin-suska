@@ -75,7 +75,7 @@ export const ContributorListItems: ContributorListItemProps[] = [
 		socialProfiles: {
 			github: "https://github.com/rel1vee",
 			linkedIn: "https://www.linkedin.com/in/muhzakierbaisyas",
-			instagram: "https://www.linkedin.com/in/muhzakierbaisyas/",
+			instagram: "https://www.instagram.com/reliv.ee/",
 		},
 	},
 	{

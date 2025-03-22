@@ -36,7 +36,7 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
       if (savedSubmission) {
         const data = JSON.parse(savedSubmission);
         if (data.submitted) {
-          setHasSubmission(false);
+          setHasSubmission(true);
           setSubmissionData(data);
         }
       }

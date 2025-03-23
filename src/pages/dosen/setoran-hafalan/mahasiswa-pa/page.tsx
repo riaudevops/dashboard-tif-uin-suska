@@ -172,8 +172,13 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                       <TableCell colSpan={7}>
                         <div className="flex flex-col gap-2">
                           <Skeleton className="h-8 w-full" />
-                          <Skeleton className="h-8 w-[90%]" />
-                          <Skeleton className="h-8 w-[60%]" />
+                          <Skeleton className="h-8 w-full" />
+                          <Skeleton className="h-8 w-full" />
+                          <Skeleton className="h-8 w-full" />
+                          <Skeleton className="h-8 w-full" />
+                          <Skeleton className="h-8 w-full" />
+                          <Skeleton className="h-8 w-full" />
+                          <Skeleton className="h-8 w-full" />
                         </div>
                       </TableCell>
                     </TableRow>

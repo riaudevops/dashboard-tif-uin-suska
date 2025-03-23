@@ -32,11 +32,11 @@ export default function MahasiswaSetoranHafalanStatistikPage() {
           <div className="flex flex-col gap-4">
             {isLoading && (
               <>
-                <Skeleton className="rounded-xl px-5 py-9" />
-                <Skeleton className="rounded-xl px-5 py-9" />
-                <Skeleton className="rounded-xl px-5 py-9" />
-                <Skeleton className="rounded-xl px-5 py-9" />
-                <Skeleton className="rounded-xl px-5 py-9" />
+                <Skeleton className="rounded-xl px-5 py-[2.9rem] lg:py-[2.53rem]" />
+                <Skeleton className="rounded-xl px-5 py-[2.9rem] lg:py-[2.53rem]" />
+                <Skeleton className="rounded-xl px-5 py-[2.9rem] lg:py-[2.53rem]" />
+                <Skeleton className="rounded-xl px-5 py-[2.9rem] lg:py-[2.53rem]" />
+                <Skeleton className="rounded-xl px-5 py-[2.9rem] lg:py-[2.53rem]" />
               </>
             )}
             {dataRingkasan?.map(

@@ -1,8 +1,16 @@
 import { SideBarNavMenuItemsProps } from "@/interfaces/components/globals/sidebars/side-bar-nav-menu.interface";
-import { BackpackIcon, BookOpen, ChartColumnIcon, LayoutGridIcon, LucideHistory, PieChart, UserRoundPenIcon } from "lucide-react";
+import {
+	BackpackIcon,
+	BookOpen,
+	ChartColumnIcon,
+	LayoutGridIcon,
+	LucideHistory,
+	PieChart,
+	UserRoundPenIcon,
+} from "lucide-react";
 
 export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
-	"mahasiswa": [
+	mahasiswa: [
 		{
 			label: "Setoran Hafalan",
 			menus: [
@@ -29,15 +37,11 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 					items: [
 						{
 							title: "Permohonan",
-							url: "/mahasiswa/kerja-praktek/permohonan",
+							url: "/mahasiswa/kerja-praktik/daftar-kp/permohonan",
 						},
 						{
 							title: "Kelengkapan Berkas",
-							url: "/mahasiswa/kerja-praktek/kelengkapan-berkas",
-						},
-						{
-							title: "Detail Riwayat",
-							url: "/mahasiswa/kerja-praktek/detail-riwayat",
+							url: "/mahasiswa/kerja-praktik/daftar-kp/kelengkapan-berkas",
 						},
 					],
 				},
@@ -45,31 +49,43 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 					title: "Daily Report",
 					url: "#",
 					icon: BookOpen,
+					isActive: true,
 					items: [
 						{
 							title: "Isi Agenda",
-							url: "/mahasiswa/daily-report/isi-agenda",
+							url: "/mahasiswa/kerja-praktik/daily-report/isi-agenda",
 						},
 						{
 							title: "Riwayat Bimbingan",
-							url: "/mahasiswa/daily-report/riwayat-bimbingan",
+							url: "/mahasiswa/kerja-praktik/daily-report/riwayat-bimbingan",
 						},
 					],
 				},
 			],
 		},
-        {
+		{
 			label: "Seminar",
 			menus: [
 				{
-					title: "Daftar SEM-KP",
-					url: "/mahasiswa/seminar/daftar-sem-kp",
+					title: "SEM-KP",
+					url: "#",
+					isActive: true,
 					icon: LayoutGridIcon,
+					items: [
+						{
+							title: "Pendaftaran",
+							url: "/mahasiswa/seminar/daftar-sem-kp",
+						},
+						{
+							title: "Validasi Berkas",
+							url: "/mahasiswa/seminar/validasi-berkas",
+						},
+					],
 				},
 			],
 		},
 	],
-	"dosen": [
+	dosen: [
 		{
 			label: "Setoran Hafalan",
 			menus: [

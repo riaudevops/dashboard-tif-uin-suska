@@ -58,9 +58,6 @@ function ModalBoxBatalSetoran({
 }: ModalBoxProps) {
   const [checkBoxState, setCheckBoxState] = React.useState(false);
   const [isOpen, setIsOpen] = useState(false);
-
-  console.log(buttonLoading);
-
   useEffect(() => {
     setIsOpen(openDialog);
   }, [openDialog]);

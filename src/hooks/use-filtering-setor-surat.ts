@@ -23,6 +23,7 @@ export function useFilteringSetoranSurat(
 ) {
   const [dataCurrent, setDataCurrent] = useState<MahasiswaSetoran[]>([]);
   const [tabState, setTabState] = useState<string>(initialTab);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (tabState === "default") {
@@ -34,5 +35,27 @@ export function useFilteringSetoranSurat(
     }
   }, [tabState, dataIntial]);
 
-  return { dataCurrent, setTabState, tabState };
+  useEffect(() => {
+    if (search === "") {
+      if (tabState === "default") {
+        setDataCurrent(dataIntial);
+      } else if (tabState === "belum_setor") {
+        setDataCurrent(dataIntial.filter((item) => item.sudah_setor === false));
+      } else if (tabState === "sudah_setor") {
+        setDataCurrent(dataIntial.filter((item) => item.sudah_setor === true));
+      }
+    } else {
+      setDataCurrent(
+        dataIntial.filter(
+          (item) =>
+            (tabState === "default" ||
+              (tabState === "belum_setor" && item.sudah_setor === false) ||
+              (tabState === "sudah_setor" && item.sudah_setor === true)) &&
+            item.nama.toLowerCase().includes(search.toLowerCase())
+        )
+      );
+    }
+  }, [search, dataIntial, tabState]);
+
+  return { dataCurrent, setTabState, tabState, setSearch };
 }

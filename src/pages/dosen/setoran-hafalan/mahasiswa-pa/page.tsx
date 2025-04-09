@@ -198,8 +198,8 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                       <TableCell className="text-center">
                         {item.semester}
                       </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2 items-center w-full">
+                      <TableCell className="pr-6">
+                        <div className="flex gap-1.5 items-center w-full">
                           <div className="w-[90%]">
                             <Progress
                               value={

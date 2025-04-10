@@ -91,16 +91,18 @@ const DefaultStepper: React.FC<{ steps: Step[]; activeStep: number }> = ({
   };
 
   const getCircleColor = (stepIndex: number) => {
-    if (stepIndex < activeStep) return "bg-purple-800 text-white"; // Completed
-    if (stepIndex === activeStep) return "bg-purple-800 text-white"; // Active
-    return "bg-muted text-muted-foreground"; // Pending
+    if (stepIndex < activeStep)
+      return "bg-green-600 dark:bg-emerald-400 text-white"; // Completed
+    if (stepIndex === activeStep)
+      return "bg-green-600 dark:bg-emerald-400 text-white"; // Active
+    return "bg-green-200 text-green-500"; // Pending
   };
 
   // Custom animation for the connector line
   const getLineAnimation = (stepIndex: number) => {
     if (stepIndex < activeStep) {
       return {
-        backgroundColor: "rgb(37, 99, 235)",
+        backgroundColor: "rgb(22, 163, 74)",
         transition: { duration: 0.5, delay: stepIndex * 0.2 },
       };
     }
@@ -122,7 +124,7 @@ const DefaultStepper: React.FC<{ steps: Step[]; activeStep: number }> = ({
             {index < steps.length - 1 && (
               <motion.div
                 className="absolute h-[2px] left-[50%] right-[-50%] top-4 md:top-5"
-                initial={{ backgroundColor: "bg-purple-800" }}
+                initial={{ backgroundColor: "bg-green-500" }}
                 animate={getLineAnimation(index)}
               />
             )}
@@ -139,7 +141,7 @@ const DefaultStepper: React.FC<{ steps: Step[]; activeStep: number }> = ({
               {/* Pulsing effect for active step */}
               {index === activeStep && (
                 <motion.div
-                  className="absolute w-12 h-12 rounded-full bg-purple-400 opacity-50"
+                  className="absolute w-12 h-12 rounded-full bg-green-400 opacity-50"
                   animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
                   transition={{ repeat: Infinity, duration: 2 }}
                 />
@@ -210,7 +212,7 @@ const SectionStepper: React.FC<{ activeStep: number }> = ({ activeStep }) => {
       isCompleted: activeStep > 4,
     },
     {
-      title: "Nilai-Irase",
+      title: "Selesai",
       stepRange: [5],
       isActive: activeStep === 5,
       isCompleted: activeStep > 5,
@@ -219,27 +221,27 @@ const SectionStepper: React.FC<{ activeStep: number }> = ({ activeStep }) => {
 
   const getProgressPercentage = () => {
     if (activeStep <= 2) return 0;
-    if (activeStep === 3) return 15;
-    if (activeStep === 4) return 35;
-    if (activeStep === 5) return 60;
+    if (activeStep === 3) return 25;
+    if (activeStep === 4) return 52;
+    if (activeStep === 5) return 80;
 
     return 0;
   };
 
   return (
-    <div className="w-fit p-2 mt-2">
-      <div className="flex items-center justify-center gap-10 relative py-4 pr-32">
+    <div className="w-full flex justify-center">
+      <div className="flex items-center justify-center relative py-4">
         {/* Background Progress Line */}
         <div
           className="absolute h-1 bg-gray-200 rounded-full"
-          style={{ top: "40%", left: "5%", width: "65%" }}
+          style={{ top: "36%", left: "10%", width: "80%" }}
         />
 
         {/* Animated Progress Line */}
         <motion.div
-          className="absolute h-1 bg-green-400 rounded-full"
+          className="absolute h-1 bg-green-600 dark:bg-emerald-400 rounded-full"
           style={{
-            top: "40%",
+            top: "36%",
             left: "10%",
             width: `${getProgressPercentage()}%`,
           }}
@@ -250,11 +252,14 @@ const SectionStepper: React.FC<{ activeStep: number }> = ({ activeStep }) => {
 
         {/* Steps */}
         {sections.map((section, index) => (
-          <div key={index} className="relative flex flex-col items-center z-10">
+          <div
+            key={index}
+            className="relative flex flex-col items-center z-10 mx-8"
+          >
             {/* Pulsing effect for active step */}
             {section.isActive && !section.isCompleted && (
               <motion.div
-                className="absolute w-11 h-11 bg-green-300 rounded-full"
+                className="absolute w-12 h-12 bg-emerald-300 rounded-full"
                 animate={{ scale: [1, 1.5, 1], opacity: [0.6, 0, 0.6] }}
                 transition={{ repeat: Infinity, duration: 1.5 }}
               />
@@ -265,16 +270,16 @@ const SectionStepper: React.FC<{ activeStep: number }> = ({ activeStep }) => {
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5, delay: index * 0.3 }}
-              className={`relative w-12 h-12 flex items-center justify-center rounded-full shadow-md transition-colors ${
+              className={`relative w-12 h-12 flex items-center justify-center rounded-full shadow-none transition-colors  ${
                 section.isCompleted || section.isActive
-                  ? "bg-green-500"
-                  : "bg-blue-500"
+                  ? "bg-green-600 dark:bg-emerald-400"
+                  : "bg-green-200"
               }`}
             >
               {section.isCompleted || section.isActive ? (
                 <CheckCircle2 className="w-7 h-7 text-white" />
               ) : (
-                <Info className="w-7 h-7 text-white" />
+                <Info className="w-7 h-7 text-green-500" />
               )}
             </motion.div>
 
@@ -283,10 +288,10 @@ const SectionStepper: React.FC<{ activeStep: number }> = ({ activeStep }) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.5 }}
-              className={`mt-1 text-xs font-medium ${
+              className={`mt-3 text-xs font-medium text-center  ${
                 section.isCompleted || section.isActive
                   ? "text-black dark:text-white"
-                  : "text-gray-600 dark:text-gray-300"
+                  : "text-gray-500 dark:text-gray-300"
               }`}
             >
               {section.title}

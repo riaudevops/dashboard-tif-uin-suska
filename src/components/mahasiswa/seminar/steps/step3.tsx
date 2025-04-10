@@ -1,17 +1,86 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import Dropzone from "@/components/mahasiswa/seminar/dropzone";
 import Stepper from "@/components/mahasiswa/seminar/stepper";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileWithPath } from "react-dropzone";
-import { Map, UserRound, Book } from "lucide-react";
+import {
+  Map,
+  UserRound,
+  Book,
+  Upload,
+  FileText,
+  RefreshCw,
+} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { infoPengajuanSeminar } from "@/pages/mahasiswa/seminar/validasi-berkas/page";
 import Status from "../status";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
-const handleFilesChange = (files: FileWithPath[]) => {
-  console.log("Files changed:", files);
+const DocumentCard = ({
+  title,
+  status,
+}: {
+  title: string;
+  status: "belum" | "validasi";
+}) => {
+  if (status === "validasi") {
+    return (
+      <div className="gap-1.5">
+        <Label htmlFor="link" className="font-semibold text-xs">
+          {title}
+        </Label>
+        <Input
+          type="text"
+          id="link"
+          value="http://drive.google.com/drive/folders/file.pdf"
+          readOnly
+          className="bg-white dark:text-white cursor-text select-all dark:bg-secondary "
+        />
+      </div>
+    );
+  }
+
+  return (
+    <Card className="border border-green-100 dark:border-green-800/40 bg-white dark:bg-gray-800/80 shadow-sm hover:shadow-md transition-all duration-200">
+      <CardHeader className="pb-2">
+        <div className="flex items-start gap-3">
+          <div className="mt-1 p-2 bg-green-50 dark:bg-green-900/20 rounded-md">
+            <FileText className="h-5 w-5 text-green-600 dark:text-green-400" />
+          </div>
+          <div>
+            <CardTitle className="text-base font-medium text-gray-800 dark:text-gray-100">
+              {title}
+            </CardTitle>
+            <p className="font-normal text-sm text-gray-600 dark:text-gray-400 mt-1">
+              Silakan inputkan Link GDrive dengan file harus berformat pdf.
+            </p>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          <Label
+            htmlFor="link"
+            className="flex items-center gap-1 font-medium text-xs text-gray-700 dark:text-gray-300"
+          >
+            Link GDrive <span className="text-red-500">*</span>
+          </Label>
+          <div className="relative">
+            <Input
+              type="text"
+              id="link"
+              placeholder="https://drive.google.com/drive/folders/file.pdf"
+              className="pl-9 border-gray-200 dark:border-gray-700 focus:border-green-500 focus:ring-1 focus:ring-green-500 dark:focus:border-green-500 dark:focus:ring-green-500/50"
+            />
+            <Upload className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
 };
+
+const documents = ["Dokumen Surat Undangan Seminar Kerja Praktik"];
 
 export default function Step3({
   activeStep,
@@ -27,170 +96,226 @@ export default function Step3({
       </h1>
       <Stepper activeStep={activeStep} />
       {status === "belum" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-6">
+        <>
+          <Status
+            status="belum"
+            title="Anda belum mengupload Surat Undangan & Dosen Penguji"
+            subtitle="Silakan upload dokumen terlebih dahulu"
+          />
+
           <div className="space-y-2">
-            <Status
-              status="belum"
-              title="Anda belum mengupload Surat Undangan & Dosen Penguji"
-              subtitle="Silahkan upload dokumen terlebih dahulu"
-            />
-            <Card>
-              <CardHeader className="">
-                <CardTitle className="text-base font-semibold">
-                  Informasi Pengajuan Diseminasi Kp Anda
+            <Card className="overflow-hidden rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+              <div className="bg-gradient-to-r from-emerald-600 to-green-500 px-6 py-4">
+                <CardTitle className="text-white text-lg font-medium">
+                  Informasi Pengajuan Diseminasi Kerja Praktik
                 </CardTitle>
-              </CardHeader>
-              <Separator className="mb-4" />
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 className="flex flex-row items-center gap-2 font-medium ">
-                    <Map className="size-4" />
-                    Lokasi Kerja Praktik:
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {infoPengajuanSeminar.lokasi}
-                  </p>
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="flex flex-row items-center gap-2 font-medium ">
-                    <UserRound className="size-4" />
-                    Dosen Pembimbing:
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {infoPengajuanSeminar.dosenPembimbing}
-                  </p>
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="flex flex-row items-center gap-2 font-medium ">
-                    <UserRound className="size-4" />
-                    Dosen Penguji:
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {infoPengajuanSeminar.dosenPenguji}
-                  </p>
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="flex flex-row items-center gap-2 font-medium">
-                    <Book className="size-4" />
-                    Judul Laporan:
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {infoPengajuanSeminar.judul}
-                  </p>
+              </div>
+
+              <CardContent className="p-0">
+                <div className="p-6 space-y-5">
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 mt-1">
+                      <Map className="size-5 text-emerald-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                        Lokasi Kerja Praktik
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300 mt-1">
+                        {infoPengajuanSeminar.lokasi}
+                      </p>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 mt-1">
+                      <UserRound className="size-5 text-emerald-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                        Dosen Pembimbing
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300 mt-1">
+                        {infoPengajuanSeminar.dosenPembimbing}
+                      </p>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 mt-1">
+                      <UserRound className="size-5 text-emerald-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                        Dosen Penguji
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300 mt-1">
+                        {infoPengajuanSeminar.dosenPenguji}
+                      </p>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 mt-1">
+                      <Book className="size-5 text-emerald-500" />
+                    </div>
+                    <div className="w-full">
+                      <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400 break-words">
+                        Judul Laporan
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300 mt-1 break-words pr-2">
+                        {infoPengajuanSeminar.judul}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </div>
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle className="text-base font-semibold">
-                Silahkan Upload Surat Undangan Seminar KP
-              </CardTitle>
-            </CardHeader>
-            <Separator className="mb-4" />
-            <CardContent className="flex flex-col h-[calc(100%-4rem)] gap-4 ">
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  upload dokumen dalam format{" "}
-                  <span className="text-blue-600 dark:text-blue-400 cursor-pointer">
-                    .pdf
-                  </span>
-                </p>
+          <div>
+            <Card className="border border-green-200 dark:border-green-800/50 shadow-sm rounded-lg overflow-hidden bg-gradient-to-b from-green-50/70 to-white dark:from-green-950/20 dark:to-gray-900/95">
+              <CardHeader className="px-5 py-4 mb-2 bg-gradient-to-r from-green-200/80 to-green-100/60 dark:from-green-800/30 dark:to-green-900/20 border-b border-green-200 dark:border-green-800/30">
+                <div className="flex items-center gap-3">
+                  <div className="w-1.5 h-6 bg-green-500 dark:bg-green-400 rounded-full"></div>
+                  <CardTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Silakan isi formulir di bawah ini untuk divalidasi!
+                  </CardTitle>
+                </div>
+              </CardHeader>
+
+              <CardContent className="p-5 flex flex-col gap-5">
+                {documents.map((doc, index) => (
+                  <DocumentCard key={index} title={doc} status="belum" />
+                ))}
+              </CardContent>
+            </Card>
+            <div className="flex justify-end mt-5">
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="border-green-200 dark:border-green-800/50 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-2"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Kosongkan Formulir
+                </Button>
+                <Button className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-600 text-white border-none shadow-sm hover:shadow">
+                  Kirim
+                </Button>
               </div>
-              <Dropzone onFilesChange={handleFilesChange} />
-              <div className="flex justify-end gap-3 pb-3">
-                <Button variant="outline">Batal</Button>
-                <Button>Simpan</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </div>
+        </>
       )}
       {status === "validasi" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-6">
+        <>
+          <Status
+            status="validasi"
+            title="Input ID Pengajuan Surat Undangan Anda dalam Proses Validasi"
+            subtitle="Silakan lengkapi dokumen terlebih dahulu"
+          />
+
           <div className="space-y-2">
-            <Status
-              status="validasi"
-              title="Input ID Pengajuan Surat Undangan Anda dalam Proses Validasi"
-              subtitle="Silahkan lengkapi dokumen terlebih dahulu"
-            />
-            <Card>
-              <CardHeader className="">
-                <CardTitle className="text-base font-semibold">
-                  Informasi Pengajuan Diseminasi Kp Anda
+            <Card className="overflow-hidden rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+              <div className="bg-gradient-to-r from-emerald-600 to-green-500 px-6 py-4">
+                <CardTitle className="text-white text-lg font-medium">
+                  Informasi Pengajuan Diseminasi Kerja Praktik
                 </CardTitle>
-              </CardHeader>
-              <Separator className="mb-4" />
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 className="flex flex-row items-center gap-2 font-medium ">
-                    <Map className="size-4" />
-                    Lokasi Kerja Praktik:
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {infoPengajuanSeminar.lokasi}
-                  </p>
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="flex flex-row items-center gap-2 font-medium ">
-                    <UserRound className="size-4" />
-                    Dosen Pembimbing:
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {infoPengajuanSeminar.dosenPembimbing}
-                  </p>
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="flex flex-row items-center gap-2 font-medium ">
-                    <UserRound className="size-4" />
-                    Dosen Penguji:
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {infoPengajuanSeminar.dosenPenguji}
-                  </p>
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="flex flex-row items-center gap-2 font-medium">
-                    <Book className="size-4" />
-                    Judul Laporan:
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {infoPengajuanSeminar.judul}
-                  </p>
+              </div>
+
+              <CardContent className="p-0">
+                <div className="p-6 space-y-5">
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 mt-1">
+                      <Map className="size-5 text-emerald-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                        Lokasi Kerja Praktik
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300 mt-1">
+                        {infoPengajuanSeminar.lokasi}
+                      </p>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 mt-1">
+                      <UserRound className="size-5 text-emerald-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                        Dosen Pembimbing
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300 mt-1">
+                        {infoPengajuanSeminar.dosenPembimbing}
+                      </p>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 mt-1">
+                      <UserRound className="size-5 text-emerald-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                        Dosen Penguji
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300 mt-1">
+                        {infoPengajuanSeminar.dosenPenguji}
+                      </p>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 mt-1">
+                      <Book className="size-5 text-emerald-500" />
+                    </div>
+                    <div className="w-full">
+                      <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400 break-words">
+                        Judul Laporan
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300 mt-1 break-words pr-2">
+                        {infoPengajuanSeminar.judul}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </div>
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle className="text-base font-semibold">
-                Silahkan Upload Surat Undangan Seminar KP
-              </CardTitle>
-            </CardHeader>
-            <Separator className="mb-4" />
-            <CardContent className="flex flex-col h-[calc(100%-4rem)] gap-4 ">
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  upload dokumen dalam format{" "}
-                  <span className="text-blue-600 dark:text-blue-400 cursor-pointer">
-                    .pdf
-                  </span>
-                </p>
+          <div>
+            <Card className="border border-green-200 dark:border-green-800/50 shadow-sm rounded-lg overflow-hidden bg-gradient-to-b from-green-50/70 to-white dark:from-green-950/20 dark:to-gray-900/95">
+              <CardHeader className="px-5 py-4 mb-2 bg-gradient-to-r from-green-200/80 to-green-100/60 dark:from-green-800/30 dark:to-green-900/20 border-b border-green-200 dark:border-green-800/30">
+                <div className="flex items-center gap-3">
+                  <div className="w-1.5 h-6 bg-green-500 dark:bg-green-400 rounded-full"></div>
+                  <CardTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Silakan isi formulir di bawah ini untuk divalidasi!
+                  </CardTitle>
+                </div>
+              </CardHeader>
+
+              <CardContent className="p-5 flex flex-col gap-5">
+                {documents.map((doc, index) => (
+                  <DocumentCard key={index} title={doc} status="validasi" />
+                ))}
+              </CardContent>
+            </Card>
+            <div className="flex justify-end mt-5">
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="border-green-200 dark:border-green-800/50 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-2"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Kosongkan Formulir
+                </Button>
+                <Button className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-600 text-white border-none shadow-sm hover:shadow">
+                  Kirim
+                </Button>
               </div>
-              <Dropzone onFilesChange={handleFilesChange} />
-              <div className="flex justify-end gap-3 pb-3">
-                <Button variant="outline">Batal</Button>
-                <Button>Simpan</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </div>
+        </>
       )}
       {status === "ditolak" && (
         <>
@@ -200,81 +325,107 @@ export default function Step3({
             subtitle="Silakan isi kembali Form sesuai perintah"
             catatan="Pada Surat Balasan, nama Anda salah"
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-            <div className="space-y-2">
-              <Card>
-                <CardHeader className="">
-                  <CardTitle className="text-base font-semibold">
-                    Informasi Pengajuan Diseminasi Kp Anda
-                  </CardTitle>
-                </CardHeader>
-                <Separator className="mb-4" />
-                <CardContent className="space-y-4">
-                  <div>
-                    <h3 className="flex flex-row items-center gap-2 font-medium ">
-                      <Map className="size-4" />
-                      Lokasi Kerja Praktik:
-                    </h3>
-                    <p className="text-muted-foreground">
-                      {infoPengajuanSeminar.lokasi}
-                    </p>
-                  </div>
-                  <Separator />
-                  <div>
-                    <h3 className="flex flex-row items-center gap-2 font-medium ">
-                      <UserRound className="size-4" />
-                      Dosen Pembimbing:
-                    </h3>
-                    <p className="text-muted-foreground">
-                      {infoPengajuanSeminar.dosenPembimbing}
-                    </p>
-                  </div>
-                  <Separator />
-                  <div>
-                    <h3 className="flex flex-row items-center gap-2 font-medium ">
-                      <UserRound className="size-4" />
-                      Dosen Penguji:
-                    </h3>
-                    <p className="text-muted-foreground">
-                      {infoPengajuanSeminar.dosenPenguji}
-                    </p>
-                  </div>
-                  <Separator />
-                  <div>
-                    <h3 className="flex flex-row items-center gap-2 font-medium">
-                      <Book className="size-4" />
-                      Judul Laporan:
-                    </h3>
-                    <p className="text-muted-foreground">
-                      {infoPengajuanSeminar.judul}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            <Card className="h-full">
-              <CardHeader>
-                <CardTitle className="text-base font-semibold">
-                  Silahkan Upload Surat Undangan Seminar KP
+
+          <div className="space-y-2">
+            <Card className="overflow-hidden rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+              <div className="bg-gradient-to-r from-emerald-600 to-green-500 px-6 py-4">
+                <CardTitle className="text-white text-lg font-medium">
+                  Informasi Pengajuan Diseminasi Kerja Praktik
                 </CardTitle>
-              </CardHeader>
-              <Separator className="mb-4" />
-              <CardContent className="flex flex-col h-[calc(100%-4rem)] gap-4 ">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    upload dokumen dalam format{" "}
-                    <span className="text-blue-600 dark:text-blue-400 cursor-pointer">
-                      .pdf
-                    </span>
-                  </p>
-                </div>
-                <Dropzone onFilesChange={handleFilesChange} />
-                <div className="flex justify-end gap-3 pb-3">
-                  <Button variant="outline">Batal</Button>
-                  <Button>Simpan</Button>
+              </div>
+
+              <CardContent className="p-0">
+                <div className="p-6 space-y-5">
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 mt-1">
+                      <Map className="size-5 text-emerald-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                        Lokasi Kerja Praktik
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300 mt-1">
+                        {infoPengajuanSeminar.lokasi}
+                      </p>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 mt-1">
+                      <UserRound className="size-5 text-emerald-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                        Dosen Pembimbing
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300 mt-1">
+                        {infoPengajuanSeminar.dosenPembimbing}
+                      </p>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 mt-1">
+                      <UserRound className="size-5 text-emerald-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                        Dosen Penguji
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300 mt-1">
+                        {infoPengajuanSeminar.dosenPenguji}
+                      </p>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 mt-1">
+                      <Book className="size-5 text-emerald-500" />
+                    </div>
+                    <div className="w-full">
+                      <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400 break-words">
+                        Judul Laporan
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300 mt-1 break-words pr-2">
+                        {infoPengajuanSeminar.judul}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
+          </div>
+          <div>
+            <Card className="border border-green-200 dark:border-green-800/50 shadow-sm rounded-lg overflow-hidden bg-gradient-to-b from-green-50/70 to-white dark:from-green-950/20 dark:to-gray-900/95">
+              <CardHeader className="px-5 py-4 mb-2 bg-gradient-to-r from-green-200/80 to-green-100/60 dark:from-green-800/30 dark:to-green-900/20 border-b border-green-200 dark:border-green-800/30">
+                <div className="flex items-center gap-3">
+                  <div className="w-1.5 h-6 bg-green-500 dark:bg-green-400 rounded-full"></div>
+                  <CardTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Silakan isi formulir di bawah ini untuk divalidasi!
+                  </CardTitle>
+                </div>
+              </CardHeader>
+
+              <CardContent className="p-5 flex flex-col gap-5">
+                {documents.map((doc, index) => (
+                  <DocumentCard key={index} title={doc} status="belum" />
+                ))}
+              </CardContent>
+            </Card>
+            <div className="flex justify-end mt-5">
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="border-green-200 dark:border-green-800/50 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-2"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Kosongkan Formulir
+                </Button>
+                <Button className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-600 text-white border-none shadow-sm hover:shadow">
+                  Kirim
+                </Button>
+              </div>
+            </div>
           </div>
         </>
       )}

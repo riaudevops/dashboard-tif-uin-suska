@@ -16,19 +16,16 @@ const getDataMahasiswaByEmail = async (email: string) => {
 
 const postSetoranSurah = async ({
   nim,
-  email_dosen_pa,
   nomor_surah,
   tgl_setoran,
 }: {
   nim: string;
-  email_dosen_pa: string;
   nomor_surah: number;
   tgl_setoran: string;
 }) => {
   const axios = api();
   const request = await axios.post(`imemoraise/v1/dosen/setor`, {
     nim,
-    email_dosen_pa,
     nomor_surah,
     tgl_setoran,
   });

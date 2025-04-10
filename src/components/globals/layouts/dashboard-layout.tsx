@@ -29,17 +29,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const pathParts = location.pathname.split("/");
     // hanya ambil data ke index ke 2 dst
     const newPathParts = pathParts.splice(2);
-    // console.log(newPathParts);
-    console.log(pathParts);
 
     setBreadcrumbs(
       newPathParts.map((part, index) => ({
         name: part.replace("-", " "),
-        link: `/dosen/${newPathParts.slice(0, index + 1).join("/")}`,
+        link: `/${pathParts[1]}/${newPathParts.slice(0, index + 1).join("/")}`,
       }))
     );
 
-    console.log(`/${pathParts.join("/")}`);
   }, []);
 
   return (

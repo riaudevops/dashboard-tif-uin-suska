@@ -174,7 +174,6 @@ function DetailMahasiswaSetoran() {
           setButtonLoading(true);
           mutation.mutate({
             nim: dataInfoSetoran?.info.nim,
-            email_dosen_pa: dataInfoSetoran?.info.dosen_pa.email,
             nomor_surah: detailSurah.nomor,
             tgl_setoran: dateSetoran,
           });

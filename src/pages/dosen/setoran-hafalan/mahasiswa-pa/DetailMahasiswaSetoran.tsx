@@ -88,7 +88,7 @@ function DetailMahasiswaSetoran() {
     useFilteringSetoranSurat(dataInfoSetoran?.setoran.detail, "default");
 
   // post data Setoran with mutation
-  const mutation = useMutation({
+  const mutationAccept = useMutation({
     mutationFn: apiSetoran.postSetoranSurah,
   });
 
@@ -127,36 +127,46 @@ function DetailMahasiswaSetoran() {
         setLoading(true);
         try {
           // Filter item yang id_surah-nya kosong, lalu lakukan mutatio
-          const dataAcc = tempDataCheck
-            .filter((item) => item.id_surah === "")
-            .map((item) => ({
-              nama_surah: item.nama_surah,
-              nomor_surah: item.nomor_surah,
-            }));
-          console.log(dataAcc);
-          // if (dataAcc.length === 0) {
-          //   setLoading(false);
-          //   return toast({
-          //     title: "ℹ️ Info",
-          //     description: "Tidak ada surah yang divalidasi",
-          //     className: "dark:bg-blue-500 bg-blue-300",
-          //   });
-          // }
+          const dataAcc = tempDataCheck.map((item) => ({
+            nama_surah: item.nama_surah,
+            nomor_surah: item.nomor_surah,
+          }));
 
-          // await Promise.all(dataAcc);
-          await queryclient.invalidateQueries({
-            queryKey: ["info-mahasiswa-by-email"],
-          });
-          setTempDataCheck([]);
-          setSelectAll(false);
-          toast({
-            title: "✨ Sukses",
-            description: "Validasi Setoran Surah Berhasil",
-            className: "dark:bg-green-600 bg-green-300",
-          });
+          if (dataAcc.length === 0) {
+            setLoading(false);
+            return toast({
+              title: "ℹ️ Info",
+              description: "Tidak ada surah yang divalidasi",
+              className: "dark:bg-blue-500 bg-blue-300",
+            });
+          }
+          await mutationAccept
+            .mutateAsync({
+              nim: dataInfoSetoran?.info.nim,
+              data_setoran: dataAcc,
+              tgl_setoran: new Date().toISOString().split("T")[0],
+            })
+            .then((data) => {
+              console.log(data);
+              if (data.response) {
+                queryclient.invalidateQueries({
+                  queryKey: ["info-mahasiswa-by-email"],
+                });
 
-          setLoading(false);
-          console.log("Sukses");
+                setTempDataCheck([]);
+                setSelectAll(false);
+                toast({
+                  title: "✨ Sukses",
+                  description: "Validasi Setoran Surah Berhasil",
+                  className: "dark:bg-green-600 bg-green-300",
+                });
+
+                setLoading(false);
+                console.log("Sukses");
+              }
+            });
+
+          // console.log("Sukses");
         } catch (error) {
           toast({
             title: "❌ Error",
@@ -180,7 +190,7 @@ function DetailMahasiswaSetoran() {
           const dataBatalkan = tempDataCheck
             .filter((item) => item.id_surah !== "")
             .map((item) => ({ id_surah: item.id_surah } as const));
-          console.log(dataBatalkan);
+          // console.log(dataBatalkan);
           if (dataBatalkan.length === 0) {
             setLoading(false);
             return toast({
@@ -238,12 +248,13 @@ function DetailMahasiswaSetoran() {
       setTempDataCheck((prevData) => [
         ...prevData,
         { nama_surah: nama_surah, nomor_surah: nomor_surah },
-        ]);
+      ]);
     } else {
       // Hapus data yang sesuai dari array
       setTempDataCheck((prevData) =>
         prevData.filter(
-          (item) => item.nama_surah !== nama_surah || item.nomor_surah !== nomor_surah
+          (item) =>
+            item.nama_surah !== nama_surah || item.nomor_surah !== nomor_surah
         )
       );
     }
@@ -452,6 +463,7 @@ function DetailMahasiswaSetoran() {
               // disabled={tempDataCheck.length === 0 || isLoading}
               onClick={() => {
                 handleAksi();
+                console.log(tempDataCheck);
                 // setLoading(true);
                 // try {
                 //   // Filter item yang id_surah-nya kosong, lalu lakukan mutatio
@@ -679,10 +691,8 @@ function DetailMahasiswaSetoran() {
                         onCheckedChange={(checked) =>
                           handleCheckBoxToTempData(
                             Boolean(checked),
-                            dataInfoSetoran?.info.nim,
-                            surah.nomor,
-                            new Date().toISOString().split("T")[0],
-                            surah.setoran[0]?.id || ""
+                            surah.nama,
+                            surah.nomor
                           )
                         }
                       />

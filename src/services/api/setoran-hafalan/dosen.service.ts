@@ -1,32 +1,36 @@
 import { api } from "@/lib/axios-instance";
 
+interface DataSetoran {
+  nama_surah: string;
+  nomor_surah: number;
+}
 const getDataMyMahasiswa = async () => {
   const axios = api();
-  const response = await axios.get(`imemoraise/v1/dosen/pa-saya`);
+  const response = await axios.get(`dosen/pa-saya`);
   const data = response.data;
   return data;
 };
 
 const getDataMahasiswaByEmail = async (email: string) => {
   const axios = api();
-  const response = await axios.get(`imemoraise/v1/mahasiswa/setoran/${email}`);
+  const response = await axios.get(`mahasiswa/setoran/${email}`);
   const data = response.data;
   return data;
 };
 
 const postSetoranSurah = async ({
   nim,
-  nomor_surah,
+  data_setoran,
   tgl_setoran,
 }: {
   nim: string;
-  nomor_surah: number;
+  data_setoran: DataSetoran[];
   tgl_setoran: string;
 }) => {
   const axios = api();
-  const request = await axios.post(`imemoraise/v1/dosen/setor`, {
+  const request = await axios.post(`/dosen/setor`, {
     nim,
-    nomor_surah,
+    data_setoran,
     tgl_setoran,
   });
   return request.data;
@@ -34,7 +38,7 @@ const postSetoranSurah = async ({
 
 const pembatalanSetoranSurah = async ({id }: {id: string}) => {
   const axios = api();
-  const request =await axios.delete(`imemoraise/v1/dosen/setor/${id}`);
+  const request =await axios.delete(`dosen/setor/${id}`);
   return request.data
 };
 

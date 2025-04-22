@@ -4,14 +4,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-interface ModalBoxDetailSetoranProps {
-  nama_surah: string;
-  tanggal_setoran: string;
-  dosen_mengesahkan: string;
-  sudah_setor: boolean;
-  openDialog: boolean;
-  setOpenDialog: (openDialog: boolean) => void;
-}
+import {ModalBoxDetailSetoranProps} from "@/interfaces/components/mahasiswa/setoran-hafalan/modal-box-detail-setoran.interface";
 function ModalBoxDetailSetoran({
   openDialog,
   setOpenDialog,

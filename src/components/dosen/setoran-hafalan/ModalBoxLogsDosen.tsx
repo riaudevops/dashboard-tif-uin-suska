@@ -8,7 +8,7 @@ import { CircleCheckBig, CircleX } from "lucide-react";
 import React from "react";
 import dataLogs from "@/assets/logs.json";
 
-function ModalBoxLogs({
+function ModalBoxLogsDosen({
   isOpen,
   setIsOpen,
 
@@ -16,7 +16,7 @@ function ModalBoxLogs({
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  // console.log(dataLogs.log_validasi);
+
   return (
     <Dialog
       open={isOpen}
@@ -102,4 +102,4 @@ function ModalBoxLogs({
   );
 }
 
-export default ModalBoxLogs;
+export default ModalBoxLogsDosen;

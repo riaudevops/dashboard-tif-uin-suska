@@ -313,9 +313,9 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                           <p>-</p>
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">
                         <div
-                          className={`py-2 px-6 rounded-md text-center text-white font-medium ${
+                          className={`py-1 px-5 rounded-2xl text-center text-white inline-block ${
                             colourLabelingCategory(surah.label)[1]
                           }`}
                         >
@@ -329,7 +329,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                       </TableCell>
                       <TableCell className="text-center">
                         {surah.sudah_setor ? (
-                          <div className="bg-green-600 p-1 text-white">
+                          <div className="bg-green-600 px-1 py-1 text-white rounded-2xl text-xs">
                             Sudah Setor
                           </div>
                         ) : (

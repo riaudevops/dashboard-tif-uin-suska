@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
 interface Dosen {
   nama: string;
+  nip: string;
+  email: string;
 }
 
 interface Setoran {
   id: string;
-  tgl_setoran: string; // Bisa diubah ke Date jika ingin langsung digunakan sebagai objek Date
-  tgl_validasi: string; // Bisa diubah ke Date jika diperlukan
-  dosen: Dosen;
+  tgl_setoran: string;
+  tgl_validasi: string;
+  dosen_yang_mengesahkan: Dosen;
 }
-
 interface MahasiswaSetoran {
   nomor: number;
   nama: string;
   label: string;
   sudah_setor: boolean;
-  setoran: Setoran[];
+  info_setoran: Setoran;
 }
 export function useFilteringSetoranSurat(
   dataIntial: MahasiswaSetoran[],

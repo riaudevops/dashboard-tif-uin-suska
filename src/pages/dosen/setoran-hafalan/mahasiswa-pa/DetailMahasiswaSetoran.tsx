@@ -14,8 +14,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import apiSetoran from "@/services/api/setoran-hafalan/dosen.service";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-// import ModalBoxDosen from "@/components/dosen/setoran-hafalan/ModalBoxValidasiSetoran";
-// import ModalBoxBatalSetoran from "@/components/dosen/setoran-hafalan/ModalBoxBatalSetoran";
 import { Skeleton } from "@/components/ui/skeleton";
 import ModalBoxStatistik from "@/components/dosen/setoran-hafalan/ModalBoxStatistik";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,68 +24,34 @@ import {
   ChartSpline,
   FileDigit,
   Rocket,
-  SaveAll,
   User,
 } from "lucide-react";
 import ProgressStatistik from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/ProgressStatistik";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import ModalBoxLogsDosen from "@/components/dosen/setoran-hafalan/ModalBoxLogsDosen";
+import ModalBoxValidasiSetoran from "@/components/dosen/setoran-hafalan/ModalBoxValidasiSetoran";
+import ModalBoxBatalSetoran from "@/components/dosen/setoran-hafalan/ModalBoxBatalSetoran";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import ModalBoxLogs from "@/components/dosen/setoran-hafalan/ModalBoxLogs";
-// import LoadingComponent from "@/components/globals/loading";
-
-interface Dosen {
-  nama: string;
-}
-
-interface Setoran {
-  id: string;
-  tgl_setoran: string;
-  tgl_validasi: string;
-  dosen: Dosen;
-}
-interface MahasiswaSetoran {
-  nomor: number;
-  nama: string;
-  label: string;
-  sudah_setor: boolean;
-  setoran: Setoran[];
-}
-// interface detailSetoranProps {
-//   nomor: number;
-//   nama: string;
-//   label: string;
-//   sudah_setor: boolean;
-//   setoran: Setoran[];
-// }
-interface CheckedData {
-  nama_surah: string;
-  nomor_surah: number;
-  id_surah?: string;
-}
+  CheckedData,
+  MahasiswaSetoran,
+} from "@/interfaces/pages/dosen/setoran-hafalan/mahasiswa-pa/detail-mahasiswa-setoran.interface";
 function DetailMahasiswaSetoran() {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const email = urlParams.get("email");
+  const nim = urlParams.get("nim");
   const { toast } = useToast();
   const queryclient = useQueryClient();
 
   const { data: dataInfoSetoran, isLoading } = useQuery({
     queryKey: ["info-mahasiswa-by-email"],
     queryFn: () =>
-      apiSetoran.getDataMahasiswaByEmail(email!).then((res) => res.data),
+      apiSetoran.getDataMahasiswaByEmail(nim!).then((res) => res.data),
   });
 
   const { dataCurrent, setTabState, tabState, setSearch } =
     useFilteringSetoranSurat(dataInfoSetoran?.setoran.detail, "default");
 
-  // post data Setoran with mutation
   const mutationAccept = useMutation({
     mutationFn: apiSetoran.postSetoranSurah,
   });
@@ -95,13 +59,15 @@ function DetailMahasiswaSetoran() {
   const mutationDelete = useMutation({
     mutationFn: apiSetoran.pembatalanSetoranSurah,
   });
-  // const [buttonLoading, setButtonLoading] = useState(true);
+
   const [tempDataCheck, setTempDataCheck] = useState<CheckedData[]>([]);
+  const [buttonLoading, setButtonLoading] = useState(false);
   const [selectAll, setSelectAll] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [aksi, setAksi] = useState<string>("");
-  // console.log(aksi);
-  // console.log(JSON.stringify(tempDataCheck));
+  const [openModalValidasiSetoran, setModalValidasiSetoran] = useState(false);
+  const [openModalBatalkanSetoran, setModalBatalkanSetoran] = useState(false);
+  const [openModalStatistik, setModalStatistik] = useState(false);
+  const [openModalLogs, setModalLogs] = useState(false);
 
   const handleSelectAll = (checked: boolean) => {
     setSelectAll(checked);
@@ -112,7 +78,7 @@ function DetailMahasiswaSetoran() {
         dataCurrent?.map((surah) => ({
           nama_surah: surah.nama,
           nomor_surah: surah.nomor,
-          id_surah: surah.setoran[0]?.id || "", // Add this line
+          id: surah.info_setoran?.id || "",
         })) || [];
 
       setTempDataCheck(allData);
@@ -121,133 +87,34 @@ function DetailMahasiswaSetoran() {
       setTempDataCheck([]);
     }
   };
-  const handleAksi = async () => {
-    switch (aksi) {
-      case "validasi":
-        setLoading(true);
-        try {
-          // Filter item yang id_surah-nya kosong, lalu lakukan mutatio
-          const dataAcc = tempDataCheck.map((item) => ({
-            nama_surah: item.nama_surah,
-            nomor_surah: item.nomor_surah,
-          }));
-
-          if (dataAcc.length === 0) {
-            setLoading(false);
-            return toast({
-              title: "ℹ️ Info",
-              description: "Tidak ada surah yang divalidasi",
-              className: "dark:bg-blue-500 bg-blue-300",
-            });
-          }
-          await mutationAccept
-            .mutateAsync({
-              nim: dataInfoSetoran?.info.nim,
-              data_setoran: dataAcc,
-              tgl_setoran: new Date().toISOString().split("T")[0],
-            })
-            .then((data) => {
-              console.log(data);
-              if (data.response) {
-                queryclient.invalidateQueries({
-                  queryKey: ["info-mahasiswa-by-email"],
-                });
-
-                setTempDataCheck([]);
-                setSelectAll(false);
-                toast({
-                  title: "✨ Sukses",
-                  description: "Validasi Setoran Surah Berhasil",
-                  className: "dark:bg-green-600 bg-green-300",
-                });
-
-                setLoading(false);
-                console.log("Sukses");
-              }
-            });
-
-          // console.log("Sukses");
-        } catch (error) {
-          toast({
-            title: "❌ Error",
-            description: "Validasi Setoran Surah Gagal",
-            variant: "destructive",
-            action: (
-              <ToastAction
-                altText="Refreh"
-                onClick={() => window.location.reload()}
-              >
-                Refresh
-              </ToastAction>
-            ),
-          });
-          console.log(error);
-        }
-        break;
-      case "batalkan":
-        setLoading(true);
-        try {
-          const dataBatalkan = tempDataCheck
-            .filter((item) => item.id_surah !== "")
-            .map((item) => ({ id_surah: item.id_surah } as const));
-          // console.log(dataBatalkan);
-          if (dataBatalkan.length === 0) {
-            setLoading(false);
-            return toast({
-              title: "ℹ️ Info",
-              description: "Tidak ada surah yang dibatalkan",
-              className: "dark:bg-blue-500 bg-blue-300",
-            });
-          }
-
-          // await Promise.all(dataBatalkan);
-          await queryclient.invalidateQueries({
-            queryKey: ["info-mahasiswa-by-email"],
-          });
-          setTempDataCheck([]);
-          setSelectAll(false);
-          setLoading(false);
-          toast({
-            title: "✨ Sukses",
-            description: "Pembatalan Setoran Surah Berhasil",
-            className: "dark:bg-green-600 bg-green-300",
-          });
-        } catch (error) {
-          toast({
-            title: "❌ Error",
-            description: "Pembatalan Setoran Surah Gagal",
-            variant: "destructive",
-            action: (
-              <ToastAction
-                altText="Refreh"
-                onClick={() => window.location.reload()}
-              >
-                Refresh
-              </ToastAction>
-            ),
-          });
-          console.log(error);
-        }
-        break;
-      default:
-        toast({
-          title: "📢 Peringatan",
-          description: "Pilih aksi yang ingin dilakukan",
-          className: "dark:bg-orange-400 bg-orange-300",
-        });
-        break;
+  const tempDataToString = (aksi: string) => {
+    if (aksi === "validasi") {
+      const tempData = tempDataCheck
+        .filter((item) => item.id === "")
+        .map((item) => item.nama_surah);
+      return tempData.join(", ");
+    } else {
+      const tempData = tempDataCheck
+        .filter((item) => item.id !== "")
+        .map((item) => item.nama_surah);
+      return tempData.join(", ");
     }
   };
   const handleCheckBoxToTempData = (
     checked: boolean,
     nama_surah: string,
-    nomor_surah: number
+    nomor_surah: number,
+    id?: string
   ) => {
     if (checked) {
       // Tambahkan data baru ke array
       setTempDataCheck((prevData) => [
         ...prevData,
-        { nama_surah: nama_surah, nomor_surah: nomor_surah },
+        {
+          nama_surah: nama_surah,
+          nomor_surah: nomor_surah,
+          id: id,
+        },
       ]);
     } else {
       // Hapus data yang sesuai dari array
@@ -259,11 +126,6 @@ function DetailMahasiswaSetoran() {
       );
     }
   };
-
-  // const [openModalValidasiSetoran, setModalValidasiSetoran] = useState(false);
-  // const [openModalBatalkanSetoran, setModalBatalkanSetoran] = useState(false);
-  const [openModalStatistik, setModalStatistik] = useState(false);
-  const [openModalLogs, setModalLogs] = useState(false);
   return (
     <DashboardLayout>
       <ModalBoxStatistik
@@ -271,39 +133,145 @@ function DetailMahasiswaSetoran() {
         dataRingkasan={dataInfoSetoran?.setoran.ringkasan}
         setIsOpen={setModalStatistik}
       />
-      <ModalBoxLogs isOpen={openModalLogs} setIsOpen={setModalLogs} />
-      {/* <ModalBoxBatalSetoran
+      <ModalBoxLogsDosen isOpen={openModalLogs} setIsOpen={setModalLogs} />
+      <ModalBoxBatalSetoran
         openDialog={openModalBatalkanSetoran}
         buttonLoading={buttonLoading}
         deleteSetoran={() => {
           setButtonLoading(true);
-          mutationDelete.mutate({
-            id: idSurah,
-          });
+          try {
+            const dataBatalkan = tempDataCheck
+              .filter((item) => item.id !== "")
+              .map((item) => ({
+                id: item.id,
+                nomor_surah: item.nomor_surah,
+                nama_surah: item.nama_surah,
+              }));
+            if (dataBatalkan.length === 0) {
+              setLoading(false);
+              return toast({
+                title: "ℹ️ Info",
+                description: "Tidak ada surah yang dibatalkan",
+                className: "dark:bg-blue-500 bg-blue-300",
+              });
+            }
+
+            mutationDelete
+              .mutateAsync({
+                nim: dataInfoSetoran?.info.nim,
+                data_setoran: dataBatalkan,
+              })
+              .then((data) => {
+                console.log(data);
+                if (data.response) {
+                  queryclient.invalidateQueries({
+                    queryKey: ["info-mahasiswa-by-email"],
+                  });
+
+                  setTempDataCheck([]);
+                  setSelectAll(false);
+                  setModalBatalkanSetoran(false);
+                  setButtonLoading(false);
+                  toast({
+                    title: "✨ Sukses",
+                    description: "Membatalkan Setoran Surah Berhasil",
+                    // className: "dark:bg-green-600 bg-green-300",
+                  });
+
+                  setLoading(false);
+                }
+              });
+          } catch (error) {
+            toast({
+              title: "❌ Error",
+              description: "Pembatalan Setoran Surah Gagal",
+              variant: "destructive",
+              action: (
+                <ToastAction
+                  altText="Refreh"
+                  onClick={() => window.location.reload()}
+                >
+                  Refresh
+                </ToastAction>
+              ),
+            });
+            console.log(error);
+          }
         }}
         info={dataInfoSetoran?.info}
-        detail={detailSurah}
+        nama_surah={tempDataToString("batalkan")}
         onClose={() => {
           setModalBatalkanSetoran(false);
         }}
-      /> */}
-      {/* <ModalBoxDosen
+      />
+      <ModalBoxValidasiSetoran
         openDialog={openModalValidasiSetoran}
         buttonLoading={buttonLoading}
         validasiSetoran={(dateSetoran: string) => {
+          if (dateSetoran === "") {
+            return toast({
+              title: "📢 Peringatan",
+              description: "Tanggal setoran tidak boleh kosong",
+              // className: "dark:bg-blue-500 bg-blue-300",
+            });
+          }
           setButtonLoading(true);
-          mutation.mutate({
-            nim: dataInfoSetoran?.info.nim,
-            nomor_surah: detailSurah.nomor,
-            tgl_setoran: dateSetoran,
-          });
+          try {
+            const dataAcc = tempDataCheck
+              .filter((item) => item.id === "")
+              .map((item) => ({
+                nama_surah: item.nama_surah,
+                nomor_surah: item.nomor_surah,
+              }));
+
+            mutationAccept
+              .mutateAsync({
+                nim: dataInfoSetoran?.info.nim,
+                data_setoran: dataAcc,
+                tgl_setoran: dateSetoran,
+              })
+              .then((data) => {
+                if (data.response) {
+                  queryclient.invalidateQueries({
+                    queryKey: ["info-mahasiswa-by-email"],
+                  });
+
+                  setTempDataCheck([]);
+                  setSelectAll(false);
+                  setModalValidasiSetoran(false);
+                  setButtonLoading(false);
+                  toast({
+                    title: "✨ Sukses",
+                    description: "Validasi Setoran Surah Berhasil",
+                    // className: "dark:bg-green-600 bg-green-300",
+                  });
+
+                  setLoading(false);
+                }
+              });
+          } catch (error) {
+            toast({
+              title: "❌ Error",
+              description: "Validasi Setoran Surah Gagal",
+              variant: "destructive",
+              action: (
+                <ToastAction
+                  altText="Refreh"
+                  onClick={() => window.location.reload()}
+                >
+                  Refresh
+                </ToastAction>
+              ),
+            });
+            console.log(error);
+          }
         }}
         info={dataInfoSetoran?.info}
-        detail={detailSurah}
+        nama_surah={tempDataToString("validasi")}
         onClose={(bool) => {
           setModalValidasiSetoran(bool);
         }}
-      /> */}
+      />
 
       <div className="flex flex-col gap-4">
         {/* judul */}
@@ -321,7 +289,6 @@ function DetailMahasiswaSetoran() {
             uploadedDocs={dataInfoSetoran?.setoran.info_dasar.total_sudah_setor}
             totalDocs={dataInfoSetoran?.setoran.info_dasar.total_wajib_setor}
           />
-          {/* <ProgressStatistik uploadedDocs={5} totalDocs={10} /> */}
           <div className="-ml-28 flex flex-col gap-1 h-full justify-center py-14">
             <div className="flex items-center">
               {/* Bagian kiri */}
@@ -384,201 +351,137 @@ function DetailMahasiswaSetoran() {
           </div>
         </div>
 
-        <div className="flex justify-between">
-          <div>
-            <Tabs defaultValue="tab1" className="w-full">
-              <TabsList className="gap-1.5">
-                <TabsTrigger
-                  value="tab1"
-                  onClick={() => setTabState("default")}
-                  className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
-                    tabState !== "default" &&
-                    "hover:bg-blue-100 dark:hover:bg-background/20"
-                  }`}
-                >
-                  Semua Riwayat
-                </TabsTrigger>
-                <TabsTrigger
-                  value="tab2"
-                  onClick={() => setTabState("sudah_setor")}
-                  className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
-                    tabState !== "sudah_setor" &&
-                    "hover:bg-blue-100 dark:hover:bg-background/20"
-                  }`}
-                >
-                  Sudah Disetor
-                </TabsTrigger>
-                <TabsTrigger
-                  value="tab3"
-                  onClick={() => setTabState("belum_setor")}
-                  className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
-                    tabState !== "belum_setor" &&
-                    "hover:bg-blue-100 dark:hover:bg-background/20"
-                  }`}
-                >
-                  Belum Disetor
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-          <div className="flex gap-1.5">
-            <Button
-              variant={"default"}
-              className="bg-blue-500 hover:scale-[106%] text-white hover:bg-blue-700 active:scale-95 flex justify-center items-center gap-1.5"
-              onClick={() => {
-                setModalStatistik(true);
-              }}
-            >
-              <ChartSpline size={20} />
-              Lihat Statistik
-            </Button>
-            <Button
-              variant={"default"}
-              className="bg-gray-500 hover:scale-[106%] text-white hover:bg-gray-700 active:scale-95 flex justify-center items-center gap-1.5"
-              onClick={() => {
-                setModalLogs(true);
-              }}
-            >
-              <Activity size={20} />
-              Lihat Logs
-            </Button>
-
-            <Select
-              value={aksi} // Pastikan jika null, tetap bisa reset ke placeholder
-              onValueChange={(e) => {
-                setAksi(e);
-              }}
-            >
-              <SelectTrigger className="bg-orange-500 dark:bg-orange-700 text-white">
-                <SelectValue placeholder="Pilih Aksi" />
-              </SelectTrigger>
-              <SelectContent className="bg-red-400">
-                <SelectItem value="validasi">Validasi</SelectItem>
-                <SelectItem value="batalkan">Batalkan</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button
-              variant={"default"}
-              className="bg-green-500 hover:scale-[106%] text-white hover:bg-green-700 active:scale-95 flex justify-center items-center gap-1.5"
-              // disabled={tempDataCheck.length === 0 || isLoading}
-              onClick={() => {
-                handleAksi();
-                console.log(tempDataCheck);
-                // setLoading(true);
-                // try {
-                //   // Filter item yang id_surah-nya kosong, lalu lakukan mutatio
-                //   const dataAcc = tempDataCheck
-                //     .filter((item) => item.id_surah === "")
-                //     .map((item) => {
-                //       return mutation.mutateAsync({
-                //         nim: item.nim,
-                //         nomor_surah: item.nomor_surah,
-                //         tgl_setoran: item.tgl_setoran,
-                //       });
-                //     });
-                //   await Promise.all(dataAcc);
-                //   setTempDataCheck([]);
-                //   setSelectAll(false);
-                //   toast({
-                //     title: "✨ Sukses",
-                //     description: "Validasi Setoran Surah Berhasil",
-                //   });
-                //   setLoading(false);
-                //   await queryclient.invalidateQueries({
-                //     queryKey: ["info-mahasiswa-by-email"],
-                //   });
-                //   console.log("Sukses");
-                // } catch (error) {
-                //   toast({
-                //     title: "❌ Error",
-                //     description: "Validasi Setoran Surah Gagal",
-                //     variant: "destructive",
-                //     action: (
-                //       <ToastAction
-                //         altText="Refreh"
-                //         onClick={() => window.location.reload()}
-                //       >
-                //         Refresh
-                //       </ToastAction>
-                //     ),
-                //   });
-                //   console.log(error);
-                // }
-              }}
-            >
-              <SaveAll /> Simpan
-            </Button>
-            {/* <Button
-              variant={"default"}
-              className="bg-red-500 hover:scale-[106%] text-white hover:bg-red-700 active:scale-95 flex justify-center items-center gap-1.5"
-              onClick={async () => {
-                setLoading(true);
-                try {
-                  const dataAcc = tempDataCheck
-                    .filter((item) => item.id_surah !== "")
-                    .map((item) => {
-                      return mutationDelete.mutateAsync({
-                        id: item.id_surah,
-                      });
-                    });
-
-                  if (dataAcc.length === 0) {
-                    setLoading(false);
+        <div className="flex flex-col gap-1.5 sticky top-[64.3px] z-10 bg-background py-1.5">
+          <div className="flex justify-between">
+            <div>
+              <Tabs defaultValue="tab1" className="w-full">
+                <TabsList className="gap-1.5">
+                  <TabsTrigger
+                    value="tab1"
+                    onClick={() => setTabState("default")}
+                    className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+                      tabState !== "default" &&
+                      "hover:bg-blue-100 dark:hover:bg-background/20"
+                    }`}
+                  >
+                    Semua Riwayat
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="tab2"
+                    onClick={() => setTabState("sudah_setor")}
+                    className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+                      tabState !== "sudah_setor" &&
+                      "hover:bg-blue-100 dark:hover:bg-background/20"
+                    }`}
+                  >
+                    Sudah Disetor
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="tab3"
+                    onClick={() => setTabState("belum_setor")}
+                    className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+                      tabState !== "belum_setor" &&
+                      "hover:bg-blue-100 dark:hover:bg-background/20"
+                    }`}
+                  >
+                    Belum Disetor
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+            <div className="flex gap-1.5">
+              <Button
+                variant={"default"}
+                className="bg-blue-500 hover:scale-[106%] text-white hover:bg-blue-700 active:scale-95 flex justify-center items-center gap-1.5"
+                onClick={() => {
+                  setModalStatistik(true);
+                }}
+              >
+                <ChartSpline size={20} />
+                Lihat Statistik
+              </Button>
+              <Button
+                variant={"default"}
+                className="bg-gray-500 hover:scale-[106%] text-white hover:bg-gray-700 active:scale-95 flex justify-center items-center gap-1.5"
+                onClick={() => {
+                  setModalLogs(true);
+                }}
+              >
+                <Activity size={20} />
+                Lihat Logs
+              </Button>
+              <Button
+                variant={"outline"}
+                className="rounded-full border-2 border-solid border-red-400 hover:scale-[105%] active:scale-95"
+                disabled={tempDataCheck.length === 0 || isLoading}
+                onClick={() => {
+                  const dataBatalkan = tempDataCheck
+                    .filter((item) => item.id !== "")
+                    .map((item) => ({
+                      id: item.id,
+                      nomor_surah: item.nomor_surah,
+                      nama_surah: item.nama_surah,
+                    }));
+                  if (dataBatalkan.length === 0) {
+                    setModalBatalkanSetoran(false);
                     return toast({
-                      title: "❌ Error",
-                      description: "Tidak ada data yang bisa dihapus",
-                      variant: "destructive",
+                      title: "📢 Peringatan",
+                      description: "Surah yang anda pilih belum disetor",
+                      // className: "dark:bg-orange-400 bg-orange-300",
                     });
                   }
 
-                  await Promise.all(dataAcc);
-                  setTempDataCheck([]);
-                  setSelectAll(false);
-                  setLoading(false);
-                  await queryclient.invalidateQueries({
-                    queryKey: ["info-mahasiswa-by-email"],
-                  });
-                  toast({
-                    title: "✨ Sukses",
-                    description: "Pembatalan Setoran Surah Berhasil",
-                  });
-                } catch (error) {
-                  toast({
-                    title: "❌ Error",
-                    description: "Pembatalan Setoran Surah Gagal",
-                    variant: "destructive",
-                    action: (
-                      <ToastAction
-                        altText="Refreh"
-                        onClick={() => window.location.reload()}
-                      >
-                        Refresh
-                      </ToastAction>
-                    ),
-                  });
-                  console.log(error);
-                }
+                  setModalBatalkanSetoran(true);
+                }}
+              >
+                ❌ Batalkan
+              </Button>
+
+              <Button
+                variant={"outline"}
+                className="rounded-full border-2 border-solid border-green-400 hover:scale-[105%] active:scale-95"
+                disabled={tempDataCheck.length === 0 || isLoading}
+                onClick={() => {
+                  const dataAcc = tempDataCheck
+                    .filter((item) => item.id === "")
+                    .map((item) => ({
+                      nama_surah: item.nama_surah,
+                      nomor_surah: item.nomor_surah,
+                    }));
+
+                  if (dataAcc.length === 0) {
+                    setLoading(false);
+                    setModalValidasiSetoran(false);
+                    return toast({
+                      title: "📢 Peringatan",
+                      description: "Surah yang anda pilih sudah disetor",
+                      // className: "dark:bg-orange-400 bg-orange-300",
+                    });
+                  }
+
+                  setModalValidasiSetoran(true);
+                }}
+              >
+                <span className="font-bold text-green-500 text-lg">✓</span>{" "}
+                Validasi
+              </Button>
+            </div>
+          </div>
+
+          <div>
+            <Input
+              placeholder="Cari Surah berdasarkan nama..."
+              onChange={(e) => {
+                setSearch(e.target.value);
               }}
-              disabled={tempDataCheck.length === 0 || isLoading}
-            >
-              Hapus
-            </Button> */}
+              className="w-full"
+            />
           </div>
         </div>
 
-        <div>
-          <Input
-            placeholder="Cari Surah berdasarkan nama..."
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-            className="w-full"
-          />
-        </div>
-
-        <div>
+        <div className="">
           <Table>
-            <TableHeader>
+            <TableHeader className="">
               <TableRow className="border border-solid border-secondary bg-muted">
                 <TableHead className="">No</TableHead>
                 <TableHead>Nama Surah</TableHead>
@@ -592,7 +495,7 @@ function DetailMahasiswaSetoran() {
                   Dosen Yang Mengesahkan
                 </TableHead>
                 <TableHead className="text-center">Status</TableHead>
-                <TableHead className="">
+                <TableHead className="w-24 text-center">
                   <Checkbox
                     className="data-[state=checked]:bg-green-500"
                     checked={selectAll}
@@ -647,11 +550,11 @@ function DetailMahasiswaSetoran() {
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{surah.nama}</TableCell>
                     <TableCell className="text-center">
-                      {surah.setoran.length > 0 ? (
+                      {surah.sudah_setor ? (
                         <div>
                           <p>
                             {new Date(
-                              surah.setoran[0].tgl_setoran
+                              surah.info_setoran.tgl_setoran
                             ).toLocaleDateString("id-ID")}
                           </p>
                         </div>
@@ -661,7 +564,7 @@ function DetailMahasiswaSetoran() {
                     </TableCell>
                     <TableCell>
                       <div
-                        className={`py-2 px-6 rounded-md text-center text-white font-normal ${
+                        className={`py-2 px-4 rounded-md text-center text-white font-normal ${
                           colourLabelingCategory(surah.label)[1]
                         }`}
                       >
@@ -669,17 +572,21 @@ function DetailMahasiswaSetoran() {
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      {surah.sudah_setor ? surah.setoran[0].dosen.nama : "-"}
+                      {surah.sudah_setor
+                        ? surah.info_setoran.dosen_yang_mengesahkan.nama
+                        : "-"}
                     </TableCell>
 
                     <TableCell className="text-center">
                       {surah.sudah_setor ? (
-                        <div>sudah setor</div>
+                        <div className="bg-green-600 p-1 text-white">
+                          Sudah Setor
+                        </div>
                       ) : (
                         <div>-</div>
                       )}
                     </TableCell>
-                    <TableCell className="">
+                    <TableCell className="w-24 text-center">
                       <Checkbox
                         className="data-[state=checked]:bg-green-500"
                         checked={
@@ -692,7 +599,8 @@ function DetailMahasiswaSetoran() {
                           handleCheckBoxToTempData(
                             Boolean(checked),
                             surah.nama,
-                            surah.nomor
+                            surah.nomor,
+                            surah.info_setoran?.id || ""
                           )
                         }
                       />

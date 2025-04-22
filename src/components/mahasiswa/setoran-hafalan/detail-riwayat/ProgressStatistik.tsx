@@ -1,9 +1,6 @@
 // import { useTheme } from "@/components/themes/theme-provider";
 import { PieChart, Pie, Label, ResponsiveContainer, Cell } from "recharts";
-interface DocumentProgressChartsProps {
-  uploadedDocs: number;
-  totalDocs: number;
-}
+import {DocumentProgressChartsProps} from "@/interfaces/components/mahasiswa/setoran-hafalan/progres-statistik.interface";
 
 export default function ProgressStatistik({
   uploadedDocs,

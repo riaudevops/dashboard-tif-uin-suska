@@ -1,5 +1,12 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { Calendar, FileDigit, Printer, Rocket, User } from "lucide-react";
+import {
+  Calendar,
+  FileDigit,
+  History,
+  Printer,
+  Rocket,
+  User,
+} from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import ProgressStatistik from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/ProgressStatistik";
@@ -19,8 +26,19 @@ import { GeneratePDF } from "@/components/mahasiswa/setoran-hafalan/detail-riway
 import { Skeleton } from "@/components/ui/skeleton";
 import ModalBoxDetailSetoran from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/ModalBoxDetailSetoran";
 import { useState } from "react";
+import ModalBoxLogsMahasiswa from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/ModalBoxLogsMahasiswa";
 
 export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
+  const [openDialog, setOpenDialog] = useState(false);
+  const [dataModal, setDataModal] = useState({
+    nama_surah: "",
+    tanggal_setoran: "",
+    sudah_setoran: false as boolean,
+    dosen_mengesahkan: "",
+  });
+
+  const [modalLogs, setModalLogs] = useState(false);
+
   const { data: dataRingkasan, isLoading } = useQuery({
     queryKey: ["setoran-saya-detail"],
     queryFn: () => apiSetoran.getDataMysetoran().then((data) => data.data),
@@ -32,14 +50,6 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
     "default"
   );
 
-  const [openDialog, setOpenDialog] = useState(false);
-  const [dataModal, setDataModal] = useState({
-    nama_surah: "",
-    tanggal_setoran: "",
-    sudah_setoran: false as boolean,
-    dosen_mengesahkan: "",
-  });
-  console.log(dataModal);
   return (
     <>
       <DashboardLayout>
@@ -59,6 +69,8 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
           dosen_mengesahkan={dataModal?.dosen_mengesahkan}
           sudah_setor={dataModal.sudah_setoran}
         />
+
+        <ModalBoxLogsMahasiswa isOpen={modalLogs} setIsOpen={setModalLogs} dataLogs={dataRingkasan?.setoran.log}/>
         <div className="flex flex-col gap-3">
           {/* judul */}
           <div className="flex flex-col gap-1.5 -mb-2">
@@ -76,7 +88,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
               uploadedDocs={dataRingkasan?.setoran.info_dasar.total_sudah_setor}
               totalDocs={dataRingkasan?.setoran.info_dasar.total_wajib_setor}
             />
-            {/* <ProgressStatistik uploadedDocs={5} totalDocs={10} /> */}
+
             <div className="-ml-28 flex flex-col gap-1 h-full justify-center py-14">
               <div className="flex items-center">
                 {/* Bagian kiri */}
@@ -177,23 +189,35 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                   </TabsList>
                 </Tabs>
               </div>
-              <Button
-                variant={"default"}
-                className="bg-blue-500 hover:scale-[106%] text-white hover:bg-blue-700 active:scale-95"
-                onClick={() =>
-                  GeneratePDF({
-                    props: {
-                      nama: dataRingkasan?.info.nama,
-                      nim: dataRingkasan?.info.nim,
-                      dataSurah: dataRingkasan?.setoran.detail,
-                      dosen_pa: dataRingkasan?.info.dosen_pa.nama,
-                      nip_dosen: dataRingkasan?.info.dosen_pa.nip,
-                    },
-                  })
-                }
-              >
-                <Printer /> Cetak Kartu Setoran
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant={"default"}
+                  className="bg-gray-500 hover:scale-[106%] text-white hover:bg-gray-700 active:scale-95 flex justify-center items-center gap-1.5"
+                  onClick={() => {
+                    setModalLogs(true);
+                  }}
+                >
+                  <History size={20} />
+                  Lihat Aktivitas
+                </Button>
+                <Button
+                  variant={"default"}
+                  className="bg-blue-500 hover:scale-[106%] text-white hover:bg-blue-700 active:scale-95"
+                  onClick={() =>
+                    GeneratePDF({
+                      props: {
+                        nama: dataRingkasan?.info.nama,
+                        nim: dataRingkasan?.info.nim,
+                        dataSurah: dataRingkasan?.setoran.detail,
+                        dosen_pa: dataRingkasan?.info.dosen_pa.nama,
+                        nip_dosen: dataRingkasan?.info.dosen_pa.nip,
+                      },
+                    })
+                  }
+                >
+                  <Printer /> Cetak Kartu Setoran
+                </Button>
+              </div>
             </div>
 
             <div>
@@ -211,6 +235,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                     <TableHead className="text-center">
                       Dosen Yang Mengesahkan
                     </TableHead>
+                    <TableHead className="text-center">Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody className="border border-solid border-secondary">
@@ -248,12 +273,11 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                           : "bg-background cursor-pointer"
                       }
                       onClick={() => {
-                        console.log(surah.nama);
                         setOpenDialog(true);
                         setDataModal({
                           nama_surah: surah.nama,
                           tanggal_setoran:
-                            new Date(surah.setoran[0]?.tgl_setoran)
+                            new Date(surah.info_setoran.tgl_setoran)
                               .toLocaleDateString("id-ID", {
                                 day: "2-digit",
                                 month: "long",
@@ -262,25 +286,21 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                               .replace(/^(\d+)\s(\w+)\s(\d+)$/, "$1 $2, $3") ||
                             "-",
                           dosen_mengesahkan:
-                            surah.setoran[0]?.dosen.nama || "-",
+                            surah.info_setoran.dosen_yang_mengesahkan.nama ||
+                            "-",
                           sudah_setoran: surah.sudah_setor,
                         });
                       }}
                     >
                       <TableCell className="text-center">
-                        {surah.setoran.length > 0 && (
-                          <span className="text-green-500 text-xl font-bold">
-                            ✓{" "}
-                          </span>
-                        )}
                         {index + 1}.
                       </TableCell>
                       <TableCell>{surah.nama}</TableCell>
                       <TableCell className="text-center">
-                        {surah.setoran.length > 0 ? (
+                        {surah.sudah_setor ? (
                           <div>
                             <p>
-                              {new Date(surah.setoran[0].tgl_setoran)
+                              {new Date(surah.info_setoran.tgl_setoran)
                                 .toLocaleDateString("id-ID", {
                                   day: "2-digit",
                                   month: "long",
@@ -293,9 +313,9 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                           <p>-</p>
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">
                         <div
-                          className={`py-2 px-6 rounded-md text-center text-white font-medium ${
+                          className={`py-1 px-5 rounded-2xl text-center text-white inline-block ${
                             colourLabelingCategory(surah.label)[1]
                           }`}
                         >
@@ -303,9 +323,18 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        {surah.setoran.length > 0
-                          ? surah.setoran[0].dosen.nama
+                        {surah.sudah_setor
+                          ? surah.info_setoran.dosen_yang_mengesahkan.nama
                           : "-"}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {surah.sudah_setor ? (
+                          <div className="bg-green-600 px-1 py-1 text-white rounded-2xl text-xs">
+                            Sudah Setor
+                          </div>
+                        ) : (
+                          <div>-</div>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}

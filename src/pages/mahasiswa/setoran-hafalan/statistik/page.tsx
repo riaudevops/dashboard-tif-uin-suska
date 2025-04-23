@@ -3,21 +3,17 @@ import BarChartSetoran from "@/components/mahasiswa/setoran-hafalan/statistik/Ba
 import apiSetoran from "@/services/api/setoran-hafalan/mahasiswa.service";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import {MahasiswaSetoranHafalanStatistikPageProps} from "@/interfaces/pages/mahasiswa/setoran-hafalan/statistik/statistik.interface";
 
-interface MahasiswaSetoranHafalanStatistikPageProps {
-  label: string;
-  persentase: number;
-  total_wajib_setor: number;
-  total_belum_setor: number;
-  total_sudah_setor: number;
-}
 export default function MahasiswaSetoranHafalanStatistikPage() {
+
   const { data: dataRingkasan, isLoading } = useQuery({
     queryKey: ["setoran-saya"],
     queryFn: () =>
       apiSetoran.getDataMysetoran().then((data) => data.data.setoran.ringkasan),
     staleTime: Infinity,
   });
+  
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-1.5">
@@ -44,7 +40,7 @@ export default function MahasiswaSetoranHafalanStatistikPage() {
                 <BarChartSetoran
                   key={item.label}
                   label={item.label}
-                  persentase={item.persentase}
+                  persentase={item.persentase_progres_setor}
                   wajib_setor={item.total_wajib_setor}
                   telah_setor={item.total_sudah_setor}
                 />

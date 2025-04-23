@@ -104,6 +104,19 @@ export default {
   				'30%, 60%': {
   					'background-position': 'calc(100% + var(--shiny-width)) 0'
   				}
+  			},
+  			meteor: {
+  				'0%': {
+  					transform: 'rotate(var(--angle)) translateX(0)',
+  					opacity: '1'
+  				},
+  				'70%': {
+  					opacity: '1'
+  				},
+  				'100%': {
+  					transform: 'rotate(var(--angle)) translateX(-500px)',
+  					opacity: '0'
+  				}
   			}
   		},
   		animation: {
@@ -111,7 +124,8 @@ export default {
   			'accordion-up': 'accordion-up 0.2s ease-out',
   			grid: 'grid 15s linear infinite',
   			shine: 'shine var(--duration) infinite linear',
-  			'shiny-text': 'shiny-text 8s infinite'
+  			'shiny-text': 'shiny-text 8s infinite',
+  			meteor: 'meteor 5s linear infinite'
   		}
   	}
   },

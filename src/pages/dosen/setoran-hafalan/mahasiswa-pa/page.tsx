@@ -16,30 +16,27 @@ import colourfulProgress from "@/helpers/colourful-progress";
 import apiSetoran from "@/services/api/setoran-hafalan/dosen.service";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useEffect, useState } from "react";
 import { SquareArrowOutUpRightIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-
-interface tabListStateProps {
-  tahun: string;
-  total: string;
-}
+import { tabListStateProps } from "@/interfaces/pages/dosen/setoran-hafalan/mahasiswa-pa/mahasiswa-pa.interface";
 
 export default function DosenSetoranHafalanMahasiswaPAPage() {
   const navigate = useNavigate();
+
+  const [date, setDate] = useState(new Date());
+  
   const { data: dataMahasiswa, isLoading } = useQuery({
     queryKey: ["mahasiswa-pa-saya"],
     queryFn: () => apiSetoran.getDataMyMahasiswa().then((res) => res.data),
   });
-  const dataMahaiswa = dataMahasiswa?.info_mahasiswa_pa.daftar_mahasiswa;
-  const tabListState = dataMahasiswa?.info_mahasiswa_pa.ringkasan;
+  
   const { dataCurrent, setSearch, setTabState, tabState } = useFilteredMahasiswa(
-    dataMahaiswa,
+    dataMahasiswa?.info_mahasiswa_pa.daftar_mahasiswa,
     "semua"
   );
-  const [date, setDate] = useState(new Date());
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -78,7 +75,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
             <div className="flex flex-col text-black gap-1 py-10 w-[70%]">
               <div className="font-bold text-3xl">Halo, Dosen PA!</div>
               <div>
-                Semangat bertugas! 🎉 Tahun ini kamu membimbing {dataMahaiswa?.length}{" "}
+                Semangat bertugas! 🎉 Tahun ini kamu membimbing {dataMahasiswa?.info_mahasiswa_pa.daftar_mahasiswa.length}{" "}
                 mahasiswa PA. Berikut adalah daftar mahasiswa yang sedang kamu
                 dampingi. Ayo, mari kita mulai bekerja.
               </div>
@@ -107,7 +104,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                       >
                         Semua Angkatan
                       </TabsTrigger>
-                      {tabListState?.map((item:tabListStateProps) => (
+                      {dataMahasiswa?.info_mahasiswa_pa.ringkasan?.map((item:tabListStateProps) => (
                         <TabsTrigger
                           key={item.tahun}
                           onClick={() => setTabState(item.tahun)}
@@ -198,15 +195,15 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                       <TableCell className="text-center">
                         {item.semester}
                       </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2 items-center w-full">
+                      <TableCell className="pr-6">
+                        <div className="flex gap-1.5 items-center w-full">
                           <div className="w-[90%]">
                             <Progress
                               value={
-                                item.info_setoran.persentase_progress_setor
+                                item.info_setoran.persentase_progres_setor
                               }
                               color={colourfulProgress(
-                                item.info_setoran.persentase_progress_setor
+                                item.info_setoran.persentase_progres_setor
                               )}
                               className="h-3"
                               style={{ maxWidth: "100%" }}
@@ -214,7 +211,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                           </div>
                           <div className="w-[10%]">
                             <span className="text-center">
-                              {item.info_setoran.persentase_progress_setor}%
+                              {item.info_setoran.persentase_progres_setor}%
                             </span>
                           </div>
                         </div>
@@ -228,7 +225,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                           className="border-secondary border-2 rounded-xl text-foreground hover:scale-105 active:scale-95"
                           onClick={() =>
                             navigate(
-                              `/dosen/setoran-hafalan/mahasiswa-pa/detail?email=${item.email}`
+                              `/dosen/setoran-hafalan/mahasiswa-pa/detail?nim=${item.nim}`
                             )
                           }
                         >
@@ -237,7 +234,6 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                         </Button>
                       </TableCell>
                     </TableRow>
-                    // </Link>
                   ))}
                 </TableBody>
               </Table>

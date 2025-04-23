@@ -19,10 +19,10 @@ import ModalBoxStatistik from "@/components/dosen/setoran-hafalan/ModalBoxStatis
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFilteringSetoranSurat } from "@/hooks/use-filtering-setor-surat";
 import {
-  Activity,
   Calendar,
   ChartSpline,
   FileDigit,
+  History,
   Rocket,
   User,
 } from "lucide-react";
@@ -34,8 +34,9 @@ import ModalBoxValidasiSetoran from "@/components/dosen/setoran-hafalan/ModalBox
 import ModalBoxBatalSetoran from "@/components/dosen/setoran-hafalan/ModalBoxBatalSetoran";
 import {
   CheckedData,
-  MahasiswaSetoran,
+  MahasiswaSetoran
 } from "@/interfaces/pages/dosen/setoran-hafalan/mahasiswa-pa/detail-mahasiswa-setoran.interface";
+
 function DetailMahasiswaSetoran() {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
@@ -126,6 +127,7 @@ function DetailMahasiswaSetoran() {
       );
     }
   };
+  // console.log(dataInfoSetoran?.setoran.log);
   return (
     <DashboardLayout>
       <ModalBoxStatistik
@@ -133,7 +135,11 @@ function DetailMahasiswaSetoran() {
         dataRingkasan={dataInfoSetoran?.setoran.ringkasan}
         setIsOpen={setModalStatistik}
       />
-      <ModalBoxLogsDosen isOpen={openModalLogs} setIsOpen={setModalLogs} />
+      <ModalBoxLogsDosen
+        isOpen={openModalLogs}
+        setIsOpen={setModalLogs}
+        dataLogs={dataInfoSetoran?.setoran.log}
+      />
       <ModalBoxBatalSetoran
         openDialog={openModalBatalkanSetoran}
         buttonLoading={buttonLoading}
@@ -174,7 +180,7 @@ function DetailMahasiswaSetoran() {
                   setButtonLoading(false);
                   toast({
                     title: "✨ Sukses",
-                    description: "Membatalkan Setoran Surah Berhasil",
+                    description: data.message,
                     // className: "dark:bg-green-600 bg-green-300",
                   });
 
@@ -224,6 +230,7 @@ function DetailMahasiswaSetoran() {
                 nomor_surah: item.nomor_surah,
               }));
 
+            console.log("mulai");
             mutationAccept
               .mutateAsync({
                 nim: dataInfoSetoran?.info.nim,
@@ -231,6 +238,7 @@ function DetailMahasiswaSetoran() {
                 tgl_setoran: dateSetoran,
               })
               .then((data) => {
+                console.log("masuk api");
                 if (data.response) {
                   queryclient.invalidateQueries({
                     queryKey: ["info-mahasiswa-by-email"],
@@ -242,11 +250,26 @@ function DetailMahasiswaSetoran() {
                   setButtonLoading(false);
                   toast({
                     title: "✨ Sukses",
-                    description: "Validasi Setoran Surah Berhasil",
+                    description: data.message,
                     // className: "dark:bg-green-600 bg-green-300",
                   });
 
                   setLoading(false);
+                } else {
+                  return toast({
+                    title: "❌ Error",
+                    description: data.message,
+                    variant: "destructive",
+                    action: (
+                      <ToastAction
+                        altText="Refreh"
+                        onClick={() => window.location.reload()}
+                      >
+                        Refresh
+                      </ToastAction>
+                    ),
+                    // className: "dark:bg-blue-500 bg-blue-300"
+                  });
                 }
               });
           } catch (error) {
@@ -389,7 +412,7 @@ function DetailMahasiswaSetoran() {
                 </TabsList>
               </Tabs>
             </div>
-            <div className="flex gap-1.5">
+            <div className="flex gap-1.5 justify-center items-center">
               <Button
                 variant={"default"}
                 className="bg-blue-500 hover:scale-[106%] text-white hover:bg-blue-700 active:scale-95 flex justify-center items-center gap-1.5"
@@ -407,8 +430,8 @@ function DetailMahasiswaSetoran() {
                   setModalLogs(true);
                 }}
               >
-                <Activity size={20} />
-                Lihat Logs
+                <History size={20} />
+                Lihat Aktivitas
               </Button>
               <Button
                 variant={"outline"}

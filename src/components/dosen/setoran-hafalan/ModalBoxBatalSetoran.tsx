@@ -12,7 +12,6 @@ import { Loader2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { ModalBoxBatalkanProps } from "@/interfaces/components/dosen/setoran-hafalan/modal-box-batalkan-setoran.interface";
 
-
 function ModalBoxBatalSetoran({
   openDialog,
   buttonLoading,
@@ -25,13 +24,9 @@ function ModalBoxBatalSetoran({
   useEffect(() => {
     setIsOpen(openDialog);
   }, [openDialog]);
-  // const formatDate = (isoDate: string) => {
-  //   return new Date(isoDate).toLocaleDateString("id-ID", {
-  //     day: "2-digit",
-  //     month: "long", // Ubah format bulan menjadi nama bulan
-  //     year: "numeric",
-  //   }).replace(/^(\d+)\s(\w+)\s(\d+)$/, "$1 $2, $3");
-  // };
+  useEffect(() => {
+    setCheckBoxState(buttonLoading);
+  }, [buttonLoading]);
   return (
     <Dialog
       open={isOpen}
@@ -44,7 +39,7 @@ function ModalBoxBatalSetoran({
       <DialogContent className="">
         <DialogHeader>
           <DialogTitle className="text-center">
-             ❌ Pembatalan Setoran ❌ 
+            ❌ Pembatalan Setoran ❌ 
           </DialogTitle>
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1">
@@ -55,8 +50,8 @@ function ModalBoxBatalSetoran({
               <div className="text-start">NIM</div>
               <Input disabled className="bg-secondary" value={info?.nim} />
             </div>
-            
-            <div className="flex gap-3 hover:scale-95 active:scale-100 items-center cursor-pointer">
+
+            <div className="flex gap-3 items-center cursor-pointer">
               <Checkbox
                 id="terms"
                 checked={checkBoxState}
@@ -69,25 +64,26 @@ function ModalBoxBatalSetoran({
                 htmlFor="terms"
                 className="text-sm leading-tight cursor-pointer font-light peer-disabled:cursor-not-allowed peer-disabled:opacity-70 select-none"
               >
-               Saya yakin akan membatalkan validasi setoran surah dari mahasiswa <span className="underline italic font-medium">{info?.nama}</span>
+                Saya yakin akan membatalkan validasi setoran surah dari
+                mahasiswa{" "}
+                <span className="underline italic font-medium">
+                  {info?.nama}
+                </span>
               </label>
             </div>
           </div>
         </DialogHeader>
         <DialogFooter>
-            <Button
-              disabled={!checkBoxState}
-              className="bg-red-600 hover:bg-destructive/90 w-full text-white"
-              onClick={() => {
-                deleteSetoran();
-                setTimeout(() => {                
-                  setCheckBoxState(false);
-                }, 1000);
-              }}
-            >
-              {buttonLoading && <Loader2 className="animate-spin" />}
-              Batalkan Setoran Mahasiswa
-            </Button>
+          <Button
+            disabled={!checkBoxState}
+            className="bg-red-600 hover:bg-destructive/90 w-full text-white"
+            onClick={() => {
+              deleteSetoran();
+            }}
+          >
+            {buttonLoading && <Loader2 className="animate-spin" />}
+            Batalkan Setoran Mahasiswa
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

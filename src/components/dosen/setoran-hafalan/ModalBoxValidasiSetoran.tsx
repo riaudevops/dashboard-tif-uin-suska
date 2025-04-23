@@ -88,7 +88,7 @@ function ModalBoxValidasiSetoran({
                 }
               </div>
             </div>
-            <div className="flex gap-3 hover:scale-95 active:scale-100 items-center cursor-pointer">
+            <div className="flex gap-3 items-center cursor-pointer">
               <Checkbox
                 id="terms"
                 checked={checkBoxState}

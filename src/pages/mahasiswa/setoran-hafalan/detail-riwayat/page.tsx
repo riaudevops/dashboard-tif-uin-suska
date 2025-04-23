@@ -1,8 +1,8 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import {
-  Activity,
   Calendar,
   FileDigit,
+  History,
   Printer,
   Rocket,
   User,
@@ -70,7 +70,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
           sudah_setor={dataModal.sudah_setoran}
         />
 
-        <ModalBoxLogsMahasiswa isOpen={modalLogs} setIsOpen={setModalLogs} />
+        <ModalBoxLogsMahasiswa isOpen={modalLogs} setIsOpen={setModalLogs} dataLogs={dataRingkasan?.setoran.log}/>
         <div className="flex flex-col gap-3">
           {/* judul */}
           <div className="flex flex-col gap-1.5 -mb-2">
@@ -197,8 +197,8 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                     setModalLogs(true);
                   }}
                 >
-                  <Activity size={20} />
-                  Lihat Logs
+                  <History size={20} />
+                  Lihat Aktivitas
                 </Button>
                 <Button
                   variant={"default"}

@@ -36,12 +36,12 @@ interface CriteriaSectionProps {
 const NilaiSeminarPenguji: React.FC = () => {
   const navigate = useNavigate();
 
-  // const [studentData, setStudentData] = useState<StudentData>({
-  //   name: "Ahmad Farhan",
-  //   nim: "12345678",
-  //   title: "Implementasi Teknologi Blockchain untuk Keamanan Data Kesehatan",
-  //   major: "Informatika",
-  // });
+  const [studentData, setStudentData] = useState<StudentData>({
+    name: "Ahmad Farhan",
+    nim: "12345678",
+    title: "Implementasi Teknologi Blockchain untuk Keamanan Data Kesehatan",
+    major: "Informatika",
+  });
 
   const [scores, setScores] = useState<Scores>({
     penguasaan: null,

@@ -70,20 +70,9 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
       label: "Seminar",
       menus: [
         {
-          title: "SEM-KP",
-          url: "#",
-          isActive: true,
+          title: "Seminar KP",
+          url: "/mahasiswa/seminar-kp",
           icon: LayoutGridIcon,
-          items: [
-            {
-              title: "Pendaftaran",
-              url: "/mahasiswa/seminar/daftar-sem-kp",
-            },
-            {
-              title: "Validasi Berkas",
-              url: "/mahasiswa/seminar/validasi-berkas",
-            },
-          ],
         },
       ],
     },
@@ -96,6 +85,27 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
           title: "Mahasiswa PA",
           url: "/dosen/setoran-hafalan/mahasiswa-pa",
           icon: BackpackIcon,
+        },
+      ],
+    },
+    {
+      label: "Seminar Kerja Praktek",
+      menus: [
+        {
+          title: "Pengujian",
+          url: "#",
+          isActive: true,
+          icon: BackpackIcon,
+          items: [
+            {
+              title: "Input Nilai",
+              url: "/dosen/seminar-kp/nilai-penguji",
+            },
+            {
+              title: "Mahasiswa Diuji",
+              url: "/dosen/seminar-kp/mahasiswa-diuji",
+            },
+          ],
         },
       ],
     },

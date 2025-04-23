@@ -1,266 +1,306 @@
+import { FC, useState } from "react";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import Stepper from "@/components/mahasiswa/seminar/stepper";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Map,
-  UserRound,
-  Book,
-  FileText,
-  Upload,
-  RefreshCw,
-} from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { RefreshCw } from "lucide-react";
 import Status from "@/components/mahasiswa/seminar/status";
-import { infoPengajuanSeminar } from "@/pages/mahasiswa/seminar/validasi-berkas/page";
+import InfoCard from "../informasi-seminar";
+import DocumentCard from "../formulir-dokumen";
+import { toast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
-const DocumentCard = ({
-  title,
-  status,
-}: {
+// Type definitions
+type StepStatus = "belum" | "validasi" | "ditolak" | "diterima";
+type DocumentStatus = "default" | "validasi" | "revisi" | "diterima";
+
+interface FormActionsProps {
+  onReset?: () => void;
+  onSubmit?: () => void;
+}
+
+interface CardHeaderProps {
   title: string;
-  status: "belum" | "validasi";
-}) => {
-  if (status === "validasi") {
-    return (
-      <div className="gap-1.5">
-        <Label htmlFor="link" className="font-semibold text-xs">
-          {title}
-        </Label>
-        <Input
-          type="text"
-          id="link"
-          value="http://drive.google.com/drive/folders/file.pdf"
-          readOnly
-          className="bg-white dark:text-white cursor-text select-all dark:bg-secondary "
-        />
-      </div>
-    );
-  }
+}
 
-  return (
-    <Card className="border border-green-100 dark:border-green-800/40 bg-white dark:bg-gray-800/80 shadow-sm hover:shadow-md transition-all duration-200">
-      <CardHeader className="pb-2">
-        <div className="flex items-start gap-3">
-          <div className="mt-1 p-2 bg-green-50 dark:bg-green-900/20 rounded-md">
-            <FileText className="h-5 w-5 text-green-600 dark:text-green-400" />
-          </div>
-          <div>
-            <CardTitle className="text-base font-medium text-gray-800 dark:text-gray-100">
-              {title}
-            </CardTitle>
-            <p className="font-normal text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Silakan inputkan Link GDrive dengan file harus berformat pdf.
-            </p>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          <Label
-            htmlFor="link"
-            className="flex items-center gap-1 font-medium text-xs text-gray-700 dark:text-gray-300"
-          >
-            Link GDrive <span className="text-red-500">*</span>
-          </Label>
-          <div className="relative">
-            <Input
-              type="text"
-              id="link"
-              placeholder="https://drive.google.com/drive/folders/file.pdf"
-              className="pl-9 border-gray-200 dark:border-gray-700 focus:border-green-500 focus:ring-1 focus:ring-green-500 dark:focus:border-green-500 dark:focus:ring-green-500/50"
-            />
-            <Upload className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-const documents = [
+interface Step1Props {
+  activeStep: number;
+  status: StepStatus;
+}
+
+interface DocumentInfo {
+  title: string;
+  status: DocumentStatus;
+  notes?: string;
+  link?: string;
+}
+
+// Constants
+const DOCUMENTS = [
   "Dokumen Surat Keterangan Selesai Kerja Praktik Dari Instansi",
   "Menghadiri Seminar Kerja Praktik Mahasiswa Lain Minimal 5 Kali",
   "Laporan Tambahan Tugas Kerja Praktik",
 ];
 
-export default function Step1({
-  activeStep,
-  status,
-}: {
-  activeStep: number;
-  status: string;
-}) {
+// Component for gradient card header
+const CardHeaderGradient: FC<CardHeaderProps> = ({ title }) => (
+  <div className="bg-gradient-to-r from-emerald-600 to-green-500 px-6 py-4">
+    <CardTitle className="text-white text-lg font-medium">{title}</CardTitle>
+  </div>
+);
+
+// Form actions component for reuse
+const FormActions: FC<FormActionsProps> = ({ onReset, onSubmit }) => (
+  <div className="flex justify-end mt-5">
+    <div className="flex gap-3">
+      <Button
+        variant="outline"
+        className="border-green-200 dark:border-green-800/50 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-2"
+        onClick={onReset}
+      >
+        <RefreshCw className="h-4 w-4" />
+        Kosongkan Formulir
+      </Button>
+      <Button
+        className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-600 text-white border-none shadow-sm hover:shadow"
+        onClick={onSubmit}
+      >
+        Kirim
+      </Button>
+    </div>
+  </div>
+);
+
+// Document list component
+interface DocumentFormProps {
+  documents: DocumentInfo[];
+  showHeader?: boolean;
+  showActions?: boolean;
+  onReset?: () => void;
+  onSubmit?: () => void;
+  onLinkChange?: (index: number, value: string) => void;
+}
+
+const DocumentForm: FC<DocumentFormProps> = ({
+  documents,
+  showHeader = true,
+  showActions = true,
+  onReset,
+  onSubmit,
+  onLinkChange,
+}) => (
+  <>
+    <Card className="border dark:border-none shadow-sm rounded-lg overflow-hidden dark:bg-gray-900">
+      {showHeader && (
+        <CardHeaderGradient title="Silakan isi formulir di bawah ini untuk divalidasi!" />
+      )}
+      <CardContent className="p-5 flex flex-col gap-5">
+        {documents.map((doc, index) => (
+          <DocumentCard
+            key={index}
+            judulDokumen={doc.title}
+            status={doc.status}
+            catatan={doc.notes}
+            link={doc.link}
+            onLinkChange={(value) => onLinkChange && onLinkChange(index, value)}
+          />
+        ))}
+      </CardContent>
+    </Card>
+    {showActions && <FormActions onReset={onReset} onSubmit={onSubmit} />}
+  </>
+);
+
+// Main component
+const Step1: FC<Step1Props> = ({ activeStep, status }) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // Add state to track form data
+  const [formDocuments, setFormDocuments] = useState<DocumentInfo[]>(() =>
+    getInitialDocumentConfig(status)
+  );
+
+  const informasiSeminarFields = [
+    "lokasi",
+    "lamaKerjaPraktek",
+    "dosenPembimbing",
+    "kontakPembimbing",
+    "judul",
+  ];
+
+  // Handler for link changes
+  const handleLinkChange = (index: number, value: string) => {
+    const updatedDocs = [...formDocuments];
+    updatedDocs[index] = { ...updatedDocs[index], link: value };
+    setFormDocuments(updatedDocs);
+  };
+
+  const handleReset = () => {
+    // Reset the form data by clearing all links
+    const resetDocs = formDocuments.map((doc) => ({
+      ...doc,
+      link: "", // Clear the link value
+    }));
+    setFormDocuments(resetDocs);
+
+    // Show toast notification for reset confirmation
+    toast({
+      title: "✅ Berhasil",
+      description: "Formulir berhasil dikosongkan",
+      duration: 3000,
+    });
+
+    console.log("Form reset");
+  };
+
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleConfirm = () => {
+    setIsDialogOpen(false);
+    // Show success toast
+    toast({
+      title: "👌 Berhasil",
+      description: "Dokumen berhasil dikirim untuk divalidasi",
+      duration: 3000,
+    });
+    console.log("Form submitted with documents:", formDocuments);
+  };
+
+  // Get initial document configuration based on status
+  function getInitialDocumentConfig(currentStatus: StepStatus): DocumentInfo[] {
+    switch (currentStatus) {
+      case "belum":
+        return DOCUMENTS.map((title) => ({
+          title,
+          status: "default",
+          link: "", // Initialize with empty link
+        }));
+
+      case "validasi":
+        return DOCUMENTS.map((title) => ({
+          title,
+          status: "validasi",
+          link: "", // Initialize with empty link
+        }));
+
+      case "ditolak":
+        return [
+          {
+            title: DOCUMENTS[0],
+            status: "diterima",
+            link: "",
+          },
+          {
+            title: DOCUMENTS[1],
+            status: "diterima",
+            link: "",
+          },
+          {
+            title: DOCUMENTS[2],
+            status: "revisi",
+            notes:
+              "Format laporan tidak sesuai dengan template yang diberikan. Mohon untuk menyusun ulang sesuai dengan panduan.",
+            link: "",
+          },
+        ];
+
+      default:
+        return [];
+    }
+  }
+
+  // Render status notification if needed
+  const renderStatusNotification = () => {
+    if (status === "belum") {
+      return (
+        <Status
+          status="belum"
+          title="Anda Belum Mengupload Dokumen Form Pendaftaran Diseminasi KP"
+          subtitle="Silakan lengkapi dokumen terlebih dahulu."
+        />
+      );
+    }
+
+    if (status === "validasi") {
+      return (
+        <Status
+          status="validasi"
+          title="Dokumen Anda Sedang dalam Proses Validasi"
+        />
+      );
+    }
+
+    if (status === "ditolak") {
+      return (
+        <Status
+          status="ditolak"
+          title="Validasi Dokumen Anda Ditolak"
+          subtitle="Silakan isi kembali Form sesuai perintah dengan benar!"
+        />
+      );
+    }
+
+    return null;
+  };
+
   return (
     <DashboardLayout>
       <h1 className="text-2xl font-bold mb-8">
         Validasi Kelengkapan Berkas Seminar Kerja Praktik
       </h1>
+
       <Stepper activeStep={activeStep} />
 
-      {status === "belum" && (
-        <>
-          <Status
-            status="belum"
-            title="Anda Belum Mengupload Dokumen Form Pendaftaran Diseminasi KP"
-            subtitle="Silakan lengkapi dokumen terlebih dahulu."
-          />
-          <Card className="border border-green-200 dark:border-green-800/50 shadow-sm rounded-lg overflow-hidden bg-gradient-to-b from-green-50/70 to-white dark:from-green-950/20 dark:to-gray-900/95">
-            <CardHeader className="px-5 py-4 mb-2 bg-gradient-to-r from-green-200/80 to-green-100/60 dark:from-green-800/30 dark:to-green-900/20 border-b border-green-200 dark:border-green-800/30">
-              <div className="flex items-center gap-3">
-                <div className="w-1.5 h-6 bg-green-500 dark:bg-green-400 rounded-full"></div>
-                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Silakan isi formulir di bawah ini untuk divalidasi!
-                </CardTitle>
-              </div>
-            </CardHeader>
+      {renderStatusNotification()}
 
-            <CardContent className="p-5 flex flex-col gap-5">
-              {documents.map((doc, index) => (
-                <DocumentCard key={index} title={doc} status="belum" />
-              ))}
-            </CardContent>
-          </Card>
+      <InfoCard displayItems={informasiSeminarFields} />
 
-          <div className="flex justify-end mt-5">
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                className="border-green-200 dark:border-green-800/50 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-2"
-              >
-                <RefreshCw className="h-4 w-4" />
-                Kosongkan Formulir
-              </Button>
-              <Button className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-600 text-white border-none shadow-sm hover:shadow">
-                Kirim
-              </Button>
-            </div>
-          </div>
-        </>
-      )}
+      <div className={`${status === "ditolak" ? "flex flex-col gap-4" : ""}`}>
+        <DocumentForm
+          documents={formDocuments}
+          showHeader={status !== "validasi"}
+          showActions={status !== "validasi"}
+          onReset={handleReset}
+          onSubmit={handleOpenDialog}
+          onLinkChange={handleLinkChange}
+        />
+      </div>
 
-      {status === "validasi" && (
-        <>
-          <Status
-            status="validasi"
-            title="Dokumen Pendaftaran Diseminasi Anda dalam proses validasi"
-          />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
-            <div className="space-y-2">
-              <Card className="overflow-hidden rounded-xl border border-emerald-100 dark:border-emerald-900/30">
-                <div className="bg-gradient-to-r from-emerald-600 to-green-500 px-6 py-4">
-                  <CardTitle className="text-white text-lg font-medium">
-                    Informasi Pengajuan Diseminasi Kerja Praktik
-                  </CardTitle>
-                </div>
-
-                <CardContent className="p-0">
-                  <div className="p-6 space-y-5">
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 mt-1">
-                        <Map className="size-5 text-emerald-500" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                          Lokasi Kerja Praktik
-                        </p>
-                        <p className="text-gray-700 dark:text-gray-300 mt-1">
-                          {infoPengajuanSeminar.lokasi}
-                        </p>
-                      </div>
-                    </div>
-                    <Separator />
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 mt-1">
-                        <UserRound className="size-5 text-emerald-500" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                          Dosen Pembimbing
-                        </p>
-                        <p className="text-gray-700 dark:text-gray-300 mt-1">
-                          {infoPengajuanSeminar.dosenPembimbing}
-                        </p>
-                      </div>
-                    </div>
-                    <Separator />
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 mt-1">
-                        <Book className="size-5 text-emerald-500" />
-                      </div>
-                      <div className="w-full">
-                        <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400 break-words">
-                          Judul Laporan
-                        </p>
-                        <p className="text-gray-700 dark:text-gray-300 mt-1 break-words pr-2">
-                          {infoPengajuanSeminar.judul}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            <Card className="overflow-hidden rounded-xl shadow-md border border-emerald-100 dark:border-emerald-900/30">
-              <div className="bg-gradient-to-r from-emerald-600 to-green-500 px-6 py-4">
-                <CardTitle className="text-white text-lg font-medium">
-                  Dokumen Pendaftaran Seminar Kerja Praktik
-                </CardTitle>
-              </div>
-
-              <CardContent className="p-6 space-y-4">
-                {documents.map((doc, index) => (
-                  <DocumentCard key={index} title={doc} status="validasi" />
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-        </>
-      )}
-
-      {status === "ditolak" && (
-        <div className="flex flex-col gap-4">
-          <Status
-            status="ditolak"
-            title=" Dokumen Pendaftaran Diseminasi Anda Ditolak"
-            subtitle="Silakan Isi kembali
-            Form sesuai perintah!"
-            catatan="Pada Surat Balasan, Nama Anda Salah"
-          />
-          <Card className="border border-green-200 dark:border-green-800/50 shadow-sm rounded-lg overflow-hidden bg-gradient-to-b from-green-50/70 to-white dark:from-green-950/20 dark:to-gray-900/95">
-            <CardHeader className="px-5 py-4 mb-2 bg-gradient-to-r from-green-200/80 to-green-100/60 dark:from-green-800/30 dark:to-green-900/20 border-b border-green-200 dark:border-green-800/30">
-              <div className="flex items-center gap-3">
-                <div className="w-1.5 h-6 bg-green-500 dark:bg-green-400 rounded-full"></div>
-                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Silakan isi formulir di bawah ini untuk divalidasi!
-                </CardTitle>
-              </div>
-            </CardHeader>
-
-            <CardContent className="p-5 flex flex-col gap-5">
-              {documents.map((doc, index) => (
-                <DocumentCard key={index} title={doc} status="belum" />
-              ))}
-            </CardContent>
-          </Card>
-
-          <div className="flex justify-end mt-5">
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                className="border-green-200 dark:border-green-800/50 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-2"
-              >
-                <RefreshCw className="h-4 w-4" />
-                Kosongkan Formulir
-              </Button>
-              <Button className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-600 text-white border-none shadow-sm hover:shadow">
-                Kirim
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Confirmation Dialog */}
+      <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Konfirmasi Pengiriman</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin mengirim dokumen ini untuk divalidasi?
+              Dokumen yang telah dikirim tidak dapat diubah sampai proses
+              validasi selesai.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirm}
+              className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-600 text-white"
+            >
+              Yakin
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
-}
+};
+
+export default Step1;

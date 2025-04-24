@@ -20,7 +20,6 @@ import {  useNavigate } from "react-router-dom";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useEffect, useState } from "react";
 import { SquareArrowOutUpRightIcon } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { tabListStateProps } from "@/interfaces/pages/dosen/setoran-hafalan/mahasiswa-pa/mahasiswa-pa.interface";
 import TableLoadingSkeleton from "@/components/globals/table-loading-skeleton";
 

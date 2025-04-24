@@ -298,7 +298,7 @@ function DetailMahasiswaSetoran() {
 
 			<div className="flex flex-col gap-4">
 				{/* judul */}
-				<div className="flex flex-col gap-1.5 -mb-2">
+				<div className="flex flex-col gap-1.5 -mb-2.5">
 					<div className="text-lg md:text-3xl font-bold select-none -ml-1">
 						✨ Detail Riwayat Setoran Hafalan Mahasiswa PA-mu...
 					</div>
@@ -316,7 +316,7 @@ function DetailMahasiswaSetoran() {
 							dataInfoSetoran?.setoran.info_dasar.total_wajib_setor || 1
 						}
 					/>
-					<div className="-ml-36 flex flex-col gap-1 h-full justify-center py-14">
+					<div className="md:-ml-36 ml-3 flex flex-col gap-1 h-full justify-center py-9 md:py-14">
 						<div className="flex items-center">
 							{/* Bagian kiri */}
 							<div className="flex items-center gap-1 min-w-40">
@@ -379,7 +379,7 @@ function DetailMahasiswaSetoran() {
 				</div>
 
 				<div className="flex flex-col gap-1.5 sticky top-[64.3px] z-10 bg-background py-1.5 -mb-4 pb-3">
-					<div className="flex justify-between">
+					<div className="flex justify-between gap-4">
 						<div>
 							<Tabs defaultValue="tab1" className="w-full">
 								<TabsList className="gap-1.5">
@@ -425,7 +425,7 @@ function DetailMahasiswaSetoran() {
 								}}
 							>
 								<ChartSpline size={20} />
-								Lihat Statistik
+								<span className="hidden md:block">Lihat Statistik</span>
 							</Button>
 							<Button
 								variant={"default"}
@@ -435,7 +435,7 @@ function DetailMahasiswaSetoran() {
 								}}
 							>
 								<History size={20} />
-								Lihat Aktivitas
+								<span className="hidden md:block">Lihat Aktivitas</span>
 							</Button>
 							<div className="w-[2px] rounded-full h-full mx-1 py-0.5">
 								<div className="w-full h-full bg-foreground/20" />

@@ -54,7 +54,7 @@ function ModalBoxLogsMahasiswa({
             </div>
           </DialogTitle>
           {dataLogs?.length === 0 && (
-            <div className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-10 gap-2">
+            <div className="w-full bg-muted/10 rounded-xl h-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-10 gap-2">
               <div className="bg-secondary rounded-full backdrop-blur-sm">
                 <LucideBadgeHelp
                   className="h-20 w-20 text-chart-3 drop-shadow-md"

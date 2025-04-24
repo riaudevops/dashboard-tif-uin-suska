@@ -113,7 +113,7 @@ function ModalBoxValidasiSetoran({
             disabled={!checkBoxState}
             className="bg-green-500 hover:bg-green-400 w-full text-white"
             onClick={() => {
-              validasiSetoran(dateSetoran);
+              !buttonLoading && validasiSetoran(dateSetoran);
             }}
           >
             {buttonLoading && <Loader2 className="animate-spin" />}

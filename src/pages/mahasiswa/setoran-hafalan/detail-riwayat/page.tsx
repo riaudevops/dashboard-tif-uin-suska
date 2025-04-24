@@ -78,7 +78,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 				/>
 				<div className="flex flex-col gap-3">
 					{/* judul */}
-					<div className="flex flex-col gap-1.5 -mb-2">
+					<div className="flex flex-col gap-1.5 -mb-2.5">
 						<div className="text-lg md:text-3xl font-bold select-none -ml-1">
 							✨ Detail Riwayat Setoran Hafalanmu...
 						</div>
@@ -94,7 +94,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 							totalDocs={dataRingkasan?.setoran.info_dasar.total_wajib_setor || 1}
 						/>
 
-						<div className="-ml-36 flex flex-col gap-1 h-full justify-center py-14">
+						<div className="md:-ml-36 ml-3 flex flex-col gap-1 h-full justify-center py-9 md:py-14">
 							<div className="flex items-center">
 								{/* Bagian kiri */}
 								<div className="flex items-center gap-1 min-w-40">
@@ -156,8 +156,8 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 						</div>
 					</div>
 					{/* table and button  */}
-					<div className="flex flex-col gap-2.5">
-						<div className="flex justify-between">
+					<div className="flex flex-col gap-3">
+						<div className="flex justify-between gap-4">
 							<div>
 								<Tabs defaultValue="tab1" className="w-full">
 									<TabsList className="gap-1.5">
@@ -203,8 +203,8 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 									}}
 								>
 									<History size={20} />
-									Lihat Aktivitas
-								</Button>
+                  <span className="hidden md:block">Lihat Aktivitas</span>
+                </Button>
 								<Button
 									variant={"default"}
 									className="bg-blue-500 text-white hover:bg-blue-700 active:scale-95"
@@ -220,7 +220,8 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 										})
 									}
 								>
-									<Printer /> Cetak Kartu Setoran
+									<Printer /> 
+                  <span className="hidden md:block">Cetak Kartu Setoran</span>
 								</Button>
 							</div>
 						</div>

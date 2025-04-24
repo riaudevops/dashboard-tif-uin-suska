@@ -20,8 +20,8 @@ import {  useNavigate } from "react-router-dom";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useEffect, useState } from "react";
 import { SquareArrowOutUpRightIcon } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { tabListStateProps } from "@/interfaces/pages/dosen/setoran-hafalan/mahasiswa-pa/mahasiswa-pa.interface";
+import TableLoadingSkeleton from "@/components/globals/table-loading-skeleton";
 
 export default function DosenSetoranHafalanMahasiswaPAPage() {
   const navigate = useNavigate();
@@ -89,7 +89,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
           </div>
 
           <div className="flex flex-col gap-3 w-full">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               <div className="w-full select-none">
                 <Tabs defaultValue="tab1" className="w-full h-full">
                   <ScrollArea
@@ -165,20 +165,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                     </TableRow>
                   )}
                   {isLoading && (
-                    <TableRow>
-                      <TableCell colSpan={7}>
-                        <div className="flex flex-col gap-2">
-                          <Skeleton className="h-8 w-full" />
-                          <Skeleton className="h-8 w-full" />
-                          <Skeleton className="h-8 w-full" />
-                          <Skeleton className="h-8 w-full" />
-                          <Skeleton className="h-8 w-full" />
-                          <Skeleton className="h-8 w-full" />
-                          <Skeleton className="h-8 w-full" />
-                          <Skeleton className="h-8 w-full" />
-                        </div>
-                      </TableCell>
-                    </TableRow>
+                    <TableLoadingSkeleton columns={7} rows={7} />
                   )}
                   {dataCurrent?.map((item, index) => (
                     <TableRow
@@ -225,7 +212,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                           className="border-secondary border-2 rounded-xl text-foreground hover:scale-105 active:scale-95"
                           onClick={() =>
                             navigate(
-                              `/dosen/setoran-hafalan/mahasiswa-pa/detail?nim=${item.nim}`
+                              `/dosen/setoran-hafalan/mahasiswa-pa/${item.nim}`
                             )
                           }
                         >

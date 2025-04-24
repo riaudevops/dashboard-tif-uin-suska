@@ -78,7 +78,7 @@ function ModalBoxBatalSetoran({
             disabled={!checkBoxState}
             className="bg-red-600 hover:bg-destructive/90 w-full text-white"
             onClick={() => {
-              deleteSetoran();
+              !buttonLoading && deleteSetoran();
             }}
           >
             {buttonLoading && <Loader2 className="animate-spin" />}

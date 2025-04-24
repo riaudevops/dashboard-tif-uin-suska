@@ -33,6 +33,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
       }
       setFileName(selectedFile.name);
       setFile(selectedFile);
+      console.log(file)
       if (onChange) {
         onChange(selectedFile);
       }

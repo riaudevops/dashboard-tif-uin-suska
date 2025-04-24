@@ -50,11 +50,11 @@ function ModalBoxLogsDosen({
         <DialogHeader>
           <DialogTitle className="text-center py-3">
             <div className="flex flex-col items-center justify-center gap-1">
-              <div>Aktivitas Setoran Mahasiswa 🔗</div>
+              <div>Riwayat Aktivitas Setoran Mahasiswa 🔗</div>
             </div>
           </DialogTitle>
           {dataLogs?.length === 0 && (
-            <div className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-10 gap-2">
+            <div className="w-full bg-muted/10 rounded-xl h-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-10 gap-2">
               <div className="bg-secondary rounded-full backdrop-blur-sm">
                 <LucideBadgeHelp
                   className="h-20 w-20 text-chart-3 drop-shadow-md"
@@ -82,7 +82,7 @@ function ModalBoxLogsDosen({
                     key={item.id}
                     className="px-3 py-4 rounded-lg bg-gradient-to-r from-secondary to-green-500/50"
                   >
-                    <div className="flex gap-1.5">
+                    <div className="flex gap-3">
                       <div className="flex items-center">
                         <CircleCheckBig
                           className="stroke-green-500"
@@ -106,15 +106,20 @@ function ModalBoxLogsDosen({
                             {formatDateTime(item.timestamp)}
                           </div>
                           <div className="text-xs dark:text-gray-400 text-gray-600">
-                            {extractIP(item.ip)}
+                            IPv4: {extractIP(item.ip)}
                           </div>
                         </div>
+
+                        <div className="mt-1.5 text-xs text-foreground/70">
+                          {item.user_agent}
+                        </div>
                       </div>
+
                     </div>
                   </div>
                 ) : (
                   <div className="px-3 py-4 rounded-lg bg-gradient-to-r from-red-500/50 to-secondary">
-                    <div className="flex gap-1.5 justify-start">
+                    <div className="flex gap-3 justify-start">
                       <div>
                         <CircleX className="stroke-red-500" size={50} />
                       </div>
@@ -133,8 +138,11 @@ function ModalBoxLogsDosen({
                             {formatDateTime(item.timestamp)}
                           </div>
                           <div className="text-xs dark:text-gray-400 text-gray-600">
-                          {extractIP(item.ip)}
+                          IPv4: {extractIP(item.ip)}
                           </div>
+                        </div>
+                        <div className="mt-1.5 text-xs text-foreground/70">
+                          {item.user_agent}
                         </div>
                       </div>
                     </div>

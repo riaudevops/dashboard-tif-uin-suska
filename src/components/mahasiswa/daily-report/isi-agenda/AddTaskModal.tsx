@@ -24,6 +24,8 @@ const TambahAgendaModal = ({ isOpen, onClose }: TambahAgendaModalProps) => {
     }
   };
 
+  console.log(handleOutsideClick)
+
   // Add state for handling modal animation stages
   const [showContent, setShowContent] = useState(false);
 

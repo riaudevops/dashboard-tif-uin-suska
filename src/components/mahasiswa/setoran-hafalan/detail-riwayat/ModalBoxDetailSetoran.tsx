@@ -12,9 +12,7 @@ function ModalBoxDetailSetoran({
   tanggal_setoran,
   dosen_mengesahkan,
   sudah_setor,
-}: ModalBoxDetailSetoranProps) {
-  console.log(nama_surah);
-  return (
+}: ModalBoxDetailSetoranProps) {  return (
     <Dialog
       open={openDialog}
       onOpenChange={(open) => {

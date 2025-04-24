@@ -225,7 +225,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                           className="border-secondary border-2 rounded-xl text-foreground hover:scale-105 active:scale-95"
                           onClick={() =>
                             navigate(
-                              `/dosen/setoran-hafalan/mahasiswa-pa/detail?nim=${item.nim}`
+                              `/dosen/setoran-hafalan/mahasiswa-pa/${item.nim}`
                             )
                           }
                         >

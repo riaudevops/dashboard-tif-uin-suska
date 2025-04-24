@@ -37,6 +37,7 @@ import {
 	MahasiswaSetoran,
 } from "@/interfaces/pages/dosen/setoran-hafalan/mahasiswa-pa/detail-mahasiswa-setoran.interface";
 import { useParams } from "react-router-dom";
+import TableLoadingSkeleton from "@/components/globals/table-loading-skeleton";
 
 function DetailMahasiswaSetoran() {
 	const { nim } = useParams<{ nim: string }>();
@@ -308,8 +309,12 @@ function DetailMahasiswaSetoran() {
 				</div>
 				<div className="flex gap-2 -mb-5">
 					<ProgressStatistik
-						uploadedDocs={dataInfoSetoran?.setoran.info_dasar.total_sudah_setor}
-						totalDocs={dataInfoSetoran?.setoran.info_dasar.total_wajib_setor}
+						uploadedDocs={
+							dataInfoSetoran?.setoran.info_dasar.total_sudah_setor || 0
+						}
+						totalDocs={
+							dataInfoSetoran?.setoran.info_dasar.total_wajib_setor || 1
+						}
 					/>
 					<div className="-ml-36 flex flex-col gap-1 h-full justify-center py-14">
 						<div className="flex items-center">
@@ -534,36 +539,19 @@ function DetailMahasiswaSetoran() {
 							{dataCurrent?.length === 0 && (
 								<TableRow>
 									<TableCell colSpan={6} className="text-center">
-										{
-											search ? "❌ Maaf, surah yang anda cari tidak ditemukan nih!" 
-												: tabState === "sudah_setor"
-												? "❌ Mahasiswa ini Belum Menyetor Satu pun Hafalan Surah"
-												: "✔️ Mahasiswa ini Sudah Menyetor semua Hafalan Surah"
-										}
+										{search
+											? "❌ Maaf, surah yang anda cari tidak ditemukan nih!"
+											: tabState === "sudah_setor"
+											? "❌ Mahasiswa ini Belum Menyetor Satu pun Hafalan Surah"
+											: "✔️ Mahasiswa ini Sudah Menyetor semua Hafalan Surah"}
 									</TableCell>
 								</TableRow>
 							)}
 							{isLoading && (
-								<TableRow>
-									<TableCell colSpan={6}>
-										<div className="flex flex-col gap-2">
-											<Skeleton className="h-8 w-full" />
-											<Skeleton className="h-8 w-[90%]" />
-											<Skeleton className="h-8 w-[60%]" />
-										</div>
-									</TableCell>
-								</TableRow>
+								<TableLoadingSkeleton columns={7} rows={7} />
 							)}
 							{loading ? (
-								<TableRow>
-									<TableCell colSpan={6}>
-										<div className="flex flex-col gap-2">
-											<Skeleton className="h-8 w-full" />
-											<Skeleton className="h-8 w-[90%]" />
-											<Skeleton className="h-8 w-[60%]" />
-										</div>
-									</TableCell>
-								</TableRow>
+								<TableLoadingSkeleton columns={7} rows={7} />
 							) : (
 								dataCurrent?.map((surah: MahasiswaSetoran, index: number) => (
 									<TableRow

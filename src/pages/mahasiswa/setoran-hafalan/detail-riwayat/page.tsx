@@ -192,7 +192,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
               <div className="flex gap-2">
                 <Button
                   variant={"default"}
-                  className="bg-orange-500 hover:scale-[106%] text-white hover:bg-orange-600 active:scale-95 flex justify-center items-center gap-1.5"
+                  className="bg-orange-500 text-white hover:bg-orange-600 active:scale-95 flex justify-center items-center gap-1.5"
                   onClick={() => {
                     setModalLogs(true);
                   }}
@@ -202,7 +202,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                 </Button>
                 <Button
                   variant={"default"}
-                  className="bg-blue-500 hover:scale-[106%] text-white hover:bg-blue-700 active:scale-95"
+                  className="bg-blue-500 text-white hover:bg-blue-700 active:scale-95"
                   onClick={() =>
                     GeneratePDF({
                       props: {

@@ -58,5 +58,5 @@ export function useFilteringSetoranSurat(
     }
   }, [search, dataIntial, tabState]);
 
-  return { dataCurrent, setTabState, tabState, setSearch };
+  return { dataCurrent, setTabState, tabState, setSearch, search };
 }

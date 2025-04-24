@@ -192,7 +192,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
               <div className="flex gap-2">
                 <Button
                   variant={"default"}
-                  className="bg-gray-500 hover:scale-[106%] text-white hover:bg-gray-700 active:scale-95 flex justify-center items-center gap-1.5"
+                  className="bg-orange-500 hover:scale-[106%] text-white hover:bg-orange-600 active:scale-95 flex justify-center items-center gap-1.5"
                   onClick={() => {
                     setModalLogs(true);
                   }}
@@ -273,11 +273,10 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                           : "bg-background cursor-pointer"
                       }
                       onClick={() => {
-                        setOpenDialog(true);
                         setDataModal({
                           nama_surah: surah.nama,
                           tanggal_setoran:
-                            new Date(surah.info_setoran.tgl_setoran)
+                            new Date(surah.info_setoran?.tgl_setoran)
                               .toLocaleDateString("id-ID", {
                                 day: "2-digit",
                                 month: "long",
@@ -286,10 +285,11 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                               .replace(/^(\d+)\s(\w+)\s(\d+)$/, "$1 $2, $3") ||
                             "-",
                           dosen_mengesahkan:
-                            surah.info_setoran.dosen_yang_mengesahkan.nama ||
+                            surah.info_setoran?.dosen_yang_mengesahkan.nama ||
                             "-",
                           sudah_setoran: surah.sudah_setor,
                         });
+                        setOpenDialog(true);
                       }}
                     >
                       <TableCell className="text-center">
@@ -315,7 +315,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                       </TableCell>
                       <TableCell className="text-center">
                         <div
-                          className={`py-1 px-5 rounded-2xl text-center text-white inline-block ${
+                          className={`py-1 px-3 rounded-2xl text-center text-white inline-block ${
                             colourLabelingCategory(surah.label)[1]
                           }`}
                         >
@@ -329,7 +329,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                       </TableCell>
                       <TableCell className="text-center">
                         {surah.sudah_setor ? (
-                          <div className="bg-green-600 px-1 py-1 text-white rounded-2xl text-xs">
+                          <div className="bg-green-600 px-3 py-1 text-white rounded-2xl inline-block">
                             Sudah Setor
                           </div>
                         ) : (

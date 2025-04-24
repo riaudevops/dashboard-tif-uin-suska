@@ -49,7 +49,7 @@ function DetailMahasiswaSetoran() {
 			apiSetoran.getDataMahasiswaByEmail(nim!).then((res) => res.data),
 	});
 
-	const { dataCurrent, setTabState, tabState, setSearch } =
+	const { dataCurrent, setTabState, tabState, setSearch, search } =
 		useFilteringSetoranSurat(dataInfoSetoran?.setoran.detail, "default");
 
 	const mutationAccept = useMutation({
@@ -534,9 +534,12 @@ function DetailMahasiswaSetoran() {
 							{dataCurrent?.length === 0 && (
 								<TableRow>
 									<TableCell colSpan={6} className="text-center">
-										{tabState === "sudah_setor"
-											? "❌ Mahasiswa ini Belum Menyetor Satu pun Hafalan Surah"
-											: "✔️ Mahasiswa ini Sudah Menyetor semua Hafalan Surah"}
+										{
+											search ? "❌ Maaf, surah yang anda cari tidak ditemukan nih!" 
+												: tabState === "sudah_setor"
+												? "❌ Mahasiswa ini Belum Menyetor Satu pun Hafalan Surah"
+												: "✔️ Mahasiswa ini Sudah Menyetor semua Hafalan Surah"
+										}
 									</TableCell>
 								</TableRow>
 							)}

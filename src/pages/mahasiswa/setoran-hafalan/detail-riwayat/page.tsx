@@ -89,7 +89,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
               totalDocs={dataRingkasan?.setoran.info_dasar.total_wajib_setor}
             />
 
-            <div className="-ml-28 flex flex-col gap-1 h-full justify-center py-14">
+            <div className="-ml-36 flex flex-col gap-1 h-full justify-center py-14">
               <div className="flex items-center">
                 {/* Bagian kiri */}
                 <div className="flex items-center gap-1 min-w-40">

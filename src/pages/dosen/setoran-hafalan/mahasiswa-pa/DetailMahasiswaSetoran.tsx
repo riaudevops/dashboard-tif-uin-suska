@@ -306,7 +306,7 @@ function DetailMahasiswaSetoran() {
 						persyaratan akademik di UIN Suska Riau... 💙❤️
 					</div>
 				</div>
-				<div className="flex gap-2">
+				<div className="flex gap-2 -mb-5">
 					<ProgressStatistik
 						uploadedDocs={dataInfoSetoran?.setoran.info_dasar.total_sudah_setor}
 						totalDocs={dataInfoSetoran?.setoran.info_dasar.total_wajib_setor}
@@ -507,7 +507,7 @@ function DetailMahasiswaSetoran() {
 					<Table>
 						<TableHeader className="sticky top-0">
 							<TableRow className="border border-solid border-secondary bg-muted">
-								<TableHead className="">No</TableHead>
+								<TableHead className="text-center">No</TableHead>
 								<TableHead>Nama Surah</TableHead>
 								<TableHead className="text-center">
 									Tanggal Setoran Hafalan
@@ -574,7 +574,7 @@ function DetailMahasiswaSetoran() {
 												: "bg-background hover:bg-background"
 										}
 									>
-										<TableCell>{index + 1}</TableCell>
+										<TableCell className="text-center">{index + 1}.</TableCell>
 										<TableCell>{surah.nama}</TableCell>
 										<TableCell className="text-center">
 											{surah.sudah_setor ? (

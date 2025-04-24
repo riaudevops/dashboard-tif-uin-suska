@@ -83,7 +83,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
             </div>
           </div>
           {/* statistik && user info */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 -mb-2">
             <ProgressStatistik
               uploadedDocs={dataRingkasan?.setoran.info_dasar.total_sudah_setor}
               totalDocs={dataRingkasan?.setoran.info_dasar.total_wajib_setor}

@@ -18,6 +18,7 @@ import { infoPengajuanSeminar } from "@/pages/mahasiswa/seminar/validasi-berkas/
 import FileUpload from "../fileUpload";
 
 function handleFileChange(file: File | null): void {
+  console.log(file)
   throw new Error("Function not implemented.");
 }
 

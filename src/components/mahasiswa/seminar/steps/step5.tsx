@@ -21,6 +21,7 @@ export default function Step5({
   status: string;
 }) {
   function handleFileChange(file: File | null): void {
+    console.log(file)
     throw new Error("Function not implemented.");
   }
 

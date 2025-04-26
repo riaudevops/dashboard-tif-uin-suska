@@ -259,7 +259,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 									)}
 									{dataCurrent?.map((surah, index) => (
 										<TableRow
-											key={surah.nomor}
+											key={surah.id}
 											className={
 												index % 2 !== 0
 													? "bg-secondary cursor-pointer"

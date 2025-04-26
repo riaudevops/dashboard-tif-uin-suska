@@ -78,7 +78,7 @@ function DetailMahasiswaSetoran() {
 			const allData =
 				dataCurrent?.map((surah) => ({
 					nama_surah: surah.nama,
-					nomor_surah: surah.nomor,
+					id_komponen_setoran: surah.id,
 					id: surah.info_setoran?.id || "",
 				})) || [];
 
@@ -104,7 +104,7 @@ function DetailMahasiswaSetoran() {
 	const handleCheckBoxToTempData = (
 		checked: boolean,
 		nama_surah: string,
-		nomor_surah: number,
+		id_komponen_setoran: string,
 		id?: string
 	) => {
 		if (checked) {
@@ -113,7 +113,7 @@ function DetailMahasiswaSetoran() {
 				...prevData,
 				{
 					nama_surah: nama_surah,
-					nomor_surah: nomor_surah,
+					id_komponen_setoran: id_komponen_setoran,
 					id: id,
 				},
 			]);
@@ -122,7 +122,7 @@ function DetailMahasiswaSetoran() {
 			setTempDataCheck((prevData) =>
 				prevData.filter(
 					(item) =>
-						item.nama_surah !== nama_surah || item.nomor_surah !== nomor_surah
+						item.nama_surah !== nama_surah || item.id_komponen_setoran !== id_komponen_setoran
 				)
 			);
 		}
@@ -150,7 +150,7 @@ function DetailMahasiswaSetoran() {
 							.filter((item) => item.id !== "")
 							.map((item) => ({
 								id: item.id,
-								nomor_surah: item.nomor_surah,
+								id_komponen_setoran: item.id_komponen_setoran,
 								nama_surah: item.nama_surah,
 							}));
 						if (dataBatalkan.length === 0) {
@@ -227,7 +227,7 @@ function DetailMahasiswaSetoran() {
 							.filter((item) => item.id === "")
 							.map((item) => ({
 								nama_surah: item.nama_surah,
-								nomor_surah: item.nomor_surah,
+								id_komponen_setoran: item.id_komponen_setoran,
 							}));
 
 						console.log("mulai");
@@ -449,7 +449,7 @@ function DetailMahasiswaSetoran() {
 										.filter((item) => item.id !== "")
 										.map((item) => ({
 											id: item.id,
-											nomor_surah: item.nomor_surah,
+											id_komponen_setoran: item.id_komponen_setoran,
 											nama_surah: item.nama_surah,
 										}));
 									if (dataBatalkan.length === 0) {
@@ -476,7 +476,7 @@ function DetailMahasiswaSetoran() {
 										.filter((item) => item.id === "")
 										.map((item) => ({
 											nama_surah: item.nama_surah,
-											nomor_surah: item.nomor_surah,
+											id_komponen_setoran: item.id_komponen_setoran,
 										}));
 
 									if (dataAcc.length === 0) {
@@ -555,7 +555,7 @@ function DetailMahasiswaSetoran() {
 							) : (
 								dataCurrent?.map((surah: MahasiswaSetoran, index: number) => (
 									<TableRow
-										key={surah.nomor}
+										key={surah.id}
 										className={
 											index % 2 !== 0
 												? "bg-secondary hover:bg-secondary"
@@ -611,14 +611,14 @@ function DetailMahasiswaSetoran() {
 												checked={
 													selectAll ||
 													tempDataCheck.some(
-														(item) => item.nomor_surah === surah.nomor
+														(item) => item.id_komponen_setoran === surah.id
 													)
 												}
 												onCheckedChange={(checked) =>
 													handleCheckBoxToTempData(
 														Boolean(checked),
 														surah.nama,
-														surah.nomor,
+														surah.id,
 														surah.info_setoran?.id || ""
 													)
 												}

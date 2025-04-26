@@ -39,6 +39,7 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
 
   useEffect(() => {
     const hasShownNotification = localStorage.getItem('kpNotificationShown');
+    console.log(hasShownNotification)
 
     const timer = setTimeout(() => {
       setIsLoading(false);

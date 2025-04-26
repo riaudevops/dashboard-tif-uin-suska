@@ -139,7 +139,7 @@ const router = createBrowserRouter([
 		),
 	},
 	{
-		path: "/dosen/setoran-hafalan/mahasiswa-pa/detail",
+		path: "/dosen/setoran-hafalan/mahasiswa-pa/:nim",
 		element: (
 			<ProtectedRoute roles={["dosen"]}>
 				<DetailMahasiswaSetoran />

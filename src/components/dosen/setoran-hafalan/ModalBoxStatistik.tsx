@@ -6,14 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import React from "react";
-
-interface MahasiswaSetoranHafalanStatistikPageProps {
-  label: string;
-  persentase: number;
-  total_wajib_setor: number;
-  total_belum_setor: number;
-  total_sudah_setor: number;
-}
+import { MahasiswaSetoranHafalanStatistikPageProps } from "@/interfaces/pages/mahasiswa/setoran-hafalan/statistik/statistik.interface";
 
 function ModalBoxStatistik({
   dataRingkasan, isOpen, setIsOpen}: { dataRingkasan: MahasiswaSetoranHafalanStatistikPageProps[], isOpen: boolean, setIsOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
@@ -35,7 +28,7 @@ function ModalBoxStatistik({
                 <BarChartSetoran
                   key={item.label}
                   label={item.label}
-                  persentase={item.persentase}
+                  persentase={item.persentase_progres_setor}
                   wajib_setor={item.total_wajib_setor}
                   telah_setor={item.total_sudah_setor}
                 />

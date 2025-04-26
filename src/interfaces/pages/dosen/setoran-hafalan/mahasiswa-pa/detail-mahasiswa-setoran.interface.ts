@@ -11,7 +11,7 @@ interface Setoran {
   dosen_yang_mengesahkan: Dosen;
 }
 export interface MahasiswaSetoran {
-  nomor: number;
+  id: string;
   nama: string;
   label: string;
   sudah_setor: boolean;
@@ -19,6 +19,6 @@ export interface MahasiswaSetoran {
 }
 export interface CheckedData {
   nama_surah: string;
-  nomor_surah: number;
+  id_komponen_setoran: string;
   id?: string;
 }

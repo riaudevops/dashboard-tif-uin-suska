@@ -8,7 +8,7 @@ interface Setoran {
 }
 
 interface SurahData {
-  nomor: number;
+  id: string;
   nama: string;
   label: string;
   sudah_setor: boolean;

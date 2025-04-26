@@ -568,7 +568,7 @@ const LandingPage = () => {
 						</span>
 					</div>
 
-					<Carousel className="w-full max-w-6xl pt-5">
+					<Carousel className="w-full max-w-6xl pt-5" opts={{ loop: true }}>
 						<CarouselContent>
 							{ContributorListItems.map((contributor, index) => (
 								<CarouselItem key={index} className="lg:basis-1/3 md:basis-1/2">

@@ -12,7 +12,7 @@ interface Setoran {
   dosen_yang_mengesahkan: Dosen;
 }
 interface MahasiswaSetoran {
-  nomor: number;
+  id: string;
   nama: string;
   label: string;
   sudah_setor: boolean;

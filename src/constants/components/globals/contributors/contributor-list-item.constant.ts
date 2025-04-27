@@ -2,7 +2,8 @@ import { ContributorListItemProps } from "@/interfaces/components/globals/contri
 
 export const ContributorListItems: ContributorListItemProps[] = [
 	{
-		image: "https://res.cloudinary.com/dbsltir7r/image/upload/v1741517480/1724323203741_ctteha.jpg",
+		image:
+			"https://res.cloudinary.com/dbsltir7r/image/upload/v1741517480/1724323203741_ctteha.jpg",
 		name: "M. Farhan Aulia Pratama",
 		roles: "FullStack & DevOps Engineer",
 		socialProfiles: {
@@ -69,6 +70,18 @@ export const ContributorListItems: ContributorListItemProps[] = [
 	},
 	{
 		image:
+			"https://res.cloudinary.com/dm8ryfdi4/image/upload/v1741522588/Ahmad_K_chdu2z.jpg",
+		name: "Ahmad Kurniawan",
+		roles: "FrontEnd Engineer",
+		socialProfiles: {
+			github: "https://github.com/Ahmad-Kurniawan ",
+			linkedIn: "https://www.linkedin.com/in/ahmad-kurniawan-2100a0330/",
+			instagram: "https://www.instagram.com/ahmadkrniwn_",
+		},
+	},
+
+	{
+		image:
 			"https://res.cloudinary.com/dbsltir7r/image/upload/v1741497104/c45fccd6-ac7d-4f2e-80f4-b305e526a4b5_uxodiz.png",
 		name: "Muh. Zaki Erbai Syas",
 		roles: "FullStack Engineer",
@@ -80,23 +93,14 @@ export const ContributorListItems: ContributorListItemProps[] = [
 	},
 	{
 		image:
-			"https://res.cloudinary.com/dm8ryfdi4/image/upload/v1741522588/Ahmad_K_chdu2z.jpg",
-		name: "Ahmad Kurniawan",
-		roles: "FrontEnd Engineer",
-		socialProfiles: {
-			github: "https://github.com/Ahmad-Kurniawan ",
-			linkedIn: "https://www.linkedin.com/in/ahmad-kurniawan-2100a0330/",
-			instagram: "https://www.instagram.com/ahmadkrniwn_",
-		},
-	},
-	{
-		image: "https://res.cloudinary.com/doa2hsfra/image/upload/v1741504025/uiw2sahgmj9zpmm7iv7u.jpg",
+			"https://res.cloudinary.com/doa2hsfra/image/upload/v1741504025/uiw2sahgmj9zpmm7iv7u.jpg",
 		name: "Hafidz Alhadid Rahman",
 		roles: "FullStack Engineer",
 		socialProfiles: {
 			github: "https://github.com/hafidzrahman",
-			linkedIn: "https://id.linkedin.com/in/hafidz-rahman-4b146a258?trk=people-guest_people_search-card&original_referer=https%3A%2F%2Fwww.linkedin.com%2F",
+			linkedIn:
+				"https://id.linkedin.com/in/hafidz-rahman-4b146a258?trk=people-guest_people_search-card&original_referer=https%3A%2F%2Fwww.linkedin.com%2F",
 			instagram: "https://www.instagram.com/hfdzrhmn_/",
-		}
+		},
 	},
 ];

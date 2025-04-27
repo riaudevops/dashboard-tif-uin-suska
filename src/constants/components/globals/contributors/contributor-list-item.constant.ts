@@ -1,6 +1,17 @@
 import { ContributorListItemProps } from "@/interfaces/components/globals/contributors/contributor-list-item.interface";
 
-export const ContributorListItems: ContributorListItemProps[] = [		
+export const ContributorListItems: ContributorListItemProps[] = [
+	{
+		image:
+			"https://res.cloudinary.com/dbsltir7r/image/upload/v1741517480/1724323203741_ctteha.jpg",
+		name: "M. Farhan Aulia Pratama",
+		roles: "FullStack & DevOps Engineer",
+		socialProfiles: {
+			github: "https://github.com/mfarhanz1",
+			linkedIn: "https://id.linkedin.com/in/m-farhan-aulia-pratama-3a5b1a323",
+			instagram: "https://www.instagram.com/mfarhanz1",
+		},
+	},
 	{
 		image:
 			"https://res.cloudinary.com/dkoaxiwdd/image/upload/v1741482800/4-5_jou254.jpg",
@@ -58,15 +69,17 @@ export const ContributorListItems: ContributorListItemProps[] = [
 		},
 	},
 	{
-		image: "https://res.cloudinary.com/doa2hsfra/image/upload/v1741504025/uiw2sahgmj9zpmm7iv7u.jpg",
-		name: "Hafidz Alhadid Rahman",
-		roles: "FullStack Engineer",
+		image:
+			"https://res.cloudinary.com/dm8ryfdi4/image/upload/v1741522588/Ahmad_K_chdu2z.jpg",
+		name: "Ahmad Kurniawan",
+		roles: "FrontEnd Engineer",
 		socialProfiles: {
-			github: "https://github.com/hafidzrahman",
-			linkedIn: "https://id.linkedin.com/in/hafidz-rahman-4b146a258?trk=people-guest_people_search-card&original_referer=https%3A%2F%2Fwww.linkedin.com%2F",
-			instagram: "https://www.instagram.com/hfdzrhmn_/",
-		}
+			github: "https://github.com/Ahmad-Kurniawan ",
+			linkedIn: "https://www.linkedin.com/in/ahmad-kurniawan-2100a0330/",
+			instagram: "https://www.instagram.com/ahmadkrniwn_",
+		},
 	},
+
 	{
 		image:
 			"https://res.cloudinary.com/dbsltir7r/image/upload/v1741497104/c45fccd6-ac7d-4f2e-80f4-b305e526a4b5_uxodiz.png",
@@ -80,23 +93,14 @@ export const ContributorListItems: ContributorListItemProps[] = [
 	},
 	{
 		image:
-			"https://res.cloudinary.com/dm8ryfdi4/image/upload/v1741522588/Ahmad_K_chdu2z.jpg",
-		name: "Ahmad Kurniawan",
-		roles: "FrontEnd Engineer",
+			"https://res.cloudinary.com/doa2hsfra/image/upload/v1741504025/uiw2sahgmj9zpmm7iv7u.jpg",
+		name: "Hafidz Alhadid Rahman",
+		roles: "FullStack Engineer",
 		socialProfiles: {
-			github: "https://github.com/Ahmad-Kurniawan ",
-			linkedIn: "https://www.linkedin.com/in/ahmad-kurniawan-2100a0330/",
-			instagram: "https://www.instagram.com/ahmadkrniwn_",
+			github: "https://github.com/hafidzrahman",
+			linkedIn:
+				"https://id.linkedin.com/in/hafidz-rahman-4b146a258?trk=people-guest_people_search-card&original_referer=https%3A%2F%2Fwww.linkedin.com%2F",
+			instagram: "https://www.instagram.com/hfdzrhmn_/",
 		},
 	},
-	{
-		image: "https://res.cloudinary.com/dbsltir7r/image/upload/v1741517480/1724323203741_ctteha.jpg",
-		name: "M. Farhan Aulia Pratama",
-		roles: "FullStack & DevOps Engineer",
-		socialProfiles: {
-			github: "https://github.com/mfarhanz1",
-			linkedIn: "https://id.linkedin.com/in/m-farhan-aulia-pratama-3a5b1a323",
-			instagram: "https://www.instagram.com/mfarhanz1",
-		},
-	}
 ];

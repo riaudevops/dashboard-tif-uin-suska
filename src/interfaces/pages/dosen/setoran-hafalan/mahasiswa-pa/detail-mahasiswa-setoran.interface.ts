@@ -18,7 +18,7 @@ export interface MahasiswaSetoran {
   info_setoran: Setoran;
 }
 export interface CheckedData {
-  nama_surah: string;
+  nama_komponen_setoran: string;
   id_komponen_setoran: string;
   id?: string;
 }

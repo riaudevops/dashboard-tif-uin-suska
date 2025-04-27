@@ -1,5 +1,5 @@
 export interface ModalBoxDetailSetoranProps {
-    nama_surah: string;
+    nama_komponen_setoran: string;
     tanggal_setoran: string;
     dosen_mengesahkan: string;
     sudah_setor: boolean;

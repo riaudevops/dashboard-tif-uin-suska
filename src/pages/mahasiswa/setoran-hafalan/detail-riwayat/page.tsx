@@ -32,7 +32,7 @@ import TableLoadingSkeleton from "@/components/globals/table-loading-skeleton";
 export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 	const [openDialog, setOpenDialog] = useState(false);
 	const [dataModal, setDataModal] = useState({
-		nama_surah: "",
+		nama_komponen_setoran: "",
 		tanggal_setoran: "",
 		sudah_setoran: false as boolean,
 		dosen_mengesahkan: "",
@@ -59,13 +59,13 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 					setOpenDialog={() => {
 						setOpenDialog(!openDialog);
 						setDataModal({
-							nama_surah: "",
+							nama_komponen_setoran: "",
 							tanggal_setoran: "",
 							sudah_setoran: false,
 							dosen_mengesahkan: "",
 						});
 					}}
-					nama_surah={dataModal.nama_surah}
+					nama_komponen_setoran={dataModal.nama_komponen_setoran}
 					tanggal_setoran={dataModal?.tanggal_setoran}
 					dosen_mengesahkan={dataModal?.dosen_mengesahkan}
 					sudah_setor={dataModal.sudah_setoran}
@@ -267,7 +267,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 											}
 											onClick={() => {
 												setDataModal({
-													nama_surah: surah.nama,
+													nama_komponen_setoran: surah.nama,
 													tanggal_setoran:
 														new Date(surah.info_setoran?.tgl_setoran)
 															.toLocaleDateString("id-ID", {

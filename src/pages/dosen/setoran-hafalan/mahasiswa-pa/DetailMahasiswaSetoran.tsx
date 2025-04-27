@@ -77,7 +77,7 @@ function DetailMahasiswaSetoran() {
 			// Jika dicentang, tambahkan semua data ke tempDataCheck
 			const allData =
 				dataCurrent?.map((surah) => ({
-					nama_surah: surah.nama,
+					nama_komponen_setoran: surah.nama,
 					id_komponen_setoran: surah.id,
 					id: surah.info_setoran?.id || "",
 				})) || [];
@@ -92,18 +92,18 @@ function DetailMahasiswaSetoran() {
 		if (aksi === "validasi") {
 			const tempData = tempDataCheck
 				.filter((item) => item.id === "")
-				.map((item) => item.nama_surah);
+				.map((item) => item.nama_komponen_setoran);
 			return tempData.join(", ");
 		} else {
 			const tempData = tempDataCheck
 				.filter((item) => item.id !== "")
-				.map((item) => item.nama_surah);
+				.map((item) => item.nama_komponen_setoran);
 			return tempData.join(", ");
 		}
 	};
 	const handleCheckBoxToTempData = (
 		checked: boolean,
-		nama_surah: string,
+		nama_komponen_setoran: string,
 		id_komponen_setoran: string,
 		id?: string
 	) => {
@@ -112,7 +112,7 @@ function DetailMahasiswaSetoran() {
 			setTempDataCheck((prevData) => [
 				...prevData,
 				{
-					nama_surah: nama_surah,
+					nama_komponen_setoran: nama_komponen_setoran,
 					id_komponen_setoran: id_komponen_setoran,
 					id: id,
 				},
@@ -122,7 +122,7 @@ function DetailMahasiswaSetoran() {
 			setTempDataCheck((prevData) =>
 				prevData.filter(
 					(item) =>
-						item.nama_surah !== nama_surah || item.id_komponen_setoran !== id_komponen_setoran
+						item.nama_komponen_setoran !== nama_komponen_setoran || item.id_komponen_setoran !== id_komponen_setoran
 				)
 			);
 		}
@@ -151,7 +151,7 @@ function DetailMahasiswaSetoran() {
 							.map((item) => ({
 								id: item.id,
 								id_komponen_setoran: item.id_komponen_setoran,
-								nama_surah: item.nama_surah,
+								nama_komponen_setoran: item.nama_komponen_setoran,
 							}));
 						if (dataBatalkan.length === 0) {
 							setLoading(false);
@@ -205,7 +205,7 @@ function DetailMahasiswaSetoran() {
 					}
 				}}
 				info={dataInfoSetoran?.info}
-				nama_surah={tempDataToString("batalkan")}
+				nama_komponen_setoran={tempDataToString("batalkan")}
 				onClose={() => {
 					setModalBatalkanSetoran(false);
 				}}
@@ -226,7 +226,7 @@ function DetailMahasiswaSetoran() {
 						const dataAcc = tempDataCheck
 							.filter((item) => item.id === "")
 							.map((item) => ({
-								nama_surah: item.nama_surah,
+								nama_komponen_setoran: item.nama_komponen_setoran,
 								id_komponen_setoran: item.id_komponen_setoran,
 							}));
 
@@ -290,7 +290,7 @@ function DetailMahasiswaSetoran() {
 					}
 				}}
 				info={dataInfoSetoran?.info}
-				nama_surah={tempDataToString("validasi")}
+				nama_komponen_setoran={tempDataToString("validasi")}
 				onClose={(bool) => {
 					setModalValidasiSetoran(bool);
 				}}
@@ -450,7 +450,7 @@ function DetailMahasiswaSetoran() {
 										.map((item) => ({
 											id: item.id,
 											id_komponen_setoran: item.id_komponen_setoran,
-											nama_surah: item.nama_surah,
+											nama_komponen_setoran: item.nama_komponen_setoran,
 										}));
 									if (dataBatalkan.length === 0) {
 										setModalBatalkanSetoran(false);
@@ -475,7 +475,7 @@ function DetailMahasiswaSetoran() {
 									const dataAcc = tempDataCheck
 										.filter((item) => item.id === "")
 										.map((item) => ({
-											nama_surah: item.nama_surah,
+											nama_komponen_setoran: item.nama_komponen_setoran,
 											id_komponen_setoran: item.id_komponen_setoran,
 										}));
 

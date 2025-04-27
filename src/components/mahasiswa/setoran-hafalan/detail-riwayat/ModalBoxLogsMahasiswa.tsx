@@ -77,7 +77,7 @@ function ModalBoxLogsMahasiswa({
             <div className="flex flex-col gap-2">
               {/* logs */}
               {dataLogs?.map((item) =>
-                item.aksi === "Validasi" ? (
+                item.aksi === "VALIDASI" ? (
                   <div
                     key={item.id}
                     className="px-3 py-4 rounded-lg bg-gradient-to-r from-secondary to-green-500/50"

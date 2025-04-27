@@ -8,7 +8,7 @@ import {ModalBoxDetailSetoranProps} from "@/interfaces/components/mahasiswa/seto
 function ModalBoxDetailSetoran({
   openDialog,
   setOpenDialog,
-  nama_surah,
+  nama_komponen_setoran,
   tanggal_setoran,
   dosen_mengesahkan,
   sudah_setor,
@@ -31,7 +31,7 @@ function ModalBoxDetailSetoran({
                 <div className="px-2 bg-muted py-1 text-center font-semibold">
                   Nama Surah
                 </div>
-                <div className="text-center">{nama_surah}</div>
+                <div className="text-center">{nama_komponen_setoran}</div>
                 <div className="justify-center items-center mt-4">
                   ❌ Anda{" "}
                   <span className="italic font-medium underline">
@@ -47,7 +47,7 @@ function ModalBoxDetailSetoran({
                 <div className="px-2 bg-secondary py-1 text-center font-semibold">
                   Nama Surah
                 </div>
-                <div className="text-center">{nama_surah}</div>
+                <div className="text-center">{nama_komponen_setoran}</div>
               </div>
               <div className="flex flex-col gap-1">
                 <div className="bg-secondary py-1 text-center font-semibold">

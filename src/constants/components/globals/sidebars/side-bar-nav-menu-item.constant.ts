@@ -2,7 +2,6 @@ import { SideBarNavMenuItemsProps } from "@/interfaces/components/globals/sideba
 import {
 	BackpackIcon,
 	BookOpen,
-	ChartColumnIcon,
 	LayoutGridIcon,
 	LucideHistory,
 	PieChart,
@@ -96,15 +95,40 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 				},
 			],
 		},
-	],
-	"koordinator-kp": [
 		{
 			label: "Kerja Praktek",
 			menus: [
 				{
-					title: "Verifikasi KP",
-					url: "/koordinator-kp/kerja-praktek/verifikasi-kp",
-					icon: ChartColumnIcon,
+					title: "Mahasiswa Bimbingan KP",
+					url: "/dosen/kerja-praktik/mahasiswa-bimbingan-kp",
+					icon: UserRoundPenIcon,
+					
+				},
+			],
+		},
+	],
+	"koordinator-kp": [
+		{
+			label: "Koordinator KP",
+			menus: [
+				{
+					title: "Kerja Praktik",
+					url: "#",
+					icon: LayoutGridIcon ,
+					items: [
+						{
+							title: "Permohonan",
+							url: "/koordinator-kp/kerja-praktik/Permohonan",
+						},
+						{
+							title: "Validasi Berkas",
+							url: "/koordinator-kp/kerja-praktik/validasi-berkas",
+						},
+						{
+							title: "Daily Report",
+							url: "/koordinator-kp/kerja-praktik/Daily-Report",
+						},
+					],
 				},
 			],
 		},

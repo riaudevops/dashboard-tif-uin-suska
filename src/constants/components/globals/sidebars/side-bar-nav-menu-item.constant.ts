@@ -2,7 +2,6 @@ import { SideBarNavMenuItemsProps } from "@/interfaces/components/globals/sideba
 import {
 	BackpackIcon,
 	BookOpen,
-	ChartColumnIcon,
 	LayoutGridIcon,
 	LucideHistory,
 	PieChart,

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import {
   Calendar,
@@ -16,9 +15,6 @@ import {
 } from "lucide-react";
 
 const DosenKerjaPraktikMahasiswaDetail = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-
   // State for tabs
   const [activeTab, setActiveTab] = useState("info");
 

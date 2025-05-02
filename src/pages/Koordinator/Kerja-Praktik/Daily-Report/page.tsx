@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, ChevronRight, ArrowUpRight } from "lucide-react";
+import { Search, ChevronRight, ArrowUpRight, ChevronLeft, ChevronRight as ChevronRightIcon } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
@@ -18,55 +18,72 @@ export default function KoordinatorKerjaPraktikDailyReportpage() {
   const [academicYear, setAcademicYear] = useState("2023-2024 Ganjil");
   const [activeTab, setActiveTab] = useState("Semua Riwayat");
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const navigate = useNavigate();
 
-  // Data from the image
-  const applicationData = [
-    {
-      id: 1,
-      name: "Gilang Ramadhan",
-      nim: "1225111212",
-      Angkatan: "2022",
-    },
-    {
-      id: 2,
-      name: "Farhan Fadilla",
-      nim: "1225111212",
-      Angkatan: "2022",
-    },
-    {
-      id: 3,
-      name: "Ahmad Kurniawan",
-      nim: "1225111212",
-      Angkatan: "2022",
-    },
-    {
-      id: 4,
-      name: "Muh Zaki Erbay",
-      nim: "1225111212",
-      Angkatan: "2024",
-    },
-    {
-      id: 5,
-      name: "M. Rafly Wirayudha",
-      nim: "1225111212",
-      Angkatan: "2023",
-    },
+  // Sample data with more than 10 entries to demonstrate pagination
+  const tableData = [
+    { id: 1, name: "Gilang Ramadhan", nim: "1225111212", Angkatan: "2022" },
+    { id: 2, name: "Farhan Fadilla", nim: "1225111213", Angkatan: "2022" },
+    { id: 3, name: "Ahmad Kurniawan", nim: "1225111214", Angkatan: "2022" },
+    { id: 4, name: "Muh Zaki Erbay", nim: "1225111215", Angkatan: "2024" },
+    { id: 5, name: "M. Rafly Wirayudha", nim: "1225111216", Angkatan: "2023" },
+    { id: 6, name: "Rizky Pratama", nim: "1225111217", Angkatan: "2022" },
+    { id: 7, name: "Dimas Nugroho", nim: "1225111218", Angkatan: "2023" },
+    { id: 8, name: "Rahmat Hidayat", nim: "1225111219", Angkatan: "2024" },
+    { id: 9, name: "Siti Nuraini", nim: "1225111220", Angkatan: "2022" },
+    { id: 10, name: "Dewi Anggraini", nim: "1225111221", Angkatan: "2023" },
+    { id: 11, name: "Budi Santoso", nim: "1225111222", Angkatan: "2022" },
+    { id: 12, name: "Anita Wijaya", nim: "1225111223", Angkatan: "2023" },
+    { id: 13, name: "Fajar Maulana", nim: "1225111224", Angkatan: "2024" },
+    { id: 14, name: "Rina Fitriani", nim: "1225111225", Angkatan: "2022" },
+    { id: 15, name: "Agus Setiawan", nim: "1225111226", Angkatan: "2023" },
+    { id: 16, name: "Putri Lestari", nim: "1225111227", Angkatan: "2024" },
+    { id: 17, name: "Hendra Gunawan", nim: "1225111228", Angkatan: "2022" },
+    { id: 18, name: "Maya Sari", nim: "1225111229", Angkatan: "2023" },
+    { id: 19, name: "Rudi Hartono", nim: "1225111230", Angkatan: "2024" },
+    { id: 20, name: "Novi Indah", nim: "1225111231", Angkatan: "2022" },
+    { id: 21, name: "Deni Hermawan", nim: "1225111232", Angkatan: "2023" },
+    { id: 22, name: "Lia Puspita", nim: "1225111233", Angkatan: "2024" },
   ];
 
-  const filteredData = applicationData
-    .filter(
-      (item) => activeTab === "Semua Riwayat" || item.Angkatan === activeTab
-    )
-    .filter(
-      (item) =>
-        searchTerm === "" ||
-        item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  // Filter data based on active tab and search term
+  const filteredData = tableData.filter(
+    (item) =>
+      (activeTab === "Semua Riwayat" || item.Angkatan === activeTab) &&
+      (searchTerm === "" ||
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  
+  // Handle page changes
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Go to previous page
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  // Go to next page
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
   return (
     <DashboardLayout>
-      <div className="p-4 min-h-screen">
+      <div className="p-2">
         <h1 className="text-2xl font-bold mb-4">Daily Report Mahasiswa</h1>
 
         {/* Academic Year Selector */}
@@ -99,28 +116,28 @@ export default function KoordinatorKerjaPraktikDailyReportpage() {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="bg-blue-100 dark:bg-blue-900/30 p-0.5 rounded-md">
+              <TabsList className="bg-blue-50 dark:bg-blue-900/30 p-0.5 rounded-md">
                 <TabsTrigger
                   value="Semua Riwayat"
-                  className="text-sm font-medium data-[state=active]:bg-blue-600 dark:data-[state=active]:bg-blue-700 data-[state=active]:text-white rounded-md"
+                  className="text-sm font-medium data-[state=active]:bg-blue-500 dark:data-[state=active]:bg-blue-700 data-[state=active]:text-white rounded-md"
                 >
                   Semua Angkatan
                 </TabsTrigger>
                 <TabsTrigger
                   value="2022"
-                  className="text-sm font-medium data-[state=active]:bg-blue-600 dark:data-[state=active]:bg-blue-700 data-[state=active]:text-white rounded-md"
+                  className="text-sm font-medium data-[state=active]:bg-blue-500 dark:data-[state=active]:bg-blue-700 data-[state=active]:text-white rounded-md"
                 >
                   2022
                 </TabsTrigger>
                 <TabsTrigger
                   value="2023"
-                  className="text-sm font-medium data-[state=active]:bg-blue-600 dark:data-[state=active]:bg-blue-700 data-[state=active]:text-white rounded-md"
+                  className="text-sm font-medium data-[state=active]:bg-blue-500 dark:data-[state=active]:bg-blue-700 data-[state=active]:text-white rounded-md"
                 >
                   2023
                 </TabsTrigger>
                 <TabsTrigger
                   value="2024"
-                  className="text-sm font-medium data-[state=active]:bg-blue-600 dark:data-[state=active]:bg-blue-700 data-[state=active]:text-white rounded-md"
+                  className="text-sm font-medium data-[state=active]:bg-blue-500 dark:data-[state=active]:bg-blue-700 data-[state=active]:text-white rounded-md"
                 >
                   2024
                 </TabsTrigger>
@@ -132,7 +149,7 @@ export default function KoordinatorKerjaPraktikDailyReportpage() {
             <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               placeholder="Cari nama mahasiswa..."
-              className="pl-8 ml-2 py-2 w-full rounded-md border border-gray-300 dark:bg-gray-700/10 focus:outline-none  focus:ring-blue-300 dark:focus:ring-gray-600"
+              className="pl-8 ml-2 py-2 w-full rounded-md border border-gray-300 dark:bg-gray-700/10 focus:outline-none focus:ring-blue-300 dark:focus:ring-gray-600"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -142,30 +159,30 @@ export default function KoordinatorKerjaPraktikDailyReportpage() {
         {/* Table */}
         <div className="w-full bg-white dark:bg-gray-900/20 rounded-md border shadow-md">
           <Table>
-            <TableHeader className=" bg-gray-200 dark:bg-gray-900/10">
+            <TableHeader className="bg-gray-200 dark:bg-gray-900/10">
               <TableRow>
-                <TableHead className="text-center uppercase font-semibold ">
+                <TableHead className="text-center uppercase font-semibold">
                   No
                 </TableHead>
-                <TableHead className="text-center uppercase font-semibold ">
+                <TableHead className="text-center uppercase font-semibold">
                   Nama Mahasiswa
                 </TableHead>
-                <TableHead className="text-center uppercase font-semibold ">
+                <TableHead className="text-center uppercase font-semibold">
                   Nim
                 </TableHead>
-                <TableHead className="text-center uppercase font-semibold ">
+                <TableHead className="text-center uppercase font-semibold">
                   Aksi
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredData.map((item) => (
+              {currentItems.map((item) => (
                 <TableRow
                   key={item.id}
                   className={
                     item.id % 2 === 0
                       ? "bg-gray-50 dark:bg-gray-900/10"
-                      : "bg-gray-50 dark:bg-gray-800"
+                      : "bg-white dark:bg-gray-800"
                   }
                 >
                   <TableCell className="text-center font-medium">
@@ -191,11 +208,77 @@ export default function KoordinatorKerjaPraktikDailyReportpage() {
               ))}
             </TableBody>
           </Table>
-          <div className="p-2 text-sm text-gray-500 border-t">
-            {filteredData.length} of {applicationData.length} row(s) selected.
+          
+          {/* Pagination */}
+          <div className="p-4 border-t flex items-center justify-between">
+            <div className="text-sm text-gray-500">
+              Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredData.length)} of {filteredData.length} results
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                className="h-8 w-8 p-0 flex items-center justify-center"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              
+              <div className="flex items-center space-x-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(page => {
+                    // Show first page, last page, current page, and pages around current page
+                    return page === 1 || 
+                           page === totalPages || 
+                           Math.abs(page - currentPage) <= 1;
+                  })
+                  .map((page, index, array) => {
+                    // Add ellipsis when there are gaps
+                    const showEllipsisBefore = index > 0 && array[index - 1] !== page - 1;
+                    const showEllipsisAfter = index < array.length - 1 && array[index + 1] !== page + 1;
+                    
+                    return (
+                      <div key={page} className="flex items-center">
+                        {showEllipsisBefore && (
+                          <span className="mx-1 text-gray-400">...</span>
+                        )}
+                        
+                        <Button
+                          variant={currentPage === page ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handlePageChange(page)}
+                          className={`h-8 w-8 p-0 ${
+                            currentPage === page 
+                              ? "bg-blue-500 text-white" 
+                              : "text-gray-600"
+                          }`}
+                        >
+                          {page}
+                        </Button>
+                        
+                        {showEllipsisAfter && (
+                          <span className="mx-1 text-gray-400">...</span>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className="h-8 w-8 p-0 flex items-center justify-center"
+              >
+                <ChevronRightIcon className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
     </DashboardLayout>
   );
-}
+};

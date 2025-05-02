@@ -224,27 +224,6 @@ const TambahAgendaModal = ({ isOpen, onClose }: TambahAgendaModalProps) => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="bg-gray-900 text-white px-4 py-2 rounded-md flex items-center gap-2"
-                      >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M12 4V20M4 12H20"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                        Tambah Agenda
-                      </Button>
                     </motion.div>
                     <motion.div
                       whileHover={{ scale: 1.05 }}

@@ -8,7 +8,7 @@ interface ReviewDailyReportProps {
   reportData?: any;
 }
 
-const ReviewDailyReport = ({
+const ModalAdendaMahasiswa = ({
   isOpen,
   onClose,
   reportData,
@@ -167,7 +167,7 @@ const ReviewDailyReport = ({
               transition={{ duration: 0.3, delay: 0.1 }}
             >
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-                Review Daily Report
+                Review Agenda
               </h2>
             </motion.div>
 
@@ -224,4 +224,4 @@ const ReviewDailyReport = ({
   );
 };
 
-export default ReviewDailyReport;
+export default ModalAdendaMahasiswa;

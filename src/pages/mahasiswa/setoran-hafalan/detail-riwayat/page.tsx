@@ -140,7 +140,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
           </div>
           {/* table and button  */}
           <div className="flex flex-col gap-2.5">
-            <div className="flex justify-between">
+            <div className="flex justify-between">   
               <div>
                 <Tabs defaultValue="tab1" className="w-full">
                   <TabsList className="gap-1.5">

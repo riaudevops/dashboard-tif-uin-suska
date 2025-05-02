@@ -5,6 +5,8 @@ import ForbiddenPage from "@/pages/publics/forbidden.page";
 import NotFoundPage from "@/pages/publics/not-found.page";
 import MahasiswaSetoranHafalanStatistikPage from "@/pages/mahasiswa/setoran-hafalan/statistik/page";
 import DosenSetoranHafalanMahasiswaPAPage from "@/pages/dosen/setoran-hafalan/mahasiswa-pa/page";
+import DosenKerjaPraktikmahasiswaBimbinganpage from "@/pages/dosen/Kerja-praktik/mahasiswa-bimbingan-kp/page";
+import DosenKerjaPraktikMahasiswaBimbinganKPDetailpage from "@/pages/dosen/Kerja-praktik/mahasiswa-bimbingan-kp/detail/page";
 import MahasiswaSetoranHafalanDetailRiwayatPage from "@/pages/mahasiswa/setoran-hafalan/detail-riwayat/page";
 import DetailMahasiswaSetoran from "@/pages/dosen/setoran-hafalan/mahasiswa-pa/DetailMahasiswaSetoran";
 import MahasiswaKerjaPraktekDailyReportIsiAgendaPage from "@/pages/mahasiswa/kerja-praktik/daily-report/isi-agenda/page";
@@ -14,6 +16,13 @@ import MahasiswaKerjaPraktekDaftarKpKelengkapanBerkasPage from "@/pages/mahasisw
 import MahasiswaKerjaPraktekDaftarKpPermohonanFormPendaftaranPage from "@/pages/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-pendaftaran/page";
 import MahasiswaKerjaPraktekDaftarKpPermohonanFormDaftarInstansiPage from "@/pages/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-daftar-instansi/page";
 import MahasiswaKerjaPraktekDailyReportIsiAgendaDetailPage from "@/pages/mahasiswa/kerja-praktik/daily-report/isi-agenda/detail/page";
+import InstansiKerjaPraktikpage from "@/pages/instansi/page";
+import InstansiKerjaPraktikMahasiswaDetailPage from "@/pages/instansi/detailmahasiswa/page";
+import DailyReportKerjaPraktikMahasiswaDetailPage from "@/pages/instansi/detailmahasiswa/detail-agenda/page";
+import KoordinatorKerjaPraktikPermohonanpage from "@/pages/Koordinator/Kerja-Praktik/Permohonan/page";
+import KoordinatorKerjaPraktikPermohonanDetailpage from "@/pages/Koordinator/Kerja-Praktik/Permohonan/Detail-Permohonan/page";
+import KoordinatorKerjaPraktikDailyReportpage from "@/pages/Koordinator/Kerja-Praktik/Daily-Report/page";
+import KoordinatorKerjaPraktikDailyReportDetailpage from "@/pages/Koordinator/Kerja-Praktik/Daily-Report/Detail-Mahasiswa/page";
 
 const router = createBrowserRouter([
 	{
@@ -119,6 +128,80 @@ const router = createBrowserRouter([
 				<DetailMahasiswaSetoran />
 			</ProtectedRoute>
 		)
+	},
+	{
+		path: "/dosen/kerja-praktik/mahasiswa-bimbingan-kp",
+		element: (
+			<ProtectedRoute roles={["dosen"]}>
+				<DosenKerjaPraktikmahasiswaBimbinganpage />
+			</ProtectedRoute>
+		)
+	},
+	{
+		path: "/dosen/kerja-praktik/mahasiswa-bimbingan-kp/detail/:id",
+		element: (
+			<ProtectedRoute roles={["dosen"]}>
+				<DosenKerjaPraktikMahasiswaBimbinganKPDetailpage/>
+			</ProtectedRoute>
+		)
+	},
+	{
+		path: "/instansi/kerja-praktik/UIN-SUSKA-RIAU",
+		element: (		
+				<InstansiKerjaPraktikpage/>
+		)
+	},
+	{
+		path: "/instansi/detail/:name",
+		element: (		
+				<InstansiKerjaPraktikMahasiswaDetailPage/>
+		)
+	},
+	{
+		path: "/instansi/detailmahasiswa/detail",
+		element: (		
+				<DailyReportKerjaPraktikMahasiswaDetailPage/>
+		)
+	},
+	{
+		path: "/Koordinator-kp/Kerja-Praktik/Permohonan",
+		element: (	
+			<ProtectedRoute roles={["koordinator-kp"]}>	
+				<KoordinatorKerjaPraktikPermohonanpage/>
+			</ProtectedRoute>
+		)
+	},
+	{
+		path: "/Koordinator-kp/Kerja-Praktik/Permohonan/Detail-Permohonan",
+		element: (	
+			<ProtectedRoute roles={["koordinator-kp"]}>	
+				<KoordinatorKerjaPraktikPermohonanDetailpage/>
+			</ProtectedRoute>
+		)
+	},
+	{
+		path: "/koordinator-kp/kerja-praktik/Daily-Report",
+		element: (
+			<ProtectedRoute roles={["koordinator-kp"]}>	
+				<KoordinatorKerjaPraktikDailyReportpage/>
+			</ProtectedRoute>
+		)
+	},
+	{
+		path: "/koordinator-kp/kerja-praktik/Daily-Report/Detail-Mahasiswa",
+		element: (
+			<ProtectedRoute roles={["koordinator-kp"]}>	
+				<KoordinatorKerjaPraktikDailyReportDetailpage/>
+			</ProtectedRoute>
+		)
+	},
+	{
+	path: "/Koordinator-kp/kerja-praktik/Daily-Report/Detail-Mahasiswa",
+	element: (
+		<ProtectedRoute roles={["Koordinator-kp"]}>
+			<KoordinatorKerjaPraktikDailyReportDetailpage />
+		</ProtectedRoute>
+	)
 	}
 ]);
 

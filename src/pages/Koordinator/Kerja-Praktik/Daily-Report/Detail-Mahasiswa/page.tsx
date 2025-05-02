@@ -2,7 +2,6 @@ import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import { User, Building, ContactRound, ArrowUpRight, Calendar, FileText } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 // Import shadcn/ui components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,8 +12,6 @@ import { Button } from "@/components/ui/button";
 
 export const KoordinatorKerjaPraktikDailyReportDetailpage = () => {
   const { search } = useLocation();
-  const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("agenda");
   const query = new URLSearchParams(search);
   const name = query.get("name") || "-";
@@ -67,19 +64,6 @@ export const KoordinatorKerjaPraktikDailyReportDetailpage = () => {
     semester: 6,
     judulkp: "Pengembangan Aplikasi Web",
   };
-
-  // Mock data for application data table
-  const applicationData = [
-    { id: 1, name: "John Doe", nim: "123456789" },
-    { id: 2, name: "Jane Smith", nim: "987654321" },
-    { id: 3, name: "Alice Johnson", nim: "456789123" }
-  ];
-
-  // Filtered data for table
-  const filteredData = applicationData.filter(item => 
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    item.nim.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <>

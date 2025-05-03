@@ -42,7 +42,7 @@ const DOCUMENTS = [
   "Lembar Pengesahan KP",
   "Daftar Hadir Seminar KP",
   "(Jika Ada) Revisi Laporan Tambahan",
-  "(Jika Ada) Upload Sistem KP Final",
+  "(Jika Ada) Sistem KP Final",
 ];
 
 // Reusable components

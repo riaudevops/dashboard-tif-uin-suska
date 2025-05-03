@@ -5,6 +5,7 @@ import {
   ChartColumnIcon,
   LayoutGridIcon,
   LucideHistory,
+  MedalIcon,
   PieChart,
   UserRoundPenIcon,
 } from "lucide-react";
@@ -109,12 +110,23 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
   ],
   "koordinator-kp": [
     {
-      label: "Kerja Praktek",
+      label: "Koordinator",
       menus: [
         {
-          title: "Verifikasi KP",
-          url: "/koordinator-kp/kerja-praktek/verifikasi-kp",
-          icon: ChartColumnIcon,
+          title: "Seminar KP",
+          url: "#",
+          isActive: true,
+          icon: MedalIcon,
+          items: [
+            {
+              title: "Validasi Berkas",
+              url: "/koordinator/seminar-kerja-praktek/validasi-berkas",
+            },
+            {
+              title: "Nilai",
+              url: "/koordinator/seminar-kerja-praktek/nilai",
+            },
+          ],
         },
       ],
     },

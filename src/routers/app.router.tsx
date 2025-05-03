@@ -20,6 +20,8 @@ import DosenPengujiNilaiPage from "@/pages/dosen/seminar-kerja-praktek/nilai-pen
 import DosenPengujiMahasiswaPage from "@/pages/dosen/seminar-kerja-praktek/mahasiswa-diuji/page";
 import DetailMahasiswaSeminar from "@/pages/dosen/seminar-kerja-praktek/mahasiswa-diuji/DetailMahasiswaSeminar";
 import NilaiSeminarPenguji from "@/pages/dosen/seminar-kerja-praktek/nilai-penguji/NilaiSeminarPenguji";
+import KoordinatorValidasiBerkasPage from "@/pages/koordinator/seminar-kerja-praktek/validasi-berkas/page";
+import KoordinatorNilaiPage from "@/pages/koordinator/seminar-kerja-praktek/nilai/page";
 
 const router = createBrowserRouter([
   {
@@ -187,6 +189,22 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute roles={["dosen"]}>
         <NilaiSeminarPenguji />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/koordinator/seminar-kerja-praktek/validasi-berkas",
+    element: (
+      <ProtectedRoute roles={["koordinator-kp"]}>
+        <KoordinatorValidasiBerkasPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/koordinator/seminar-kerja-praktek/nilai",
+    element: (
+      <ProtectedRoute roles={["koordinator-kp"]}>
+        <KoordinatorNilaiPage />
       </ProtectedRoute>
     ),
   },

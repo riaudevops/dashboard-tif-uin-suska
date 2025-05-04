@@ -827,7 +827,7 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
                           className="text-white bg-blue-500 hover:bg-blue-600 shadow-sm hover:shadow transition-all duration-200"
                           onClick={() =>
                             navigate(
-                              `/mahasiswa/kerja-praktik/daily-report/isi-agenda/detail?tanggal=${entry.tanggal}`
+                              `/mahasiswa/kerja-praktik/daily-report/detail?tanggal=${entry.tanggal}`
                             )
                           }
                         >

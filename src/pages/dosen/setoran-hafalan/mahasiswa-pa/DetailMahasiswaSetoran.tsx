@@ -378,7 +378,7 @@ function DetailMahasiswaSetoran() {
 					</div>
 				</div>
 
-				<div className="flex flex-col gap-1.5 sticky top-[64.3px] z-10 bg-background py-1.5 -mb-4 pb-3">
+				<div className="flex flex-col gap-1.5 sticky top-[51.3px] bg-background pt-2.5 -mb-4 pb-3.5 z-50">
 					<div className="flex justify-between gap-4">
 						<div>
 							<Tabs defaultValue="tab1" className="w-full">

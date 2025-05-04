@@ -27,8 +27,9 @@ import KoordinatorKerjaPraktikDailyReportpage from "@/pages/koordinator/kerja-pr
 import KoordinatorKerjaPraktikDailyReportDetailpage from "@/pages/koordinator/kerja-praktik/daily-report/Detail-Mahasiswa/page";
 import DosenPengujiNilaiPage from "@/pages/dosen/seminar-kerja-praktek/nilai-penguji/page";
 import NilaiSeminarPenguji from "@/pages/dosen/seminar-kerja-praktek/nilai-penguji/NilaiSeminarPenguji";
-import KoordinatorValidasiBerkasPage from "@/pages/Koordinator/seminar-kerja-praktek/validasi-berkas/page";
-import KoordinatorNilaiPage from "@/pages/Koordinator/seminar-kerja-praktek/nilai/page";
+import KoordinatorNilaiPage from "@/pages/koordinator/seminar-kerja-praktek/nilai/page";
+import KoordinatorValidasiBerkasPage from "@/pages/koordinator/seminar-kerja-praktek/validasi-berkas/page";
+
 
 const router = createBrowserRouter([
 	{

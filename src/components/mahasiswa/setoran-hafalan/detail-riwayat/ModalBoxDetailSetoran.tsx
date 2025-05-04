@@ -4,24 +4,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-interface ModalBoxDetailSetoranProps {
-  nama_surah: string;
-  tanggal_setoran: string;
-  dosen_mengesahkan: string;
-  sudah_setor: boolean;
-  openDialog: boolean;
-  setOpenDialog: (openDialog: boolean) => void;
-}
+import {ModalBoxDetailSetoranProps} from "@/interfaces/components/mahasiswa/setoran-hafalan/modal-box-detail-setoran.interface";
 function ModalBoxDetailSetoran({
   openDialog,
   setOpenDialog,
-  nama_surah,
+  nama_komponen_setoran,
   tanggal_setoran,
   dosen_mengesahkan,
   sudah_setor,
-}: ModalBoxDetailSetoranProps) {
-  console.log(nama_surah);
-  return (
+}: ModalBoxDetailSetoranProps) {  return (
     <Dialog
       open={openDialog}
       onOpenChange={(open) => {
@@ -36,12 +27,12 @@ function ModalBoxDetailSetoran({
 
           {!sudah_setor ? (
             <div className="flex flex-col gap-3">
-              <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-1">
                 <div className="px-2 bg-muted py-1 text-center font-semibold">
                   Nama Surah
                 </div>
-                <div className="text-center">{nama_surah}</div>
-                <div className="justify-center items-center">
+                <div className="text-center">{nama_komponen_setoran}</div>
+                <div className="justify-center items-center mt-4">
                   ❌ Anda{" "}
                   <span className="italic font-medium underline">
                     belum menyetorkan
@@ -52,11 +43,11 @@ function ModalBoxDetailSetoran({
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1">
                 <div className="px-2 bg-secondary py-1 text-center font-semibold">
                   Nama Surah
                 </div>
-                <div className="text-center">{nama_surah}</div>
+                <div className="text-center">{nama_komponen_setoran}</div>
               </div>
               <div className="flex flex-col gap-1">
                 <div className="bg-secondary py-1 text-center font-semibold">

@@ -3,7 +3,7 @@ interface InfoSetoran {
     total_wajib_setor: number;
     total_sudah_setor: number;
     total_belum_setor: number;
-    persentase_progress_setor: number;
+    persentase_progres_setor: number;
     terakhir_setor: string;
     tgl_terakhir_setor: string;
   }

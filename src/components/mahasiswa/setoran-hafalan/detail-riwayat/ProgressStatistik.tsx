@@ -1,9 +1,6 @@
 // import { useTheme } from "@/components/themes/theme-provider";
 import { PieChart, Pie, Label, ResponsiveContainer, Cell } from "recharts";
-interface DocumentProgressChartsProps {
-  uploadedDocs: number;
-  totalDocs: number;
-}
+import {DocumentProgressChartsProps} from "@/interfaces/components/mahasiswa/setoran-hafalan/progres-statistik.interface";
 
 export default function ProgressStatistik({
   uploadedDocs,
@@ -16,7 +13,7 @@ export default function ProgressStatistik({
     { name: "Remaining", value: totalDocs - uploadedDocs },
   ];
   return (
-    <ResponsiveContainer width="40%" className={'-ml-12'} height="100%">
+    <ResponsiveContainer width="40%" className={'-ml-14 hidden md:block'} height="100%">
       <PieChart>
       <defs>
           {/* Gradient untuk bagian Uploaded */}

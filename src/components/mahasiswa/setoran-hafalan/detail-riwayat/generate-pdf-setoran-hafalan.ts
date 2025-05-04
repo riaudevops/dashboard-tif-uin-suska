@@ -3,30 +3,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { colourLabelingCategory } from "@/helpers/colour-labeling-category";
 import { GeistSansBold, GeistSansRegular } from "./jsPDFCustomFont";
-
-interface Setoran {
-  id: string;
-  tgl_setoran: string;
-  tgl_validasi: string;
-  dosen: {
-    nama: string;
-  };
-}
-
-interface SurahData {
-  nomor: number;
-  nama: string;
-  label: string;
-  sudah_setor: boolean;
-  setoran: Setoran[];
-}
-interface PDFGeneratorProps {
-  nama: string;
-  nim: string;
-  dataSurah: SurahData[];
-  dosen_pa: string;
-  nip_dosen: string;
-}
+import { PDFGeneratorProps } from "@/interfaces/components/mahasiswa/setoran-hafalan/generate-pdf-setoran-hafalan.interface";
 const PDF_CONFIG = {
   margin: 15,
   lineY: 45,
@@ -161,9 +138,9 @@ export const GeneratePDF = ({ props }: { props: PDFGeneratorProps }) => {
   const tableData = props.dataSurah.map((surah, index) => [
     `${index + 1}.`,
     surah.nama,
-    surah.setoran.length > 0 ? formatDate(surah.setoran[0].tgl_setoran) : "-",
+    surah.sudah_setor ? formatDate(surah.info_setoran.tgl_setoran) : "-",
     colourLabelingCategory(surah.label)[0],
-    surah.setoran.length > 0 ? surah.setoran[0].dosen.nama : "-",
+    surah.sudah_setor ? surah.info_setoran.dosen_yang_mengesahkan.nama : "-",
   ]);
 
   doc.setFont("Geist-Regular", "regular");

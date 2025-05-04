@@ -26,7 +26,7 @@ export default function MahasiswaSeminarDaftarPage() {
   };
 
   const handleNavigation = () => {
-    navigate("/mahasiswa/seminar-kp/validasi-berkas");
+    navigate("/mahasiswa/kerja-praktik/seminar/validasi-berkas");
   };
 
   return (

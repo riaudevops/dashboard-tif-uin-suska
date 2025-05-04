@@ -25,6 +25,12 @@ import KoordinatorKerjaPraktikPermohonanpage from "@/pages/Koordinator/Kerja-Pra
 import KoordinatorKerjaPraktikPermohonanDetailpage from "@/pages/Koordinator/Kerja-Praktik/Permohonan/Detail-Permohonan/page";
 import KoordinatorKerjaPraktikDailyReportpage from "@/pages/Koordinator/Kerja-Praktik/Daily-Report/page";
 import KoordinatorKerjaPraktikDailyReportDetailpage from "@/pages/Koordinator/Kerja-Praktik/Daily-Report/Detail-Mahasiswa/page";
+import DosenPengujiNilaiPage from "@/pages/dosen/seminar-kerja-praktek/nilai-penguji/page";
+import DosenPengujiMahasiswaPage from "@/pages/dosen/seminar-kerja-praktek/mahasiswa-diuji/page";
+import DetailMahasiswaSeminar from "@/pages/dosen/seminar-kerja-praktek/mahasiswa-diuji/DetailMahasiswaSeminar";
+import NilaiSeminarPenguji from "@/pages/dosen/seminar-kerja-praktek/nilai-penguji/NilaiSeminarPenguji";
+import KoordinatorValidasiBerkasPage from "@/pages/koordinator/seminar-kerja-praktek/validasi-berkas/page";
+import KoordinatorNilaiPage from "@/pages/koordinator/seminar-kerja-praktek/nilai/page";
 
 const router = createBrowserRouter([
 	{
@@ -229,6 +235,190 @@ const router = createBrowserRouter([
 		</ProtectedRoute>
 	)
 	}
+  {
+    path: "/",
+    element: <LandingPage />,
+  },
+  {
+    path: "/beranda",
+    element: <LandingPage />,
+  },
+  {
+    path: "/forbidden",
+    element: <ForbiddenPage />,
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
+  },
+  {
+    path: "/mahasiswa/setoran-hafalan/statistik",
+    element: (
+      <ProtectedRoute roles={["mahasiswa"]}>
+        <MahasiswaSetoranHafalanStatistikPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/mahasiswa/setoran-hafalan/detail-riwayat",
+    element: (
+      <ProtectedRoute roles={["mahasiswa"]}>
+        <MahasiswaSetoranHafalanDetailRiwayatPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/mahasiswa/kerja-praktik/daftar-kp",
+    element: <Navigate to="/mahasiswa/kerja-praktik/daftar-kp/permohonan" />,
+  },
+  {
+    path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan",
+    element: (
+      <ProtectedRoute roles={["mahasiswa"]}>
+        <MahasiswaKerjaPraktekDaftarKpPermohonanPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-pendaftaran",
+    element: (
+      <ProtectedRoute roles={["mahasiswa"]}>
+        <MahasiswaKerjaPraktekDaftarKpPermohonanFormPendaftaranPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-daftar-instansi",
+    element: (
+      <ProtectedRoute roles={["mahasiswa"]}>
+        <MahasiswaKerjaPraktekDaftarKpPermohonanFormDaftarInstansiPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/mahasiswa/kerja-praktik/daftar-kp/kelengkapan-berkas",
+    element: (
+      <ProtectedRoute roles={["mahasiswa"]}>
+        <MahasiswaKerjaPraktekDaftarKpKelengkapanBerkasPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/mahasiswa/kerja-praktik/daily-report",
+    element: <Navigate to="/mahasiswa/kerja-praktik/daily-report/isi-agenda" />,
+  },
+  {
+    path: "/mahasiswa/kerja-praktik/daily-report/isi-agenda",
+    element: (
+      <ProtectedRoute roles={["mahasiswa"]}>
+        <MahasiswaKerjaPraktekDailyReportIsiAgendaPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/mahasiswa/kerja-praktik/daily-report/isi-agenda/detail",
+    element: (
+      <ProtectedRoute roles={["mahasiswa"]}>
+        <MahasiswaKerjaPraktekDailyReportIsiAgendaDetailPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/mahasiswa/kerja-praktik/daily-report/riwayat-bimbingan",
+    element: (
+      <ProtectedRoute roles={["mahasiswa"]}>
+        <MahasiswaKerjaPraktikDailyReportRiwayatBimbinganPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/mahasiswa/seminar-kp",
+    element: (
+      <ProtectedRoute roles={["mahasiswa"]}>
+        <MahasiswaSeminarDaftarPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/mahasiswa/seminar-kp/validasi-berkas",
+    element: (
+      <ProtectedRoute roles={["mahasiswa"]}>
+        <MahasiswaSeminarValidasiBerkasPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/dosen/setoran-hafalan/mahasiswa-pa",
+    element: (
+      <ProtectedRoute roles={["dosen"]}>
+        <DosenSetoranHafalanMahasiswaPAPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/dosen/setoran-hafalan/mahasiswa-pa/detail",
+    element: (
+      <ProtectedRoute roles={["dosen"]}>
+        <DetailMahasiswaSetoran />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/dosen/seminar-kp/nilai-penguji",
+    element: (
+      <ProtectedRoute roles={["dosen"]}>
+        <DosenPengujiNilaiPage />
+      </ProtectedRoute>
+    ),
+  },
+  // {
+  //   path: "/dosen/seminar-kerja-praktek/nilai-penguji/detail",
+  //   element: (
+  //     <ProtectedRoute roles={["dosen"]}>
+  //       <DetailMahasiswaSetoran />
+  //     </ProtectedRoute>
+  //   ),
+  // },
+  {
+    path: "/dosen/seminar-kp/mahasiswa-diuji",
+    element: (
+      <ProtectedRoute roles={["dosen"]}>
+        <DosenPengujiMahasiswaPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/dosen/seminar-kp/mahasiswa-diuji/detail",
+    element: (
+      <ProtectedRoute roles={["dosen"]}>
+        <DetailMahasiswaSeminar />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/dosen/seminar-kp/nilai-penguji/input-nilai",
+    element: (
+      <ProtectedRoute roles={["dosen"]}>
+        <NilaiSeminarPenguji />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/koordinator/seminar-kerja-praktek/validasi-berkas",
+    element: (
+      <ProtectedRoute roles={["koordinator-kp"]}>
+        <KoordinatorValidasiBerkasPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/koordinator/seminar-kerja-praktek/nilai",
+    element: (
+      <ProtectedRoute roles={["koordinator-kp"]}>
+        <KoordinatorNilaiPage />
+      </ProtectedRoute>
+    ),
+  },
 ]);
 
 export default router;

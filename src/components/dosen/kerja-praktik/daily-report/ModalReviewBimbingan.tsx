@@ -2,17 +2,17 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
-interface ReviewDailyReportProps {
+interface ReviewBimbinganProps {
   isOpen: boolean;
   onClose: () => void;
   reportData?: any;
 }
 
-const ReviewDailyReport = ({
+const ReviewBimbinganKP = ({
   isOpen,
   onClose,
   reportData,
-}: ReviewDailyReportProps) => {
+}: ReviewBimbinganProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [showContent, setShowContent] = useState(false);
 
@@ -126,7 +126,7 @@ const ReviewDailyReport = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 bg-black/10 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
           initial="hidden"
           animate="visible"
           exit="exit"
@@ -167,7 +167,7 @@ const ReviewDailyReport = ({
               transition={{ duration: 0.3, delay: 0.1 }}
             >
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-                Review Daily Report
+                Review Bimbingan Kerja Praktik
               </h2>
             </motion.div>
 
@@ -180,29 +180,17 @@ const ReviewDailyReport = ({
                   animate="visible"
                   variants={contentVariants}
                 >
-                  <div className="space-y-6">
+                  <div className="space-y-4">
                     <div className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
-                      <div className="p-6">
-                        <div className="flex justify-between items-center mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
-                          <p className="text-gray-600 dark:text-gray-400 font-medium">
-                            {data.tanggal}
-                          </p>
-                          <p className="text-gray-600 dark:text-gray-400 font-medium">
-                            {data.waktu}
-                          </p>
-                        </div>
-
+                      <div className="p-4">
                         <h3 className="font-semibold text-xl text-center my-6 text-gray-800 dark:text-white">
                           {data.judul}
                         </h3>
 
                         {/* Report content - Only the description is kept */}
-                        <motion.div 
-                          className="mt-8"
-                          variants={itemVariants}
-                        >
-                          <h4 className="font-medium text-lg mb-4 text-gray-800 dark:text-gray-200">
-                            Deskripsi Kegiatan
+                        <motion.div className="mt-8" variants={itemVariants}>
+                          <h4 className="font-medium text-lg mb-2 text-gray-800 dark:text-gray-200">
+                            Evaluasi Bimbingan
                           </h4>
                           <div className="bg-gray-50 dark:bg-gray-700/30 p-6 rounded-lg border border-dashed border-gray-300 dark:border-gray-600">
                             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
@@ -224,4 +212,4 @@ const ReviewDailyReport = ({
   );
 };
 
-export default ReviewDailyReport;
+export default ReviewBimbinganKP;

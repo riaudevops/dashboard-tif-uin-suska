@@ -11,13 +11,14 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, CheckCircle, AlertCircle, Award, X } from "lucide-react";
+import { Eye, CheckCircle, AlertCircle, Award, X, EyeClosed } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const BimbinganKerjaPraktikPage = () => {
   const [isReviewBimbinganModal, setReviewBimbinganModal] = useState(false);
   const [showLoginNotification, setShowLoginNotification] = useState(false);
+  const [hoveredButtonId, setHoveredButtonId] = useState<number | null>(null);
 
   // Cek apakah ini pertama kali login
   useEffect(() => {
@@ -334,11 +335,18 @@ const BimbinganKerjaPraktikPage = () => {
                   </TableCell>
                   <TableCell className="text-center">
                     <Button
-                      className="text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm"
+                      className="text-white bg-blue-500 hover:bg-blue-600 transition-colors shadow-sm"
                       size="sm"
                       onClick={() => setReviewBimbinganModal(true)}
+                      onMouseEnter={() => setHoveredButtonId(item.id)}
+                      onMouseLeave={() => setHoveredButtonId(null)}
                     >
-                      <Eye className="h-4 w-4 mr-1" /> Detail
+                      {hoveredButtonId === item.id ? (
+                        <Eye size={16} />
+                      ) : (
+                        <EyeClosed size={16} />
+                      )}
+                      Lihat Detail
                     </Button>
                   </TableCell>
                 </TableRow>

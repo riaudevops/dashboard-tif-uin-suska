@@ -204,8 +204,6 @@ const InstansiKerjaPraktikPage = () => {
         );
       }
     } else {
-      // Complex pagination with ellipses
-      // Always show first page
       items.push(
         <PaginationItem key={1}>
           <PaginationLink
@@ -362,6 +360,7 @@ const InstansiKerjaPraktikPage = () => {
           </div>
         </CardHeader>
         <CardContent className="p-0">
+          
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow className="hover:bg-slate-50">
@@ -431,7 +430,7 @@ const InstansiKerjaPraktikPage = () => {
               ))}
             </TableBody>
           </Table>
-
+          
           {/* Empty state when no students match search */}
           {filteredStudents.length === 0 && (
             <div className="py-12 flex flex-col items-center justify-center text-center">

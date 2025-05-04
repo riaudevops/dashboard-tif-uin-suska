@@ -17,6 +17,8 @@ import { ShinyButton } from "@/components/magicui/shiny-button";
 import DetailAgendaModal from "@/components/mahasiswa/daily-report/isi-agenda/ReviewDailyReport";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import EditDailyReport from "@/components/mahasiswa/daily-report/isi-agenda/EditDailyReport";
+
 
 const MahasiswaKerjaPraktekDailyReportIsiAgendaDetailPage = () => {
   const { search } = useLocation();
@@ -27,6 +29,7 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaDetailPage = () => {
   // Add state to control modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedRows] = useState<number[]>([]);
 
   useEffect(() => {
@@ -182,7 +185,8 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaDetailPage = () => {
                             </Button>
                             <Button 
                              size="sm"
-                             className="bg-amber-500 hover:bg-amber-600 text-white ml-2">
+                             className="bg-amber-500 hover:bg-amber-600 text-white ml-2"
+                             onClick={() => setIsEditModalOpen(true)}>
                             <FilePenLine className="h-4 w-4" />
                             </Button>
                           </div>
@@ -236,6 +240,10 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaDetailPage = () => {
       <DetailAgendaModal
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
+      />
+      <EditDailyReport
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
       />
     </DashboardLayout>
   );

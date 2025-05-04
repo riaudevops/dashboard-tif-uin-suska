@@ -36,7 +36,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-
 const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showNotification, setShowNotification] = useState(false);
@@ -44,7 +43,7 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
     useState(false);
   const [showAbsensiNotification, setShowAbsensiNotification] = useState(false);
   const [absensiNotificationType, setAbsensiNotificationType] =
-    useState("success"); 
+    useState("success");
   const [absensiNotificationMessage, setAbsensiNotificationMessage] =
     useState("");
   const [agendaEntries, setAgendaEntries] = useState<
@@ -53,8 +52,7 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const entriesPerPage = 8;
   const [lastAbsensiDate, setLastAbsensiDate] = useState<Date | null>(null);
- 
-  
+
   // Internship period dates
   const internshipStartDate = new Date("2025-03-15");
   const internshipEndDate = new Date("2025-03-25");
@@ -298,7 +296,7 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
   const getstatusmahasiswa = (status: string) => {
     switch (status) {
       case "Baru":
-        return "bg-green-500 status-indicator animate-pulse";
+        return "bg-green-500";
       case "Lanjut":
         return "bg-amber-500";
       case "Gagal":
@@ -313,41 +311,41 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
     switch (type) {
       case "success":
         return {
-          bg: "bg-gradient-to-r from-green-50 to-green-100",
           border: "border-l-4 border-green-500",
           text: "text-green-700",
           icon: (
             <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
           ),
           buttonClass: "text-green-500 hover:text-green-700",
+          timerColor: "bg-green-500",
         };
       case "warning":
         return {
-          bg: "bg-gradient-to-r from-amber-50 to-amber-100",
           border: "border-l-4 border-amber-500",
           text: "text-amber-700",
           icon: (
             <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
           ),
           buttonClass: "text-amber-500 hover:text-amber-700",
+          timerColor: "bg-amber-500",
         };
       case "error":
         return {
-          bg: "bg-gradient-to-r from-red-50 to-red-100",
           border: "border-l-4 border-red-500",
           text: "text-red-700",
           icon: <X className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />,
           buttonClass: "text-red-500 hover:text-red-700",
+          timerColor: "bg-red-500",
         };
       default:
         return {
-          bg: "bg-gradient-to-r from-blue-50 to-blue-100",
           border: "border-l-4 border-blue-500",
           text: "text-blue-700",
           icon: (
             <Clock className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
           ),
           buttonClass: "text-blue-500 hover:text-blue-700",
+          timerColor: "bg-blue-500",
         };
     }
   };
@@ -374,14 +372,14 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
               <div
                 className="fixed top-4 right-4 z-50 max-w-md transform transition-all duration-500 ease-in-out"
                 style={{
-                  animation: "slideIn 0.5s ease-out, pulse 2s infinite",
+                  animation: "slideIn 0.5s ease-out",
                   opacity: showNotification ? 1 : 0,
                   transform: showNotification
                     ? "translateX(0)"
                     : "translateX(100%)",
                 }}
               >
-                <div className="bg-gradient-to-r from-amber-50 to-amber-100 border-l-4 border-amber-500 text-amber-700 p-4 rounded-md shadow-lg flex items-start justify-between">
+                <div className="bg-white dark:bg-gray-800 border-l-4 border-amber-500 text-amber-700 p-4 rounded-md shadow-lg flex items-start justify-between relative">
                   <div className="flex gap-3">
                     <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
                     <div>
@@ -404,6 +402,9 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
                   >
                     <X className="h-4 w-4" />
                   </button>
+                  
+                  {/* Timer countdown line */}
+                  <div className="absolute bottom-0 left-0 h-1 bg-amber-500 w-full rounded-b-md" style={{ animation: "countdown 10s linear forwards" }}></div>
                 </div>
               </div>
             )}
@@ -415,14 +416,14 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
               <div
                 className="fixed top-4 right-4 z-50 max-w-md transform transition-all duration-500 ease-in-out"
                 style={{
-                  animation: "slideIn 0.5s ease-out, pulse 2s infinite",
+                  animation: "slideIn 0.5s ease-out",
                   opacity: showCompletionNotification ? 1 : 0,
                   transform: showCompletionNotification
                     ? "translateX(0)"
                     : "translateX(100%)",
                 }}
               >
-                <div className="bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md shadow-lg flex items-start justify-between">
+                <div className="bg-white dark:bg-gray-800 border-l-4 border-green-500 text-green-700 p-4 rounded-md shadow-lg flex items-start justify-between relative">
                   <div className="flex gap-3">
                     <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
                     <div>
@@ -441,16 +442,19 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
                   >
                     <X className="h-4 w-4" />
                   </button>
+                  
+                  {/* Timer countdown line */}
+                  <div className="absolute bottom-0 left-0 h-1 bg-green-500 w-full rounded-b-md" style={{ animation: "countdown 15s linear forwards" }}></div>
                 </div>
               </div>
             )}
 
-          {/* Beautiful Absensi Notification - Dynamic based on type */}
+          {/* Absensi Notification - Dynamic based on type */}
           {!isLoading && showAbsensiNotification && (
             <div
               className="fixed top-4 right-4 z-50 max-w-md transform transition-all duration-500 ease-in-out"
               style={{
-                animation: "slideIn 0.5s ease-out, fadeInOut 5s ease-in-out",
+                animation: "slideIn 0.5s ease-out",
                 opacity: showAbsensiNotification ? 1 : 0,
                 transform: showAbsensiNotification
                   ? "translateX(0)"
@@ -458,11 +462,11 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
               }}
             >
               <div
-                className={`${
-                  getNotificationStyles(absensiNotificationType).bg
-                } ${getNotificationStyles(absensiNotificationType).border} ${
+                className={`bg-white dark:bg-gray-800/30 ${
+                  getNotificationStyles(absensiNotificationType).border
+                } ${
                   getNotificationStyles(absensiNotificationType).text
-                } p-4 rounded-md shadow-lg flex items-start justify-between`}
+                } p-4 rounded-md shadow-lg flex items-start justify-between relative`}
               >
                 <div className="flex gap-3">
                   {getNotificationStyles(absensiNotificationType).icon}
@@ -487,6 +491,14 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
                 >
                   <X className="h-4 w-4" />
                 </button>
+                
+                {/* Timer countdown line */}
+                <div 
+                  className={`absolute bottom-0 left-0 h-1 ${
+                    getNotificationStyles(absensiNotificationType).timerColor
+                  } w-full rounded-b-md`} 
+                  style={{ animation: "countdown 5s linear forwards" }}
+                ></div>
               </div>
             </div>
           )}
@@ -505,24 +517,24 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
                 </div>
               </div>
             ) : (
-              <div className="bg-gradient-to-r from-white to-gray-50 dark:from-gray-800/40 dark:to-gray-800/20 rounded-lg border border-gray-100 dark:border-gray-700 shadow-md overflow-hidden">
+              <div className="bg-gradient-to-r from-white to-gray-50 dark:from-gray-800/40 dark:to-gray-800/20  rounded-lg border border-gray-100 dark:border-gray-700 shadow-md overflow-hidden">
                 {/* Header Section with Avatar */}
-                <div className="bg-primary/10 p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                <div className="bg-gradient-to-br from-purple-600 to-indigo-700 text-white p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="bg-white dark:bg-gray-800 rounded-full h-12 w-12 flex items-center justify-center shadow-inner border border-primary/20">
                       <User className="h-7 w-7 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+                      <h3 className="text-lg font-bold text-gray-50 dark:text-gray-100">
                         {biodataMahasiswa.nama}
                       </h3>
                       <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                        <span className="bg-primary/20 text-primary px-2 py-0.5 rounded-md text-xs font-medium mr-2">
+                        <span className="bg-white text-gray-600 dark:text-gray-300 dark:bg-gray-800 px-2 py-0.5 rounded-md border dark:border-gray-700 text-xs font-medium mr-2">
                           Semester {biodataMahasiswa.semester}
                         </span>
-                        <span className="flex items-center">
+                        <span className="flex text-white items-center">
                           <span
-                            className={`inline-block w-3 h-3 rounded-full mr-1.5 ${getstatusmahasiswa(
+                            className={`inline-block animate-pulse w-3 h-3 rounded-full mr-1.5 ${getstatusmahasiswa(
                               biodataMahasiswa.status
                             )}`}
                           ></span>
@@ -682,9 +694,7 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
                               }}
                               disabled={!internshipProgress.isCompleted}
                               onClick={handlePrintClick}
-                              
                             >
-                              
                               {internshipProgress.isCompleted ? (
                                 <>
                                   <Printer className="h-4 w-4 text-green-500" />
@@ -714,9 +724,9 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
               </div>
             )}
           </div>
-
-          {/* Table Section with Pagination */}
-          <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
+         
+       {/* Table Section with Pagination */}
+       <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
             <Table>
               <TableHeader>
                 <TableRow className="bg-primary/10 dark:bg-primary/5">
@@ -753,7 +763,7 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
               <TableBody>
                 {isLoading ? (
                   // Skeleton rows
-                  [...Array(8)].map((_, index) => (
+                  [...Array(5)].map((_, index) => (
                     <TableRow
                       key={index}
                       className="hover:bg-gray-100/50 dark:hover:bg-gray-700/20"
@@ -813,7 +823,6 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
                       </TableCell>
                       <TableCell className="text-center">
                         <Button
-                          variant="outline"
                           size="sm"
                           className="text-white bg-blue-500 hover:bg-blue-600 shadow-sm hover:shadow transition-all duration-200"
                           onClick={() =>
@@ -870,26 +879,45 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
               </div>
             )}
           </div>
+      
 
-          {/* Add custom CSS for animations */}
-          <style type="text/css">{`
-            @keyframes slideIn {
-              from {
-                transform: translateX(100%);
-                opacity: 0;
-              }
-              to {
-                transform: translateX(0);
-                opacity: 1;
-              }
+       <style type="text/css">{`
+          @keyframes slideIn {
+            from {
+              transform: translateX(100%);
+              opacity: 0;
             }
-            
-            
-          `}</style>
-        </CardContent>
-      </div>
-    </DashboardLayout>
-  );
+            to {
+              transform: translateX(0%);
+              opacity: 1;
+            }
+          }
+          
+           @keyframes countdown {
+            from {
+              width: 100%;
+              right: 0;
+              left: auto;
+            }
+            to {
+              width: 0%;
+              right: 0;
+              left: auto;
+            }
+          }
+
+          .status-indicator {
+            border-radius: 50%;
+            display: inline-block;
+            height: 10px;
+            width: 10px;
+            margin-right: 6px;
+          }
+        `}</style>
+      </CardContent>
+    </div>
+  </DashboardLayout>
+);
 };
 
 export default MahasiswaKerjaPraktekDailyReportIsiAgendaPage;

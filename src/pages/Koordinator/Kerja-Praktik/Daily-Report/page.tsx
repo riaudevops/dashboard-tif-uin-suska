@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, ChevronRight, ArrowUpRight, ChevronLeft, ChevronRight as ChevronRightIcon } from "lucide-react";
+import { Search, ChevronRight,  ChevronLeft, ChevronRight as ChevronRightIcon, SquareArrowOutUpRight } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
@@ -34,18 +34,7 @@ export default function KoordinatorKerjaPraktikDailyReportpage() {
     { id: 8, name: "Rahmat Hidayat", nim: "1225111219", Angkatan: "2024" },
     { id: 9, name: "Siti Nuraini", nim: "1225111220", Angkatan: "2022" },
     { id: 10, name: "Dewi Anggraini", nim: "1225111221", Angkatan: "2023" },
-    { id: 11, name: "Budi Santoso", nim: "1225111222", Angkatan: "2022" },
-    { id: 12, name: "Anita Wijaya", nim: "1225111223", Angkatan: "2023" },
-    { id: 13, name: "Fajar Maulana", nim: "1225111224", Angkatan: "2024" },
-    { id: 14, name: "Rina Fitriani", nim: "1225111225", Angkatan: "2022" },
-    { id: 15, name: "Agus Setiawan", nim: "1225111226", Angkatan: "2023" },
-    { id: 16, name: "Putri Lestari", nim: "1225111227", Angkatan: "2024" },
-    { id: 17, name: "Hendra Gunawan", nim: "1225111228", Angkatan: "2022" },
-    { id: 18, name: "Maya Sari", nim: "1225111229", Angkatan: "2023" },
-    { id: 19, name: "Rudi Hartono", nim: "1225111230", Angkatan: "2024" },
-    { id: 20, name: "Novi Indah", nim: "1225111231", Angkatan: "2022" },
-    { id: 21, name: "Deni Hermawan", nim: "1225111232", Angkatan: "2023" },
-    { id: 22, name: "Lia Puspita", nim: "1225111233", Angkatan: "2024" },
+
   ];
 
   // Filter data based on active tab and search term
@@ -116,7 +105,7 @@ export default function KoordinatorKerjaPraktikDailyReportpage() {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="bg-blue-50 dark:bg-blue-900/30 p-0.5 rounded-md">
+              <TabsList className="bg-gray-100 dark:bg-gray-700 p-0.5 rounded-md">
                 <TabsTrigger
                   value="Semua Riwayat"
                   className="text-sm font-medium data-[state=active]:bg-blue-500 dark:data-[state=active]:bg-blue-700 data-[state=active]:text-white rounded-md"
@@ -200,7 +189,7 @@ export default function KoordinatorKerjaPraktikDailyReportpage() {
                         )
                       }
                     >
-                      <ArrowUpRight className="h-4 w-4" />
+                      <SquareArrowOutUpRight className="h-4 w-4" />
                       Lihat Detail
                     </Button>
                   </TableCell>

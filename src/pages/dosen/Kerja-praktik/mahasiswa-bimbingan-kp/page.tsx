@@ -1,7 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { Search, Filter, Info, ChevronRight, BarChart, X, Calendar, GraduationCap, User } from "lucide-react";
+import {
+  Search,
+  Filter,
+  Info,
+  ChevronRight,
+  BarChart,
+  X,
+  Calendar,
+  GraduationCap,
+  User,
+} from "lucide-react";
 
 export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
   const navigate = useNavigate();
@@ -98,7 +108,7 @@ export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
   // Function to get initials from name (first 2 letters)
   const getInitials = (name: string) => {
     // Split the name by spaces and get the first two characters
-    const nameParts = name.split(' ');
+    const nameParts = name.split(" ");
     if (nameParts.length >= 2) {
       // Get first letter of first name and first letter of last name
       return (nameParts[0][0] + nameParts[1][0]).toUpperCase();
@@ -173,7 +183,7 @@ export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
   ];
 
   // Function to apply filter
-  const applyFilter = (filter : string) => {
+  const applyFilter = (filter: string) => {
     setSelectedFilter(filter);
     setShowFilterDropdown(false);
   };
@@ -181,10 +191,11 @@ export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
   // Function to get filtered students
   const getFilteredStudents = () => {
     // First apply status filter
-    let filtered = selectedFilter === "Total Bimbingan" 
-      ? students 
-      : students.filter((student) => student.status === selectedFilter);
-    
+    let filtered =
+      selectedFilter === "Total Bimbingan"
+        ? students
+        : students.filter((student) => student.status === selectedFilter);
+
     // Then apply search filter if there's a search query
     if (searchQuery.trim() !== "") {
       const query = searchQuery.toLowerCase();
@@ -194,20 +205,15 @@ export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
           student.id.toLowerCase().includes(query)
       );
     }
-    
+
     return filtered;
   };
 
   // Get filtered students
   const filteredStudents = getFilteredStudents();
 
-  // Function to handle navigation to detail page
-  const handleNavigateToDetail = (studentId : string) => {
-    navigate(`/dosen/kerja-praktik/mahasiswa-bimbingan-kp/detail/${studentId}`);
-  };
-
   // Handle search input change
-  const handleSearchChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
@@ -242,7 +248,7 @@ export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6 ">
           {stats.map((stat, index) => (
@@ -267,20 +273,20 @@ export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
         <div className="flex flex-col sm:flex-row gap-3 mb-4">
           {/* Filter Button with Dropdown */}
           <div className="relative sm:w-auto">
-            <button 
+            <button
               className="flex items-center gap-2 dark:bg-gray-800/30 border px-4 py-2 rounded-md text-sm w-full"
               onClick={() => setShowFilterDropdown(!showFilterDropdown)}
             >
               <Filter className="h-4 w-4" />
               <span>Filter Status</span>
             </button>
-            
+
             {/* Filter Dropdown */}
             {showFilterDropdown && (
               <div className="absolute z-10 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 border dark:border-gray-700">
                 <div className="flex justify-between items-center px-4 py-2 border-b dark:border-gray-700">
                   <span className="font-medium">Filter Status</span>
-                  <button 
+                  <button
                     onClick={() => setShowFilterDropdown(false)}
                     className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                   >
@@ -292,7 +298,9 @@ export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
                     <button
                       key={option}
                       className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                        selectedFilter === option ? "bg-blue-50 dark:bg-gray-700 font-medium text-blue-600 dark:text-blue-400" : ""
+                        selectedFilter === option
+                          ? "bg-blue-50 dark:bg-gray-700 font-medium text-blue-600 dark:text-blue-400"
+                          : ""
                       }`}
                       onClick={() => applyFilter(option)}
                     >
@@ -332,7 +340,9 @@ export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
           <div className="flex flex-wrap gap-2">
             {selectedFilter !== "Total Bimbingan" && (
               <div className="bg-blue-50 dark:bg-gray-700/30 shadow-sm px-3 py-1 rounded-full flex items-center gap-1">
-                <span className="text-blue-600 dark:text-blue-400">{selectedFilter}</span>
+                <span className="text-blue-600 dark:text-blue-400">
+                  {selectedFilter}
+                </span>
                 <button
                   onClick={() => applyFilter("Total Bimbingan")}
                   className="text-blue-600 dark:text-blue-400 hover:text-blue-800"
@@ -343,7 +353,9 @@ export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
             )}
             {searchQuery && (
               <div className="bg-blue-50 dark:bg-gray-700 px-3 py-1 rounded-full flex items-center gap-1">
-                <span className="text-blue-600 dark:text-blue-400">Pencarian: {searchQuery}</span>
+                <span className="text-blue-600 dark:text-blue-400">
+                  Pencarian: {searchQuery}
+                </span>
                 <button
                   onClick={clearSearch}
                   className="text-blue-600 dark:text-blue-400 hover:text-blue-800"
@@ -353,7 +365,7 @@ export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
               </div>
             )}
           </div>
-          
+
           {/* Data Information */}
           <div className="flex items-center gap-2 dark:text-gray-400">
             <Info className="h-4 w-4 dark:text-gray-400" />
@@ -371,7 +383,11 @@ export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
               >
                 {/* Card Header with Status Badge */}
                 <div className="px-4 py-3 border-b dark:border-gray-700 flex justify-between items-center">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(student.status)}`}>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(
+                      student.status
+                    )}`}
+                  >
                     {student.status}
                   </span>
                   <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
@@ -379,14 +395,16 @@ export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
                     Terakhir bimbingan: {student.lastSupervision}
                   </span>
                 </div>
-                
+
                 {/* Card Content */}
                 <div className="p-4 bg-white dark:bg-gray-800/30">
                   <div className="flex items-start gap-4">
                     {/* Student Initials Avatar */}
                     <div className="flex-shrink-0">
-                      <div 
-                        className={`w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl border-2 ${getStatusBorderColor(student.status)} ${getStatusColor(student.status)} shadow-sm`}
+                      <div
+                        className={`w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl border-2 ${getStatusBorderColor(
+                          student.status
+                        )} ${getStatusColor(student.status)} shadow-sm`}
                       >
                         {getInitials(student.name)}
                       </div>
@@ -396,29 +414,34 @@ export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
                       <h3 className="font-bold text-lg dark:text-white mb-1">
                         {student.name}
                       </h3>
-                      
+
                       <div className="space-y-2">
                         <div className="flex items-center text-gray-600 dark:text-gray-300 text-sm">
                           <span className="flex items-center gap-1 w-24">
                             <User className="h-3 w-3" />
-                            NIM</span>
+                            NIM
+                          </span>
                           <span className="font-medium">: {student.id}</span>
                         </div>
-                        
+
                         <div className="flex items-center text-gray-600 dark:text-gray-300 text-sm">
                           <span className="w-24 flex items-center gap-1">
                             <GraduationCap className="h-3 w-3" />
                             Semester
                           </span>
-                          <span className="font-medium">: {student.semester}</span>
+                          <span className="font-medium">
+                            : {student.semester}
+                          </span>
                         </div>
-                        
+
                         <div className="flex items-center text-gray-600 dark:text-gray-300 text-sm">
                           <span className="w-24 flex items-center gap-1">
                             <BarChart className="h-3 w-3" />
                             Bimbingan
                           </span>
-                          <span className="font-medium">: {student.supervisionCount} kali</span>
+                          <span className="font-medium">
+                            : {student.supervisionCount} kali
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -427,9 +450,13 @@ export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
 
                 {/* Card Footer */}
                 <div className="flex justify-end p-3 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-                  <button 
+                  <button
                     className="flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 transition-colors py-1 px-3 rounded-md hover:bg-blue-50 dark:hover:bg-gray-800"
-                    onClick={() => handleNavigateToDetail(student.id)}
+                    onClick={() =>
+                      navigate(
+                        `/dosen/kerja-praktik/mahasiswa-bimbingan-kp/detail?nim=${student.id}&name=${student.name}&semester=${student.semester}&status=${student.status}`
+                      )
+                    }
                   >
                     <span>Lihat Detail</span>
                     <ChevronRight className="h-4 w-4 ml-1" />
@@ -444,12 +471,16 @@ export const DosenKerjaPraktikmahasiswaBimbinganpage = () => {
               </div>
               <h3 className="font-medium text-lg mb-1">Tidak Ada Data</h3>
               <p className="text-gray-500 dark:text-gray-400 text-sm max-w-md">
-                {searchQuery 
-                  ? `Tidak ada mahasiswa yang cocok dengan pencarian "${searchQuery}"${selectedFilter !== "Total Bimbingan" ? ` dengan status "${selectedFilter}"` : ""}.` 
+                {searchQuery
+                  ? `Tidak ada mahasiswa yang cocok dengan pencarian "${searchQuery}"${
+                      selectedFilter !== "Total Bimbingan"
+                        ? ` dengan status "${selectedFilter}"`
+                        : ""
+                    }.`
                   : `Tidak ada mahasiswa bimbingan dengan status "${selectedFilter}" pada tahun ajaran ini.`}
               </p>
               {(searchQuery || selectedFilter !== "Total Bimbingan") && (
-                <button 
+                <button
                   className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition-colors"
                   onClick={() => {
                     setSearchQuery("");

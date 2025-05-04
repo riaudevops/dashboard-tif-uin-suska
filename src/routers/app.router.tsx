@@ -21,10 +21,10 @@ import MahasiswaSeminarValidasiBerkasPage from "@/pages/mahasiswa/seminar/valida
 import InstansiKerjaPraktikpage from "@/pages/instansi/page";
 import InstansiKerjaPraktikMahasiswaDetailPage from "@/pages/instansi/detailmahasiswa/page";
 import DailyReportKerjaPraktikMahasiswaDetailPage from "@/pages/instansi/detailmahasiswa/detail-agenda/page";
-import KoordinatorKerjaPraktikPermohonanpage from "@/pages/Koordinator/Kerja-Praktik/Permohonan/page";
-import KoordinatorKerjaPraktikPermohonanDetailpage from "@/pages/Koordinator/Kerja-Praktik/Permohonan/Detail-Permohonan/page";
-import KoordinatorKerjaPraktikDailyReportpage from "@/pages/Koordinator/Kerja-Praktik/Daily-Report/page";
-import KoordinatorKerjaPraktikDailyReportDetailpage from "@/pages/Koordinator/Kerja-Praktik/Daily-Report/Detail-Mahasiswa/page";
+import KoordinatorKerjaPraktikPermohonanpage from "@/pages/koordinator/kerja-praktik/permohonan/page";
+import KoordinatorKerjaPraktikPermohonanDetailpage from "@/pages/koordinator/kerja-praktik/permohonan/Detail-Permohonan/page";
+import KoordinatorKerjaPraktikDailyReportpage from "@/pages/koordinator/kerja-praktik/daily-report/page";
+import KoordinatorKerjaPraktikDailyReportDetailpage from "@/pages/koordinator/kerja-praktik/daily-report/Detail-Mahasiswa/page";
 
 const router = createBrowserRouter([
 	{
@@ -164,7 +164,7 @@ const router = createBrowserRouter([
 		)
 	},
 	{
-		path: "/dosen/kerja-praktik/mahasiswa-bimbingan-kp/detail/:id",
+		path: "/dosen/kerja-praktik/mahasiswa-bimbingan-kp/detail",
 		element: (
 			<ProtectedRoute roles={["dosen"]}>
 				<DosenKerjaPraktikMahasiswaBimbinganKPDetailpage/>
@@ -221,14 +221,7 @@ const router = createBrowserRouter([
 			</ProtectedRoute>
 		)
 	},
-	{
-	path: "/Koordinator-kp/kerja-praktik/Daily-Report/Detail-Mahasiswa",
-	element: (
-		<ProtectedRoute roles={["Koordinator-kp"]}>
-			<KoordinatorKerjaPraktikDailyReportDetailpage />
-		</ProtectedRoute>
-	)
-	}
+	
 ]);
 
 export default router;

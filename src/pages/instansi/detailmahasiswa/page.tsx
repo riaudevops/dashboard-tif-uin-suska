@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
+import { Card } from "@/components/ui/card";
 
 const DailyReportKerjaPraktikMahasiswaPage = () => {
   const [selectedRows, setSelectedRows] = useState<String[]>([]);
@@ -267,6 +268,7 @@ const DailyReportKerjaPraktikMahasiswaPage = () => {
 
         {/* Table section - using Shadcn UI Table */}
         <div className="bg-gray-50 rounded-lg border border-gray-100 shadow-sm">
+          <Card className="rounded-lg border border-gray-300 ">
           <Table>
             <TableHeader className="bg-blue-500/10 rounded-lg">
               <TableRow className="bg-primary/10 dark:bg-primary/5">
@@ -342,6 +344,7 @@ const DailyReportKerjaPraktikMahasiswaPage = () => {
               ))}
             </TableBody>
           </Table>
+          </Card>
         </div>
 
         {/* Pagination footer */}

@@ -2,6 +2,7 @@ import { SideBarNavMenuItemsProps } from "@/interfaces/components/globals/sideba
 import {
 	BackpackIcon,
 	BookOpen,
+	GraduationCap,
 	LayoutGridIcon,
 	LucideHistory,
 	PieChart,
@@ -46,19 +47,15 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 				},
 				{
 					title: "Daily Report",
-					url: "#",
+					url: "/mahasiswa/kerja-praktik/daily-report/isi-agenda",
 					icon: BookOpen,
 					isActive: true,
-					items: [
-						{
-							title: "Isi Agenda",
-							url: "/mahasiswa/kerja-praktik/daily-report/isi-agenda",
-						},
-						{
-							title: "Riwayat Bimbingan",
-							url: "/mahasiswa/kerja-praktik/daily-report/riwayat-bimbingan",
-						},
-					],
+				},
+				{
+					title: "Bimbingan",
+					url: "/mahasiswa/kerja-praktik/daily-report/riwayat-bimbingan",
+					icon: GraduationCap,
+					isActive: true,
 				},
 			],
 		},
@@ -99,7 +96,7 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 			label: "Kerja Praktek",
 			menus: [
 				{
-					title: "Mahasiswa Bimbingan KP",
+					title: "Mahasiswa Bimbingan",
 					url: "/dosen/kerja-praktik/mahasiswa-bimbingan-kp",
 					icon: UserRoundPenIcon,
 					

@@ -103,7 +103,7 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 					items: [
 						{
 							title: "Permohonan",
-							url: "/koordinator-kp/kerja-praktik/Permohonan",
+							url: "/koordinator-kp/kerja-praktik/permohonan",
 						},
 						{
 							title: "Validasi Berkas",
@@ -111,7 +111,7 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 						},
 						{
 							title: "Daily Report",
-							url: "/koordinator-kp/kerja-praktik/Daily-Report",
+							url: "/koordinator-kp/kerja-praktik/daily-report",
 						},
 					],
 				},

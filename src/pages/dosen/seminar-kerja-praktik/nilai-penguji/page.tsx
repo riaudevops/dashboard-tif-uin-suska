@@ -32,7 +32,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 // import DetailSeminarModal from "@/components/dosen/seminar/detail-seminar-modal";
-import InputNilaiModal from "@/pages/dosen/seminar-kerja-praktek/nilai-penguji/NilaiSeminarPenguji";
+import InputNilaiModal from "@/pages/dosen/seminar-kerja-praktik/nilai-penguji/NilaiSeminarPenguji";
 
 // Type definitions
 type Role = "dibimbing" | "diuji";

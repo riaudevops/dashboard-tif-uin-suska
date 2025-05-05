@@ -13,7 +13,7 @@ import {
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-export const KoordinatorKerjaPraktikPermohonanDetailpage = () => {
+const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
   const { search } = useLocation();
   const query = new URLSearchParams(search);
   const name = query.get("name") || "-";
@@ -360,4 +360,4 @@ export const KoordinatorKerjaPraktikPermohonanDetailpage = () => {
   );
 };
 
-export default KoordinatorKerjaPraktikPermohonanDetailpage;
+export default KoordinatorKerjaPraktikPermohonanDetailPage;

@@ -31,7 +31,7 @@ import { Button } from "@/components/ui/button";
 import TambahBimbingan from "@/components/dosen/kerja-praktik/daily-report/ModalTambahBimbingan";
 import ReviewBimbinganKP from "@/components/dosen/kerja-praktik/daily-report/ModalReviewBimbingan";
 
-export const KoordinatorKerjaPraktikDailyReportDetailpage = () => {
+export const KoordinatorKerjaPraktikDailyReportDetailPage = () => {
   const { search } = useLocation();
   const [activeTab, setActiveTab] = useState("Daily-Report");
   const query = new URLSearchParams(search);
@@ -506,4 +506,4 @@ export const KoordinatorKerjaPraktikDailyReportDetailpage = () => {
   );
 };
 
-export default KoordinatorKerjaPraktikDailyReportDetailpage;
+export default KoordinatorKerjaPraktikDailyReportDetailPage;

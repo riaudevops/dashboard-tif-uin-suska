@@ -413,7 +413,7 @@ const InstansiKerjaPraktikPage = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => navigate(`/instansi/detail/${student.name}`)}
+                      onClick={() => navigate(`/instansi/detail/${student.id}`)}
                       className="bg-blue-500 text-white hover:text-white hover:bg-blue-600"
                       onMouseEnter={() => setHoveredButtonId(student.id)}
                       onMouseLeave={() => setHoveredButtonId(null)}

@@ -289,7 +289,7 @@ const NilaiSeminarPenguji: React.FC = () => {
           max="100"
           value={value}
           onChange={(e) => onChange(criteria.id, parseInt(e.target.value))}
-          className="w-full h-2 bg-gradient-to-r from-red-300 via-yellow-300 to-green-300 rounded-lg appearance-none cursor-pointer"
+          className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
         />
       </div>
     </div>
@@ -353,7 +353,7 @@ const NilaiSeminarPenguji: React.FC = () => {
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Left Column - Criteria Assessment */}
-          <div>
+          <div className="flex flex-col">
             <div className="bg-teal-800 dark:bg-teal-900 text-white p-4 rounded-t-lg shadow-sm">
               <h3 className="font-bold">Kriteria Penilaian</h3>
               <p className="text-sm text-teal-100">
@@ -361,7 +361,7 @@ const NilaiSeminarPenguji: React.FC = () => {
               </p>
             </div>
 
-            <div className="space-y-4 bg-gray-50 dark:bg-gray-900 p-4 rounded-b-lg border border-gray-200 dark:border-gray-700 border-t-0 shadow-sm">
+            <div className="space-y-4 bg-gray-50 dark:bg-gray-900 p-4 rounded-b-lg border border-gray-200 dark:border-gray-700 border-t-0 shadow-sm flex-1">
               {criteriaDefinitions.map((criteria) => (
                 <CriteriaSection
                   key={criteria.id}
@@ -374,7 +374,7 @@ const NilaiSeminarPenguji: React.FC = () => {
           </div>
 
           {/* Right Column - Summary */}
-          <div>
+          <div className="flex flex-col">
             <div className="bg-teal-800 dark:bg-teal-900 text-white p-4 rounded-t-lg shadow-sm">
               <h3 className="font-bold">Ringkasan Penilaian</h3>
               <p className="text-sm text-teal-100">
@@ -383,7 +383,7 @@ const NilaiSeminarPenguji: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-b-lg border border-gray-200 dark:border-gray-700 border-t-0 shadow-sm">
+            <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-b-lg border border-gray-200 dark:border-gray-700 border-t-0 shadow-sm flex-1">
               <div className="space-y-4">
                 {criteriaDefinitions.map((criteria) => (
                   <div

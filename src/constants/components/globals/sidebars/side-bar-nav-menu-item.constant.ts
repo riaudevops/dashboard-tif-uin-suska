@@ -2,8 +2,10 @@ import { SideBarNavMenuItemsProps } from "@/interfaces/components/globals/sideba
 import {
 	BackpackIcon,
 	BookOpen,
+	GraduationCap,
 	LayoutGridIcon,
 	LucideHistory,
+	MedalIcon,
 	PieChart,
 	UserRoundPenIcon,
 } from "lucide-react";
@@ -26,10 +28,10 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 			],
 		},
 		{
-			label: "Kerja Praktek",
+			label: "Kerja Praktik",
 			menus: [
 				{
-					title: "Daftar KP",
+					title: "Administrasi",
 					url: "#",
 					icon: UserRoundPenIcon,
 					isActive: true,
@@ -46,40 +48,18 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 				},
 				{
 					title: "Daily Report",
-					url: "#",
+					url: "/mahasiswa/kerja-praktik/daily-report",
 					icon: BookOpen,
-					isActive: true,
-					items: [
-						{
-							title: "Isi Agenda",
-							url: "/mahasiswa/kerja-praktik/daily-report/isi-agenda",
-						},
-						{
-							title: "Riwayat Bimbingan",
-							url: "/mahasiswa/kerja-praktik/daily-report/riwayat-bimbingan",
-						},
-					],
-				},
-			],
-		},
-		{
-			label: "Seminar",
-			menus: [
+				},			
 				{
-					title: "SEM-KP",
-					url: "#",
-					isActive: true,
+					title: "Bimbingan",
+					url: "/mahasiswa/kerja-praktik/bimbingan",
+					icon: GraduationCap,
+				},			
+				{
+					title: "Seminar",
+					url: "/mahasiswa/kerja-praktik/seminar",
 					icon: LayoutGridIcon,
-					items: [
-						{
-							title: "Pendaftaran",
-							url: "/mahasiswa/seminar/daftar-sem-kp",
-						},
-						{
-							title: "Validasi Berkas",
-							url: "/mahasiswa/seminar/validasi-berkas",
-						},
-					],
 				},
 			],
 		},
@@ -96,13 +76,17 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 			],
 		},
 		{
-			label: "Kerja Praktek",
+			label: "Kerja Praktik",
 			menus: [
 				{
-					title: "Mahasiswa Bimbingan KP",
+					title: "Mahasiswa Bimbing",
 					url: "/dosen/kerja-praktik/mahasiswa-bimbingan-kp",
 					icon: UserRoundPenIcon,
-					
+				},
+				{
+					title: "Mahasiswa Uji",
+					url: "/dosen/seminar-kp/nilai-penguji",
+					icon: BackpackIcon,
 				},
 			],
 		},
@@ -112,13 +96,14 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 			label: "Koordinator KP",
 			menus: [
 				{
-					title: "Kerja Praktik",
+					title: "Administrasi",
 					url: "#",
-					icon: LayoutGridIcon ,
+					isActive: true,
+					icon: LayoutGridIcon,
 					items: [
 						{
 							title: "Permohonan",
-							url: "/koordinator-kp/kerja-praktik/Permohonan",
+							url: "/koordinator-kp/kerja-praktik/permohonan",
 						},
 						{
 							title: "Validasi Berkas",
@@ -126,7 +111,23 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 						},
 						{
 							title: "Daily Report",
-							url: "/koordinator-kp/kerja-praktik/Daily-Report",
+							url: "/koordinator-kp/kerja-praktik/daily-report",
+						},
+					],
+				},
+				{
+					title: "Seminar",
+					url: "#",
+					isActive: true,
+					icon: MedalIcon,
+					items: [
+						{
+							title: "Validasi Berkas",
+							url: "/koordinator-kp/seminar-kp/validasi-berkas",
+						},
+						{
+							title: "Nilai",
+							url: "/koordinator-kp/seminar-kp/nilai",
 						},
 					],
 				},

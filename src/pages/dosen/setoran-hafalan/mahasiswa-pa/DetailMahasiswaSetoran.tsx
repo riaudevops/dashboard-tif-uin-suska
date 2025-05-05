@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { useState } from "react";
+import {  useEffect, useState } from "react";
 import {
 	Table,
 	TableBody,
@@ -44,11 +44,22 @@ function DetailMahasiswaSetoran() {
 	const { toast } = useToast();
 	const queryclient = useQueryClient();
 
-	const { data: dataInfoSetoran, isLoading } = useQuery({
-		queryKey: ["info-mahasiswa-by-email"],
-		queryFn: () =>
-			apiSetoran.getDataMahasiswaByEmail(nim!).then((res) => res.data),
-	});
+  
+  const { data: dataInfoSetoran, isLoading } = useQuery({
+    queryKey: ["info-mahasiswa-by-email"],
+    queryFn: () =>
+      apiSetoran.getDataMahasiswaByEmail(nim!).then((res) => res.data),
+  });
+
+  useEffect(() => {
+    return () => {
+      queryclient.removeQueries({ queryKey: ["info-mahasiswa-by-email"] }); // ✔️
+    };
+  }, []);
+  
+  console.log(nim);
+  console.log(dataInfoSetoran);
+  console.log(isLoading);
 
 	const { dataCurrent, setTabState, tabState, setSearch, search } =
 		useFilteringSetoranSurat(dataInfoSetoran?.setoran.detail, "default");
@@ -378,7 +389,7 @@ function DetailMahasiswaSetoran() {
 					</div>
 				</div>
 
-				<div className="flex flex-col gap-1.5 sticky top-[64.3px] z-10 bg-background py-1.5 -mb-4 pb-3">
+				<div className="flex flex-col gap-1.5 sticky top-[51.3px] bg-background pt-2.5 -mb-4 pb-3.5 z-50">
 					<div className="flex justify-between gap-4">
 						<div>
 							<Tabs defaultValue="tab1" className="w-full">

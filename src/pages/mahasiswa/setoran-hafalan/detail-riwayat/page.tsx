@@ -194,7 +194,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 									</TabsList>
 								</Tabs>
 							</div>
-							<div className="flex gap-2">
+							<div className="flex gap-1.5">
 								<Button
 									variant={"default"}
 									className="bg-orange-500 text-white hover:bg-orange-600 active:scale-95 flex justify-center items-center gap-1.5"

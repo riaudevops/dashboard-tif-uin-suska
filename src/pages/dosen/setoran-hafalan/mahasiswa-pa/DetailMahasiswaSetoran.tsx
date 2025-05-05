@@ -11,7 +11,7 @@ import {
 import { colourLabelingCategory } from "@/helpers/colour-labeling-category";
 import { Button } from "@/components/ui/button";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import apiSetoran from "@/services/api/setoran-hafalan/dosen.service";
+import APISetoran from "@/services/api/dosen/setoran-hafalan.service";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -48,7 +48,7 @@ function DetailMahasiswaSetoran() {
   const { data: dataInfoSetoran, isLoading } = useQuery({
     queryKey: ["info-mahasiswa-by-email"],
     queryFn: () =>
-      apiSetoran.getDataMahasiswaByEmail(nim!).then((res) => res.data),
+	  APISetoran.getDataMahasiswaByEmail(nim!).then((res) => res.data),
   });
 
   useEffect(() => {
@@ -65,11 +65,11 @@ function DetailMahasiswaSetoran() {
 		useFilteringSetoranSurat(dataInfoSetoran?.setoran.detail, "default");
 
 	const mutationAccept = useMutation({
-		mutationFn: apiSetoran.postSetoranSurah,
+		mutationFn: APISetoran.postSetoranSurah,
 	});
 
 	const mutationDelete = useMutation({
-		mutationFn: apiSetoran.pembatalanSetoranSurah,
+		mutationFn: APISetoran.pembatalanSetoranSurah,
 	});
 
 	const [tempDataCheck, setTempDataCheck] = useState<CheckedData[]>([]);

@@ -19,7 +19,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
-import apiSetoran from "@/services/api/setoran-hafalan/mahasiswa.service";
+import APISetoran from "@/services/api/mahasiswa/setoran-hafalan.service";
 import { useFilteringSetoranSurat } from "@/hooks/use-filtering-setor-surat";
 import { colourLabelingCategory } from "@/helpers/colour-labeling-category";
 import { GeneratePDF } from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/generate-pdf-setoran-hafalan";
@@ -42,7 +42,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 
 	const { data: dataRingkasan, isLoading } = useQuery({
 		queryKey: ["setoran-saya-detail"],
-		queryFn: () => apiSetoran.getDataMysetoran().then((data) => data.data),
+		queryFn: () => APISetoran.getDataMysetoran().then((data) => data.data),
 		staleTime: Infinity,
 	});
 

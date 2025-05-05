@@ -1,6 +1,6 @@
 import InstansiKerjaPraktikPage from "@/pages/instansi/page";
-import InstansiKerjaPraktikMahasiswaDetailPage from "@/pages/instansi/detailmahasiswa/page";
-import DailyReportKerjaPraktikMahasiswaDetailPage from "@/pages/instansi/detailmahasiswa/detail-agenda/page";
+import InstansiKerjaPraktikMahasiswaDetailPage from "@/pages/instansi/detail-mahasiswa/page";
+import DailyReportKerjaPraktikMahasiswaDetailPage from "@/pages/instansi/detail-mahasiswa/detail-agenda/page";
 
 export const instansiRouter = [
 	{
@@ -12,7 +12,7 @@ export const instansiRouter = [
 		element: <InstansiKerjaPraktikMahasiswaDetailPage />,
 	},
 	{
-		path: "/instansi/detailmahasiswa/detail",
+		path: "/instansi/detail-mahasiswa/detail",
 		element: <DailyReportKerjaPraktikMahasiswaDetailPage />,
 	},
 ]

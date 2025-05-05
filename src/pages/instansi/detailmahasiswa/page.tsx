@@ -8,6 +8,8 @@ import {
   Rocket,
   Calendar,
   FileText,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +27,8 @@ import { Card } from "@/components/ui/card";
 const DailyReportKerjaPraktikMahasiswaPage = () => {
   const [selectedRows, setSelectedRows] = useState<String[]>([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   const navigate = useNavigate();
 
   const studentData = {
@@ -36,13 +40,39 @@ const DailyReportKerjaPraktikMahasiswaPage = () => {
     progress: 80,
   };
 
-  const reportData = [
-    { hari: 1, tanggal: "Senin,25 Februari 2025", status: "Disetujui" },
-    { hari: 2, tanggal: "Selasa,24 Februari 2025", status: "Disetujui" },
-    { hari: 3, tanggal: "Rabu,23 Februari 2025", status: "Menunggu" },
-    { hari: 4, tanggal: "Kamis,22 Februari 2025", status: "Revisi" },
-    { hari: 5, tanggal: "Jumat,21 Februari 2025", status: "Revisi" },
+  // Sample report data (expanded to demonstrate pagination)
+  const allReportData = [
+    { hari: 1, tanggal: "Senin, 25 Februari 2025", status: "Disetujui" },
+    { hari: 2, tanggal: "Selasa, 24 Februari 2025", status: "Disetujui" },
+    { hari: 3, tanggal: "Rabu, 23 Februari 2025", status: "Belum" },
+    { hari: 4, tanggal: "Kamis, 22 Februari 2025", status: "Direvisi" },
+    { hari: 5, tanggal: "Jumat, 21 Februari 2025", status: "Direvisi" },
+    { hari: 6, tanggal: "Senin, 18 Februari 2025", status: "Disetujui" },
+    { hari: 7, tanggal: "Selasa, 17 Februari 2025", status: "Disetujui" },
+    { hari: 8, tanggal: "Rabu, 16 Februari 2025", status: "Disetujui" },
+    { hari: 9, tanggal: "Kamis, 15 Februari 2025", status: "Menunggu" },
+    { hari: 10, tanggal: "Jumat, 14 Februari 2025", status: "Direvisi" },
   ];
+
+  // Calculate total pages
+  const totalPages = Math.ceil(allReportData.length / itemsPerPage);
+  
+  // Get current page data
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentReportData = allReportData.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (pageNumber : number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
 
   const handleCheckboxChange = (hari: String) => {
     setSelectedRows((prev) => {
@@ -58,7 +88,7 @@ const DailyReportKerjaPraktikMahasiswaPage = () => {
     if (selectAll) {
       setSelectedRows([]);
     } else {
-      setSelectedRows(reportData.map((row) => row.hari.toString()));
+      setSelectedRows(currentReportData.map((row) => row.hari.toString()));
     }
     setSelectAll(!selectAll);
   };
@@ -67,10 +97,8 @@ const DailyReportKerjaPraktikMahasiswaPage = () => {
     switch (status) {
       case "Disetujui":
         return "bg-green-100 text-green-600";
-      case "Menunggu":
+      case "Direvisi":
         return "bg-yellow-100 text-yellow-600";
-      case "Revisi":
-        return "bg-orange-100 text-orange-600";
       default:
         return "bg-gray-100";
     }
@@ -294,7 +322,7 @@ const DailyReportKerjaPraktikMahasiswaPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {reportData.map((row) => (
+              {currentReportData.map((row) => (
                 <TableRow
                   key={row.hari}
                   className="hover:bg-gray-50 transition-colors"
@@ -307,7 +335,7 @@ const DailyReportKerjaPraktikMahasiswaPage = () => {
                   </TableCell>
                   <TableCell className="py-4 px-4 text-center">
                     <span
-                      className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
+                      className={`px-4 py-1 inline-flex text-xs leading-5 font-semibold rounded-md ${getStatusColor(
                         row.status
                       )}`}
                     >
@@ -347,19 +375,48 @@ const DailyReportKerjaPraktikMahasiswaPage = () => {
           </Card>
         </div>
 
-        {/* Pagination footer */}
+        {/* Improved Pagination footer */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4">
           <div className="text-sm text-gray-600 w-full sm:w-auto">
-            {selectedRows.length} dari {reportData.length} baris dipilih
+            {selectedRows.length} dari {currentReportData.length} baris dipilih
           </div>
-          <div className="flex items-center w-full sm:w-auto justify-between sm:justify-end">
-            <span className="text-sm text-gray-600 mr-4">Halaman 1 dari 5</span>
+          <div className="flex items-center w-full sm:w-auto justify-between sm:justify-end gap-2">
+            <div className="text-sm text-gray-600">
+              Halaman {currentPage} dari {totalPages}
+            </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" disabled>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                className="flex items-center"
+              >
+                <ChevronLeft size={16} className="mr-1" />
                 Previous
               </Button>
-              <Button variant="default" size="sm">
+              <div className="flex gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <Button
+                    key={pageNum}
+                    variant={pageNum === currentPage ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handlePageChange(pageNum)}
+                    className={pageNum === currentPage ? "bg-blue-500 text-white hover:bg-blue-600" : ""}
+                  >
+                    {pageNum}
+                  </Button>
+                ))}
+              </div>
+              <Button
+                variant="outline" 
+                size="sm"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className="flex items-center"
+              >
                 Next
+                <ChevronRight size={16} className="ml-1" />
               </Button>
             </div>
           </div>

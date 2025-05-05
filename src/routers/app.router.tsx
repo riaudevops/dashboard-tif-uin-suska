@@ -177,7 +177,7 @@ const router = createBrowserRouter([
 		element: <InstansiKerjaPraktikpage />,
 	},
 	{
-		path: "/instansi/detail/:name",
+		path: "/instansi/detail/:id",
 		element: <InstansiKerjaPraktikMahasiswaDetailPage />,
 	},
 	{

@@ -1,10 +1,10 @@
-import KoordinatorKerjaPraktikPermohonanDetailpage from "@/pages/koordinator-kp/Kerja-Praktik/Permohonan/Detail-Permohonan/page";
+import KoordinatorKerjaPraktikPermohonanDetailpage from "@/pages/koordinator-kp/kerja-praktikx/Permohonan/Detail-Permohonan/page";
 import ProtectedRoute from "./protected.router";
-import KoordinatorKerjaPraktikDailyReportpage from "@/pages/koordinator-kp/Kerja-Praktik/Daily-Report/page";
-import KoordinatorKerjaPraktikDailyReportDetailpage from "@/pages/koordinator-kp/Kerja-Praktik/Daily-Report/Detail-Mahasiswa/page";
+import KoordinatorKerjaPraktikDailyReportpage from "@/pages/koordinator-kp/kerja-praktikx/Daily-Report/page";
+import KoordinatorKerjaPraktikDailyReportDetailpage from "@/pages/koordinator-kp/kerja-praktikx/Daily-Report/Detail-Mahasiswa/page";
 import KoordinatorValidasiBerkasPage from "@/pages/koordinator-kp/seminar-kerja-praktek/validasi-berkas/page";
 import KoordinatorNilaiPage from "@/pages/koordinator-kp/seminar-kerja-praktek/nilai/page";
-import KoordinatorKerjaPraktikPermohonanpage from "@/pages/koordinator-kp/Kerja-Praktik/Permohonan/page";
+import KoordinatorKerjaPraktikPermohonanpage from "@/pages/koordinator-kp/kerja-praktikx/Permohonan/page";
 
 export const koordinatorKPRouter = [
 	{

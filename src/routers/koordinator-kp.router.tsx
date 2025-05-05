@@ -1,4 +1,4 @@
-import KoordinatorKerjaPraktikPermohonanDetailpage from "@/pages/koordinator-kp/kerja-praktik/permohonan/Detail-Permohonan/page";
+import KoordinatorKerjaPraktikPermohonanDetailpage from "@/pages/koordinator-kp/kerja-praktik/permohonan/Detail-Permohonanx/page";
 import ProtectedRoute from "./protected.router";
 import KoordinatorKerjaPraktikDailyReportpage from "@/pages/koordinator-kp/kerja-praktik/daily-report/page";
 import KoordinatorKerjaPraktikDailyReportDetailpage from "@/pages/koordinator-kp/kerja-praktik/daily-report/detail-mahasiswa/page";

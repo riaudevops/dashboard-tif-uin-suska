@@ -14,7 +14,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 // Main component
-export default function KoordinatorKerjaPraktikPermohonanpage() {
+export default function KoordinatorKerjaPraktikPermohonanPage() {
   const [academicYear, setAcademicYear] = useState("2023-2024 Ganjil");
   const [activeTab, setActiveTab] = useState("Semua Riwayat");
   const [searchTerm, setSearchTerm] = useState("");

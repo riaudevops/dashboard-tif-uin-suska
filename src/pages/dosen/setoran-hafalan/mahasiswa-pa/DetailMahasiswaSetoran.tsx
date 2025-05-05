@@ -45,8 +45,8 @@ function DetailMahasiswaSetoran() {
 	const queryclient = useQueryClient();
 
   
-  const { data: dataInfoSetoran, isFetching } = useQuery({
-    queryKey: ["info-mahasiswa-by-email"], // tambah nim ke queryKey
+  const { data: dataInfoSetoran, isLoading } = useQuery({
+    queryKey: ["info-mahasiswa-by-email"],
     queryFn: () =>
       apiSetoran.getDataMahasiswaByEmail(nim!).then((res) => res.data),
   });
@@ -59,7 +59,7 @@ function DetailMahasiswaSetoran() {
   
   console.log(nim);
   console.log(dataInfoSetoran);
-  console.log(isFetching);
+  console.log(isLoading);
 
 	const { dataCurrent, setTabState, tabState, setSearch, search } =
 		useFilteringSetoranSurat(dataInfoSetoran?.setoran.detail, "default");
@@ -338,7 +338,7 @@ function DetailMahasiswaSetoran() {
 							{/* Titik dua dan nilai */}
 							<div className="flex items-center gap-2">
 								<span>:</span>
-								{isFetching && <Skeleton className="h-4 w-24" />}
+								{isLoading && <Skeleton className="h-4 w-24" />}
 								<span className="">{dataInfoSetoran?.info.nama}</span>
 							</div>
 						</div>
@@ -352,7 +352,7 @@ function DetailMahasiswaSetoran() {
 							{/* Titik dua dan nilai */}
 							<div className="flex items-center gap-2">
 								<span>:</span>
-								{isFetching && <Skeleton className="h-4 w-24" />}
+								{isLoading && <Skeleton className="h-4 w-24" />}
 								<span className="">{dataInfoSetoran?.info.nim}</span>
 							</div>
 						</div>
@@ -366,7 +366,7 @@ function DetailMahasiswaSetoran() {
 							{/* Titik dua dan nilai */}
 							<div className="flex items-center gap-2">
 								<span>:</span>
-								{isFetching && <Skeleton className="h-4 w-24" />}
+								{isLoading && <Skeleton className="h-4 w-24" />}
 								<span className="">{dataInfoSetoran?.info.semester}</span>
 							</div>
 						</div>
@@ -380,7 +380,7 @@ function DetailMahasiswaSetoran() {
 							{/* Titik dua dan nilai */}
 							<div className="flex items-center gap-2">
 								<span>:</span>
-								{isFetching && <Skeleton className="h-4 w-24" />}
+								{isLoading && <Skeleton className="h-4 w-24" />}
 								<span className="">
 									{dataInfoSetoran?.setoran.info_dasar.terakhir_setor}
 								</span>
@@ -454,7 +454,7 @@ function DetailMahasiswaSetoran() {
 							<Button
 								variant={"outline"}
 								className="border-2 border-solid border-red-400 active:scale-95"
-								disabled={tempDataCheck.length === 0 || isFetching}
+								disabled={tempDataCheck.length === 0 || isLoading}
 								onClick={() => {
 									const dataBatalkan = tempDataCheck
 										.filter((item) => item.id !== "")
@@ -481,7 +481,7 @@ function DetailMahasiswaSetoran() {
 							<Button
 								variant={"outline"}
 								className="border-2 border-solid border-green-400 active:scale-95"
-								disabled={tempDataCheck.length === 0 || isFetching}
+								disabled={tempDataCheck.length === 0 || isLoading}
 								onClick={() => {
 									const dataAcc = tempDataCheck
 										.filter((item) => item.id === "")
@@ -540,7 +540,7 @@ function DetailMahasiswaSetoran() {
 										className="data-[state=checked]:bg-green-500"
 										checked={selectAll}
 										onCheckedChange={handleSelectAll}
-										disabled={dataCurrent?.length === 0 || isFetching}
+										disabled={dataCurrent?.length === 0 || isLoading}
 									/>
 								</TableHead>
 							</TableRow>
@@ -558,7 +558,7 @@ function DetailMahasiswaSetoran() {
 									</TableCell>
 								</TableRow>
 							)}
-							{isFetching && (
+							{isLoading && (
 								<TableLoadingSkeleton columns={7} rows={7} />
 							)}
 							{loading ? (

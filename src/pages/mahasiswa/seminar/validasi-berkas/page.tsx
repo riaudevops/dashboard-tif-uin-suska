@@ -48,7 +48,7 @@ export default function MahasiswaSeminarValidasiBerkasPage() {
   const StepComponent = stepComponents[step];
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4">
+    <div className="flex flex-col items-center gap-4">
       {/* Use key prop to force re-render when step or status changes */}
       <StepComponent
         key={componentKey}

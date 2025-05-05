@@ -185,7 +185,7 @@ export default function KoordinatorKerjaPraktikDailyReportpage() {
                       className="border-gray-300 bg-blue-500 text-white hover:bg-blue-600 font-medium flex items-center gap-1 mx-auto"
                       onClick={() =>
                         navigate(
-                          `/Koordinator-kp/Kerja-Praktik/Daily-Report/Detail-Mahasiswa?name=${item.name}&nim=${item.nim}`
+                          `/koordinator-kp/kerja-praktik/daily-report/detail-mahasiswa?name=${item.name}&nim=${item.nim}`
                         )
                       }
                     >

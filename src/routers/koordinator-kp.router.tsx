@@ -3,8 +3,8 @@ import ProtectedRoute from "./protected.router";
 import KoordinatorValidasiBerkasPage from "@/pages/koordinator-kp/seminar-kerja-praktik/validasi-berkas/page";
 import KoordinatorNilaiPage from "@/pages/koordinator-kp/seminar-kerja-praktik/nilai/page";
 import KoordinatorKerjaPraktikPermohonanPage from "@/pages/koordinator-kp/kerja-praktik/permohonan/page";
-import KoordinatorKerjaPraktikDailyReportPage from "@/pages/koordinator-kp/kerja-praktik/Daily-Reportx/page";
-import KoordinatorKerjaPraktikDailyReportDetailPage from "@/pages/koordinator-kp/kerja-praktik/Daily-Reportx/detail-mahasiswa/page";
+import KoordinatorKerjaPraktikDailyReportPage from "@/pages/koordinator-kp/kerja-praktik/daily-report/page";
+import KoordinatorKerjaPraktikDailyReportDetailPage from "@/pages/koordinator-kp/kerja-praktik/daily-report/detail-mahasiswa/page";
 
 export const koordinatorKPRouter = [
 	{

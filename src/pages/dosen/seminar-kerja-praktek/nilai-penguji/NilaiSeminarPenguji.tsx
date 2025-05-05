@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Check,
   Save,
@@ -212,88 +212,134 @@ const NilaiSeminarPenguji: React.FC = () => {
     criteria,
     value,
     onChange,
-  }) => (
-    <div className="mb-6 p-5 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors">
-      <div className="flex items-center gap-3 mb-2">
-        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900/30">
-          <span className="text-teal-600 dark:text-teal-400 text-sm font-bold">
-            %
-          </span>
-        </div>
-        <div>
-          <h3 className="font-bold text-gray-800 dark:text-gray-100">
-            {criteria.title}{" "}
-            <span className="text-teal-600 dark:text-teal-400">
-              ({criteria.percentage}%)
+  }) => {
+    // Use a ref to track the current slider value without causing re-renders
+    const sliderValueRef = useRef(value);
+    const [displayValue, setDisplayValue] = useState(value);
+
+    // Debounce timer ref
+    const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Update the displayed value immediately for smooth UI
+    const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = parseInt(e.target.value);
+      sliderValueRef.current = newValue;
+      setDisplayValue(newValue);
+
+      // Clear any existing timer
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+
+      // Debounce the actual state update to reduce re-renders
+      debounceTimerRef.current = setTimeout(() => {
+        onChange(criteria.id, newValue);
+      }, 50);
+    };
+
+    // Handle direct input changes
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = parseInt(e.target.value) || 0;
+      // Clamp the value between 0 and 100
+      const clampedValue = Math.min(100, Math.max(0, newValue));
+      setDisplayValue(clampedValue);
+      sliderValueRef.current = clampedValue;
+
+      // Update the parent component's state
+      onChange(criteria.id, clampedValue);
+    };
+
+    // Ensure we update our local state if the value prop changes
+    useEffect(() => {
+      setDisplayValue(value);
+      sliderValueRef.current = value;
+    }, [value]);
+
+    return (
+      <div className="mb-6 p-5 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900/30">
+            <span className="text-teal-600 dark:text-teal-400 text-sm font-bold">
+              %
             </span>
-          </h3>
-        </div>
-      </div>
-
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 ml-11">
-        {criteria.description}
-      </p>
-
-      <div className="flex justify-between items-center mb-2">
-        <div>
-          {value > 0 && (
-            <div className="flex items-center text-sm">
-              <Check
-                size={16}
-                className="text-green-500 dark:text-green-400 mr-1"
-              />
-              <span className="font-medium text-gray-800 dark:text-gray-200">
-                Nilai: {value} - {getScoreLabel(value)}
+          </div>
+          <div>
+            <h3 className="font-bold text-gray-800 dark:text-gray-100">
+              {criteria.title}{" "}
+              <span className="text-teal-600 dark:text-teal-400">
+                ({criteria.percentage}%)
               </span>
-            </div>
-          )}
+            </h3>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span
-            className={`px-3 py-1 text-sm rounded-md ${
-              value >= 80
-                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                : value >= 70
-                ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
-                : value > 0
-                ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400"
-            }`}
-          >
-            {value > 0 ? getScoreLabel(value) : "Belum dinilai"}
-          </span>
+
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 ml-11">
+          {criteria.description}
+        </p>
+
+        <div className="flex justify-between items-center mb-2">
+          <div>
+            {displayValue > 0 && (
+              <div className="flex items-center text-sm">
+                <Check
+                  size={16}
+                  className="text-green-500 dark:text-green-400 mr-1"
+                />
+                <span className="font-medium text-gray-800 dark:text-gray-200">
+                  Nilai: {displayValue} - {getScoreLabel(displayValue)}
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <span
+              className={`px-3 py-1 text-sm rounded-md ${
+                displayValue >= 80
+                  ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                  : displayValue >= 70
+                  ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
+                  : displayValue > 0
+                  ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                  : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400"
+              }`}
+            >
+              {displayValue > 0 ? getScoreLabel(displayValue) : "Belum dinilai"}
+            </span>
+            <input
+              type="number"
+              value={displayValue || ""}
+              onChange={handleInputChange}
+              min="0"
+              max="100"
+              className="w-16 text-center border border-gray-300 dark:border-gray-600 rounded-md py-1 px-2 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200"
+            />
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
+            <span>0</span>
+            <span>25</span>
+            <span>50</span>
+            <span>75</span>
+            <span>100</span>
+          </div>
           <input
-            type="number"
-            value={value || ""}
-            onChange={(e) =>
-              onChange(criteria.id, parseInt(e.target.value) || 0)
-            }
+            type="range"
             min="0"
             max="100"
-            className="w-16 text-center border border-gray-300 dark:border-gray-600 rounded-md py-1 px-2 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200"
+            value={displayValue}
+            onChange={handleSliderChange}
+            className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb"
+            style={{
+              WebkitAppearance: "none",
+              transition: "all 0.1s ease",
+            }}
           />
         </div>
       </div>
-
-      <div className="mt-4">
-        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
-          <span>0</span>
-          <span>25</span>
-          <span>50</span>
-          <span>75</span>
-          <span>100</span>
-        </div>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={value}
-          onChange={(e) => onChange(criteria.id, parseInt(e.target.value))}
-          className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
-        />
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <DashboardLayout>
@@ -350,6 +396,88 @@ const NilaiSeminarPenguji: React.FC = () => {
             </div>
           </div>
         </div>
+
+        <style>
+          {`
+            /* Custom styling for the range slider */
+            input[type="range"] {
+              -webkit-appearance: none;
+              appearance: none;
+              height: 6px;
+              background: #e5e7eb;
+              border-radius: 5px;
+              background-image: linear-gradient(#10b981, #10b981);
+              background-repeat: no-repeat;
+            }
+            
+            /* Thumb styles for different browsers */
+            input[type="range"]::-webkit-slider-thumb {
+              -webkit-appearance: none;
+              appearance: none;
+              height: 18px;
+              width: 18px;
+              border-radius: 50%;
+              background: #10b981;
+              cursor: pointer;
+              border: none;
+              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+              transition: all 0.1s ease;
+            }
+            
+            input[type="range"]::-moz-range-thumb {
+              height: 18px;
+              width: 18px;
+              border-radius: 50%;
+              background: #10b981;
+              cursor: pointer;
+              border: none;
+              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+              transition: all 0.1s ease;
+            }
+            
+            input[type="range"]::-ms-thumb {
+              height: 18px;
+              width: 18px;
+              border-radius: 50%;
+              background: #10b981;
+              cursor: pointer;
+              border: none;
+              box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+              transition: all 0.1s ease;
+            }
+            
+            /* Active state */
+            input[type="range"]:active::-webkit-slider-thumb {
+              transform: scale(1.2);
+              box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+            }
+            
+            input[type="range"]:active::-moz-range-thumb {
+              transform: scale(1.2);
+              box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+            }
+            
+            /* Focus state */
+            input[type="range"]:focus {
+              outline: none;
+            }
+            
+            /* Dark mode adjustments */
+            .dark input[type="range"] {
+              background: #374151;
+              background-image: linear-gradient(#059669, #059669);
+              background-repeat: no-repeat;
+            }
+            
+            .dark input[type="range"]::-webkit-slider-thumb {
+              background: #10b981;
+            }
+            
+            .dark input[type="range"]::-moz-range-thumb {
+              background: #10b981;
+            }
+          `}
+        </style>
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Left Column - Criteria Assessment */}

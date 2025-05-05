@@ -53,7 +53,7 @@ function DetailMahasiswaSetoran() {
 
   useEffect(() => {
     return () => {
-      queryclient.removeQueries({ queryKey: ["info-mahasiswa-by-email"] }); // ✔️
+      queryclient.removeQueries({ queryKey: ["info-mahasiswa-by-email"] });
     };
   }, []);
   

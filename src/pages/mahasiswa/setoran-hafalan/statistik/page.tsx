@@ -1,6 +1,6 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import BarChartSetoran from "@/components/mahasiswa/setoran-hafalan/statistik/BarChartSetoranHafalan";
-import apiSetoran from "@/services/api/setoran-hafalan/mahasiswa.service";
+import APISetoran from "@/services/api/mahasiswa/setoran-hafalan.service";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import {MahasiswaSetoranHafalanStatistikPageProps} from "@/interfaces/pages/mahasiswa/setoran-hafalan/statistik/statistik.interface";
@@ -10,7 +10,7 @@ export default function MahasiswaSetoranHafalanStatistikPage() {
   const { data: dataRingkasan, isLoading } = useQuery({
     queryKey: ["setoran-saya"],
     queryFn: () =>
-      apiSetoran.getDataMysetoran().then((data) => data.data.setoran.ringkasan),
+      APISetoran.getDataMysetoran().then((data) => data.data.setoran.ringkasan),
     staleTime: Infinity,
   });
   

@@ -1,9 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Add interface for props
 interface TambahAgendaModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -24,7 +22,7 @@ const TambahAgendaModal = ({ isOpen, onClose }: TambahAgendaModalProps) => {
     }
   };
 
-  console.log(handleOutsideClick)
+  console.log(handleOutsideClick);
 
   // Add state for handling modal animation stages
   const [showContent, setShowContent] = useState(false);
@@ -171,25 +169,6 @@ const TambahAgendaModal = ({ isOpen, onClose }: TambahAgendaModalProps) => {
                     </div>
                   </motion.div>
 
-                  {/* Upload Button */}
-                  <motion.div
-                    className="pt-4 flex flex-col items-center"
-                    variants={{
-                      hidden: { opacity: 0, y: 20 },
-                      visible: { opacity: 1, y: 0 },
-                    }}
-                  >
-                    <motion.button
-                      type="button"
-                      className="flex gap-2 justify-center items-center  bg-gray-200 dark:bg-gray-600 px-4 py-2 rounded-md"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Upload size={18} />
-                      Upload Dokumentasi
-                    </motion.button>
-                  </motion.div>
-
                   {/* Judul Agenda */}
                   <motion.div
                     className="mt-4 mb-4"
@@ -207,7 +186,7 @@ const TambahAgendaModal = ({ isOpen, onClose }: TambahAgendaModalProps) => {
                       value={formData.judulAgenda}
                       onChange={handleChange}
                       placeholder="Masukkan Judul Agenda"
-                      className="w-full border dark:bg-gray-700  rounded-md px-3 py-2"
+                      className="w-full border dark:bg-gray-700  focus:ring-2 hover:bg-gray-50 rounded-md px-3 py-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
                     />
                   </motion.div>
 
@@ -228,7 +207,7 @@ const TambahAgendaModal = ({ isOpen, onClose }: TambahAgendaModalProps) => {
                       onChange={handleChange}
                       placeholder="Masukkan Deskripsi Agenda"
                       rows={4}
-                      className="w-full border dark:bg-gray-700  rounded-md px-3 py-2"
+                      className="w-full border focus-ring-2 hover:bg-gray-50 dark:bg-gray-700  rounded-md px-3 py-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
                     ></textarea>
                   </motion.div>
 
@@ -243,53 +222,15 @@ const TambahAgendaModal = ({ isOpen, onClose }: TambahAgendaModalProps) => {
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                    >
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="bg-gray-900 text-white px-4 py-2 rounded-md flex items-center gap-2"
-                      >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M12 4V20M4 12H20"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                        Tambah Agenda
-                      </Button>
-                    </motion.div>
+                    ></motion.div>
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
                       <Button
                         type="submit"
-                        variant="outline"
-                        className="bg-gray-900 text-white px-4 py-2 rounded-md flex items-center gap-2"
+                        className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 rounded-md flex items-center gap-2"
                       >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M4 12L9 17L20 6"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
                         Simpan
                       </Button>
                     </motion.div>

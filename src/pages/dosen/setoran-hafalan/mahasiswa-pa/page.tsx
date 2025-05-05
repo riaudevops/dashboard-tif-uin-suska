@@ -51,92 +51,93 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
   return (
     <>
       <DashboardLayout>
-        <div className="flex flex-col gap-3 pt-1 pb-3 w-full">
-          <div className="flex justify-start gap-2">
-            <div className="">
-              <span className="text-2xl">
-                {date.toLocaleDateString("id-ID", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </span>
+        <div className="flex flex-col w-full">
+          <div className="flex flex-col gap-3">
+            <div className="flex justify-start gap-2">
+              <div className="">
+                <span className="text-2xl">
+                  {date.toLocaleDateString("id-ID", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+              <div className="">
+                <span className="text-2xl font-bold italic">
+                  ({formatNumber(date.getHours())}:
+                  {formatNumber(date.getMinutes())}:
+                  {formatNumber(date.getSeconds())} WIB)
+                </span>
+              </div>
             </div>
-            <div className="">
-              <span className="text-2xl font-bold italic">
-                ({formatNumber(date.getHours())}:
-                {formatNumber(date.getMinutes())}:
-                {formatNumber(date.getSeconds())} WIB)
-              </span>
+            <div className="flex bg-[#86A7FC] px-4 py-2 relative rounded-lg">
+              <div className="flex flex-col text-black gap-1 py-10 w-[70%]">
+                <div className="font-bold text-3xl">Halo, Dosen PA!</div>
+                <div>
+                  Semangat bertugas! 🎉 Tahun ini kamu membimbing {dataMahasiswa?.info_mahasiswa_pa.daftar_mahasiswa.length}{" "}
+                  mahasiswa PA. Berikut adalah daftar mahasiswa yang sedang kamu
+                  dampingi. Ayo, mari kita mulai bekerja.
+                </div>
+              </div>
+
+              <div>
+                <div className="absolute bottom-0 right-0">
+                  <img src={icon_dosenpa_page} alt="" />
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex bg-[#86A7FC] px-4 py-2 relative rounded-lg">
-            <div className="flex flex-col text-black gap-1 py-10 w-[70%]">
-              <div className="font-bold text-3xl">Halo, Dosen PA!</div>
-              <div>
-                Semangat bertugas! 🎉 Tahun ini kamu membimbing {dataMahasiswa?.info_mahasiswa_pa.daftar_mahasiswa.length}{" "}
-                mahasiswa PA. Berikut adalah daftar mahasiswa yang sedang kamu
-                dampingi. Ayo, mari kita mulai bekerja.
-              </div>
+
+          <div className="flex flex-col gap-1 sticky top-[44.3px] z-50 bg-background pt-2.5 pb-3.5">
+            <div className="w-full select-none">
+              <Tabs defaultValue="tab1" className="w-full h-full">
+                <ScrollArea
+                  className="h-full py-2"
+                  style={{ width: `calc(100vw - 295px)` }}
+                >
+                  <TabsList className="flex gap-1.5 whitespace-nowrap justify-start px-3 w-max">
+                    <TabsTrigger
+                      value="tab1"
+                      onClick={() => setTabState("semua")}
+                      className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${tabState !== "semua" && "hover:bg-blue-100 dark:hover:bg-background/20"}`}
+                    >
+                      Semua Angkatan
+                    </TabsTrigger>
+                    {dataMahasiswa?.info_mahasiswa_pa.ringkasan?.map((item:tabListStateProps) => (
+                      <TabsTrigger
+                        key={item.tahun}
+                        onClick={() => setTabState(item.tahun)}
+                        value={item.tahun}
+                        className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${tabState !== item.tahun && "hover:bg-blue-100 dark:hover:bg-background/20"}`}
+                      >
+                        {item.tahun}{" "}
+                        <span className="ml-2 px-2 rounded-xl bg-yellow-600 text-white">
+                          {item.total} mhs
+                        </span>
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  <ScrollBar
+                    orientation="horizontal"
+                    className="cursor-pointer"
+                  />
+                </ScrollArea>
+              </Tabs>
             </div>
 
             <div>
-              <div className="absolute bottom-0 right-0">
-                <img src={icon_dosenpa_page} alt="" />
-              </div>
+              <Input
+                placeholder="Cari mahasiswa berdasarkan nama ataupun NIM..."
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                className="w-full"
+              />
             </div>
           </div>
-
           <div className="flex flex-col gap-3 w-full">
-            <div className="flex flex-col gap-1">
-              <div className="w-full select-none">
-                <Tabs defaultValue="tab1" className="w-full h-full">
-                  <ScrollArea
-                    className="h-full py-3"
-                    style={{ width: `calc(100vw - 295px)` }}
-                  >
-                    <TabsList className="flex gap-1.5 whitespace-nowrap justify-start px-3 w-max">
-                      <TabsTrigger
-                        value="tab1"
-                        onClick={() => setTabState("semua")}
-                        className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${tabState !== "semua" && "hover:bg-blue-100 dark:hover:bg-background/20"}`}
-                      >
-                        Semua Angkatan
-                      </TabsTrigger>
-                      {dataMahasiswa?.info_mahasiswa_pa.ringkasan?.map((item:tabListStateProps) => (
-                        <TabsTrigger
-                          key={item.tahun}
-                          onClick={() => setTabState(item.tahun)}
-                          value={item.tahun}
-                          className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${tabState !== item.tahun && "hover:bg-blue-100 dark:hover:bg-background/20"}`}
-                        >
-                          {item.tahun}{" "}
-                          <span className="ml-2 px-2 rounded-xl bg-yellow-600 text-white">
-                            {item.total} mhs
-                          </span>
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-                    <ScrollBar
-                      orientation="horizontal"
-                      className="cursor-pointer"
-                    />
-                  </ScrollArea>
-                </Tabs>
-              </div>
-
-              <div>
-                <Input
-                  placeholder="Cari mahasiswa berdasarkan nama ataupun NIM..."
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                  }}
-                  className="w-full"
-                />
-              </div>
-            </div>
-
             <div className="">
               <Table>
                 <TableHeader>

@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { useState } from "react";
+import {  useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -44,11 +44,24 @@ function DetailMahasiswaSetoran() {
   const { toast } = useToast();
   const queryclient = useQueryClient();
 
-  const { data: dataInfoSetoran, isLoading } = useQuery({
-    queryKey: ["info-mahasiswa-by-email"],
+  
+  const { data: dataInfoSetoran, isFetching } = useQuery({
+    queryKey: ["info-mahasiswa-by-email"], // tambah nim ke queryKey
     queryFn: () =>
       apiSetoran.getDataMahasiswaByEmail(nim!).then((res) => res.data),
   });
+
+  useEffect(() => {
+    return () => {
+      queryclient.removeQueries({ queryKey: ["info-mahasiswa-by-email"] }); // ✔️
+    };
+  }, []);
+  
+
+  console.log(urlParams);
+  console.log(nim);
+  console.log(dataInfoSetoran);
+  console.log(isFetching);
 
   const { dataCurrent, setTabState, tabState, setSearch } =
     useFilteringSetoranSurat(dataInfoSetoran?.setoran.detail, "default");
@@ -323,22 +336,22 @@ function DetailMahasiswaSetoran() {
               {/* Titik dua dan nilai */}
               <div className="flex items-center gap-2">
                 <span>:</span>
-                {isLoading && <Skeleton className="h-4 w-24" />}
-                <span className="">{dataInfoSetoran?.info.nama}</span>
+                {isFetching && <Skeleton className="h-4 w-24" />}
+                <span className="" key={dataInfoSetoran?.info.nim}>{dataInfoSetoran?.info.nama}</span>
               </div>
             </div>
             <div className="flex items-center">
               {/* Bagian kiri */}
               <div className="flex items-center gap-1 min-w-40">
                 <FileDigit size={19} />
-                <span className="font-medium">NIM</span>
+                <span className="font-medium" key={dataInfoSetoran?.info.nim}>NIM</span>
               </div>
 
               {/* Titik dua dan nilai */}
               <div className="flex items-center gap-2">
                 <span>:</span>
-                {isLoading && <Skeleton className="h-4 w-24" />}
-                <span className="">{dataInfoSetoran?.info.nim}</span>
+                {isFetching && <Skeleton className="h-4 w-24" />}
+                <span className="" key={dataInfoSetoran?.info.nim}>{dataInfoSetoran?.info.nim}</span>
               </div>
             </div>
             <div className="flex items-center">
@@ -351,22 +364,22 @@ function DetailMahasiswaSetoran() {
               {/* Titik dua dan nilai */}
               <div className="flex items-center gap-2">
                 <span>:</span>
-                {isLoading && <Skeleton className="h-4 w-24" />}
-                <span className="">{dataInfoSetoran?.info.semester}</span>
+                {isFetching && <Skeleton className="h-4 w-24" />}
+                <span className="" key={dataInfoSetoran?.info.nim}>{dataInfoSetoran?.info.semester}</span>
               </div>
             </div>
             <div className="flex items-center">
               {/* Bagian kiri */}
               <div className="flex items-center gap-1 min-w-40">
                 <Calendar size={19} />
-                <span className="font-medium">Terakhir Setoran</span>
+                <span className="font-medium" key={dataInfoSetoran?.info.nim}>Terakhir Setoran</span>
               </div>
 
               {/* Titik dua dan nilai */}
               <div className="flex items-center gap-2">
                 <span>:</span>
-                {isLoading && <Skeleton className="h-4 w-24" />}
-                <span className="">
+                {isFetching && <Skeleton className="h-4 w-24" />}
+                <span className="" key={dataInfoSetoran?.info.nim}>
                   {dataInfoSetoran?.setoran.info_dasar.terakhir_setor}
                 </span>
               </div>
@@ -436,7 +449,7 @@ function DetailMahasiswaSetoran() {
               <Button
                 variant={"outline"}
                 className="rounded-full border-2 border-solid border-red-400 hover:scale-[105%] active:scale-95"
-                disabled={tempDataCheck.length === 0 || isLoading}
+                disabled={tempDataCheck.length === 0 || isFetching}
                 onClick={() => {
                   const dataBatalkan = tempDataCheck
                     .filter((item) => item.id !== "")
@@ -463,7 +476,7 @@ function DetailMahasiswaSetoran() {
               <Button
                 variant={"outline"}
                 className="rounded-full border-2 border-solid border-green-400 hover:scale-[105%] active:scale-95"
-                disabled={tempDataCheck.length === 0 || isLoading}
+                disabled={tempDataCheck.length === 0 || isFetching}
                 onClick={() => {
                   const dataAcc = tempDataCheck
                     .filter((item) => item.id === "")
@@ -523,7 +536,7 @@ function DetailMahasiswaSetoran() {
                     className="data-[state=checked]:bg-green-500"
                     checked={selectAll}
                     onCheckedChange={handleSelectAll}
-                    disabled={dataCurrent?.length === 0 || isLoading}
+                    disabled={dataCurrent?.length === 0 || isFetching}
                   />
                 </TableHead>
               </TableRow>
@@ -539,7 +552,7 @@ function DetailMahasiswaSetoran() {
                   </TableCell>
                 </TableRow>
               )}
-              {isLoading && (
+              {isFetching && (
                 <TableRow>
                   <TableCell colSpan={6}>
                     <div className="flex flex-col gap-2">

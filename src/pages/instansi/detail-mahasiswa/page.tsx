@@ -350,7 +350,7 @@ const DailyReportKerjaPraktikMahasiswaPage = () => {
                         className="flex items-center bg-blue-500 text-white hover:bg-blue-600"
                         onClick={() =>
                           navigate(
-                            `/instansi/detailmahasiswa/detail?tanggal=${row.tanggal}`
+                            `/instansi/detail-mahasiswa/detail?tanggal=${row.tanggal}`
                           )
                         }
                       >

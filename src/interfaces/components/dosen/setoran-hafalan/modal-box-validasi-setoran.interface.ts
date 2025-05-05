@@ -15,5 +15,5 @@ export interface ModalBoxValidasiProps {
   onClose: (bool: boolean) => void;
   validasiSetoran: (dateSetoran: string) => void;
   info: infoMahasiswa;
-  nama_surah?: string;
+  nama_komponen_setoran?: string;
 }

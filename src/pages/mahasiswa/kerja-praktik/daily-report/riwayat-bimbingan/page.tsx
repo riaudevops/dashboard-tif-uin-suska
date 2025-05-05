@@ -11,26 +11,29 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, CheckCircle, AlertCircle, Award, X } from "lucide-react";
+import { Eye, CheckCircle, AlertCircle, Award, X, EyeClosed } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const BimbinganKerjaPraktikPage = () => {
   const [isReviewBimbinganModal, setReviewBimbinganModal] = useState(false);
   const [showLoginNotification, setShowLoginNotification] = useState(false);
-  
+  const [hoveredButtonId, setHoveredButtonId] = useState<number | null>(null);
+
   // Cek apakah ini pertama kali login
   useEffect(() => {
     // Periksa apakah notifikasi sudah pernah ditampilkan
-    const hasShownNotification = localStorage.getItem("bimbinganNotificationShown");
-    
+    const hasShownNotification = localStorage.getItem(
+      "bimbinganNotificationShown"
+    );
+
     if (!hasShownNotification) {
       setShowLoginNotification(true);
       // Tandai bahwa notifikasi sudah ditampilkan
       localStorage.setItem("bimbinganNotificationShown", "true");
     }
   }, []);
-  
+
   // Fungsi untuk menutup notifikasi
   const closeNotification = () => {
     setShowLoginNotification(false);
@@ -38,22 +41,9 @@ const BimbinganKerjaPraktikPage = () => {
 
   const [bimbinganHistory] = useState([
     {
-      id: 5,
-      bimbinganKe: 5,
-      tanggal: "15 Januari 2025",
-      status: "Selesai",
-    },
-
-    {
-      id: 4,
-      bimbinganKe: 4,
-      tanggal: "15 Januari 2025",
-      status: "Selesai",
-    },
-    {
-      id: 3,
-      bimbinganKe: 3,
-      tanggal: "10 Januari 2025",
+      id: 1,
+      bimbinganKe: 1,
+      tanggal: "06 Januari 2025",
       status: "Selesai",
     },
     {
@@ -63,9 +53,21 @@ const BimbinganKerjaPraktikPage = () => {
       status: "Selesai",
     },
     {
-      id: 1,
-      bimbinganKe: 1,
-      tanggal: "06 Januari 2025",
+      id: 3,
+      bimbinganKe: 3,
+      tanggal: "10 Januari 2025",
+      status: "Selesai",
+    },
+    {
+      id: 4,
+      bimbinganKe: 4,
+      tanggal: "15 Januari 2025",
+      status: "Selesai",
+    },
+    {
+      id: 5,
+      bimbinganKe: 5,
+      tanggal: "15 Januari 2025",
       status: "Selesai",
     },
   ]);
@@ -79,7 +81,7 @@ const BimbinganKerjaPraktikPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-6 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+      <div className="p-6 min-h-screen">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold tracking-tight bg-clip-text">
@@ -96,11 +98,13 @@ const BimbinganKerjaPraktikPage = () => {
           <Alert className="mb-6 bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/30 dark:border-blue-700 dark:text-blue-300">
             <div className="flex justify-between items-center">
               <AlertDescription>
-                Selamat datang di dashboard Bimbingan Kerja Praktik! Anda telah menyelesaikan {completedSessions} dari {minimumRequired} bimbingan yang diperlukan.
+                Selamat datang di dashboard Bimbingan Kerja Praktik! Anda telah
+                menyelesaikan {completedSessions} dari {minimumRequired}{" "}
+                bimbingan yang diperlukan.
               </AlertDescription>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="h-8 w-8 p-0 rounded-full"
                 onClick={closeNotification}
               >
@@ -214,7 +218,7 @@ const BimbinganKerjaPraktikPage = () => {
           {/* Stats Cards */}
           <div className="col-span-1 grid grid-cols-1 gap-4">
             {/* Sessions completed */}
-            <Card className="border-0 shadow-md bg-white dark:bg-gray-800">
+            <Card className="border shadow-md bg-gray-50 dark:bg-gray-800/30 rounded-lg  border-gray-100 dark:border-gray-700">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -233,7 +237,7 @@ const BimbinganKerjaPraktikPage = () => {
             </Card>
 
             {/* Percentage completed */}
-            <Card className="border-0 shadow-md bg-white dark:bg-gray-800">
+            <Card className="border shadow-md bg-gray-50 dark:bg-gray-800/30 rounded-lg  border-gray-100 dark:border-gray-700">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between ">
                   <div>
@@ -265,7 +269,7 @@ const BimbinganKerjaPraktikPage = () => {
             </Card>
 
             {/* Remaining sessions */}
-            <Card className="border-0 shadow-md bg-white dark:bg-gray-800">
+            <Card className="border shadow-md bg-gray-50 dark:bg-gray-800/30 rounded-lg  border-gray-100 dark:border-gray-700">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -291,7 +295,7 @@ const BimbinganKerjaPraktikPage = () => {
         </h2>
 
         {/* Enhanced Table */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-md overflow-hidden">
+        <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
           <Table>
             <TableHeader>
               <TableRow className="bg-gray-50 dark:bg-gray-700/50">
@@ -313,7 +317,9 @@ const BimbinganKerjaPraktikPage = () => {
               {bimbinganHistory.map((item) => (
                 <TableRow
                   key={item.id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
+                  className={item.id % 2 !== 0
+                    ? "bg-secondary dark:bg-gray-700/10 cursor-pointer"
+                    : "bg-background dark:bg-gray-700/30 cursor-pointer"}
                 >
                   <TableCell className="text-center font-medium">
                     {item.bimbinganKe}
@@ -322,18 +328,25 @@ const BimbinganKerjaPraktikPage = () => {
                   <TableCell className="text-center">
                     <Badge
                       variant="outline"
-                      className="bg-green-100 text-green-800 hover:bg-green-100 px-3 py-1 rounded-full font-medium"
+                      className="bg-green-100 text-green-800 hover:bg-green-100 px-3 py-1 rounded-lg font-medium"
                     >
                       {item.status}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">
                     <Button
-                      className="text-white bg-purple-600 hover:bg-purple-700 transition-colors shadow-sm"
+                      className="text-white bg-blue-500 hover:bg-blue-600 transition-colors shadow-sm"
                       size="sm"
                       onClick={() => setReviewBimbinganModal(true)}
+                      onMouseEnter={() => setHoveredButtonId(item.id)}
+                      onMouseLeave={() => setHoveredButtonId(null)}
                     >
-                      <Eye className="h-4 w-4 mr-1" /> Detail
+                      {hoveredButtonId === item.id ? (
+                        <Eye size={16} />
+                      ) : (
+                        <EyeClosed size={16} />
+                      )}
+                      Lihat Detail
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -342,7 +355,7 @@ const BimbinganKerjaPraktikPage = () => {
           </Table>
         </div>
       </div>
-      
+
       {/* Modal Review Bimbingan */}
       <ReviewBimbingan
         isOpen={isReviewBimbinganModal}

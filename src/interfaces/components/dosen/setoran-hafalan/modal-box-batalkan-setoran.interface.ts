@@ -15,5 +15,5 @@ export interface ModalBoxBatalkanProps {
   onClose: (bool: boolean) => void;
   deleteSetoran: () => void;
   info: infoMahasiswa;
-  nama_surah?: string;
+  nama_komponen_setoran?: string;
 }

@@ -12,7 +12,7 @@ interface Setoran {
   dosen_yang_mengesahkan: Dosen;
 }
 interface MahasiswaSetoran {
-  nomor: number;
+  id: string;
   nama: string;
   label: string;
   sudah_setor: boolean;
@@ -58,5 +58,5 @@ export function useFilteringSetoranSurat(
     }
   }, [search, dataIntial, tabState]);
 
-  return { dataCurrent, setTabState, tabState, setSearch };
+  return { dataCurrent, setTabState, tabState, setSearch, search };
 }

@@ -3,8 +3,8 @@ import DosenSetoranHafalanMahasiswaPAPage from "@/pages/dosen/setoran-hafalan/ma
 import DosenKerjaPraktikmahasiswaBimbinganpage from "@/pages/dosen/kerja-praktik/mahasiswa-bimbingan-kp/page";
 import DosenKerjaPraktikMahasiswaBimbinganKPDetailpage from "@/pages/dosen/kerja-praktik/mahasiswa-bimbingan-kp/detail/page";
 import DetailMahasiswaSetoran from "@/pages/dosen/setoran-hafalan/mahasiswa-pa/DetailMahasiswaSetoran";
-import DosenPengujiNilaiPage from "@/pages/dosen/seminar-kerja-praktek/nilai-penguji/page";
-import NilaiSeminarPenguji from "@/pages/dosen/seminar-kerja-praktek/nilai-penguji/NilaiSeminarPenguji";
+import DosenPengujiNilaiPage from "@/pages/dosen/seminar-kerja-praktik/nilai-penguji/page";
+import NilaiSeminarPenguji from "@/pages/dosen/seminar-kerja-praktik/nilai-penguji/NilaiSeminarPenguji";
 
 export const dosenRouter = [
 	{

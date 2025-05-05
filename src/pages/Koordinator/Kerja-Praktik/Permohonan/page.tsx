@@ -236,7 +236,7 @@ export default function KoordinatorKerjaPraktikPermohonanpage() {
                       className="bg-blue-500 text-white hover:bg-blue-600 font-medium flex items-center gap-1 mx-auto"
                       onClick={() =>
                         navigate(
-                          `/Koordinator-kp/Kerja-Praktik/Permohonan/Detail-Permohonan?name=${item.name}&nim=${item.nim}`
+                          `/koordinator-kp/kerja-praktik/permohonan/detail-permohonan?name=${item.name}&nim=${item.nim}`
                         )
                       }
                     >

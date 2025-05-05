@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 
-
 interface TambahAgendaModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -23,7 +22,7 @@ const TambahAgendaModal = ({ isOpen, onClose }: TambahAgendaModalProps) => {
     }
   };
 
-  console.log(handleOutsideClick)
+  console.log(handleOutsideClick);
 
   // Add state for handling modal animation stages
   const [showContent, setShowContent] = useState(false);
@@ -223,53 +222,15 @@ const TambahAgendaModal = ({ isOpen, onClose }: TambahAgendaModalProps) => {
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                    >
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="bg-gray-900 text-white px-4 py-2 rounded-md flex items-center gap-2"
-                      >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M12 4V20M4 12H20"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                        Tambah Agenda
-                      </Button>
-                    </motion.div>
+                    ></motion.div>
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
                       <Button
                         type="submit"
-                        variant="outline"
-                        className="bg-gray-900 text-white px-4 py-2 rounded-md flex items-center gap-2"
+                        className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 rounded-md flex items-center gap-2"
                       >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M4 12L9 17L20 6"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
                         Simpan
                       </Button>
                     </motion.div>

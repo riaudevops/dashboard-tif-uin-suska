@@ -44,6 +44,8 @@ const InstansiKerjaPraktikPage = () => {
       status: "Mahasiswa",
       university: "UIN SUSKA RIAU",
       notifications: 1,
+      tanggalMulai: "31 Januari 2025",
+      tanggalSelesai: "31 Desember 2025",
     },
     {
       id: 2,
@@ -51,6 +53,8 @@ const InstansiKerjaPraktikPage = () => {
       status: "Mahasiswa",
       university: "UIN SUSKA RIAU",
       notifications: 0,
+      tanggalMulai: "31 Januari 2025",
+      tanggalSelesai: "31 Desember 2025",
     },
     {
       id: 3,
@@ -58,6 +62,8 @@ const InstansiKerjaPraktikPage = () => {
       status: "Mahasiswa",
       university: "UIN SUSKA RIAU",
       notifications: 0,
+      tanggalMulai: "31 Januari 2025",
+      tanggalSelesai: "31 Desember 2025",
     },
     {
       id: 4,
@@ -65,6 +71,8 @@ const InstansiKerjaPraktikPage = () => {
       status: "Mahasiswa",
       university: "UIN SUSKA RIAU",
       notifications: 7,
+      tanggalMulai: "31 Januari 2025",
+      tanggalSelesai: "31 Desember 2025",
     },
     {
       id: 5,
@@ -72,6 +80,8 @@ const InstansiKerjaPraktikPage = () => {
       status: "Mahasiswa",
       university: "UIN SUSKA RIAU",
       notifications: 0,
+      tanggalMulai: "31 Januari 2025",
+      tanggalSelesai: "31 Desember 2025",
     },
     {
       id: 6,
@@ -79,6 +89,8 @@ const InstansiKerjaPraktikPage = () => {
       status: "Mahasiswa",
       university: "UIN SUSKA RIAU",
       notifications: 1,
+      tanggalMulai: "31 Januari 2025",
+      tanggalSelesai: "31 Desember 2025",
     },
     {
       id: 7,
@@ -86,6 +98,8 @@ const InstansiKerjaPraktikPage = () => {
       status: "Mahasiswa",
       university: "UIN SUSKA RIAU",
       notifications: 3,
+      tanggalMulai: "31 Januari 2025",
+      tanggalSelesai: "31 Desember 2025",
     },
     {
       id: 8,
@@ -93,6 +107,8 @@ const InstansiKerjaPraktikPage = () => {
       status: "Mahasiswa",
       university: "UIN SUSKA RIAU",
       notifications: 0,
+      tanggalMulai: "31 Januari 2025",
+      tanggalSelesai: "31 Desember 2025",
     },
     {
       id: 9,
@@ -100,13 +116,17 @@ const InstansiKerjaPraktikPage = () => {
       status: "Mahasiswa",
       university: "UIN SUSKA RIAU",
       notifications: 2,
+      tanggalMulai: "31 Januari 2025",
+      tanggalSelesai: "31 Desember 2025",
     },
     {
       id: 10,
       name: "Anisa Wijaya",
       status: "Mahasiswa",
       university: "UIN SUSKA RIAU",
-      notifications: 0,
+      notifications: 1,
+      tanggalMulai: "31 Januari 2025",
+      tanggalSelesai: "31 Desember 2025",
     },
     {
       id: 11,
@@ -114,6 +134,8 @@ const InstansiKerjaPraktikPage = () => {
       status: "Mahasiswa",
       university: "UIN SUSKA RIAU",
       notifications: 5,
+      tanggalMulai: "31 Januari 2025",
+      tanggalSelesai: "31 Desember 2025",
     },
   ];
 
@@ -182,8 +204,6 @@ const InstansiKerjaPraktikPage = () => {
         );
       }
     } else {
-      // Complex pagination with ellipses
-      // Always show first page
       items.push(
         <PaginationItem key={1}>
           <PaginationLink
@@ -340,22 +360,23 @@ const InstansiKerjaPraktikPage = () => {
           </div>
         </CardHeader>
         <CardContent className="p-0">
+          
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow className="hover:bg-slate-50">
-                <TableHead className="w-24 sm:w-auto text-center text-gray-700 uppercase">
+                <TableHead className="w-24 sm:w-auto text-center text-gray-700 ">
                   Nama Mahasiswa
                 </TableHead>
-                <TableHead className="w-24 sm:w-auto text-center text-gray-700 uppercase">
-                  Status
+                <TableHead className="w-24 sm:w-auto text-center text-gray-700 ">
+                  Tanggal Mulai
                 </TableHead>
-                <TableHead className="w-24 sm:w-auto text-center text-gray-700 uppercase">
-                  Universitas
+                <TableHead className="w-24 sm:w-auto text-center text-gray-700 ">
+                  Tanggal Selesai
                 </TableHead>
-                <TableHead className="w-24 sm:w-auto text-center text-gray-700 uppercase">
-                  Notifikasi
+                <TableHead className="w-24 sm:w-auto text-center text-gray-700 ">
+                  Daily Report
                 </TableHead>
-                <TableHead className="w-24 sm:w-auto text-center text-gray-700 uppercase">
+                <TableHead className="w-24 sm:w-auto text-center text-gray-700 ">
                   Aksi
                 </TableHead>
               </TableRow>
@@ -369,16 +390,11 @@ const InstansiKerjaPraktikPage = () => {
                   <TableCell className="font-medium text-slate-800 py-4">
                     {student.name}
                   </TableCell>
-                  <TableCell className="text-slate-600">
-                    {student.status}
+                 <TableCell className="font-medium text-slate-800 py-4">
+                    {student.tanggalMulai}
                   </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100"
-                    >
-                      {student.university}
-                    </Badge>
+                  <TableCell className="font-medium text-slate-800 py-4">
+                    {student.tanggalSelesai}
                   </TableCell>
                   <TableCell>
                     {student.notifications > 0 ? (
@@ -397,7 +413,7 @@ const InstansiKerjaPraktikPage = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => navigate(`/instansi/detail/${student.name}`)}
+                      onClick={() => navigate(`/instansi/detail/${student.id}`)}
                       className="bg-blue-500 text-white hover:text-white hover:bg-blue-600"
                       onMouseEnter={() => setHoveredButtonId(student.id)}
                       onMouseLeave={() => setHoveredButtonId(null)}
@@ -414,7 +430,7 @@ const InstansiKerjaPraktikPage = () => {
               ))}
             </TableBody>
           </Table>
-
+          
           {/* Empty state when no students match search */}
           {filteredStudents.length === 0 && (
             <div className="py-12 flex flex-col items-center justify-center text-center">

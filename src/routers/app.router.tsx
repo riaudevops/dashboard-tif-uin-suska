@@ -19,8 +19,8 @@ import MahasiswaKerjaPraktekDailyReportIsiAgendaDetailPage from "@/pages/mahasis
 import MahasiswaSeminarDaftarPage from "@/pages/mahasiswa/seminar/daftar-sem-kp/page";
 import MahasiswaSeminarValidasiBerkasPage from "@/pages/mahasiswa/seminar/validasi-berkas/page";
 import InstansiKerjaPraktikpage from "@/pages/instansi/page";
-import InstansiKerjaPraktikMahasiswaDetailPage from "@/pages/instansi/detailmahasiswa/page";
-import DailyReportKerjaPraktikMahasiswaDetailPage from "@/pages/instansi/detailmahasiswa/detail-agenda/page";
+import InstansiKerjaPraktikMahasiswaDetailPage from "@/pages/instansi/detail-mahasiswa/page";
+import DailyReportKerjaPraktikMahasiswaDetailPage from "@/pages/instansi/detail-mahasiswa/detail-agenda/page";
 import KoordinatorKerjaPraktikPermohonanpage from "@/pages/koordinator/kerja-praktik/permohonan/page";
 import KoordinatorKerjaPraktikPermohonanDetailpage from "@/pages/koordinator/kerja-praktik/permohonan/Detail-Permohonan/page";
 import KoordinatorKerjaPraktikDailyReportpage from "@/pages/koordinator/kerja-praktik/daily-report/page";

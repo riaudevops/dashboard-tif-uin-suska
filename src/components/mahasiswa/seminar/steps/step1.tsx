@@ -8,7 +8,7 @@ import Status from "@/components/mahasiswa/seminar/status";
 import InfoCard from "../informasi-seminar";
 import DocumentCard from "../formulir-dokumen";
 import { toast } from "@/hooks/use-toast";
-import { ToastAction } from "@/components/ui/toast";
+
 import {
   AlertDialog,
   AlertDialogAction,

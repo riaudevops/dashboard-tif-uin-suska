@@ -13,7 +13,7 @@ import {
 export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 	mahasiswa: [
 		{
-			label: "Setoran Hafalan",
+			label: "Muroja'ah",
 			menus: [
 				{
 					title: "Statistik",
@@ -66,7 +66,7 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 	],
 	dosen: [
 		{
-			label: "Setoran Hafalan",
+			label: "Muroja'ah",
 			menus: [
 				{
 					title: "Mahasiswa PA",

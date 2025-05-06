@@ -56,11 +56,6 @@ function DetailMahasiswaSetoran() {
       queryclient.removeQueries({ queryKey: ["info-mahasiswa-by-email"] });
     };
   }, []);
-  
-  console.log(nim);
-  console.log(dataInfoSetoran);
-  console.log(isLoading);
-
 	const { dataCurrent, setTabState, tabState, setSearch, search } =
 		useFilteringSetoranSurat(dataInfoSetoran?.setoran.detail, "default");
 

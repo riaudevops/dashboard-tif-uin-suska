@@ -128,7 +128,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Pizaini, S.T, M.Kom",
       dosenPenguji: "Rahmad Abdillah, S.T, M.Kom",
       pembimbingInstansi: "Iwan Iskandar",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 2,
@@ -141,7 +141,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Pizaini, S.T, M.Kom",
       dosenPenguji: "",
       pembimbingInstansi: "Iwan Iskandar",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 3,
@@ -154,7 +154,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Affandes, S.T, M.Kom",
       dosenPenguji: "",
       pembimbingInstansi: "Iwan Iskandar",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 4,
@@ -167,7 +167,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Affandes, S.T, M.Kom",
       dosenPenguji: "Rahmad Abdillah, S.T, M.Kom",
       pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 5,
@@ -180,7 +180,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Pizaini, S.T, M.Kom",
       dosenPenguji: "",
       pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 6,
@@ -193,7 +193,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Affandes, S.T, M.Kom",
       dosenPenguji: "Rahmad Abdillah, S.T, M.Kom",
       pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 7,
@@ -206,7 +206,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Iwan Iskandar, S.T, M.Kom",
       dosenPenguji: "Rahmad Abdillah, S.T, M.Kom",
       pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 8,
@@ -219,7 +219,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Iwan Iskandar, S.T, M.Kom",
       dosenPenguji: "Rahmad Abdillah, S.T, M.Kom",
       pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 9,
@@ -232,7 +232,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Iwan Iskandar, S.T, M.Kom",
       dosenPenguji: "",
       pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 10,
@@ -245,7 +245,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Iwan Iskandar, S.T, M.Kom",
       dosenPenguji: "",
       pembimbingInstansi: "Nurrahman",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
   ];
 

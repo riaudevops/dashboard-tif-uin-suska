@@ -174,7 +174,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                         "hover:bg-blue-100 dark:hover:bg-background/20"
                       }`}
                     >
-                      Semua Riwayat
+                      Semua riwayat muroja'ah
                     </TabsTrigger>
                     <TabsTrigger
                       value="tab2"

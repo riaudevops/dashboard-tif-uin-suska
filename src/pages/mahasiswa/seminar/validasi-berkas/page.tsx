@@ -33,7 +33,7 @@ import Step6 from "@/components/mahasiswa/seminar/steps/step6";
 import { Button } from "@/components/ui/button";
 
 const stepComponents = [Step1, Step2, Step3, Step4, Step5, Step6];
-const statuses = ["belum", "validasi", "ditolak"];
+const statuses: ("belum" | "validasi" | "ditolak")[] = ["belum", "validasi", "ditolak"];
 
 export default function MahasiswaSeminarValidasiBerkasPage() {
   const [step, setStep] = useState(0);

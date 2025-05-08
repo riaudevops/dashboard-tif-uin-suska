@@ -278,6 +278,8 @@ const ContinueButton: FC<{ isToday: boolean }> = ({ isToday }) => {
     navigate("/mahasiswa/seminar/step5");
   };
 
+  console.log(handleNavigate);
+
   // Render appropriate button based on isToday state
   if (isToday) {
     return (

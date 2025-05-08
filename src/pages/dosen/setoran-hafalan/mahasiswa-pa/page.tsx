@@ -149,10 +149,10 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                     <TableHead className="text-center">NIM</TableHead>
                     <TableHead className="text-center">Semester</TableHead>
                     <TableHead className="text-center">
-                      Progres Hafalan
+                      Progres Muroja'ah
                     </TableHead>
                     <TableHead className="text-center">
-                      Terakhir Setor
+                      Terakhir Muroja'ah
                     </TableHead>
                     <TableHead className="text-center">Aksi</TableHead>
                   </TableRow>
@@ -183,7 +183,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                       <TableCell className="text-center">
                         {item.semester}
                       </TableCell>
-                      <TableCell className="pr-6">
+                      <TableCell className="text-center px-4">
                         <div className="flex gap-1.5 items-center w-full">
                           <div className="w-[90%]">
                             <Progress

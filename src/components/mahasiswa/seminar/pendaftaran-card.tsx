@@ -81,7 +81,7 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
    */
   const getUnmetRequirements = (): string[] => {
     const requirementMapping = {
-      hapalan: "Setoran Hapalan",
+      hapalan: "Muroja'ah",
       kerja_praktik: "Verifikasi Kerja Praktik",
       bimbingan: "Bimbingan Dosen",
       nilaiInstansi: "Nilai Pembimbing Instansi",
@@ -128,7 +128,7 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
         <Terminal className="shadow-none border-none dark:bg-slate-800 flex-1 h-full flex flex-col min-h-64">
           <TypingAnimation>&gt; tif kerja-praktik@latest</TypingAnimation>
 
-          {renderCheckItem(checkmarks.hapalan, "Setoran Hapalan 1-16 .", 500)}
+          {renderCheckItem(checkmarks.hapalan, "Muroja'ah 1-16 .", 500)}
           {renderCheckItem(
             checkmarks.kerja_praktik,
             "Masih Terdaftar Melaksanakan Kerja Praktik.",

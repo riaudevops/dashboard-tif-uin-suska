@@ -44,6 +44,7 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
   navigateFunction,
 }) => {
   const navigate = useNavigate();
+  console.log(navigate);
 
   // Default checkmark values
   const defaultCheckmarks: CheckItems = {

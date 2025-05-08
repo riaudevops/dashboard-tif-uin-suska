@@ -87,21 +87,21 @@ const NilaiSeminarPenguji: React.FC = () => {
     {
       id: "penguasaan",
       title: "Penguasaan Materi",
-      percentage: 25,
+      percentage: 40,
       description:
         "Penilaian terhadap pemahaman dan penguasaan mahasiswa terhadap materi kerja praktik yang telah dilakukan.",
     },
     {
       id: "presentasi",
       title: "Teknik Presentasi",
-      percentage: 40,
+      percentage: 25,
       description:
         "Penilaian terhadap kemampuan mahasiswa dalam menyampaikan materi presentasi dengan baik dan jelas.",
     },
     {
       id: "kesesuaian",
       title: "Kesesuaian Laporan dan Presentasi",
-      percentage: 35,
+      percentage: 40,
       description:
         "Penilaian terhadap kesesuaian antara isi laporan dengan materi yang dipresentasikan.",
     },
@@ -110,9 +110,9 @@ const NilaiSeminarPenguji: React.FC = () => {
   // Calculate total score whenever scores change
   useEffect(() => {
     const total =
-      scores.penguasaan * 0.25 +
-      scores.presentasi * 0.4 +
-      scores.kesesuaian * 0.35;
+      scores.penguasaan * 0.4 +
+      scores.presentasi * 0.2 +
+      scores.kesesuaian * 0.4;
 
     setTotalScore(parseFloat(total.toFixed(1)));
   }, [scores]);
@@ -258,15 +258,15 @@ const NilaiSeminarPenguji: React.FC = () => {
     return (
       <div className="mb-6 p-5 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors">
         <div className="flex items-center gap-3 mb-2">
-          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900/30">
-            <span className="text-teal-600 dark:text-teal-400 text-sm font-bold">
+          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30">
+            <span className="text-green-600 dark:text-green-400 text-sm font-bold">
               %
             </span>
           </div>
           <div>
             <h3 className="font-bold text-gray-800 dark:text-gray-100">
               {criteria.title}{" "}
-              <span className="text-teal-600 dark:text-teal-400">
+              <span className="text-green-600 dark:text-green-400">
                 ({criteria.percentage}%)
               </span>
             </h3>
@@ -482,9 +482,9 @@ const NilaiSeminarPenguji: React.FC = () => {
         <div className="grid md:grid-cols-2 gap-6">
           {/* Left Column - Criteria Assessment */}
           <div className="flex flex-col">
-            <div className="bg-teal-800 dark:bg-teal-900 text-white p-4 rounded-t-lg shadow-sm">
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-400 dark:from-emerald-600 dark:to-teal-500 text-white p-4 rounded-t-lg shadow-sm">
               <h3 className="font-bold">Kriteria Penilaian</h3>
-              <p className="text-sm text-teal-100">
+              <p className="text-sm text-green-100">
                 Beri nilai pada skala 0-100 untuk setiap kriteria
               </p>
             </div>
@@ -503,9 +503,9 @@ const NilaiSeminarPenguji: React.FC = () => {
 
           {/* Right Column - Summary */}
           <div className="flex flex-col">
-            <div className="bg-teal-800 dark:bg-teal-900 text-white p-4 rounded-t-lg shadow-sm">
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-400 dark:from-emerald-600 dark:to-teal-500 text-white p-4 rounded-t-lg shadow-sm">
               <h3 className="font-bold">Ringkasan Penilaian</h3>
-              <p className="text-sm text-teal-100">
+              <p className="text-sm text-green-100">
                 Hasil kalkulasi dari nilai yang diinputkan berdasarkan
                 persentase
               </p>
@@ -555,14 +555,14 @@ const NilaiSeminarPenguji: React.FC = () => {
 
                 {/* Notes Section - Moved to be below the total score */}
                 <div className="pt-2 pb-4">
-                  <div className="flex items-center gap-2 mb-2 text-teal-700 dark:text-teal-400">
+                  <div className="flex items-center gap-2 mb-2 text-green-700 dark:text-green-400">
                     <MessageSquare size={18} />
                     <h3 className="font-bold text-sm uppercase">
                       Catatan Penguji
                     </h3>
                   </div>
                   <textarea
-                    className="w-full h-40 p-3 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:ring-teal-500 focus:border-teal-500 text-sm"
+                    className="w-full h-40 p-3 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:ring-green-500 focus:border-green-500 text-sm"
                     placeholder="Masukkan catatan, komentar, atau saran untuk mahasiswa..."
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
@@ -582,7 +582,7 @@ const NilaiSeminarPenguji: React.FC = () => {
                     className={`py-2.5 px-4 rounded-md font-medium transition-colors text-sm flex items-center justify-center ${
                       Object.values(scores).some((score) => score === 0)
                         ? "bg-gray-400 text-white cursor-not-allowed"
-                        : "bg-teal-700 hover:bg-teal-800 text-white"
+                        : "bg-green-700 hover:bg-green-800 text-white"
                     }`}
                     disabled={Object.values(scores).some(
                       (score) => score === 0
@@ -612,7 +612,7 @@ const NilaiSeminarPenguji: React.FC = () => {
             className={`flex items-center px-6 py-3 rounded-lg font-medium text-white transition-all ${
               Object.values(scores).some((score) => score === 0)
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 shadow-md hover:shadow-lg"
+                : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-md hover:shadow-lg"
             }`}
           >
             <Save size={20} className="mr-2" />

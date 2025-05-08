@@ -8,7 +8,7 @@ import NilaiSeminarPenguji from "@/pages/dosen/seminar-kerja-praktik/nilai-pengu
 
 export const dosenRouter = [
 	{
-		path: "/dosen/setoran-hafalan/mahasiswa-pa",
+		path: "/dosen/murojaah/mahasiswa-pa",
 		element: (
 			<ProtectedRoute roles={["dosen"]}>
 				<DosenSetoranHafalanMahasiswaPAPage />
@@ -16,7 +16,7 @@ export const dosenRouter = [
 		),
 	},
 	{
-		path: "/dosen/setoran-hafalan/mahasiswa-pa/:nim",
+		path: "/dosen/murojaah/mahasiswa-pa/:nim",
 		element: (
 			<ProtectedRoute roles={["dosen"]}>
 				<DetailMahasiswaSetoran />

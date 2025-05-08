@@ -14,7 +14,7 @@ import MahasiswaSeminarValidasiBerkasPage from "@/pages/mahasiswa/seminar/valida
 
 export const mahasiswaRouter = [
 	{
-		path: "/mahasiswa/setoran-hafalan/statistik",
+		path: "/mahasiswa/murojaah/statistik",
 		element: (
 			<ProtectedRoute roles={["mahasiswa"]}>
 				<MahasiswaSetoranHafalanStatistikPage />
@@ -22,7 +22,7 @@ export const mahasiswaRouter = [
 		),
 	},
 	{
-		path: "/mahasiswa/setoran-hafalan/detail-riwayat",
+		path: "/mahasiswa/murojaah/detail-riwayat",
 		element: (
 			<ProtectedRoute roles={["mahasiswa"]}>
 				<MahasiswaSetoranHafalanDetailRiwayatPage />

@@ -5,54 +5,63 @@ import KoordinatorNilaiPage from "@/pages/koordinator-kp/seminar-kerja-praktik/n
 import KoordinatorKerjaPraktikPermohonanPage from "@/pages/koordinator-kp/kerja-praktik/permohonan/page";
 import KoordinatorKerjaPraktikDailyReportPage from "@/pages/koordinator-kp/kerja-praktik/daily-report/page";
 import KoordinatorKerjaPraktikDailyReportDetailPage from "@/pages/koordinator-kp/kerja-praktik/daily-report/detail-mahasiswa/page";
+import KoordinatorJadwalSeminarPage from "@/pages/koordinator-kp/seminar-kerja-praktik/jadwal/page";
 
 export const koordinatorKPRouter = [
-	{
-		path: "/koordinator-kp/kerja-praktik/permohonan",
-		element: (
-			<ProtectedRoute roles={["koordinator-kp"]}>
-				<KoordinatorKerjaPraktikPermohonanPage />
-			</ProtectedRoute>
-		),
-	},
-	{
-		path: "/koordinator-kp/kerja-praktik/permohonan/detail-permohonan",
-		element: (
-			<ProtectedRoute roles={["koordinator-kp"]}>
-				<KoordinatorKerjaPraktikPermohonanDetailPage />
-			</ProtectedRoute>
-		),
-	},
-	{
-		path: "/koordinator-kp/kerja-praktik/daily-report",
-		element: (
-			<ProtectedRoute roles={["koordinator-kp"]}>
-				<KoordinatorKerjaPraktikDailyReportPage />
-			</ProtectedRoute>
-		),
-	},
-	{
-		path: "/koordinator-kp/kerja-praktik/daily-report/detail-mahasiswa",
-		element: (
-			<ProtectedRoute roles={["koordinator-kp"]}>
-				<KoordinatorKerjaPraktikDailyReportDetailPage />
-			</ProtectedRoute>
-		),
-	},
-	{
-		path: "/koordinator-kp/seminar-kp/validasi-berkas",
-		element: (
-			<ProtectedRoute roles={["koordinator-kp"]}>
-				<KoordinatorValidasiBerkasPage />
-			</ProtectedRoute>
-		),
-	},
-	{
-		path: "/koordinator-kp/seminar-kp/nilai",
-		element: (
-			<ProtectedRoute roles={["koordinator-kp"]}>
-				<KoordinatorNilaiPage />
-			</ProtectedRoute>
-		),
-	},
-]
+  {
+    path: "/koordinator-kp/kerja-praktik/permohonan",
+    element: (
+      <ProtectedRoute roles={["koordinator-kp"]}>
+        <KoordinatorKerjaPraktikPermohonanPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/koordinator-kp/kerja-praktik/permohonan/detail-permohonan",
+    element: (
+      <ProtectedRoute roles={["koordinator-kp"]}>
+        <KoordinatorKerjaPraktikPermohonanDetailPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/koordinator-kp/kerja-praktik/daily-report",
+    element: (
+      <ProtectedRoute roles={["koordinator-kp"]}>
+        <KoordinatorKerjaPraktikDailyReportPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/koordinator-kp/kerja-praktik/daily-report/detail-mahasiswa",
+    element: (
+      <ProtectedRoute roles={["koordinator-kp"]}>
+        <KoordinatorKerjaPraktikDailyReportDetailPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/koordinator-kp/seminar-kp/validasi-berkas",
+    element: (
+      <ProtectedRoute roles={["koordinator-kp"]}>
+        <KoordinatorValidasiBerkasPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/koordinator-kp/seminar-kp/nilai",
+    element: (
+      <ProtectedRoute roles={["koordinator-kp"]}>
+        <KoordinatorNilaiPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/koordinator-kp/seminar-kp/jadwal",
+    element: (
+      <ProtectedRoute roles={["koordinator-kp"]}>
+        <KoordinatorJadwalSeminarPage />
+      </ProtectedRoute>
+    ),
+  },
+];

@@ -147,7 +147,7 @@ const NilaiApproveModal: FC<NilaiApproveModalProps> = ({
               <div className="text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
                 TOTAL
               </div>
-              <span className="font-bold text-3xl">4.00 (A)</span>
+              <span className="font-bold text-3xl">100</span>
             </div>
           </div>
 

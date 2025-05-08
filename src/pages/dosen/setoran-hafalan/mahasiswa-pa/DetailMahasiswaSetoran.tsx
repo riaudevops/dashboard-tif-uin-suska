@@ -196,7 +196,7 @@ function DetailMahasiswaSetoran() {
 					} catch (error) {
 						toast({
 							title: "❌ Error",
-							description: "Pembatalan Setoran Surah Gagal",
+							description: "Pembatalan Muroja'ah Gagal",
 							variant: "destructive",
 							action: (
 								<ToastAction
@@ -223,7 +223,7 @@ function DetailMahasiswaSetoran() {
 					if (dateSetoran === "") {
 						return toast({
 							title: "📢 Peringatan",
-							description: "Tanggal setoran tidak boleh kosong",
+							description: "Tanggal muroja'ah tidak boleh kosong",
 							// className: "dark:bg-blue-500 bg-blue-300",
 						});
 					}
@@ -281,7 +281,7 @@ function DetailMahasiswaSetoran() {
 					} catch (error) {
 						toast({
 							title: "❌ Error",
-							description: "Validasi Setoran Surah Gagal",
+							description: "Validasi Muroja'ah Gagal",
 							variant: "destructive",
 							action: (
 								<ToastAction
@@ -306,13 +306,15 @@ function DetailMahasiswaSetoran() {
 				{/* judul */}
 				<div className="flex flex-col gap-1.5 -mb-2.5">
 					<div className="text-lg md:text-3xl font-bold select-none -ml-1">
-						✨ Detail Riwayat Setoran Hafalan Mahasiswa PA-mu...
+						✨ Detail Riwayat Muroja'ah Mahasiswa PA-mu...
 					</div>
 					<div className="select-none ml-1 md:text-base text-sm">
-						Berikut detail riwayat setoran hafalan mahasiswa PA kamu untuk
+						Berikut detail riwayat muroja'ah mahasiswa PA kamu untuk
 						persyaratan akademik di UIN Suska Riau... 💙❤️
 					</div>
 				</div>
+
+				{/* statistik && user info */}
 				<div className="flex gap-2 -mb-5">
 					<ProgressStatistik
 						uploadedDocs={
@@ -325,7 +327,7 @@ function DetailMahasiswaSetoran() {
 					<div className="md:-ml-36 ml-3 flex flex-col gap-1 h-full justify-center py-9 md:py-14">
 						<div className="flex items-center">
 							{/* Bagian kiri */}
-							<div className="flex items-center gap-1 min-w-40">
+							<div className="flex items-center gap-1 min-w-44">
 								<User size={19} />
 								<span className="font-medium">Nama Lengkap</span>
 							</div>
@@ -339,7 +341,7 @@ function DetailMahasiswaSetoran() {
 						</div>
 						<div className="flex items-center">
 							{/* Bagian kiri */}
-							<div className="flex items-center gap-1 min-w-40">
+							<div className="flex items-center gap-1 min-w-44">
 								<FileDigit size={19} />
 								<span className="font-medium">NIM</span>
 							</div>
@@ -353,7 +355,7 @@ function DetailMahasiswaSetoran() {
 						</div>
 						<div className="flex items-center">
 							{/* Bagian kiri */}
-							<div className="flex items-center gap-1 min-w-40">
+							<div className="flex items-center gap-1 min-w-44">
 								<Rocket size={19} />
 								<span className="font-medium">Semester</span>
 							</div>
@@ -367,9 +369,9 @@ function DetailMahasiswaSetoran() {
 						</div>
 						<div className="flex items-center">
 							{/* Bagian kiri */}
-							<div className="flex items-center gap-1 min-w-40">
+							<div className="flex items-center gap-1 min-w-44">
 								<Calendar size={19} />
-								<span className="font-medium">Terakhir Setoran</span>
+								<span className="font-medium">Terakhir Muroja'ah</span>
 							</div>
 
 							{/* Titik dua dan nilai */}
@@ -407,7 +409,7 @@ function DetailMahasiswaSetoran() {
 											"hover:bg-blue-100 dark:hover:bg-background/20"
 										}`}
 									>
-										Sudah Disetor
+										Selesai di-muroja'ah
 									</TabsTrigger>
 									<TabsTrigger
 										value="tab3"
@@ -417,7 +419,7 @@ function DetailMahasiswaSetoran() {
 											"hover:bg-blue-100 dark:hover:bg-background/20"
 										}`}
 									>
-										Belum Disetor
+										Belum di-muroja'ah
 									</TabsTrigger>
 								</TabsList>
 							</Tabs>
@@ -462,7 +464,7 @@ function DetailMahasiswaSetoran() {
 										setModalBatalkanSetoran(false);
 										return toast({
 											title: "📢 Peringatan",
-											description: "Surah yang anda pilih belum disetor",
+											description: "Surah yang anda pilih belum di-muroja'ah sebelumnya.",
 											// className: "dark:bg-orange-400 bg-orange-300",
 										});
 									}
@@ -490,7 +492,7 @@ function DetailMahasiswaSetoran() {
 										setModalValidasiSetoran(false);
 										return toast({
 											title: "📢 Peringatan",
-											description: "Surah yang anda pilih sudah disetor",
+											description: "Surah yang anda pilih sudah di-muroja'ah sebelumnya.",
 											// className: "dark:bg-orange-400 bg-orange-300",
 										});
 									}
@@ -505,7 +507,7 @@ function DetailMahasiswaSetoran() {
 
 					<div className="mt-1">
 						<Input
-							placeholder="Cari surah yang mau disetor berdasarkan nama surah-nya..."
+							placeholder="Cari surah yang mau di-muroja'ah berdasarkan nama surah-nya..."
 							onChange={(e) => {
 								setSearch(e.target.value);
 							}}
@@ -519,17 +521,17 @@ function DetailMahasiswaSetoran() {
 						<TableHeader className="sticky top-0">
 							<TableRow className="border border-solid border-secondary bg-muted">
 								<TableHead className="text-center">No</TableHead>
-								<TableHead>Nama Surah</TableHead>
+								<TableHead className="text-center">Nama Surah</TableHead>
 								<TableHead className="text-center">
-									Tanggal Setoran Hafalan
+									Tanggal Muroja'ah
 								</TableHead>
 								<TableHead className="text-center">
-									Persyaratan Setoran
+									Persyaratan Muroja'ah
 								</TableHead>
 								<TableHead className="text-center">
 									Dosen Yang Mengesahkan
 								</TableHead>
-								<TableHead className="text-center">Status</TableHead>
+								<TableHead className="text-center">Status Muroja'ah</TableHead>
 								<TableHead className="w-24 text-center">
 									<Checkbox
 										className="data-[state=checked]:bg-green-500"
@@ -569,7 +571,7 @@ function DetailMahasiswaSetoran() {
 										}
 									>
 										<TableCell className="text-center">{index + 1}.</TableCell>
-										<TableCell>{surah.nama}</TableCell>
+										<TableCell className="text-center">{surah.nama} {surah.nama_arab && ` - ${surah.nama_arab}`}</TableCell>
 										<TableCell className="text-center">
 											{surah.sudah_setor ? (
 												<div>
@@ -605,7 +607,7 @@ function DetailMahasiswaSetoran() {
 										<TableCell className="text-center">
 											{surah.sudah_setor ? (
 												<div className="bg-green-600 px-3 py-1 text-white rounded-2xl inline-block">
-													Sudah Setor
+													Selesai
 												</div>
 											) : (
 												<div>-</div>

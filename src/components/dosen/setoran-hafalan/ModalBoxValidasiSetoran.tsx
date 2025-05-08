@@ -67,7 +67,7 @@ function ModalBoxValidasiSetoran({
             
             <div className="flex flex-col gap-1">
               <div>
-                Tanggal Setoran Hafalan{" "}
+                Tanggal Muroja'ah{" "}
                 <span className="text-sm italic">
                   &nbsp;(klik untuk mengubah)
                 </span>
@@ -100,7 +100,7 @@ function ModalBoxValidasiSetoran({
                 htmlFor="terms"
                 className="text-sm leading-tight cursor-pointer font-light peer-disabled:cursor-not-allowed peer-disabled:opacity-70 select-none"
               >
-                Saya yakin akan melakukan validasi setoran surah dari mahasiswa{" "}
+                Saya yakin akan melakukan validasi muroja'ah dari mahasiswa{" "}
                 <span className="underline italic font-medium">
                   {info?.nama}
                 </span>
@@ -117,7 +117,7 @@ function ModalBoxValidasiSetoran({
             }}
           >
             {buttonLoading && <Loader2 className="animate-spin" />}
-            Validasi Setoran Mahasiswa
+            Validasi Muroja'ah Mahasiswa
           </Button>
         </DialogFooter>
       </DialogContent>

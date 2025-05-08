@@ -50,7 +50,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 		dataRingkasan?.setoran.detail,
 		"default"
 	);
-
+	
 	return (
 		<>
 			<DashboardLayout>

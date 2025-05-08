@@ -87,7 +87,7 @@ const DosenKerjaPraktikMahasiswaDetail = () => {
       id: 3,
       day: 28,
       date: "28 Februari 2025",
-      status: "Menunggu",
+      status: "Selesai",
       kegiatan: "Implementasi dashboard admin",
     },
     {
@@ -193,16 +193,13 @@ const DosenKerjaPraktikMahasiswaDetail = () => {
     switch (status) {
       case "Selesai":
         return "bg-green-100 text-green-800 hover:bg-green-200 border-green-200";
-      case "Menunggu":
-        return "bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-200";
       case "Revisi":
         return "bg-amber-100 text-amber-800 hover:bg-amber-200 border-amber-200";
-      case "Ditolak":
-        return "bg-red-100 text-red-800 hover:bg-red-200 border-red-200";
       default:
         return "bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-200";
     }
   };
+
 
   // Function to get initials from name
   const getInitials = (name: string) => {
@@ -221,28 +218,34 @@ const DosenKerjaPraktikMahasiswaDetail = () => {
       case "Kerja Praktik":
         return "from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700";
       case "Seminar Kerja Praktik":
-        return "from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700";
+        return "from-purple-500 to-indigo-600 dark:from-purple-600 dark:to-indigo-700";
       case "Selesai":
-        return "from-green-500 to-green-600 dark:from-green-600 dark:to-green-700";
+        return "from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700";
       case "Skripsi":
-        return "from-yellow-500 to-yellow-600 dark:from-yellow-600 dark:to-yellow-700";
+        return "from-orange-500 to-amber-600 dark:from-orange-600 dark:to-amber-700";
       case "Magang":
-        return "from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700";
+        return "from-indigo-500 to-blue-600 dark:from-indigo-600 dark:to-blue-700";
+      case "Lanjut":
+        return "from-orange-500 to-amber-600 dark:from-orange-600 dark:to-amber-700";
+      case "Gagal":
+        return "from-red-500 to-rose-600 dark:from-red-600 dark:to-rose-700";
       default:
         return "from-gray-500 to-gray-600 dark:from-gray-600 dark:to-gray-700";
     }
-  };
+  };  
+
+  // Updated evaluation criteria with weights as per the image
+  const evaluationCriteria = [
+    { id: 'kemampuan_penyelesaian', label: 'Kemampuan penyelesaian masalah', weight: 0.40 },
+    { id: 'keaktifan_bimbingan', label: 'Keaktifan bimbingan dan Sikap', weight: 0.35 },
+    { id: 'kualitas_laporan', label: 'Kualitas laporan KP', weight: 0.25 }
+  ];
 
    // State for evaluation form
    const [evaluationValues, setEvaluationValues] = useState({
-    ketepatan: 70,
-    keaktifan: 70,
-    kreativitas: 70,
-    pemecahan_masalah: 70,
-    kemandirian: 70,
-    kerjasama: 70,
-    tanggung_jawab: 70,
-    presentasi: 70,
+    kemampuan_penyelesaian: 70,
+    keaktifan_bimbingan: 70,
+    kualitas_laporan: 70,
     catatan: ""
   });
 
@@ -253,6 +256,9 @@ const DosenKerjaPraktikMahasiswaDetail = () => {
       [name]: value[0]
     }));
   };
+  
+  // Reset form to default values
+
 
   // Handler for text area changes
   const handleTextAreaChange = (e : React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -262,13 +268,17 @@ const DosenKerjaPraktikMahasiswaDetail = () => {
     }));
   };
 
-  // Calculate final score
+  // Calculate final score with weights
   const calculateFinalScore = () => {
-    const values = Object.values(evaluationValues);
-    // Remove the catatan (notes) from calculation
-    const numericalValues = values.filter(val => typeof val === 'number');
-    const sum = numericalValues.reduce((total, val) => total + val, 0);
-    return Math.round(sum / numericalValues.length);
+    let weightedSum = 0;
+    
+    // Calculate weighted sum based on criteria weights
+    weightedSum += evaluationValues.kemampuan_penyelesaian * evaluationCriteria[0].weight;
+    weightedSum += evaluationValues.keaktifan_bimbingan * evaluationCriteria[1].weight;
+    weightedSum += evaluationValues.kualitas_laporan * evaluationCriteria[2].weight;
+    
+    // Return rounded score - this represents 40% of the total grade as per the image
+    return Math.round(weightedSum);
   };
 
   // Function to get grade based on score
@@ -583,176 +593,53 @@ const DosenKerjaPraktikMahasiswaDetail = () => {
                 <CardHeader className="pb-2">
                   <CardTitle>Nilai Kerja Praktik</CardTitle>
                   <CardDescription>
-                    Formulir penilaian kerja praktik mahasiswa
+                    Formulir penilaian kerja praktik mahasiswa (Dosen Pembimbing - 40%)
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* Assessment Criteria */}
-                    <div className="space-y-6">
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <Label htmlFor="ketepatan" className="text-sm font-medium">
-                            Ketepatan Waktu
-                          </Label>
-                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-medium">
-                            {evaluationValues.ketepatan}
-                          </span>
+                  <div className="space-y-6">
+                    {/* Assessment Criteria based on the image */}
+                    {evaluationCriteria.map((criteria) => (
+                      <div key={criteria.id} className="bg-gray-50 dark:bg-gray-800/30 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex-1">
+                            <Label htmlFor={criteria.id} className="text-sm font-bold text-gray-700 dark:text-gray-300">
+                              {criteria.label}
+                            </Label>
+                            <span className="ml-2 px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium">
+                              {Math.round(criteria.weight * 100)}%
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="number"
+                              min={0}
+                              max={100}
+                              value={evaluationValues[criteria.id as keyof typeof evaluationValues] as number}
+                              onChange={(e) => {
+                                const value = Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
+                                handleSliderChange(criteria.id, [value]);
+                              }}
+                              className="w-16 h-9 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-center text-sm"
+                            />
+                            
+                          </div>
                         </div>
-                        <Slider
-                          id="ketepatan"
-                          defaultValue={[70]}
-                          max={100}
-                          step={1}
-                          className="w-full"
-                          value={[evaluationValues.ketepatan]}
-                          onValueChange={(value) => handleSliderChange('ketepatan', value)}
-                        />
-                      </div>
-
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <Label htmlFor="keaktifan" className="text-sm font-medium">
-                            Keaktifan & Inisiatif
-                          </Label>
-                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-medium">
-                            {evaluationValues.keaktifan}
-                          </span>
+                        <div className="flex items-center space-x-4">
+                          <span className="text-xs text-gray-500 dark:text-gray-400 w-6">0</span>
+                          <Slider
+                            id={criteria.id}
+                            defaultValue={[70]}
+                            max={100}
+                            step={1}
+                            className="flex-grow"
+                            value={[evaluationValues[criteria.id as keyof typeof evaluationValues] as number]}
+                            onValueChange={(value) => handleSliderChange(criteria.id, value)}
+                          />
+                          <span className="text-xs text-gray-500 dark:text-gray-400 w-6">100</span>
                         </div>
-                        <Slider
-                          id="keaktifan"
-                          defaultValue={[70]}
-                          max={100}
-                          step={1}
-                          className="w-full"
-                          value={[evaluationValues.keaktifan]}
-                          onValueChange={(value) => handleSliderChange('keaktifan', value)}
-                        />
                       </div>
-
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <Label htmlFor="kreativitas" className="text-sm font-medium">
-                            Kreativitas & Inovasi
-                          </Label>
-                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-medium">
-                            {evaluationValues.kreativitas}
-                          </span>
-                        </div>
-                        <Slider
-                          id="kreativitas"
-                          defaultValue={[70]}
-                          max={100}
-                          step={1}
-                          className="w-full"
-                          value={[evaluationValues.kreativitas]}
-                          onValueChange={(value) => handleSliderChange('kreativitas', value)}
-                        />
-                      </div>
-
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <Label htmlFor="pemecahan_masalah" className="text-sm font-medium">
-                            Pemecahan Masalah
-                          </Label>
-                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-medium">
-                            {evaluationValues.pemecahan_masalah}
-                          </span>
-                        </div>
-                        <Slider
-                          id="pemecahan_masalah"
-                          defaultValue={[70]}
-                          max={100}
-                          step={1}
-                          className="w-full"
-                          value={[evaluationValues.pemecahan_masalah]}
-                          onValueChange={(value) => handleSliderChange('pemecahan_masalah', value)}
-                        />
-                      </div>
-                    </div>
-
-                    {/* More Assessment Criteria */}
-                    <div className="space-y-6">
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <Label htmlFor="kemandirian" className="text-sm font-medium">
-                            Kemandirian
-                          </Label>
-                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-medium">
-                            {evaluationValues.kemandirian}
-                          </span>
-                        </div>
-                        <Slider
-                          id="kemandirian"
-                          defaultValue={[70]}
-                          max={100}
-                          step={1}
-                          className="w-full"
-                          value={[evaluationValues.kemandirian]}
-                          onValueChange={(value) => handleSliderChange('kemandirian', value)}
-                        />
-                      </div>
-
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <Label htmlFor="kerjasama" className="text-sm font-medium">
-                            Kerjasama Tim
-                          </Label>
-                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-medium">
-                            {evaluationValues.kerjasama}
-                          </span>
-                        </div>
-                        <Slider
-                          id="kerjasama"
-                          defaultValue={[70]}
-                          max={100}
-                          step={1}
-                          className="w-full"
-                          value={[evaluationValues.kerjasama]}
-                          onValueChange={(value) => handleSliderChange('kerjasama', value)}
-                        />
-                      </div>
-
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <Label htmlFor="tanggung_jawab" className="text-sm font-medium">
-                            Tanggung Jawab
-                          </Label>
-                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-medium">
-                            {evaluationValues.tanggung_jawab}
-                          </span>
-                        </div>
-                        <Slider
-                          id="tanggung_jawab"
-                          defaultValue={[70]}
-                          max={100}
-                          step={1}
-                          className="w-full"
-                          value={[evaluationValues.tanggung_jawab]}
-                          onValueChange={(value) => handleSliderChange('tanggung_jawab', value)}
-                        />
-                      </div>
-
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <Label htmlFor="presentasi" className="text-sm font-medium">
-                            Kualitas Presentasi
-                          </Label>
-                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-medium">
-                            {evaluationValues.presentasi}
-                          </span>
-                        </div>
-                        <Slider
-                          id="presentasi"
-                          defaultValue={[70]}
-                          max={100}
-                          step={1}
-                          className="w-full"
-                          value={[evaluationValues.presentasi]}
-                          onValueChange={(value) => handleSliderChange('presentasi', value)}
-                        />
-                      </div>
-                    </div>
+                    ))}
                   </div>
 
                   {/* Notes Section */}
@@ -775,6 +662,7 @@ const DosenKerjaPraktikMahasiswaDetail = () => {
                       <div className="flex flex-col items-center justify-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Nilai Akhir</h3>
                         <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{calculateFinalScore()}</p>
+                        <p className="text-xs text-gray-500 mt-1">(40% dari total nilai)</p>
                       </div>
                       
                       <div className="flex flex-col items-center justify-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">

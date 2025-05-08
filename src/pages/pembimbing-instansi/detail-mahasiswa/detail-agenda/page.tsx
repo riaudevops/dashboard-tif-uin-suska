@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
 import {
   ArrowLeft,
-  User,
-  FileDigit,
-  Rocket,
-  Calendar,
+
   FileText,
   FileInput,
 } from "lucide-react";
@@ -75,25 +72,17 @@ const DailyReportKerjaPraktikMahasiswaDetailPage = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1500);
+    }, 200);
     return () => clearTimeout(timer);
   }, []);
 
   // Student Profile Card Component that includes both progress chart and bio data
   const StudentProfileCard = ({
-    student,
     isLoading,
   }: {
     student: any;
     isLoading: boolean;
   }) => {
-    // Modern Progress Circle Component
-    const radius = 80;
-    const strokeWidth = 20;
-    const normalizedRadius = radius - strokeWidth / 2;
-    const circumference = normalizedRadius * 2 * Math.PI;
-    const strokeDashoffset =
-      circumference - (student.progress / 100) * circumference;
 
     if (isLoading) {
       return (
@@ -138,139 +127,6 @@ const DailyReportKerjaPraktikMahasiswaDetailPage = () => {
     return (
       <div className="rounded-xl overflow-hidden bg-white shadow-sm">
         <div className="flex flex-col md:flex-row">
-          {/* Progress Chart Section */}
-          <div className="relative flex items-center justify-center p-6 md:w-64">
-            <div className="relative w-40 h-40 flex items-center justify-center">
-              {/* Glowing background effect */}
-              <div className="absolute inset-0 rounded-full opacity-70"></div>
-
-              {/* Background Circle with light gray */}
-              <svg
-                height={radius * 2}
-                width={radius * 2}
-                className="drop-shadow-md"
-              >
-                <defs>
-                  <linearGradient
-                    id="bgGradient"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stopColor="#f1f5f9" />
-                    <stop offset="100%" stopColor="#e2e8f0" />
-                  </linearGradient>
-                </defs>
-                <circle
-                  stroke="url(#bgGradient)"
-                  fill="transparent"
-                  strokeWidth={strokeWidth}
-                  r={normalizedRadius}
-                  cx={radius}
-                  cy={radius}
-                />
-
-                {/* Progress Circle with multi-color gradient */}
-                <defs>
-                  <linearGradient
-                    id="progressGradient"
-                    gradientUnits="userSpaceOnUse"
-                    x1="80"
-                    y1="0"
-                    x2="80"
-                    y2="160"
-                  >
-                    <stop offset="0%" stopColor="#4ADE80" />{" "}
-                    {/* Green at top */}
-                    <stop offset="33%" stopColor="#84CC16" />{" "}
-                    {/* Green-yellow */}
-                    <stop offset="66%" stopColor="#EAB308" />{" "}
-                    {/* Yellow-orange */}
-                    <stop offset="100%" stopColor="#EF4444" />{" "}
-                    {/* Red at bottom */}
-                  </linearGradient>
-                </defs>
-                <circle
-                  stroke="url(#progressGradient)"
-                  fill="transparent"
-                  strokeWidth={strokeWidth}
-                  strokeDasharray={circumference + " " + circumference}
-                  style={{
-                    strokeDashoffset,
-                    transform: "rotate(-90deg)",
-                    transformOrigin: "center",
-                    transition: "stroke-dashoffset 1s ease-in-out",
-                  }}
-                  strokeLinecap="round"
-                  r={normalizedRadius}
-                  cx={radius}
-                  cy={radius}
-                />
-              </svg>
-
-              {/* Percentage Text */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-sm text-gray-500">Progress</span>
-                <div className="relative">
-                  <span className="text-4xl font-bold text-gray-900">
-                    {student.progress}%
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Student Bio Data Section */}
-          <div className="flex flex-col gap-3 justify-center flex-1 p-6 border-t md:border-t-0 md:border-l border-gray-100">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0">
-              <div className="flex items-center gap-2 w-full sm:w-48">
-                <User size={18} className="text-gray-800" />
-                <span className="font-medium text-gray-800">Nama Lengkap</span>
-              </div>
-              <div className="flex items-center gap-2 pl-6 sm:pl-0">
-                <span className="text-gray-600">:</span>
-                <span className="text-gray-900">{student.nama}</span>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0">
-              <div className="flex items-center gap-2 w-full sm:w-48">
-                <FileDigit size={18} className="text-gray-800" />
-                <span className="font-medium text-gray-800">NIM</span>
-              </div>
-              <div className="flex items-center gap-2 pl-6 sm:pl-0">
-                <span className="text-gray-600">:</span>
-                <span className="text-gray-900">{student.nim}</span>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0">
-              <div className="flex items-center gap-2 w-full sm:w-48">
-                <Rocket size={18} className="text-gray-800" />
-                <span className="font-medium text-black">Semester</span>
-              </div>
-              <div className="flex items-center gap-2 pl-6 sm:pl-0">
-                <span className="text-gray-600">:</span>
-                <span className="text-gray-900">{student.semester}</span>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0">
-              <div className="flex items-center gap-2 ">
-                <Calendar size={18} className="text-gray-800" />
-                <span className="font-medium text-black">
-                  Tanggal Mulai/Selesai
-                </span>
-              </div>
-              <div className="flex items-center gap-2 pl-6 sm:pl-0">
-                <span className="text-gray-600 ml-2">:</span>
-                <span className="text-gray-900">
-                  {student.tanggalMulai}/{student.tanggalSelesai}
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     );
@@ -287,7 +143,7 @@ const DailyReportKerjaPraktikMahasiswaDetailPage = () => {
           <ArrowLeft size={20} />
         </button>
         <h1 className="text-xl md:text-2xl font-bold text-gray-800">
-          Daily Report Kerja Praktik Mahasiswa
+          List Agenda Kerja Praktik <span>{tanggal}</span>
         </h1>
       </div>
 
@@ -295,15 +151,6 @@ const DailyReportKerjaPraktikMahasiswaDetailPage = () => {
       <StudentProfileCard student={studentData} isLoading={isLoading} />
 
       <div className="bg-white rounded-lg shadow-sm p-4 mb-6 mt-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-          {isLoading ? (
-            <Skeleton className="h-6 w-64" />
-          ) : (
-            <h2 className="text-lg font-semibold text-gray-800">
-              List Agenda Kerja Praktik Tanggal {tanggal}
-            </h2>
-          )}
-        </div>
 
         {/* Table Section */}
         <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
@@ -396,6 +243,7 @@ const DailyReportKerjaPraktikMahasiswaDetailPage = () => {
           {selectedRows.length} of {agendaEntries.length} row(s) selected.
         </div>
       </div>
+      
       <div>
         <h1>
           Berikan Komentar Daily Report Mahasiswa{" "}
@@ -420,6 +268,7 @@ const DailyReportKerjaPraktikMahasiswaDetailPage = () => {
           </div>
         </div>
       </div>
+
       <ModalAdendaMahasiswa
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

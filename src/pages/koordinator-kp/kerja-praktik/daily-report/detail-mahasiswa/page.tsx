@@ -6,7 +6,6 @@ import {
   FileText,
   BookOpen,
   SquareArrowOutUpRightIcon,
-  FilePlus2,
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
@@ -28,7 +27,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import TambahBimbingan from "@/components/dosen/kerja-praktik/daily-report/ModalTambahBimbingan";
 import ReviewBimbinganKP from "@/components/dosen/kerja-praktik/daily-report/ModalReviewBimbingan";
 
 export const KoordinatorKerjaPraktikDailyReportDetailPage = () => {
@@ -37,7 +35,6 @@ export const KoordinatorKerjaPraktikDailyReportDetailPage = () => {
   const query = new URLSearchParams(search);
   const name = query.get("name") || "-";
   const nim = query.get("nim") || "-";
-  const [IsModalBimbingan, setOpenModalBimbingan] = useState(false);
   const [IsModalBimbinganDetail, setOpenModalBimbinganDetail] = useState(false);
 
   // Dummy data for daily reports - Data baru ditambahkan di awal array (untuk tampil di bagian atas)
@@ -260,7 +257,7 @@ export const KoordinatorKerjaPraktikDailyReportDetailPage = () => {
                       <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                         Judul Laporan
                       </h3>
-                      <p className="font-semibold text-gray-900 dark:text-white mt-1">
+                      <p className="uppercase font-semibold text-gray-900 dark:text-white mt-1">
                         {biodataMahasiswa.judulkp}
                       </p>
                     </div>
@@ -427,15 +424,12 @@ export const KoordinatorKerjaPraktikDailyReportDetailPage = () => {
 
             <TabsContent value="Riwayat-bimbingan" className="space-y-4">
               <Card>
-                <div className="flex justify-end mr-8 mb-2 mt-2">
-                  <Button
-                    className="bg-blue-500 text-gray-50 hover:bg-blue-600 dark:bg-blue-500 border dark:border-gray-700 dark:hover:bg-blue-600"
-                    onClick={() => setOpenModalBimbingan(true)}
-                  >
-                    <FilePlus2 className="h-4 w-4 " />
-                    Tambah Bimbingan
-                  </Button>
-                </div>
+              <CardHeader className="pb-2">
+                  <CardTitle>Riwayat Bimbingan</CardTitle>
+                  <CardDescription>
+                    Daftar riwayat bimbingan kerja praktik
+                  </CardDescription>
+                </CardHeader>
                 <CardContent>
                   <Card className="rounded-lg shadow-sm border-none overflow-hidden">
                     <Table className="dark:border-gray-700 border">
@@ -492,11 +486,6 @@ export const KoordinatorKerjaPraktikDailyReportDetailPage = () => {
             </TabsContent>
           </Tabs>
         </div>
-
-        <TambahBimbingan
-          isOpen={IsModalBimbingan}
-          onClose={() => setOpenModalBimbingan(false)}
-        />
         <ReviewBimbinganKP
           isOpen={IsModalBimbinganDetail}
           onClose={() => setOpenModalBimbinganDetail(false)}

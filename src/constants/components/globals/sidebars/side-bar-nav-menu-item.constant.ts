@@ -1,13 +1,13 @@
 import { SideBarNavMenuItemsProps } from "@/interfaces/components/globals/sidebars/side-bar-nav-menu.interface";
 import {
-	BackpackIcon,
-	BookOpen,
-	GraduationCap,
-	LayoutGridIcon,
-	LucideHistory,
-	MedalIcon,
-	PieChart,
-	UserRoundPenIcon,
+  BackpackIcon,
+  BookOpen,
+  GraduationCap,
+  LayoutGridIcon,
+  LucideHistory,
+  MedalIcon,
+  PieChart,
+  UserRoundPenIcon,
 } from "lucide-react";
 
 export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
@@ -129,6 +129,10 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 							title: "Nilai",
 							url: "/koordinator-kp/seminar-kp/nilai",
 						},
+            {
+              title: "Jadwal Seminar",
+              url: "/koordinator-kp/seminar-kp/jadwal",
+            },
 					],
 				},
 			],

@@ -82,7 +82,7 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaDetailPage = () => {
           ) : (
             <>
               <CardTitle className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-0">
-                List Agenda Kerja Praktek Tanggal {tanggal}
+                List Agenda Kerja Praktek {tanggal}
               </CardTitle>
             </>
           )}

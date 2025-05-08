@@ -18,11 +18,11 @@ export default function MahasiswaSetoranHafalanStatistikPage() {
     <DashboardLayout>
       <div className="flex flex-col gap-1.5">
         <div className="text-lg md:text-3xl font-bold select-none -ml-1">
-          🔥 Progress Setoran Hafalanmu...
+          🔥 Progress Muroja'ah-mu...
         </div>
         <div className="flex flex-col gap-4">
           <div className="select-none ml-1 md:text-base text-sm">
-            Berikut stastistik dari setoran hafalan kamu untuk persyaratan
+            Berikut stastistik dari muroja'ah kamu untuk persyaratan
             akademik di UIN Suska Riau, semangat terus ya... 💙❤️
           </div>
           <div className="flex flex-col gap-4">

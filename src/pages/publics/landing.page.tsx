@@ -64,39 +64,39 @@ import { FaqListItems } from "@/constants/components/globals/faqs/faq-list-item.
 
 const features = [
 	{
-		name: "Setoran Hafalan",
-		description: "📖 Memudahkan penyetoran hafalan.",
+		name: "Muroja'ah",
+		description: "📖 Memudahkan pencatatan muroja'ah.",
 		className: "col-span-3 lg:col-span-1",
 		background: (
 			<Terminal>
-				<TypingAnimation>&gt; tif setoran-hafalan@latest</TypingAnimation>
+				<TypingAnimation>&gt; tif muroja'ah@latest</TypingAnimation>
 				<AnimatedSpan delay={1500} className="text-green-500">
 					<span>✔ Memeriksa modul.</span>
 				</AnimatedSpan>
 				<AnimatedSpan delay={2000} className="text-green-500">
-					<span>✔ Menginisialisasi modul hafalan.</span>
+					<span>✔ Menginisialisasi modul muroja'ah.</span>
 				</AnimatedSpan>
 				<AnimatedSpan delay={2500} className="text-green-500">
-					<span>✔ Memuat database surah.</span>
+					<span>✔ Memuat database muroja'ah.</span>
 				</AnimatedSpan>
 				<AnimatedSpan delay={3000} className="text-green-500">
-					<span>✔ Menginstall komponen setoran.</span>
+					<span>✔ Menginstall komponen muroja'ah.</span>
 				</AnimatedSpan>
 				<AnimatedSpan delay={3500} className="text-green-500">
-					<span>✔ Memperbarui komponen setoran.</span>
+					<span>✔ Memperbarui komponen muroja'ah.</span>
 				</AnimatedSpan>
 				<AnimatedSpan delay={4000} className="text-green-500">
 					<span>✔ Menyiapkan sistem.</span>
 				</AnimatedSpan>
 				<AnimatedSpan delay={4500} className="py-2 text-blue-500">
 					<span>ℹ Updated 1 file:</span>
-					<span className="pl-2">- lib/setoran-hafalan.ts</span>
+					<span className="pl-2">- lib/muroja'ah.ts</span>
 				</AnimatedSpan>
 				<TypingAnimation delay={5000} className="text-yellow-500">
 					Alhamdulillah! Sistem siap digunakan.
 				</TypingAnimation>
 				<TypingAnimation delay={5500} className="text-muted-foreground">
-					Silakan mulai setoran hafalan Anda.
+					Silakan mulai muroja'ah anda.
 				</TypingAnimation>
 			</Terminal>
 		),
@@ -134,7 +134,7 @@ const features = [
 					Success! Sistem siap digunakan.
 				</TypingAnimation>
 				<TypingAnimation delay={5500} className="text-muted-foreground">
-					Silakan mulai kerja praktik Anda.
+					Silakan mulai kerja praktik anda.
 				</TypingAnimation>
 			</Terminal>
 		),
@@ -167,7 +167,7 @@ const features = [
 					Success! Sistem siap digunakan.
 				</TypingAnimation>
 				<TypingAnimation delay={4500} className="text-muted-foreground">
-					Silakan mulai seminar Anda.
+					Silakan mulai seminar anda.
 				</TypingAnimation>
 			</Terminal>
 		),

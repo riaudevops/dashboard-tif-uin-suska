@@ -3,7 +3,7 @@ import { generalRouter } from "./general.router";
 import { mahasiswaRouter } from "./mahasiswa.router";
 import { dosenRouter } from "./dosen.router";
 import { koordinatorKPRouter } from "./koordinator-kp.router";
-import { instansiRouter } from "./instansi.router";
+import { instansiRouter } from "./pembimbing-instansi.router";
 
 const router = createBrowserRouter([
 	...generalRouter,

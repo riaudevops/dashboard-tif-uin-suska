@@ -13,7 +13,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { useFilteredMahasiswa } from "@/hooks/use-filtering-searching";
 import colourfulProgress from "@/helpers/colourful-progress";
-import apiSetoran from "@/services/api/setoran-hafalan/dosen.service";
+import APISetoran from "@/services/api/dosen/setoran-hafalan.service";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {  useNavigate } from "react-router-dom";
@@ -30,7 +30,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
   
   const { data: dataMahasiswa, isLoading } = useQuery({
     queryKey: ["mahasiswa-pa-saya"],
-    queryFn: () => apiSetoran.getDataMyMahasiswa().then((res) => res.data),
+    queryFn: () => APISetoran.getDataMyMahasiswa().then((res) => res.data),
   });
   
   const { dataCurrent, setSearch, setTabState, tabState } = useFilteredMahasiswa(

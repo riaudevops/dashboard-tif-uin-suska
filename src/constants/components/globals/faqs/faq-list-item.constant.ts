@@ -7,7 +7,7 @@ export const FaqListItems: FaqListItemsProps[] = [
     },
     {
         question: "Apa saja yang bisa saya lakukan di Dashboard TIF UIN Suska Riau?",
-        answer: "Anda bisa melakukan berbagai hal di Dashboard TIF UIN Suska Riau, seperti administrasi setoran hafalan, pendaftaran kerja praktik, pendaftaran seminar kerja praktik, dan masih banyak fitur yang menarik lainnya.",
+        answer: "Anda bisa melakukan berbagai hal di Dashboard TIF UIN Suska Riau, seperti administrasi muroja'ah, pendaftaran kerja praktik, pendaftaran seminar kerja praktik, dan masih banyak fitur yang menarik lainnya.",
     },
     {
         question: "Untuk siapa web Dashboard TIF UIN Suska Riau dirancang?",

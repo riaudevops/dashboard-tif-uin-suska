@@ -51,7 +51,7 @@ function ModalBoxDetailSetoran({
               </div>
               <div className="flex flex-col gap-1">
                 <div className="bg-secondary py-1 text-center font-semibold">
-                  Tanggal Setoran
+                  Tanggal Muroja'ah
                 </div>
                 <div className="py-1 text-center">{tanggal_setoran}</div>
               </div>

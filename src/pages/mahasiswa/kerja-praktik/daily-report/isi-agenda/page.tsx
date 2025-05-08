@@ -36,6 +36,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+
 const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showNotification, setShowNotification] = useState(false);
@@ -54,8 +55,8 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
   const [lastAbsensiDate, setLastAbsensiDate] = useState<Date | null>(null);
 
   // Internship period dates
-  const internshipStartDate = new Date("2025-03-15");
-  const internshipEndDate = new Date("2025-03-25");
+  const internshipStartDate = new Date("2025-04-15");
+  const internshipEndDate = new Date("2025-06-25");
 
   // Mahasiswa biodata
   const biodataMahasiswa = {
@@ -89,9 +90,10 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
       setLastAbsensiDate(new Date(storedLastAbsensiDate));
     }
 
+    // Simulate loading time
     const timer = setTimeout(() => {
       setIsLoading(false);
-
+      
       // Calculate internship progress first to use it for notification logic
       const internshipProgress = calculateInternshipProgress();
 
@@ -116,7 +118,8 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
         // Keep completion notification visible longer
         setTimeout(() => setShowCompletionNotification(false), 15000);
       }
-    }, 2000);
+    }, 200); // Loading for 800ms
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -357,7 +360,7 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
       <div className="space-y-4 sm:space-y-6">
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-2">
           {isLoading ? (
-            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-9 w-64" />
           ) : (
             <CardTitle className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-0">
               Daily Report Kerja Praktik
@@ -366,88 +369,84 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
         </CardHeader>
         <CardContent>
           {/* Warning Notification for incomplete progress - Only show if not completed */}
-          {!isLoading &&
-            showNotification &&
-            !internshipProgress.isCompleted && (
-              <div
-                className="fixed top-4 right-4 z-50 max-w-md transform transition-all duration-500 ease-in-out"
-                style={{
-                  animation: "slideIn 0.5s ease-out",
-                  opacity: showNotification ? 1 : 0,
-                  transform: showNotification
-                    ? "translateX(0)"
-                    : "translateX(100%)",
-                }}
-              >
-                <div className="bg-white dark:bg-gray-800 border-l-4 border-amber-500 text-amber-700 p-4 rounded-md shadow-lg flex items-start justify-between relative">
-                  <div className="flex gap-3">
-                    <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <h3 className="font-bold text-sm">Pengingat Penting</h3>
-                      <p className="text-sm">
-                        Anda harus menyelesaikan 100% periode KP untuk dapat
-                        mencetak laporan.
-                        {internshipProgress.daysRemaining > 0 && (
-                          <span className="block mt-1 font-medium">
-                            Masih tersisa {internshipProgress.daysRemaining}{" "}
-                            hari lagi.
-                          </span>
-                        )}
-                      </p>
-                    </div>
+          {!isLoading && showNotification && !internshipProgress.isCompleted && (
+            <div
+              className="fixed top-4 right-4 z-50 max-w-md transform transition-all duration-500 ease-in-out"
+              style={{
+                animation: "slideIn 0.5s ease-out",
+                opacity: showNotification ? 1 : 0,
+                transform: showNotification
+                  ? "translateX(0)"
+                  : "translateX(100%)",
+              }}
+            >
+              <div className="bg-white dark:bg-gray-800 border-l-4 border-amber-500 text-amber-700 p-4 rounded-md shadow-lg flex items-start justify-between relative">
+                <div className="flex gap-3">
+                  <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="font-bold text-sm">Pengingat Penting</h3>
+                    <p className="text-sm">
+                      Anda harus menyelesaikan 100% periode KP untuk dapat
+                      mencetak laporan.
+                      {internshipProgress.daysRemaining > 0 && (
+                        <span className="block mt-1 font-medium">
+                          Masih tersisa {internshipProgress.daysRemaining}{" "}
+                          hari lagi.
+                        </span>
+                      )}
+                    </p>
                   </div>
-                  <button
-                    onClick={handleCloseNotification}
-                    className="text-amber-500 hover:text-amber-700 ml-2 flex-shrink-0"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                  
-                  {/* Timer countdown line */}
-                  <div className="absolute bottom-0 left-0 h-1 bg-amber-500 w-full rounded-b-md" style={{ animation: "countdown 10s linear forwards" }}></div>
                 </div>
+                <button
+                  onClick={handleCloseNotification}
+                  className="text-amber-500 hover:text-amber-700 ml-2 flex-shrink-0"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+                
+                {/* Timer countdown line */}
+                <div className="absolute bottom-0 left-0 h-1 bg-amber-500 w-full rounded-b-md" style={{ animation: "countdown 10s linear forwards" }}></div>
               </div>
-            )}
+            </div>
+          )}
 
           {/* Success Notification for 100% completion */}
-          {!isLoading &&
-            showCompletionNotification &&
-            internshipProgress.isCompleted && (
-              <div
-                className="fixed top-4 right-4 z-50 max-w-md transform transition-all duration-500 ease-in-out"
-                style={{
-                  animation: "slideIn 0.5s ease-out",
-                  opacity: showCompletionNotification ? 1 : 0,
-                  transform: showCompletionNotification
-                    ? "translateX(0)"
-                    : "translateX(100%)",
-                }}
-              >
-                <div className="bg-white dark:bg-gray-800 border-l-4 border-green-500 text-green-700 p-4 rounded-md shadow-lg flex items-start justify-between relative">
-                  <div className="flex gap-3">
-                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <h3 className="font-bold text-sm">Selamat!</h3>
-                      <p className="text-sm">
-                        Anda telah menyelesaikan 100% periode Kerja Praktik.
-                        <span className="block mt-1 font-medium">
-                          Sekarang Anda dapat mencetak laporan KP.
-                        </span>
-                      </p>
-                    </div>
+          {!isLoading && showCompletionNotification && internshipProgress.isCompleted && (
+            <div
+              className="fixed top-4 right-4 z-50 max-w-md transform transition-all duration-500 ease-in-out"
+              style={{
+                animation: "slideIn 0.5s ease-out",
+                opacity: showCompletionNotification ? 1 : 0,
+                transform: showCompletionNotification
+                  ? "translateX(0)"
+                  : "translateX(100%)",
+              }}
+            >
+              <div className="bg-white dark:bg-gray-800 border-l-4 border-green-500 text-green-700 p-4 rounded-md shadow-lg flex items-start justify-between relative">
+                <div className="flex gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="font-bold text-sm">Selamat!</h3>
+                    <p className="text-sm">
+                      Anda telah menyelesaikan 100% periode Kerja Praktik.
+                      <span className="block mt-1 font-medium">
+                        Sekarang Anda dapat mencetak laporan KP.
+                      </span>
+                    </p>
                   </div>
-                  <button
-                    onClick={handleCloseCompletionNotification}
-                    className="text-green-500 hover:text-green-700 ml-2 flex-shrink-0"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                  
-                  {/* Timer countdown line */}
-                  <div className="absolute bottom-0 left-0 h-1 bg-green-500 w-full rounded-b-md" style={{ animation: "countdown 15s linear forwards" }}></div>
                 </div>
+                <button
+                  onClick={handleCloseCompletionNotification}
+                  className="text-green-500 hover:text-green-700 ml-2 flex-shrink-0"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+                
+                {/* Timer countdown line */}
+                <div className="absolute bottom-0 left-0 h-1 bg-green-500 w-full rounded-b-md" style={{ animation: "countdown 15s linear forwards" }}></div>
               </div>
-            )}
+            </div>
+          )}
 
           {/* Absensi Notification - Dynamic based on type */}
           {!isLoading && showAbsensiNotification && (
@@ -507,13 +506,26 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
           <div className="mb-6">
             {isLoading ? (
               <div className="bg-white dark:bg-gray-800/30 rounded-lg p-4 border border-gray-200 dark:border-gray-700 shadow-md">
-                <div className="space-y-3">
-                  <Skeleton className="h-5 w-40" />
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <Skeleton className="h-20 w-full rounded-lg" />
-                    <Skeleton className="h-20 w-full rounded-lg" />
-                    <Skeleton className="h-20 w-full rounded-lg" />
+                {/* Header Skeleton */}
+                <div className="bg-gradient-to-br from-purple-600/40 to-indigo-700/40 p-4 rounded-t-lg border-b border-gray-100 dark:border-gray-700 flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-12 w-12 rounded-full" />
+                    <div>
+                      <Skeleton className="h-5 w-40 mb-2" />
+                      <div className="flex items-center">
+                        <Skeleton className="h-4 w-20 mr-2" />
+                        <Skeleton className="h-4 w-16" />
+                      </div>
+                    </div>
                   </div>
+                  <Skeleton className="h-8 w-24 rounded-full" />
+                </div>
+
+                {/* Info Cards Skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <Skeleton className="h-24 w-full rounded-lg" />
+                  <Skeleton className="h-24 w-full rounded-lg" />
+                  <Skeleton className="h-24 w-full rounded-lg" />
                 </div>
               </div>
             ) : (
@@ -619,11 +631,11 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
           <div className="mb-6 sm:mb-8">
             {isLoading ? (
               <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
-                <div className="flex justify-between items-center gap-4">
-                  <Skeleton className="h-4 w-48" />
-                  <div className="flex gap-2">
-                    <Skeleton className="h-9 w-24 rounded-md" />
-                    <Skeleton className="h-9 w-24 rounded-md" />
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                  <Skeleton className="h-5 w-64 rounded" />
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <Skeleton className="h-10 w-24 rounded" />
+                    <Skeleton className="h-10 w-32 rounded" />
                   </div>
                 </div>
               </div>
@@ -725,8 +737,8 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
             )}
           </div>
          
-       {/* Table Section with Pagination */}
-       <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
+          {/* Table Section with Pagination */}
+          <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
             <Table>
               <TableHeader>
                 <TableRow className="bg-primary/10 dark:bg-primary/5">
@@ -766,7 +778,9 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
                   [...Array(5)].map((_, index) => (
                     <TableRow
                       key={index}
-                      className="hover:bg-gray-100/50 dark:hover:bg-gray-700/20"
+                      className={index % 2 !== 0 
+                        ? "bg-secondary dark:bg-gray-700/30" 
+                        : "bg-background dark:bg-gray-700/10"}
                     >
                       <TableCell className="text-center">
                         <Skeleton className="h-4 w-8 mx-auto" />
@@ -775,7 +789,7 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
                         <Skeleton className="h-4 w-36 mx-auto" />
                       </TableCell>
                       <TableCell className="text-center">
-                        <Skeleton className="h-6 w-28 rounded-md mx-auto" />
+                        <Skeleton className="h-6 w-24 rounded-md mx-auto" />
                       </TableCell>
                       <TableCell className="text-center">
                         <Skeleton className="h-8 w-32 rounded-md mx-auto" />
@@ -841,7 +855,7 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
               </TableBody>
             </Table>
 
-            {/* Pagination Controls - Only visible if there are entries */}
+            {/* Pagination Controls - Only visible if there are entries and not loading */}
             {!isLoading && agendaEntries.length > 0 && (
               <div className="flex justify-between items-center p-4 border-t border-gray-100 dark:border-gray-700">
                 <div className="text-sm text-gray-500">
@@ -880,44 +894,43 @@ const MahasiswaKerjaPraktekDailyReportIsiAgendaPage = () => {
             )}
           </div>
       
+          <style type="text/css">{`
+            @keyframes slideIn {
+              from {
+                transform: translateX(100%);
+                opacity: 0;
+              }
+              to {
+                transform: translateX(0%);
+                opacity: 1;
+              }
+            }
+            
+            @keyframes countdown {
+              from {
+                width: 100%;
+                right: 0;
+                left: auto;
+              }
+              to {
+                width: 0%;
+                right: 0;
+                left: auto;
+              }
+            }
 
-       <style type="text/css">{`
-          @keyframes slideIn {
-            from {
-              transform: translateX(100%);
-              opacity: 0;
+            .status-indicator {
+              border-radius: 50%;
+              display: inline-block;
+              height: 10px;
+              width: 10px;
+              margin-right: 6px;
             }
-            to {
-              transform: translateX(0%);
-              opacity: 1;
-            }
-          }
-          
-           @keyframes countdown {
-            from {
-              width: 100%;
-              right: 0;
-              left: auto;
-            }
-            to {
-              width: 0%;
-              right: 0;
-              left: auto;
-            }
-          }
-
-          .status-indicator {
-            border-radius: 50%;
-            display: inline-block;
-            height: 10px;
-            width: 10px;
-            margin-right: 6px;
-          }
-        `}</style>
-      </CardContent>
-    </div>
-  </DashboardLayout>
-);
+          `}</style>
+        </CardContent>
+      </div>
+    </DashboardLayout>
+  );
 };
 
 export default MahasiswaKerjaPraktekDailyReportIsiAgendaPage;

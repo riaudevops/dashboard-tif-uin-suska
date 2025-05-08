@@ -1,6 +1,6 @@
-import { useState, useEffect, type FC } from "react";
+import { type FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, CheckCircle, AlertCircle, TrendingUp } from "lucide-react";
+import { Users, CheckCircle, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 // Updated Student interface
@@ -49,6 +49,7 @@ const DashboardCards: FC<DashboardCardsProps> = ({ students }) => {
     },
     Number(Object.keys(semesterCounts)[0]) || 0
   );
+  console.log(highestSemester);
 
   // Animation variants
   const container = {

@@ -4,10 +4,6 @@ import { Search, Eye } from "lucide-react";
 
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -21,10 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import ValidasiPendaftaranModal from "@/components/koordinator/seminar/validasi-pendaftaran-modal";
-import ValidasiIdModal from "@/components/koordinator/seminar/validasi-id-modal";
-import ValidasiSuratUndanganModal from "@/components/koordinator/seminar/validasi-suratUndangan-modal";
-import ValidasipascaSeminarModal from "@/components/koordinator/seminar/validasi-pascaSeminar-modal";
 import NilaiBelumValidModal from "@/components/koordinator/seminar/nilai-belumValid-modal";
 import NilaiValidModal from "@/components/koordinator/seminar/nilai-valid-modal";
 import NilaiApproveModal from "@/components/koordinator/seminar/nilai-approve-modal";

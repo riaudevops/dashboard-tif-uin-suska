@@ -2,7 +2,6 @@
 import React from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
 
 interface StatusProps {
   status: "validasi" | "ditolak" | "belum";

@@ -17,12 +17,12 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 			menus: [
 				{
 					title: "Statistik",
-					url: "/mahasiswa/setoran-hafalan/statistik",
+					url: "/mahasiswa/murojaah/statistik",
 					icon: PieChart,
 				},
 				{
 					title: "Detail Riwayat",
-					url: "/mahasiswa/setoran-hafalan/detail-riwayat",
+					url: "/mahasiswa/murojaah/detail-riwayat",
 					icon: LucideHistory,
 				},
 			],
@@ -70,7 +70,7 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
 			menus: [
 				{
 					title: "Mahasiswa PA",
-					url: "/dosen/setoran-hafalan/mahasiswa-pa",
+					url: "/dosen/murojaah/mahasiswa-pa",
 					icon: BackpackIcon,
 				},
 			],

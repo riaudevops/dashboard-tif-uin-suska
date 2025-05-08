@@ -13,6 +13,8 @@ interface Setoran {
 export interface MahasiswaSetoran {
   id: string;
   nama: string;
+  nama_arab: string;
+  external_id: string;
   label: string;
   sudah_setor: boolean;
   info_setoran: Setoran;

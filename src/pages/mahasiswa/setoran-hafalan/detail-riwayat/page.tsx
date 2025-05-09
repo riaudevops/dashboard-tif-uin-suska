@@ -2,6 +2,7 @@ import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import {
   Calendar,
   FileDigit,
+  GraduationCap,
   History,
   Printer,
   Rocket,
@@ -139,6 +140,22 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                   <span>:</span>
                   {isLoading && <Skeleton className="h-4 w-24" />}
                   <span className="">{dataRingkasan?.info.semester}</span>
+                </div>
+              </div>
+              <div className="flex items-center">
+                {/* Bagian kiri */}
+                <div className="flex items-center gap-1 min-w-44">
+                  <GraduationCap size={19} />
+                  <span className="font-medium">Dosen PA</span>
+                </div>
+  
+                {/* Titik dua dan nilai */}
+                <div className="flex items-center gap-2">
+                  <span>:</span>
+                  {isLoading && <Skeleton className="h-4 w-24" />}
+                  <span className="">
+                    {dataRingkasan?.info.dosen_pa.nama}
+                  </span>
                 </div>
               </div>
               <div className="flex items-center">

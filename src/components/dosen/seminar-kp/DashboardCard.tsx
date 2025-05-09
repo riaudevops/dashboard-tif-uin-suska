@@ -35,10 +35,21 @@ const DashboardCards: FC<DashboardCardsProps> = ({ students }) => {
     : 0;
 
   // Averages by semester (new card)
-  // const semesterCounts = students.reduce((acc, student) => {
-  //   acc[student.semester] = (acc[student.semester] || 0) + 1;
-  //   return acc;
-  // }, {} as Record<number, number>);
+  const semesterCounts = students.reduce((acc, student) => {
+    acc[student.semester] = (acc[student.semester] || 0) + 1;
+    return acc;
+  }, {} as Record<number, number>);
+
+  const highestSemester = Object.keys(semesterCounts).reduce(
+    (highest, semester) => {
+      const semNum = Number(semester);
+      return semesterCounts[semNum] > semesterCounts[highest]
+        ? semNum
+        : highest;
+    },
+    Number(Object.keys(semesterCounts)[0]) || 0
+  );
+  console.log(highestSemester);
 
   // Animation variants
   const container = {

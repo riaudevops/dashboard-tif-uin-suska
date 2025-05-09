@@ -20,7 +20,7 @@ function ModalBoxStatistik({
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-center py-3">
-            Statistik Setoran Mahasiswa 📝
+            Statistik Muroja'ah Mahasiswa 📝
           </DialogTitle>
           <div className="flex flex-col gap-3">
             {dataRingkasan?.map(

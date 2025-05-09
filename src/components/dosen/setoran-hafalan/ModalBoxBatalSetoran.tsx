@@ -39,7 +39,7 @@ function ModalBoxBatalSetoran({
       <DialogContent className="">
         <DialogHeader>
           <DialogTitle className="text-center">
-            ❌ Pembatalan Setoran ❌ 
+            ❌ Pembatalan Muroja'ah ❌ 
           </DialogTitle>
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1">
@@ -64,7 +64,7 @@ function ModalBoxBatalSetoran({
                 htmlFor="terms"
                 className="text-sm leading-tight cursor-pointer font-light peer-disabled:cursor-not-allowed peer-disabled:opacity-70 select-none"
               >
-                Saya yakin akan membatalkan validasi setoran surah dari
+                Saya yakin akan membatalkan validasi muroja'ah dari
                 mahasiswa{" "}
                 <span className="underline italic font-medium">
                   {info?.nama}
@@ -82,7 +82,7 @@ function ModalBoxBatalSetoran({
             }}
           >
             {buttonLoading && <Loader2 className="animate-spin" />}
-            Batalkan Setoran Mahasiswa
+            Batalkan Muroja'ah Mahasiswa
           </Button>
         </DialogFooter>
       </DialogContent>

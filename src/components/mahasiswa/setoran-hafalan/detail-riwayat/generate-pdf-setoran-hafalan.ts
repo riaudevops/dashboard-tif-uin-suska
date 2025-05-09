@@ -33,7 +33,7 @@ const addHeader = (doc: jsPDF) => {
 
   doc.setFont("Geist-Bold", "bold");
   doc.setFontSize(PDF_CONFIG.fontSize.header);
-  doc.text("KARTU SETORAN HAFALAN JUZ 30", margin + sizeLogoUin + 5, textStart);
+  doc.text("KARTU MUROJA'AH JUZ 30", margin + sizeLogoUin + 5, textStart);
 
   doc.setFont("Geist-Regular", "regular");
   doc.setFontSize(PDF_CONFIG.fontSize.subHeader);
@@ -150,8 +150,8 @@ export const GeneratePDF = ({ props }: { props: PDFGeneratorProps }) => {
       [
         "No.",
         "Surah",
-        "Tanggal Setoran",
-        "Persyaratan Setoran",
+        "Tanggal Muroja'ah",
+        "Persyaratan Muroja'ah",
         "Dosen yang Mengesahkan",
       ],
     ],
@@ -236,5 +236,5 @@ export const GeneratePDF = ({ props }: { props: PDFGeneratorProps }) => {
 
   // Tambahkan nip dosen setelah tanda tangan (di tengah garis)'
 
-  doc.save(`[Kartu Setoran Hafalan] ${props.nama}.pdf`);
+  doc.save(`[Kartu Muroja'ah] ${props.nama}.pdf`);
 };

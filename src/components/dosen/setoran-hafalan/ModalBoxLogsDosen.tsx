@@ -50,7 +50,7 @@ function ModalBoxLogsDosen({
         <DialogHeader>
           <DialogTitle className="text-center py-3">
             <div className="flex flex-col items-center justify-center gap-1">
-              <div>Riwayat Aktivitas Setoran Mahasiswa 🔗</div>
+              <div>Riwayat Aktivitas Muroja'ah Mahasiswa 🔗</div>
             </div>
           </DialogTitle>
           {dataLogs?.length === 0 && (
@@ -97,7 +97,7 @@ function ModalBoxLogsDosen({
                           <span className="font-bold underline">
                             memvalidasi
                           </span>{" "}
-                          surah{" "}
+                          muroja'ah dari surah{" "}
                           <span className="italic">{item.keterangan}</span>
                         </div>
 
@@ -130,7 +130,7 @@ function ModalBoxLogsDosen({
                           <span className="font-bold underline">
                             membatalkan
                           </span>{" "}
-                          validasi surah{" "}
+                          validasi muroja'ah dari surah{" "}
                           <span className="italic">{item.keterangan}</span>
                         </div>
                         <div className="flex justify-between">

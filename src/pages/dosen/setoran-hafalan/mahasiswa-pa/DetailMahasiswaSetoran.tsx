@@ -22,6 +22,7 @@ import {
 	Calendar,
 	ChartSpline,
 	FileDigit,
+	GraduationCap,
 	History,
 	Rocket,
 	User,
@@ -44,18 +45,17 @@ function DetailMahasiswaSetoran() {
 	const { toast } = useToast();
 	const queryclient = useQueryClient();
 
-  
-  const { data: dataInfoSetoran, isLoading } = useQuery({
-    queryKey: ["info-mahasiswa-by-email"],
-    queryFn: () =>
-	  APISetoran.getDataMahasiswaByEmail(nim!).then((res) => res.data),
-  });
+	const { data: dataInfoSetoran, isLoading } = useQuery({
+		queryKey: ["info-mahasiswa-by-email"],
+		queryFn: () =>
+		APISetoran.getDataMahasiswaByEmail(nim!).then((res) => res.data),
+	});
 
-  useEffect(() => {
-    return () => {
-      queryclient.removeQueries({ queryKey: ["info-mahasiswa-by-email"] });
-    };
-  }, []);
+	useEffect(() => {
+		return () => {
+		queryclient.removeQueries({ queryKey: ["info-mahasiswa-by-email"] });
+		};
+	}, []);
 	const { dataCurrent, setTabState, tabState, setSearch, search } =
 		useFilteringSetoranSurat(dataInfoSetoran?.setoran.detail, "default");
 
@@ -370,6 +370,22 @@ function DetailMahasiswaSetoran() {
 						<div className="flex items-center">
 							{/* Bagian kiri */}
 							<div className="flex items-center gap-1 min-w-44">
+								<GraduationCap size={19} />
+								<span className="font-medium">Dosen PA</span>
+							</div>
+
+							{/* Titik dua dan nilai */}
+							<div className="flex items-center gap-2">
+								<span>:</span>
+								{isLoading && <Skeleton className="h-4 w-24" />}
+								<span className="">
+									{dataInfoSetoran?.info.dosen_pa.nama}
+								</span>
+							</div>
+						</div>
+						<div className="flex items-center">
+							{/* Bagian kiri */}
+							<div className="flex items-center gap-1 min-w-44">
 								<Calendar size={19} />
 								<span className="font-medium">Terakhir Muroja'ah</span>
 							</div>
@@ -399,7 +415,7 @@ function DetailMahasiswaSetoran() {
 											"hover:bg-blue-100 dark:hover:bg-background/20"
 										}`}
 									>
-										Semua Riwayat
+										Semua riwayat muroja'ah
 									</TabsTrigger>
 									<TabsTrigger
 										value="tab2"

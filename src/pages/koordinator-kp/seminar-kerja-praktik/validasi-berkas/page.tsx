@@ -1,10 +1,9 @@
 import { useState, type FC } from "react";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { Search, Eye } from "lucide-react";
+import { Search, Eye, Users, CheckCircle, AlertCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
-import {
-  Card,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -91,6 +90,22 @@ const stageBadgeConfig: Record<
   },
 };
 
+// Animation variants
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const item = {
+  hidden: { y: 20, opacity: 0 },
+  show: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300 } },
+};
+
 const KoordinatorValidasiBerkasPage: FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"semua" | Stage>("semua");
@@ -99,6 +114,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
+  // Mock data
   // Mock data
   const students: Student[] = [
     {
@@ -112,7 +128,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Pizaini, S.T, M.Kom",
       dosenPenguji: "Rahmad Abdillah, S.T, M.Kom",
       pembimbingInstansi: "Iwan Iskandar",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 2,
@@ -125,7 +141,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Pizaini, S.T, M.Kom",
       dosenPenguji: "",
       pembimbingInstansi: "Iwan Iskandar",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 3,
@@ -138,7 +154,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Affandes, S.T, M.Kom",
       dosenPenguji: "",
       pembimbingInstansi: "Iwan Iskandar",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 4,
@@ -151,7 +167,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Affandes, S.T, M.Kom",
       dosenPenguji: "Rahmad Abdillah, S.T, M.Kom",
       pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 5,
@@ -164,7 +180,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Pizaini, S.T, M.Kom",
       dosenPenguji: "",
       pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 6,
@@ -177,7 +193,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Affandes, S.T, M.Kom",
       dosenPenguji: "Rahmad Abdillah, S.T, M.Kom",
       pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 7,
@@ -190,7 +206,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Iwan Iskandar, S.T, M.Kom",
       dosenPenguji: "Rahmad Abdillah, S.T, M.Kom",
       pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 8,
@@ -203,7 +219,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Iwan Iskandar, S.T, M.Kom",
       dosenPenguji: "Rahmad Abdillah, S.T, M.Kom",
       pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 9,
@@ -216,7 +232,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Iwan Iskandar, S.T, M.Kom",
       dosenPenguji: "",
       pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
     {
       id: 10,
@@ -229,9 +245,14 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: "Iwan Iskandar, S.T, M.Kom",
       dosenPenguji: "",
       pembimbingInstansi: "Nurrahman",
-      nilaiInstansi: "4.00 (A)",
+      nilaiInstansi: "100",
     },
   ];
+
+  // Statistics for cards
+  const totalMahasiswa = 18;
+  const validasiDitolak = 3;
+  const validasiSelesai = 7;
 
   // Filter students based on active tab and search query
   const filteredStudents = students.filter((student) => {
@@ -314,55 +335,131 @@ const KoordinatorValidasiBerkasPage: FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Animated Dashboard Cards */}
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-4"
+            variants={container}
+            initial="hidden"
+            animate="show"
+          >
             {/* Card 1 - Permohonan Validasi */}
-            <div className="rounded-lg overflow-hidden border dark:border-gray-700 bg-white dark:bg-gray-900 shadow-md hover:shadow-lg transition-all duration-300 flex">
-              <div className="w-1 bg-gradient-to-b from-blue-400 to-blue-600 flex-shrink-0"></div>
-              <div className="p-4 flex flex-col w-full">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                  Permohonan Validasi Seminar
-                </p>
-                <div className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-400">
-                  18
-                </div>
-                <div className="text-xs font-semibold text-blue-500 dark:text-blue-400 uppercase tracking-wider">
-                  Mahasiswa
-                </div>
-              </div>
-            </div>
+            <motion.div variants={item}>
+              <Card className="overflow-hidden border-none shadow-lg bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-950 dark:to-gray-900">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-xl font-medium text-blue-800 dark:text-blue-300">
+                    Permohonan Validasi
+                  </CardTitle>
+                  <motion.div
+                    whileHover={{ rotate: 15 }}
+                    className="bg-blue-200 p-2 rounded-full dark:bg-blue-800"
+                  >
+                    <Users className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+                  </motion.div>
+                </CardHeader>
+                <CardContent>
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: "spring", delay: 0.1 }}
+                    className="text-5xl font-bold text-blue-800 dark:text-white"
+                  >
+                    {totalMahasiswa}
+                  </motion.div>
+                  <p className="text-sm text-blue-600 dark:text-blue-300 mt-1">
+                    Mahasiswa
+                  </p>
+                  <div className="h-2 w-full bg-blue-100 dark:bg-blue-900 rounded-full mt-3">
+                    <motion.div
+                      initial={{ width: "0%" }}
+                      animate={{ width: "100%" }}
+                      transition={{ duration: 1.5, ease: "easeOut" }}
+                      className="h-2 bg-blue-500 rounded-full"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
             {/* Card 2 - Ditolak Validasi */}
-            <div className="rounded-lg overflow-hidden bg-white dark:bg-gray-900 border dark:border-gray-700 shadow-md hover:shadow-lg transition-all duration-300 flex">
-              <div className="w-1 bg-gradient-to-b from-red-400 to-red-600 flex-shrink-0"></div>
-              <div className="p-4 flex flex-col w-full">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                  Validasi Berkas Ditolak
-                </p>
-                <div className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-red-400">
-                  3
-                </div>
-                <div className="text-xs font-semibold text-red-500 dark:text-red-400 uppercase tracking-wider">
-                  Mahasiswa
-                </div>
-              </div>
-            </div>
+            <motion.div variants={item}>
+              <Card className="overflow-hidden border-none shadow-lg bg-gradient-to-br from-red-100 to-red-50 dark:from-red-950 dark:to-gray-900">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-xl font-medium text-red-800 dark:text-red-300">
+                    Validasi Ditolak
+                  </CardTitle>
+                  <motion.div
+                    whileHover={{ rotate: 15 }}
+                    className="bg-red-200 p-2 rounded-full dark:bg-red-800"
+                  >
+                    <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-300" />
+                  </motion.div>
+                </CardHeader>
+                <CardContent>
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: "spring", delay: 0.1 }}
+                    className="text-5xl font-bold text-red-800 dark:text-white"
+                  >
+                    {validasiDitolak}
+                  </motion.div>
+                  <p className="text-sm text-red-600 dark:text-red-300 mt-1">
+                    Mahasiswa
+                  </p>
+                  <div className="h-2 w-full bg-red-100 dark:bg-red-900 rounded-full mt-3">
+                    <motion.div
+                      initial={{ width: "0%" }}
+                      animate={{
+                        width: `${(validasiDitolak / totalMahasiswa) * 100}%`,
+                      }}
+                      transition={{ duration: 1.5, ease: "easeOut" }}
+                      className="h-2 bg-red-500 rounded-full"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
             {/* Card 3 - Validasi Selesai */}
-            <div className="rounded-lg overflow-hidden bg-white dark:bg-gray-900 border dark:border-gray-700 shadow-md hover:shadow-lg transition-all duration-300 flex">
-              <div className="w-1 bg-gradient-to-b from-green-400 to-green-600 flex-shrink-0"></div>
-              <div className="p-4 flex flex-col w-full">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                  Validasi Berkas Selesai
-                </p>
-                <div className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-400">
-                  7
-                </div>
-                <div className="text-xs font-semibold text-green-500 dark:text-green-400 uppercase tracking-wider">
-                  Mahasiswa
-                </div>
-              </div>
-            </div>
-          </div>
+            <motion.div variants={item}>
+              <Card className="overflow-hidden border-none shadow-lg bg-gradient-to-br from-green-100 to-green-50 dark:from-green-950 dark:to-gray-900">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-xl font-medium text-green-800 dark:text-green-300">
+                    Validasi Selesai
+                  </CardTitle>
+                  <motion.div
+                    whileHover={{ rotate: 15 }}
+                    className="bg-green-200 p-2 rounded-full dark:bg-green-800"
+                  >
+                    <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-300" />
+                  </motion.div>
+                </CardHeader>
+                <CardContent>
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: "spring", delay: 0.1 }}
+                    className="text-5xl font-bold text-green-800 dark:text-white"
+                  >
+                    {validasiSelesai}
+                  </motion.div>
+                  <p className="text-sm text-green-600 dark:text-green-300 mt-1">
+                    Mahasiswa
+                  </p>
+                  <div className="h-2 w-full bg-green-100 dark:bg-green-900 rounded-full mt-3">
+                    <motion.div
+                      initial={{ width: "0%" }}
+                      animate={{
+                        width: `${(validasiSelesai / totalMahasiswa) * 100}%`,
+                      }}
+                      transition={{ duration: 1.5, ease: "easeOut" }}
+                      className="h-2 bg-green-500 rounded-full"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
 
           {/* Navigation Tabs and Search Bar in a flex container */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
@@ -476,7 +573,7 @@ const StudentTable: FC<{
             <TableHead className="w-12 text-center font-semibold dark:text-gray-200">
               No
             </TableHead>
-            <TableHead className=" font-semibold dark:text-gray-200">
+            <TableHead className="font-semibold dark:text-gray-200">
               Nama Mahasiswa
             </TableHead>
             <TableHead className="text-center font-semibold dark:text-gray-200">
@@ -551,7 +648,7 @@ const StudentTable: FC<{
                   <Button
                     variant="default"
                     size="sm"
-                    className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white mx-auto dark:from-emerald-600 dark:to-teal-600 dark:hover:from-emerald-700 dark:hover:to-teal-700 border-0 transition-all flex items-center gap-1.5 py-1 rounded-md  text-xs"
+                    className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white mx-auto dark:from-emerald-600 dark:to-teal-600 dark:hover:from-emerald-700 dark:hover:to-teal-700 border-0 transition-all flex items-center gap-1.5 py-1 rounded-md text-xs"
                     onClick={() => onViewDetail(student)}
                   >
                     <Eye className="h-3.5 w-3.5" />

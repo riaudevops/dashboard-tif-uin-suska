@@ -14,11 +14,13 @@ import { Badge } from "@/components/ui/badge";
 import { Eye, CheckCircle, AlertCircle, Award, X, EyeClosed } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton component
 
 const BimbinganKerjaPraktikPage = () => {
   const [isReviewBimbinganModal, setReviewBimbinganModal] = useState(false);
   const [showLoginNotification, setShowLoginNotification] = useState(false);
   const [hoveredButtonId, setHoveredButtonId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
 
   // Cek apakah ini pertama kali login
   useEffect(() => {
@@ -32,6 +34,15 @@ const BimbinganKerjaPraktikPage = () => {
       // Tandai bahwa notifikasi sudah ditampilkan
       localStorage.setItem("bimbinganNotificationShown", "true");
     }
+  }, []);
+
+  // Sekuensial loading
+  useEffect(() => {
+    const loadData = setTimeout(() => {
+      setIsLoading(false);
+    }, 200); 
+
+    return () => clearTimeout(loadData);
   }, []);
 
   // Fungsi untuk menutup notifikasi
@@ -79,6 +90,82 @@ const BimbinganKerjaPraktikPage = () => {
   const progressPercentage = (completedSessions / minimumRequired) * 100;
   const isComplete = completedSessions >= minimumRequired;
 
+  // Skeleton components
+  const ProgressCardSkeleton = () => (
+    <Card className="col-span-2 overflow-hidden border-0 shadow-lg bg-gradient-to-br from-purple-600/60 to-indigo-700/60 text-white">
+      <CardContent className="p-0">
+        <div className="p-6 flex flex-col mt-8 md:flex-row items-center gap-8">
+          {/* Left side - Progress Circle Skeleton */}
+          <div className="relative h-48 w-48 flex-shrink-0">
+            <Skeleton className="h-full w-full rounded-full bg-white/10" />
+          </div>
+
+          {/* Right side - Progress info Skeleton */}
+          <div className="space-y-4 flex-1 w-full">
+            <Skeleton className="h-8 w-64 bg-white/10 rounded-lg" />
+            <Skeleton className="h-20 w-full bg-white/10 rounded-lg" />
+            <Skeleton className="h-12 w-full bg-white/10 rounded-lg" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const StatsCardSkeleton = () => (
+    <Card className="border shadow-md bg-gray-50 dark:bg-gray-800/30 rounded-lg border-gray-100 dark:border-gray-700">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="w-full">
+            <Skeleton className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded" />
+            <Skeleton className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded mt-2" />
+          </div>
+          <Skeleton className="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const TableSkeleton = () => (
+    <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-gray-50 dark:bg-gray-700/50">
+            <TableHead className="w-24 sm:w-auto text-center font-bold">
+              No
+            </TableHead>
+            <TableHead className="w-24 sm:w-auto text-center font-bold">
+              Tanggal
+            </TableHead>
+            <TableHead className="w-24 sm:w-auto text-center font-bold">
+              Status
+            </TableHead>
+            <TableHead className="w-24 sm:w-auto text-center font-bold">
+              Aksi
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {[...Array(5)].map((_, index) => (
+            <TableRow key={index} className={index % 2 !== 0 ? "bg-secondary dark:bg-gray-700/10" : "bg-background dark:bg-gray-700/30"}>
+              <TableCell className="text-center">
+                <Skeleton className="h-6 w-6 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+              </TableCell>
+              <TableCell className="text-center">
+                <Skeleton className="h-6 w-24 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+              </TableCell>
+              <TableCell className="text-center">
+                <Skeleton className="h-6 w-16 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+              </TableCell>
+              <TableCell className="text-center">
+                <Skeleton className="h-8 w-24 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+
   return (
     <DashboardLayout>
       <div className="p-6 min-h-screen">
@@ -116,177 +203,195 @@ const BimbinganKerjaPraktikPage = () => {
 
         {/* Premium Progress Dashboard */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Main Progress Card */}
-          <Card className="col-span-2 overflow-hidden border-0 shadow-lg bg-gradient-to-br from-purple-600 to-indigo-700 text-white">
-            <CardContent className="p-0">
-              <div className="p-6 flex flex-col mt-8 md:flex-row items-center gap-8">
-                {/* Left side - Progress Circle */}
-                <div className="relative h-48 w-48 flex-shrink-0">
-                  {/* Main circle */}
-                  <div className="absolute inset-0 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 shadow-inner"></div>
+          {isLoading ? (
+            <>
+              {/* Main Progress Card Skeleton */}
+              <ProgressCardSkeleton />
 
-                  {/* Progress circle */}
-                  <svg className="absolute inset-0" viewBox="0 0 100 100">
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="42"
-                      fill="none"
-                      stroke="rgba(255,255,255,0.2)"
-                      strokeWidth="8"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="42"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth="8"
-                      strokeLinecap="round"
-                      strokeDasharray="264"
-                      strokeDashoffset={264 - (264 * progressPercentage) / 100}
-                      transform="rotate(-90 50 50)"
-                    />
-                  </svg>
-
-                  {/* Center content */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <div className="text-center">
-                      <span className="text-6xl font-bold">
-                        {completedSessions}
-                      </span>
-                      <span className="text-3xl font-medium text-white/70">
-                        /
-                      </span>
-                      <span className="text-3xl font-medium text-white/70">
-                        {minimumRequired}
-                      </span>
-                    </div>
-                    <p className="mt-2 text-sm font-medium text-white/70">
-                      Bimbingan
-                    </p>
-                  </div>
-                </div>
-
-                {/* Right side - Progress info */}
-                <div className="space-y-4 flex-1">
-                  <div className="flex items-center gap-2">
-                    {isComplete ? (
-                      <CheckCircle className="h-6 w-6 text-green-300" />
-                    ) : (
-                      <AlertCircle className="h-6 w-6 text-amber-300" />
-                    )}
-                    <h3 className="text-2xl font-bold">
-                      {isComplete
-                        ? "Persyaratan Terpenuhi!"
-                        : "Persyaratan Bimbingan"}
-                    </h3>
-                  </div>
-
-                  <p className="text-white/80 text-lg">
-                    {isComplete
-                      ? "Anda telah memenuhi jumlah minimum bimbingan yang diperlukan. Selamat!"
-                      : `Anda harus menyelesaikan minimal ${minimumRequired} kali bimbingan untuk memenuhi persyaratan kerja praktik.`}
-                  </p>
-
-                  {!isComplete && (
-                    <div className="mt-4 py-3 px-4 bg-white/10 backdrop-blur-sm rounded-lg border border-white/10">
-                      <p className="flex items-center gap-2 font-semibold">
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-purple-600 text-xs font-bold">
-                          {remainingSessions}
-                        </span>
-                        <span>
-                          Bimbingan lagi diperlukan untuk memenuhi syarat
-                        </span>
-                      </p>
-                    </div>
-                  )}
-
-                  {isComplete && (
-                    <div className="flex gap-2 mt-4">
-                      <Award className="h-6 w-6 text-yellow-300" />
-                      <p className="text-green-300 font-semibold">
-                        Siap untuk tahap selanjutnya!
-                      </p>
-                    </div>
-                  )}
-                </div>
+              {/* Stats Cards Skeleton */}
+              <div className="col-span-1 grid grid-cols-1 gap-4">
+                <StatsCardSkeleton />
+                <StatsCardSkeleton />
+                <StatsCardSkeleton />
               </div>
-            </CardContent>
-          </Card>
+            </>
+          ) : (
+            <>
+              {/* Main Progress Card - Actual Content */}
+              <Card className="col-span-2 overflow-hidden border-0 shadow-lg bg-gradient-to-br from-purple-600 to-indigo-700 text-white">
+                <CardContent className="p-0">
+                  <div className="p-6 flex flex-col mt-8 md:flex-row items-center gap-8">
+                    {/* Left side - Progress Circle */}
+                    <div className="relative h-48 w-48 flex-shrink-0">
+                      {/* Main circle */}
+                      <div className="absolute inset-0 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 shadow-inner"></div>
 
-          {/* Stats Cards */}
-          <div className="col-span-1 grid grid-cols-1 gap-4">
-            {/* Sessions completed */}
-            <Card className="border shadow-md bg-gray-50 dark:bg-gray-800/30 rounded-lg  border-gray-100 dark:border-gray-700">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      Bimbingan Selesai
-                    </p>
-                    <h3 className="text-3xl font-bold mt-1">
-                      {completedSessions}
-                    </h3>
-                  </div>
-                  <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                    <CheckCircle className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                      {/* Progress circle */}
+                      <svg className="absolute inset-0" viewBox="0 0 100 100">
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="42"
+                          fill="none"
+                          stroke="rgba(255,255,255,0.2)"
+                          strokeWidth="8"
+                        />
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="42"
+                          fill="none"
+                          stroke="white"
+                          strokeWidth="8"
+                          strokeLinecap="round"
+                          strokeDasharray="264"
+                          strokeDashoffset={
+                            264 - (264 * progressPercentage) / 100
+                          }
+                          transform="rotate(-90 50 50)"
+                        />
+                      </svg>
 
-            {/* Percentage completed */}
-            <Card className="border shadow-md bg-gray-50 dark:bg-gray-800/30 rounded-lg  border-gray-100 dark:border-gray-700">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between ">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      Progres
-                    </p>
-                    <h3 className="text-3xl font-bold mt-1">
-                      {progressPercentage}%
-                    </h3>
-                  </div>
-                  <div className="h-12 w-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
-                    <svg
-                      className="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M12 3V21M3 12H21M20 16L16 20M16 4L20 8M4 8L8 4M8 20L4 16"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                      {/* Center content */}
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <div className="text-center">
+                          <span className="text-6xl font-bold">
+                            {completedSessions}
+                          </span>
+                          <span className="text-3xl font-medium text-white/70">
+                            /
+                          </span>
+                          <span className="text-3xl font-medium text-white/70">
+                            {minimumRequired}
+                          </span>
+                        </div>
+                        <p className="mt-2 text-sm font-medium text-white/70">
+                          Bimbingan
+                        </p>
+                      </div>
+                    </div>
 
-            {/* Remaining sessions */}
-            <Card className="border shadow-md bg-gray-50 dark:bg-gray-800/30 rounded-lg  border-gray-100 dark:border-gray-700">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      Sisa Bimbingan
-                    </p>
-                    <h3 className="text-3xl font-bold mt-1">
-                      {remainingSessions}
-                    </h3>
+                    {/* Right side - Progress info */}
+                    <div className="space-y-4 flex-1">
+                      <div className="flex items-center gap-2">
+                        {isComplete ? (
+                          <CheckCircle className="h-6 w-6 text-green-300" />
+                        ) : (
+                          <AlertCircle className="h-6 w-6 text-amber-300" />
+                        )}
+                        <h3 className="text-2xl font-bold">
+                          {isComplete
+                            ? "Persyaratan Terpenuhi!"
+                            : "Persyaratan Bimbingan"}
+                        </h3>
+                      </div>
+
+                      <p className="text-white/80 text-lg">
+                        {isComplete
+                          ? "Anda telah memenuhi jumlah minimum bimbingan yang diperlukan. Selamat!"
+                          : `Anda harus menyelesaikan minimal ${minimumRequired} kali bimbingan untuk memenuhi persyaratan kerja praktik.`}
+                      </p>
+
+                      {!isComplete && (
+                        <div className="mt-4 py-3 px-4 bg-white/10 backdrop-blur-sm rounded-lg border border-white/10">
+                          <p className="flex items-center gap-2 font-semibold">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-purple-600 text-xs font-bold">
+                              {remainingSessions}
+                            </span>
+                            <span>
+                              Bimbingan lagi diperlukan untuk memenuhi syarat
+                            </span>
+                          </p>
+                        </div>
+                      )}
+
+                      {isComplete && (
+                        <div className="flex gap-2 mt-4">
+                          <Award className="h-6 w-6 text-yellow-300" />
+                          <p className="text-green-300 font-semibold">
+                            Siap untuk tahap selanjutnya!
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                    <AlertCircle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                </CardContent>
+              </Card>
+
+              {/* Stats Cards - Actual Content */}
+              <div className="col-span-1 grid grid-cols-1 gap-4">
+                {/* Sessions completed */}
+                <Card className="border shadow-md bg-gray-50 dark:bg-gray-800/30 rounded-lg  border-gray-100 dark:border-gray-700">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                          Bimbingan Selesai
+                        </p>
+                        <h3 className="text-3xl font-bold mt-1">
+                          {completedSessions}
+                        </h3>
+                      </div>
+                      <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                        <CheckCircle className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Percentage completed */}
+                <Card className="border shadow-md bg-gray-50 dark:bg-gray-800/30 rounded-lg  border-gray-100 dark:border-gray-700">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between ">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                          Progres
+                        </p>
+                        <h3 className="text-3xl font-bold mt-1">
+                          {progressPercentage}%
+                        </h3>
+                      </div>
+                      <div className="h-12 w-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                        <svg
+                          className="h-6 w-6 text-indigo-600 dark:text-indigo-400"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M12 3V21M3 12H21M20 16L16 20M16 4L20 8M4 8L8 4M8 20L4 16"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Remaining sessions */}
+                <Card className="border shadow-md bg-gray-50 dark:bg-gray-800/30 rounded-lg  border-gray-100 dark:border-gray-700">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                          Sisa Bimbingan
+                        </p>
+                        <h3 className="text-3xl font-bold mt-1">
+                          {remainingSessions}
+                        </h3>
+                      </div>
+                      <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                        <AlertCircle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Timeline */}
@@ -294,66 +399,71 @@ const BimbinganKerjaPraktikPage = () => {
           Riwayat Bimbingan
         </h2>
 
-        {/* Enhanced Table */}
-        <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-50 dark:bg-gray-700/50">
-                <TableHead className="w-24 sm:w-auto text-center font-bold">
-                  No
-                </TableHead>
-                <TableHead className="w-24 sm:w-auto text-center font-bold">
-                  Tanggal
-                </TableHead>
-                <TableHead className="w-24 sm:w-auto text-center font-bold">
-                  Status
-                </TableHead>
-                <TableHead className="w-24 sm:w-auto text-center font-bold">
-                  Aksi
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {bimbinganHistory.map((item) => (
-                <TableRow
-                  key={item.id}
-                  className={item.id % 2 !== 0
-                    ? "bg-secondary dark:bg-gray-700/10 cursor-pointer"
-                    : "bg-background dark:bg-gray-700/30 cursor-pointer"}
-                >
-                  <TableCell className="text-center font-medium">
-                    {item.bimbinganKe}
-                  </TableCell>
-                  <TableCell className="text-center">{item.tanggal}</TableCell>
-                  <TableCell className="text-center">
-                    <Badge
-                      variant="outline"
-                      className="bg-green-100 text-green-800 hover:bg-green-100 px-3 py-1 rounded-lg font-medium"
-                    >
-                      {item.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Button
-                      className="text-white bg-blue-500 hover:bg-blue-600 transition-colors shadow-sm"
-                      size="sm"
-                      onClick={() => setReviewBimbinganModal(true)}
-                      onMouseEnter={() => setHoveredButtonId(item.id)}
-                      onMouseLeave={() => setHoveredButtonId(null)}
-                    >
-                      {hoveredButtonId === item.id ? (
-                        <Eye size={16} />
-                      ) : (
-                        <EyeClosed size={16} />
-                      )}
-                      Lihat Detail
-                    </Button>
-                  </TableCell>
+        {/* Table with loading state */}
+        {isLoading ? (
+          <TableSkeleton />
+        ) : (
+          /* Enhanced Table - Actual Content */
+          <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-gray-50 dark:bg-gray-700/50">
+                  <TableHead className="w-24 sm:w-auto text-center font-bold">
+                    No
+                  </TableHead>
+                  <TableHead className="w-24 sm:w-auto text-center font-bold">
+                    Tanggal
+                  </TableHead>
+                  <TableHead className="w-24 sm:w-auto text-center font-bold">
+                    Status
+                  </TableHead>
+                  <TableHead className="w-24 sm:w-auto text-center font-bold">
+                    Aksi
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {bimbinganHistory.map((item) => (
+                  <TableRow
+                    key={item.id}
+                    className={item.id % 2 !== 0
+                      ? "bg-secondary dark:bg-gray-700/10 cursor-pointer"
+                      : "bg-background dark:bg-gray-700/30 cursor-pointer"}
+                  >
+                    <TableCell className="text-center font-medium">
+                      {item.bimbinganKe}
+                    </TableCell>
+                    <TableCell className="text-center">{item.tanggal}</TableCell>
+                    <TableCell className="text-center">
+                      <Badge
+                        variant="outline"
+                        className="bg-green-100 text-green-800 hover:bg-green-100 px-3 py-1 rounded-lg font-medium"
+                      >
+                        {item.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Button
+                        className="text-white bg-blue-500 hover:bg-blue-600 transition-colors shadow-sm"
+                        size="sm"
+                        onClick={() => setReviewBimbinganModal(true)}
+                        onMouseEnter={() => setHoveredButtonId(item.id)}
+                        onMouseLeave={() => setHoveredButtonId(null)}
+                      >
+                        {hoveredButtonId === item.id ? (
+                          <Eye size={16} />
+                        ) : (
+                          <EyeClosed size={16} />
+                        )}
+                        Lihat Detail
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </div>
 
       {/* Modal Review Bimbingan */}

@@ -38,7 +38,7 @@ const defaultInfoData: InfoData = {
   kontakPenguji: "089876543210",
   jadwal: "10.00 WIB / 13 Juni 2025",
   ruangan: "FST 301",
-  nilai: "4.00 (A)",
+  nilai: "100",
 };
 
 // Define the props type for the component

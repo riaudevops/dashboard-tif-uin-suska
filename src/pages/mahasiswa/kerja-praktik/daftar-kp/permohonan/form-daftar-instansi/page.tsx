@@ -1,206 +1,106 @@
-import { useState, useEffect } from "react";
+import { FormEvent, useState } from "react"
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Building2, Phone } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
-const MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage = () => {
-  const [isLoading, setIsLoading] = useState(true);
+interface CommonResponse {
+    response : boolean,
+    message : string
+}
 
-  useEffect(() => {
-    setTimeout(() => setIsLoading(false), 500);
-  }, []);
+function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
+    const [response, setResponse] = useState<CommonResponse | null>(null)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        <Card className="shadow-lg">
-          <CardHeader className="text-center border-b pb-6">
-            {isLoading ? (
-              <div className="space-y-4">
-                <Skeleton className="h-8 w-96 mx-auto" />
-                <Skeleton className="h-4 w-80 mx-auto" />
-              </div>
-            ) : (
-              <>
-                <CardTitle className="text-2xl font-bold">
-                  🏢 Form Pengajuan Instansi Kerja Praktik
-                </CardTitle>
-                <p className="text-sm text-muted-foreground mt-2">
-                  ✨ Lengkapi data instansi/perusahaan untuk pengajuan kerja praktik
-                  anda
-                </p>
-              </>
-            )}
-          </CardHeader>
+    async function handleOnSubmit(e : FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        setIsLoading(prev => !prev)
+        const formData = new FormData(e.currentTarget);
+        const objectFormData = Object.fromEntries(formData.entries());
+        const url = "http://localhost:5000/daftar-kp/pendaftaran-instansi"
+        const response = await fetch(url, {
+            method : "POST",
+            headers : {
+                "Content-Type" : "application/json"
+            },
+            body : JSON.stringify({
+                namaInstansi : objectFormData.namaInstansi,
+                alamatInstansi : objectFormData.alamatInstansi,
+                jenisInstansi : objectFormData.jenisInstansi,
+                emailPenanggungJawabInstansi : objectFormData.emailPenanggungJawabInstansi,
+                namaPenanggungJawabInstansi : objectFormData.namaPenanggungJawabInstansi,
+                telpPenanggungJawabInstansi : objectFormData.telpPenanggungJawabInstansi,
+                profilInstansi : objectFormData.profilInstansi,
+                longitude : parseFloat(objectFormData.longitude as string),
+                latitude : parseFloat(objectFormData.latitude as string)
+            })
+        })
+        if (!(response.ok)) {
+            throw new Error("Terjadi kesalahan pada server")
+        }
+            const data = await response.json();
+            setResponse(data)
+            const pointer = setTimeout(() => {
+                setResponse(null)
+                clearTimeout(pointer)
+            }, 1000)
+        
+        setIsLoading(prev => !prev)
+    }
 
-          <CardContent className="pt-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Left Column - Instansi/Perusahaan */}
-              <div className="space-y-6">
-                {isLoading ? (
-                  <Skeleton className="h-8 w-48" />
-                ) : (
-                  <div className="flex items-center gap-2 pb-2 border-b">
-                    <Building2 className="h-5 w-5 text-blue-500" />
-                    <h2 className="text-lg font-semibold">Instansi/Perusahaan</h2>
-                  </div>
-                )}
+    return <DashboardLayout>
+    <form onSubmit={handleOnSubmit} >
+        {response && response.response && <div className="absolute left-1/2 py-2 -translate-x-1/2 rounded-lg w-80 bg-green-600 text-white">
+        <p className="text-center text-white font-semibold tracking-wide">{response.message}</p>
+        </div>}
+        {response && !(response.response) && <div className="absolute left-1/2 -translate-x-1/2 rounded-lg w-80 py-2 bg-green-600">
+        <p className="text-center text-white font-semibold tracking-wide">{response.message}</p>
+        </div>}
+        <h2 className="text-center font-bold text-2xl mb-6">Form Pengajuan Instansi Kerja Praktek</h2>
+        <div className="grid md:grid-cols-2 md:gap-56 gap-10">
+            <div className="border-[1px] border-slate-200 p-3 rounded-lg">
+                <h4 className="font-bold text-lg mb-2">🏢 Instansi/Perusahaan</h4>
+                <label className="text-sm font-bold" htmlFor="instansi">Nama Instansi / Perusahaan</label>
+                <input className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4" placeholder="Nama Perusahaan..." type="text" id="instansi" name="namaInstansi"/>
 
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    {isLoading ? (
-                      <>
-                        <Skeleton className="h-4 w-48" />
-                        <Skeleton className="h-10 w-full" />
-                      </>
-                    ) : (
-                      <>
-                        <label className="text-sm font-medium flex items-center gap-2">
-                          <span>Nama Instansi / Perusahaan</span>
-                          <span className="text-red-500">*</span>
-                        </label>
-                        <Input
-                          type="text"
-                          placeholder="Contoh: PT. Tech Indonesia"
-                          className="w-full hover:border-blue-400 focus:border-blue-500 transition-colors"
-                        />
-                      </>
-                    )}
-                  </div>
+                <label className="text-sm font-bold" htmlFor="alamat-instansi">Alamat Instansi / Perusahaan</label>
+                <textarea className="block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4" placeholder="Alamat Perusahaan..." rows={3} id="alamat-instansi" name="alamatInstansi"/>
 
-                  <div className="space-y-2">
-                    {isLoading ? (
-                      <>
-                        <Skeleton className="h-4 w-48" />
-                        <Skeleton className="h-44 w-full" />
-                      </>
-                    ) : (
-                      <>
-                        <label className="text-sm font-medium flex items-center gap-2">
-                          <span>Alamat Instansi / Perusahaan</span>
-                          <span className="text-red-500">*</span>
-                        </label>
-                        <Textarea
-                          placeholder="Masukkan alamat lengkap instansi..."
-                          className="min-h-[180px] resize-none hover:border-blue-400 focus:border-blue-500 transition-colors"
-                        />
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
+                <label className="text-sm font-bold" htmlFor="jenis-instansi">Jenis Instansi</label>
+                <select className="block w-full my-2 p-2 rounded-lg border-[1px] border-slate-300" name="jenisInstansi" id="jenis-instansi">
+                    <option value="">Pilih Jenis Instansi</option>
+                    <option value="Pemerintahan">Pemerintahan</option>
+                    <option value="Swasta">Swasta</option>
+                    <option value="Pendidikan">Pendidikan</option>
+                    <option value="UMKM">UMKM</option>
+                </select>
 
-              {/* Right Column - Kontak Instansi */}
-              <div className="space-y-6">
-                {isLoading ? (
-                  <Skeleton className="h-8 w-36" />
-                ) : (
-                  <div className="flex items-center gap-2 pb-2 border-b">
-                    <Phone className="h-5 w-5 text-blue-500" />
-                    <h2 className="text-lg font-semibold">Kontak Instansi</h2>
-                  </div>
-                )}
+                <label className="text-sm font-bold" htmlFor="longitude">Longitude</label>
+                <input className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4" type="number" id="longitude" name="longitude"/>
 
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    {isLoading ? (
-                      <>
-                        <Skeleton className="h-4 w-48" />
-                        <Skeleton className="h-10 w-full" />
-                      </>
-                    ) : (
-                      <>
-                        <label className="text-sm font-medium flex items-center gap-2">
-                          <span>Nama Penanggung jawab Instansi</span>
-                          <span className="text-red-500">*</span>
-                        </label>
-                        <Input
-                          type="text"
-                          placeholder="Contoh: Budi Santoso"
-                          className="w-full hover:border-blue-400 focus:border-blue-500 transition-colors"
-                        />
-                      </>
-                    )}
-                  </div>
+                <label className="text-sm font-bold" htmlFor="latitude">Latitude</label>
+                <input className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4" type="number" id="latitude" name="latitude"/>
 
-                  <div className="space-y-2">
-                    {isLoading ? (
-                      <>
-                        <Skeleton className="h-4 w-48" />
-                        <div className="flex gap-2">
-                          <Skeleton className="h-10 w-16" />
-                          <Skeleton className="h-10 flex-1" />
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <label className="text-sm font-medium flex items-center gap-2">
-                          <span>No-telp penanggung jawab instansi</span>
-                          <span className="text-red-500">*</span>
-                        </label>
-                        <div className="flex gap-2">
-                          <Select>
-                            <SelectTrigger className="w-16 hover:border-blue-400 focus:border-blue-500 transition-colors">
-                              <SelectValue placeholder="ID" />
-                            </SelectTrigger>
-                          </Select>
-                          <Input
-                            type="tel"
-                            placeholder="Contoh: 812-3456-7890"
-                            className="flex-1 hover:border-blue-400 focus:border-blue-500 transition-colors"
-                          />
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
+                <label className="text-sm font-bold" htmlFor="profil-singkat">Profil Singkat</label>
+                <textarea className="block w-full border-[1px] p-1 border-slate-300 rounded-lg" name="profilSingkat" id="profil-singkat" rows={5}></textarea>
             </div>
+            <div className="border-[1px] border-slate-200 p-3 rounded-lg">
+                <h4 className="font-bold text-lg mb-2 md:mt-0 mt-10">🏢 Kontak Instansi</h4>
+                <label className="text-sm font-bold" htmlFor="nama-penanggung-jawab">Nama Penanggung Jawab Instansi</label>
+                <input className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4" placeholder="Nama Penanggung Jawab..." type="text" id="nama-penanggung-jawab" name="namaPenanggungJawabInstansi"/>
 
-            {/* Action Buttons */}
-            <div className="flex justify-end gap-4 mt-24">
-              {isLoading ? (
-                <>
-                  <Skeleton className="h-10 w-32" />
-                  <Skeleton className="h-10 w-48" />
-                </>
-              ) : (
-                <>
-                  <Button
-                    variant="outline"
-                    className="w-32 hover:bg-red-50 hover:text-red-600 hover:border-red-300 transition-colors"
-                  >
-                    Batal
-                  </Button>
-                  <Button className="w-48 bg-green-600 hover:bg-green-700 transition-colors">
-                    Ajukan Permohonan
-                  </Button>
-                </>
-              )}
+                <label className="text-sm font-bold" htmlFor="no-telp-penanggung-jawab-instansi">No Telpon Penanggung Jawab Instansi</label>
+                <input className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4" placeholder="+62-000-0000-0000" type="text" id="no-telp-penanggung-jawab-instansi" name="telpPenanggungJawabInstansi"/>
+
+                <label className="text-sm font-bold" htmlFor="email-penanggung-jawab-instansi">Email Penanggung Jawab Instansi</label>
+                <input className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1" placeholder="example@email.com" type="text" id="email-penanggung-jawab-instansi" name="emailPenanggungJawabInstansi"/>
             </div>
-
-            {isLoading ? (
-              <Skeleton className="h-4 w-96 mt-6" />
-            ) : (
-              <p className="text-xs text-muted-foreground mt-6">
-                📝 Pastikan semua data yang diisi sudah benar sebelum mengajukan
-                permohonan
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+        </div>
+        
+        <div className="text-end mt-4 sm:flex sm:flex-col sm:gap-2 md:block">
+            <button type="button" disabled={isLoading} className="md:mr-4 py-1 md:w-[198px] font-bold border-black border-[1px] rounded-lg hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50">Batal</button>
+            <button type="submit" disabled={isLoading} className="bg-green-600 py-1 md:w-[198px] text-white font-bold rounded-lg hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50">Ajukan Permohonan</button>
+        </div>
+    </form>
     </DashboardLayout>
-  );
-};
+}
 
-export default MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage;
+export default MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage

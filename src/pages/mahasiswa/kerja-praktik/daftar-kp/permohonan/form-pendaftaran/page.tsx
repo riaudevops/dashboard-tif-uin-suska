@@ -1,305 +1,112 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+// import Link from "next/link";
+// import {useRouter} from "next/navigation"
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { FormEvent, useEffect, useState } from "react";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Link, useNavigate } from "react-router-dom";
 
-const MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [formData, setFormData] = useState({
-    status: '',
-    tanggalMulai: '',
-    instansi: '',
-    tujuanSurat: ''
-  });
-  const navigate = useNavigate();
+interface CommonResponse {
+    response : boolean,
+    message : string
+}
 
-  useEffect(() => {
-    setTimeout(() => setIsLoading(false), 500);
-  }, []);
+function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
 
-  const handleChange = (name: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+    const [dataInstansi, setDataInstansi] = useState([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [response, setResponse] = useState<CommonResponse | null>(null)
+    const navigate = useNavigate()
 
-  const handleSubmit = () => {
-    // Save form data to localStorage
-    localStorage.setItem('kpSubmission', JSON.stringify({
-      status: 'Pengajuan pendaftaran kp',
-      company: 'PT. RAPP',
-      submitted: true,
-      formData
-    }));
-    
-    // Navigate back to main page
-    navigate('/mahasiswa/kerja-praktik/daftar-kp/permohonan');
-  };
+    useEffect(() => {
+        (async function() {
+            const response = await fetch("http://localhost:5000/daftar-kp/data-instansi")
+            const data = await response.json()
+            setDataInstansi(data.data)
+        })()
+    }, [])
 
-  return (
-    <DashboardLayout>
-      <Card className="w-full">
-        <CardHeader className="text-center border-b">
-          {isLoading ? (
-            <div className="space-y-4">
-              <Skeleton className="h-8 w-96 mx-auto" />
-              <Skeleton className="h-4 w-80 mx-auto" />
+    async function handleOnSubmit(e : FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        setIsLoading((prev) => !prev)
+        const formData = new FormData(e.currentTarget);
+        const objectFormData = Object.fromEntries(formData.entries());
+        const url = "http://localhost:5000/daftar-kp/pendaftaran-kp"
+        try {
+        const response = await fetch(url, {
+            method : "POST",
+            headers : {
+                "Content-Type" : "application/json"
+            },
+            body : JSON.stringify({
+                tanggalMulai : new Date(objectFormData.tanggalMulai as string).toISOString(),
+                tujuanSuratInstansi : objectFormData.tujuanSuratInstansi,
+                idInstansi : objectFormData.idInstansi,
+            })
+        }) 
+        // console.log("test2")
+        // console.log("test3")
+        if (!(response.ok)) {
+            setIsLoading(prev => !prev)
+            throw new Error("Terjadi suatu kesalahan di server")
+        }
+            const data = await response.json();
+            setResponse(data)
+            const pointer = setTimeout(() => {
+                setResponse(null)
+                clearTimeout(pointer)
+            }, 1000)
+        // console.log("tes4")
+        navigate("/pendaftaran-kerja-praktek")
+    }
+    catch (e) {
+        throw new Error("Data tanggal tidak valid")
+    }
+    }
+
+    async function handleOnCancel() {
+        navigate("/pendaftaran-kerja-praktek")
+    }
+
+    return <DashboardLayout>
+    <form onSubmit={handleOnSubmit}>
+        {response && response.response && <div className="absolute left-1/2 py-2 -translate-x-1/2 rounded-lg w-80 bg-green-600 text-white">
+        <p className="text-center text-white font-semibold tracking-wide">{response.message}</p>
+        </div>}
+        {response && !(response.response) && <div className="absolute left-1/2 -translate-x-1/2 rounded-lg w-80 py-2 bg-green-600">
+        <p className="text-center text-white font-semibold tracking-wide">{response.message}</p>
+        </div>}
+      <h3 className="text-center font-bold text-2xl">Form Pendaftaran Kerja Praktek</h3>  
+        <div className="">
+            <h4 className="font-bold text-lg">🏢 Instansi/Perusahaan</h4>
+            <label className="text-sm font-bold mt-6" htmlFor="instansi">Nama Instansi / Perusahaan</label>
+            <div className="text-black p-2 bg-white rounded-md border-black border-[1px]">
+            <select className="bg-white block w-[100%]" name="idInstansi" id="instansi">
+                <option value="">Pilih Instansi</option>
+                {dataInstansi.map(({id, nama}) => <option key={id} value={id}>{nama}</option>)}
+            </select>
             </div>
-          ) : (
-            <>
-              <CardTitle className="text-2xl font-bold flex items-center justify-center gap-2">
-                📝 Form Pendaftaran Kerja Praktik 🛠️
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Silakan isi form berikut untuk mendaftar KP 👩‍💻👨‍💻
-              </p>
-            </>
-          )}
-        </CardHeader>
+            <p className="text-sm text-slate-500">Instansi belum terdaftar? Daftarkan segera <Link className="text-blue-500" to={{pathname : "/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-daftar-instansi"}}>Disini</Link></p>
+        </div>
 
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              {isLoading ? (
-                <Skeleton className="h-8 w-48" />
-              ) : (
-                <div className="border-b pb-2">
-                  <h2 className="text-xl font-semibold flex items-center gap-2">
-                    🗓️ Periode Kerja Praktik
-                  </h2>
-                </div>
-              )}
+        <div>
+            <label className="text-sm font-bold" htmlFor="tujuan-surat">Tujuan Surat Instansi/Perusahaan</label>
+            <textarea className="text-black block bg-white w-full p-2 border-slate-300 border-[1px] rounded-lg h-42" name="tujuanSuratInstansi" id="tujuan-surat" placeholder="Masukkan tujuan instansi disini..."></textarea>
+            <p className="text-slate-500 text-sm">Lihat format penulisan Disini</p>
+        </div>
 
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  {isLoading ? (
-                    <>
-                      <Skeleton className="h-4 w-40" />
-                      <Skeleton className="h-10 w-full" />
-                    </>
-                  ) : (
-                    <>
-                      <label className="text-sm font-medium flex items-center gap-1">
-                        🟢 Status Kerja Praktik
-                      </label>
-                      <Select onValueChange={(value) => handleChange('status', value)}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Baru" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="baru">Baru KP ✨</SelectItem>
-                          <SelectItem value="gagal">Gagal KP ❌</SelectItem>
-                          <SelectItem value="ulang">Perpanjang KP 🔁</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </>
-                  )}
-                </div>
+        <div>
+        <label className="text-sm font-bold" htmlFor="tanggal-mulai">Tanggal Mulai</label>
+        <div>
+        <input className="text-black bg-white w-full p-2 border-slate-300 border-[1px] rounded-lg" type="date" id="tanggal-mulai" name="tanggalMulai"/>
+        </div>
+        </div>
 
-                <div className="space-y-2">
-                  {isLoading ? (
-                    <>
-                      <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-10 w-full" />
-                    </>
-                  ) : (
-                    <>
-                      <label className="text-sm font-medium flex items-center gap-1">
-                        📅 Tanggal Mulai
-                      </label>
-                      <Input 
-                        type="date" 
-                        className="w-full"
-                        onChange={(e) => handleChange('tanggalMulai', e.target.value)}
-                      />
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              {isLoading ? (
-                <Skeleton className="h-8 w-48" />
-              ) : (
-                <div className="border-b pb-2">
-                  <h2 className="text-xl font-semibold flex items-center gap-2">
-                    🏢 Instansi/Perusahaan
-                  </h2>
-                </div>
-              )}
-
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  {isLoading ? (
-                    <>
-                      <Skeleton className="h-4 w-44" />
-                      <Skeleton className="h-10 w-full" />
-                      <Skeleton className="h-4 w-64" />
-                    </>
-                  ) : (
-                    <>
-                      <label className="text-sm font-medium flex items-center gap-1">
-                        🏭 Nama Instansi / Perusahaan
-                      </label>
-                      <Select onValueChange={(value) => handleChange('instansi', value)}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Pilih Instansi" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pt-rapp">PT. RAPP 🌟</SelectItem>
-                          <SelectItem value="pt-indah-kiat">PT. Indah Kiat 🚀</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        ⚠️ Instansi Belum Terdaftar? Segera Daftarkan{" "}
-                        <Link
-                          to="/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-daftar-instansi"
-                          className="text-blue-600 hover:underline"
-                        >
-                          Disini 📝
-                        </Link>
-                      </p>
-                    </>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  {isLoading ? (
-                    <>
-                      <Skeleton className="h-4 w-56" />
-                      <Skeleton className="h-36 w-full" />
-                      <Skeleton className="h-4 w-32" />
-                    </>
-                  ) : (
-                    <>
-                      <label className="text-sm font-medium flex items-center gap-1">
-                        ✉️ Tujuan Surat Dan Nama Instansi/Perusahaan
-                      </label>
-                      <Textarea
-                        placeholder="Masukkan deskripsi..."
-                        className="min-h-[150px] w-full"
-                        onChange={(e) => handleChange('tujuanSurat', e.target.value)}
-                      />
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        📑 Format penulisan{" "}
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button className="text-blue-600 hover:underline inline-flex items-center gap-1">
-                                Disini <span className="text-base">📝</span>
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-md p-6 bg-white shadow-lg rounded-lg border border-gray-200">
-                              <div className="space-y-4">
-                                <div className="border-b pb-3">
-                                  <h3 className="font-bold text-sm text-gray-900 mb-1">
-                                    TUJUAN SURAT DAN NAMA INSTANSI/PERUSAHAAN KP
-                                  </h3>
-                                </div>
-
-                                <div className="space-y-3 text-gray-700">
-                                  <p className="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                                    Tuliskan nama tujuan surat dan
-                                    instansi/perusahaan tujuan pelaksanaan KP dengan
-                                    <span className="font-semibold">
-                                      {" "}
-                                      BENAR dan TANPA DISINGKAT
-                                    </span>
-                                    .
-                                  </p>
-
-                                  <p>
-                                    Nama instansi/perusahaan yang Anda input akan
-                                    ditulis pada tujuan Surat Pengantar KP.
-                                  </p>
-
-                                  <p>
-                                    Kesalahan dalam penulisan Nama
-                                    Instansi/Perusahaan adalah tanggung jawab Anda.
-                                  </p>
-                                </div>
-
-                                <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-                                  <p className="font-medium text-gray-900">
-                                    Contoh Penulisan:
-                                  </p>
-                                  <ul className="list-disc pl-5 space-y-1.5 text-gray-700">
-                                    <li>Kepala Sekolah SMK Negeri 4 Pekanbaru</li>
-                                    <li>Kepala HRD PT. ABC (Tbk)</li>
-                                    <li>Manager PT. Pertamina Hulu Rokan Rumbai</li>
-                                    <li>Kepala Dinas Pendidikan Kota Pekanbaru</li>
-                                    <li>Kepala Dinas Pertanahan Provinsi Riau</li>
-                                  </ul>
-                                </div>
-
-                                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                                  <p className="font-semibold text-gray-900 flex items-center gap-2">
-                                    <span className="text-yellow-600">⚠️</span>
-                                    PENTING: Sebaiknya cari tau terlebih dahulu ke
-                                    instansi tujuan kemana surat pengantar dari
-                                    Dekan akan ditujukan.
-                                  </p>
-                                </div>
-                              </div>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </p>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-4 mt-8 pt-8">
-            {isLoading ? (
-              <>
-                <Skeleton className="h-10 w-32" />
-                <Skeleton className="h-10 w-48" />
-              </>
-            ) : (
-              <>
-                <Link to="/mahasiswa/kerja-praktik/daftar-kp/permohonan">
-                  <Button
-                    variant="outline"
-                    className="w-32 hover:bg-red-50 hover:text-red-600 hover:border-red-300 transition-colors"
-                  >
-                    Batal
-                  </Button>
-                </Link>
-                <Button 
-                  className="w-48 bg-green-600 hover:bg-green-700 transition-colors"
-                  onClick={handleSubmit}
-                >
-                  Ajukan Permohonan
-                </Button>
-              </>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+        <div className="text-end mt-4 sm:flex sm:flex-col sm:gap-2 md:block">
+            <button onClick={handleOnCancel} type="button" disabled={isLoading} className="md:mr-4 bg-white py-1 md:w-[198px] font-bold border-black border-[1px] rounded-lg hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50">Batal</button>
+            <button type="submit" disabled={isLoading} className="bg-green-600 py-1 md:w-[198px] text-white font-bold rounded-lg hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50">Ajukan Permohonan</button>
+        </div>
+    </form>
     </DashboardLayout>
-  );
-};
+}
 
 export default MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage;

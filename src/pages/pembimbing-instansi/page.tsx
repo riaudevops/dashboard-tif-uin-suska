@@ -1,7 +1,22 @@
-import { useState, useEffect } from "react";
-import { Search, Calendar } from "lucide-react";
-import icon_dosenpa_page from "@/assets/svgs/dosen/setoran-hafalan/mahasiswa/icon_dosenpa_page.svg";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Input } from "@/components/ui/input";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import APIKerjaPraktik from "@/services/api/pembimbing-instansi/daily-report.service";
+import { MahasiswaInstansiSayaResponse } from "@/interfaces/pages/mahasiswa/kerja-praktik/daily-report/daily-report.interface";
+import {
+  Search,
+  Calendar,
+  User,
+  Building,
+  AlertTriangle,
+  ChevronDown,
+  ChevronUp,
+  Eye,
+  EyeClosed,
+} from "lucide-react";
+// import icon_dosenpa_page from "@/assets/svgs/dosen/setoran-hafalan/mahasiswa/icon_dosenpa_page.svg";
 import {
   Table,
   TableBody,
@@ -26,154 +41,65 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Eye, EyeClosed } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
-const InstansiKerjaPraktikPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [hoveredButtonId, setHoveredButtonId] = useState<number | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
-  const [, setShowStatCards] = useState(false);
-  const itemsPerPage = 5;
+const PembimbingInstansiKerjaPraktikMahasiswaPage = () => {
+  const [searchParams] = useSearchParams();
+  const email = searchParams.get("email");
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isProfileExpanded, setIsProfileExpanded] = useState<boolean>(false);
+  const [hoveredButton, setHoveredButton] = useState<string | null>(null);
+  const itemsPerPage = 10;
 
-  // Simulate loading
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+  const {
+    data: mahasiswaInstansiSaya,
+    isLoading,
+    error,
+  } = useQuery<MahasiswaInstansiSayaResponse, Error>({
+    queryKey: ["mahasiswa-instansi-saya", email],
+    queryFn: () =>
+      APIKerjaPraktik.getMahasiswaInstansiSaya(email!).then((res) => res.data),
+    staleTime: Infinity,
+    enabled: !!email,
+  });
 
-    const statCardsTimer = setTimeout(() => {
-      setShowStatCards(true);
-    }, 1200);
+  const formatDate = (date: string): string => {
+    try {
+      return new Date(date).toLocaleDateString("id-ID", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+    } catch {
+      return "-";
+    }
+  };
 
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(statCardsTimer);
-    };
-  }, []);
+  // const calculateProgress = (
+  //   tanggalMulai: string,
+  //   tanggalSelesai: string
+  // ): number => {
+  //   try {
+  //     const start = new Date(tanggalMulai).getTime();
+  //     const end = new Date(tanggalSelesai).getTime();
+  //     const today = new Date().getTime();
+  //     const totalDuration = end - start;
+  //     const elapsed = today - start;
+  //     const progress = (elapsed / totalDuration) * 100;
+  //     return Math.min(Math.max(Math.round(progress), 0), 100);
+  //   } catch {
+  //     return 0;
+  //   }
+  // };
 
-  // Extended student list to demonstrate pagination with added dailyReports
-  const students = [
-    {
-      id: 1,
-      name: "Abmi Sukma",
-      status: "Mahasiswa",
-      university: "UIN SUSKA RIAU",
-      dailyReports: 15,
-      tanggalMulai: "31 Januari 2025",
-      tanggalSelesai: "31 Desember 2025",
-      progress: 75,
-    },
-    {
-      id: 2,
-      name: "Muh. Zaki Erbai Syas",
-      status: "Mahasiswa",
-      university: "UIN SUSKA RIAU",
-      dailyReports: 8,
-      tanggalMulai: "31 Januari 2025",
-      tanggalSelesai: "31 Desember 2025",
-      progress: 40,
-    },
-    {
-      id: 3,
-      name: "Ahmad Kurniawan",
-      status: "Mahasiswa",
-      university: "UIN SUSKA RIAU",
-      dailyReports: 12,
-      tanggalMulai: "31 Januari 2025",
-      tanggalSelesai: "31 Desember 2025",
-      progress: 60,
-    },
-    {
-      id: 4,
-      name: "Farhan Aulia",
-      status: "Mahasiswa",
-      university: "UIN SUSKA RIAU",
-      dailyReports: 20,
-      tanggalMulai: "31 Januari 2025",
-      tanggalSelesai: "31 Desember 2025",
-      progress: 90,
-    },
-    {
-      id: 5,
-      name: "Farras Lathief",
-      status: "Mahasiswa",
-      university: "UIN SUSKA RIAU",
-      dailyReports: 5,
-      tanggalMulai: "31 Januari 2025",
-      tanggalSelesai: "31 Desember 2025",
-      progress: 25,
-    },
-    {
-      id: 6,
-      name: "M. Gilang Indra",
-      status: "Mahasiswa",
-      university: "UIN SUSKA RIAU",
-      dailyReports: 10,
-      tanggalMulai: "31 Januari 2025",
-      tanggalSelesai: "31 Desember 2025",
-      progress: 50,
-    },
-    {
-      id: 7,
-      name: "Sarah Nur Afifah",
-      status: "Mahasiswa",
-      university: "UIN SUSKA RIAU",
-      dailyReports: 18,
-      tanggalMulai: "31 Januari 2025",
-      tanggalSelesai: "31 Desember 2025",
-      progress: 85,
-    },
-    {
-      id: 8,
-      name: "Rahma Putri",
-      status: "Mahasiswa",
-      university: "UIN SUSKA RIAU",
-      dailyReports: 7,
-      tanggalMulai: "31 Januari 2025",
-      tanggalSelesai: "31 Desember 2025",
-      progress: 30,
-    },
-    {
-      id: 9,
-      name: "Dimas Pratama",
-      status: "Mahasiswa",
-      university: "UIN SUSKA RIAU",
-      dailyReports: 14,
-      tanggalMulai: "31 Januari 2025",
-      tanggalSelesai: "31 Desember 2025",
-      progress: 70,
-    },
-    {
-      id: 10,
-      name: "Anisa Wijaya",
-      status: "Mahasiswa",
-      university: "UIN SUSKA RIAU",
-      dailyReports: 11,
-      tanggalMulai: "31 Januari 2025",
-      tanggalSelesai: "31 Desember 2025",
-      progress: 55,
-    },
-    {
-      id: 11,
-      name: "Rizky Maulana",
-      status: "Mahasiswa",
-      university: "UIN SUSKA RIAU",
-      dailyReports: 16,
-      tanggalMulai: "31 Januari 2025",
-      tanggalSelesai: "31 Desember 2025",
-      progress: 65,
-    },
-  ];
-
-  const filteredStudents = students.filter((student) =>
-    student.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredStudents = (mahasiswaInstansiSaya?.mahasiswa || []).filter(
+    (student) =>
+      student.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.nim.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Calculate pagination values
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -182,25 +108,23 @@ const InstansiKerjaPraktikPage = () => {
     indexOfLastItem
   );
 
-  const handlePageChange = (page : number) => {
+  const handlePageChange = (page: number) => {
     if (page > 0 && page <= totalPages) {
       setCurrentPage(page);
     }
   };
 
   const today = new Date();
-  const formattedDate = today.toLocaleDateString("id-ID", {
+  const formatDateToday = today.toLocaleDateString("id-ID", {
     weekday: "long",
     day: "numeric",
     month: "short",
     year: "numeric",
   });
 
-  // Generate pagination items
   const renderPaginationItems = () => {
     const items = [];
 
-    // Add "Previous" button
     items.push(
       <PaginationItem key="prev">
         <PaginationPrevious
@@ -213,9 +137,7 @@ const InstansiKerjaPraktikPage = () => {
       </PaginationItem>
     );
 
-    // Create numbered pagination items
     if (totalPages <= 5) {
-      // Show all pages if 5 or fewer
       for (let i = 1; i <= totalPages; i++) {
         items.push(
           <PaginationItem key={i}>
@@ -250,24 +172,21 @@ const InstansiKerjaPraktikPage = () => {
         </PaginationItem>
       );
 
-      // Show ellipsis if current page is > 3
       if (currentPage > 3) {
         items.push(
           <PaginationItem key="ellipsis1">
-            <PaginationLink className="text-slate-700 border hover:border-teal-200 hover:text-teal-700">
+            <PaginationLink className="border text-slate-700 hover:border-teal-200 hover:text-teal-700">
               ...
             </PaginationLink>
           </PaginationItem>
         );
       }
 
-      // Show pages around current page
       const startPage = Math.max(2, currentPage - 1);
       const endPage = Math.min(totalPages - 1, currentPage + 1);
 
       for (let i = startPage; i <= endPage; i++) {
         if (i !== 1 && i !== totalPages) {
-          // Skip first and last pages as they're added separately
           items.push(
             <PaginationItem key={i}>
               <PaginationLink
@@ -286,18 +205,16 @@ const InstansiKerjaPraktikPage = () => {
         }
       }
 
-      // Show ellipsis if current page is < totalPages - 2
       if (currentPage < totalPages - 2) {
         items.push(
           <PaginationItem key="ellipsis2">
-            <PaginationLink className="text-slate-700 border hover:border-teal-200 hover:text-teal-700">
+            <PaginationLink className="border text-slate-700 hover:border-teal-200 hover:text-teal-700">
               ...
             </PaginationLink>
           </PaginationItem>
         );
       }
 
-      // Always show last page
       if (totalPages > 1) {
         items.push(
           <PaginationItem key={totalPages}>
@@ -317,7 +234,6 @@ const InstansiKerjaPraktikPage = () => {
       }
     }
 
-    // Add "Next" button
     items.push(
       <PaginationItem key="next">
         <PaginationNext
@@ -333,84 +249,160 @@ const InstansiKerjaPraktikPage = () => {
     return items;
   };
 
-  // Skeleton loading component
-  const SkeletonRow = () => (
-    <TableRow className="border-b animate-pulse">
-      <TableCell className="py-4">
-        <div className="h-4 w-32 bg-slate-200 rounded"></div>
-      </TableCell>
-      <TableCell><div className="h-4 w-24 bg-slate-200 rounded"></div></TableCell>
-      <TableCell><div className="h-4 w-24 bg-slate-200 rounded"></div></TableCell>
-      <TableCell><div className="h-4 w-8 bg-slate-200 rounded mx-auto"></div></TableCell>
-      <TableCell className="text-center">
-        <div className="h-8 w-24 bg-slate-200 rounded mx-auto"></div>
-      </TableCell>
-    </TableRow>
-  );
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1 }}
+          className="w-10 h-10 border-t-2 border-indigo-500 rounded-full"
+        />
+      </div>
+    );
+  }
+
+  if (error || !mahasiswaInstansiSaya) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+        <AlertTriangle className="w-12 h-12 mb-4 text-red-500" />
+        <p className="mb-4 text-lg font-medium text-gray-700 dark:text-gray-300">
+          {error?.message || "Data tidak ditemukan.."}
+        </p>
+        <Button
+          className="bg-indigo-600 hover:bg-indigo-700"
+          onClick={() => window.location.reload()}
+        >
+          Coba Lagi
+        </Button>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 md:p-8">
-      {/* Top Section with Date only (profile removed) */}
-      <motion.div 
-        className="flex justify-between items-center mb-8"
+    <div className="min-h-screen p-6 md:p-8 bg-gray-50 dark:bg-gray-900">
+      {/* Top Section */}
+      <motion.div
+        className="flex items-center justify-between mb-8"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
-          <p className="text-slate-500 flex items-center mt-1 text-sm">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+            Pembimbing Instansi Kerja Praktik
+          </h1>
+          <p className="flex items-center mt-2 text-sm text-gray-500 dark:text-gray-400">
             <Calendar size={16} className="mr-2" />
-            {formattedDate}
+            {formatDateToday}
           </p>
         </div>
       </motion.div>
-
-      {/* Welcome Card with Animation */}
+      {/* Pembimbing Biodata Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.7 }}
       >
-        <Card className="mb-8 bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-600 border-none relative overflow-hidden">
-          {/* Animated decorative circles */}
-          <motion.div 
-            className="absolute -top-10 -right-10 w-40 h-40 bg-white opacity-10 rounded-full"
-            animate={{ 
-              scale: [1, 1.2, 1],
-              opacity: [0.1, 0.15, 0.1] 
-            }}
-            transition={{ 
+        <Card className="mb-8 border-none shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md">
+          <div className="flex items-center justify-between p-6 text-white bg-gradient-to-br from-indigo-600 to-purple-700 rounded-t-xl">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center justify-center border rounded-full shadow-inner w-14 h-14 bg-white/10 border-white/20">
+                <User className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold">
+                  {mahasiswaInstansiSaya.pembimbing_instansi.nama || "Unknown"}
+                </h3>
+                <p className="text-sm text-white/80">
+                  {mahasiswaInstansiSaya.pembimbing_instansi.jabatan ||
+                    "Unknown"}
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              className="text-white hover:bg-white/20"
+              onClick={() => setIsProfileExpanded(!isProfileExpanded)}
+            >
+              {isProfileExpanded ? (
+                <ChevronUp className="w-5 h-5" />
+              ) : (
+                <ChevronDown className="w-5 h-5" />
+              )}
+              Detail Instansi
+            </Button>
+          </div>
+          <AnimatePresence>
+            {isProfileExpanded && (
+              <div className="p-6 transition-all duration-300 bg-gray-50 dark:bg-gray-800/50 rounded-b-xl">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div className="flex gap-3">
+                    <Building className="h-5 w-5 text-indigo-600 dark:text-indigo-400 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        Instansi
+                      </p>
+                      <p className="text-base text-gray-900 dark:text-white">
+                        {mahasiswaInstansiSaya.pembimbing_instansi.instansi
+                          .nama || "Unknown"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <Building className="h-5 w-5 text-indigo-600 dark:text-indigo-400 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        Alamat
+                      </p>
+                      <p className="text-base text-gray-900 dark:text-white">
+                        {mahasiswaInstansiSaya.pembimbing_instansi.instansi
+                          .alamat || "Unknown"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex col-span-1 gap-3 md:col-span-2">
+                    <Building className="h-5 w-5 text-indigo-600 dark:text-indigo-400 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        Profil Singkat
+                      </p>
+                      <p className="text-base text-gray-900 dark:text-white">
+                        {mahasiswaInstansiSaya.pembimbing_instansi.instansi
+                          .profil_singkat || "Tidak ada profil"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </AnimatePresence>
+        </Card>
+      </motion.div>
+      {/* Welcome Card */}
+      {/* <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.7 }}
+      >
+        <Card className="relative mb-8 overflow-hidden border-none bg-gradient-to-r from-indigo-500 to-purple-600">
+          <motion.div
+            className="absolute w-40 h-40 bg-white rounded-full -top-10 -right-10 opacity-10"
+            animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.15, 0.1] }}
+            transition={{
               duration: 8,
               repeat: Infinity,
-              repeatType: "reverse" 
+              repeatType: "reverse",
             }}
           />
-          <motion.div 
-            className="absolute -bottom-14 -left-14 w-48 h-48 bg-white opacity-5 rounded-full"
-            animate={{ 
-              scale: [1, 1.3, 1],
-              opacity: [0.05, 0.1, 0.05] 
-            }}
-            transition={{ 
+          <motion.div
+            className="absolute w-48 h-48 bg-white rounded-full -bottom-14 -left-14 opacity-5"
+            animate={{ scale: [1, 1.3, 1], opacity: [0.05, 0.1, 0.05] }}
+            transition={{
               duration: 10,
               repeat: Infinity,
-              repeatType: "reverse" 
+              repeatType: "reverse",
             }}
           />
-          <motion.div 
-            className="absolute top-1/2 right-1/4 transform -translate-y-1/2 w-24 h-24 bg-white opacity-5 rounded-full"
-            animate={{ 
-              scale: [1, 1.4, 1],
-              opacity: [0.05, 0.12, 0.05] 
-            }}
-            transition={{ 
-              duration: 7,
-              repeat: Infinity,
-              repeatType: "reverse" 
-            }}
-          />
-
           <CardHeader className="pb-32">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -418,141 +410,119 @@ const InstansiKerjaPraktikPage = () => {
               transition={{ delay: 0.5, duration: 0.6 }}
             >
               <CardTitle className="text-3xl font-bold text-white">
-                Selamat Datang, Pembimbing Instansi!
+                Selamat Datang,{" "}
+                {mahasiswaInstansiSaya.pembimbing_instansi.nama || "Pembimbing"} !
               </CardTitle>
-              <CardDescription className="text-teal-100 opacity-90 text-lg">
-                Pembimbing Profesional Kerja Praktik
+              <CardDescription className="text-lg text-white/80">
+                Pantau dan kelola progress mahasiswa kerja praktik...
               </CardDescription>
             </motion.div>
           </CardHeader>
-          <div>
-            <motion.div 
-              className="absolute bottom-0 right-0"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.7, duration: 0.8 }}
-            >
-              <img src={icon_dosenpa_page} alt="" />
-            </motion.div>
-          </div>
+          <motion.div
+            className="absolute bottom-0 right-0"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.7, duration: 0.8 }}
+          >
+            <img src={icon_dosenpa_page} alt="Decorative icon" />
+          </motion.div>
         </Card>
-      </motion.div>
-
-      {/* Student List Section with Animation */}
+      </motion.div> */}
+      {/* Student List Section */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.7 }}
+        transition={{ delay: 0.6, duration: 0.7 }}
       >
-        <Card className="shadow-md transition-all duration-300 hover:shadow-lg">
-          <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 pb-4 border-b">
+        <Card className="border-none shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md">
+          <CardHeader className="flex flex-col items-start justify-between pb-4 border-b border-gray-200 sm:flex-row sm:items-center dark:border-gray-700">
             <div>
-              <CardTitle className="text-xl text-slate-800">
-                Daftar Mahasiswa Kerja Praktik
+              <CardTitle className="text-xl text-gray-800 dark:text-white">
+                Daftar Mahasiswa
               </CardTitle>
-              <CardDescription className="text-slate-500">
-                Kelola dan pantau progres mahasiswa
+              <CardDescription className="text-gray-500 dark:text-gray-400">
+                Teknik Informatika - Universitas Islam Negeri Sultan Syarif
+                Kasim Riau
               </CardDescription>
             </div>
-            <div className="relative w-full sm:w-auto">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+            <div className="relative w-full mt-4 sm:w-96 sm:mt-0">
+              <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 top-1/2 left-3" />
               <Input
-                placeholder="Cari mahasiswa..."
-                className="pl-9 border-slate-300 focus:border-teal-300 w-full sm:w-64 transition-all duration-300 focus:shadow-sm"
+                placeholder="Cari mahasiswa berdasarkan nama atau NIM..."
+                className="transition-all border-gray-300 pl-9 dark:border-gray-600 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring-indigo-200 dark:focus:ring-indigo-700"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            
             <Table>
-              <TableHeader className="bg-slate-50">
-                <TableRow className="hover:bg-slate-50">
-                  <TableHead className="w-24 sm:w-auto text-center text-gray-700">
-                    Nama Mahasiswa
+              <TableHeader className="bg-indigo-50 dark:bg-indigo-900/20">
+                <TableRow>
+                  <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-200">
+                    Nama
                   </TableHead>
-                  <TableHead className="w-24 sm:w-auto text-center text-gray-700">
+                  <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-200">
+                    NIM
+                  </TableHead>
+                  <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-200">
                     Tanggal Mulai
                   </TableHead>
-                  <TableHead className="w-24 sm:w-auto text-center text-gray-700">
+                  <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-200">
                     Tanggal Selesai
                   </TableHead>
-                  <TableHead className="w-24 sm:w-auto text-center text-gray-700">
-                    Jumlah Daily Report
+                  <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-200">
+                    Hari Kerja
                   </TableHead>
-                  <TableHead className="w-24 sm:w-auto text-center text-gray-700">
+                  <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-200">
                     Aksi
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isLoading ? (
-                  // Show skeleton loading rows
-                  Array(5).fill(null).map((_, index) => (
-                    <SkeletonRow key={`skeleton-${index}`} />
-                  ))
-                ) : (
-                  // Show actual data rows without motion effects
+                {currentItems.length > 0 ? (
                   currentItems.map((student) => (
                     <TableRow
-                      key={student.id}
-                      className="border-b hover:bg-slate-50/50 transition-colors cursor-pointer"
+                      key={student.nim}
+                      className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/20"
                     >
-                      <TableCell className="font-medium text-slate-800 text-center py-4">
-                        {student.name}
+                      <TableCell className="py-4 font-medium text-center text-gray-900 dark:text-white">
+                        {student.nama || ""}
                       </TableCell>
-                      <TableCell className="text-slate-600 text-center py-4">
-                        {student.tanggalMulai}
+                      <TableCell className="py-4 text-center text-gray-600 dark:text-gray-300">
+                        {student.nim || ""}
                       </TableCell>
-                      <TableCell className="text-slate-600 text-center py-4">
-                        {student.tanggalSelesai}
+                      <TableCell className="py-4 text-center text-gray-600 dark:text-gray-300">
+                        {formatDate(
+                          student.pendaftaran_kp[0]?.tanggal_mulai ?? ""
+                        )}
+                      </TableCell>
+                      <TableCell className="py-4 text-center text-gray-600 dark:text-gray-300">
+                        {formatDate(
+                          student.pendaftaran_kp[0]?.tanggal_selesai ?? ""
+                        )}
                       </TableCell>
                       <TableCell className="text-center">
                         <div className="flex flex-col items-center p-2">
-                          <div className="text-xl font-bold text-teal-600 mb-1">
-                            {student.dailyReports}
-                          </div>
-                          
-                          <div className="w-full relative">
-                            {/* Enhanced progress bar with gradient and animation */}
-                            <div className="h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner">
-                              <div 
-                                className={`h-full transition-all duration-700 ease-out ${
-                                  student.progress >= 75 ? 'bg-gradient-to-r from-teal-400 to-emerald-500' : 
-                                  student.progress >= 50 ? 'bg-gradient-to-r from-teal-400 to-teal-500' : 
-                                  student.progress >= 25 ? 'bg-gradient-to-r from-amber-400 to-amber-500' : 
-                                  'bg-gradient-to-r from-rose-400 to-rose-500'
-                                }`}
-                                style={{ width: `${student.progress}%` }}
-                              />
-                            </div>
-                            
-                            {/* Percentage indicator with matching color */}
-                            <div className="flex justify-between items-center mt-1">
-                              <span className="text-xs text-slate-500">Progress</span>
-                              <span className={`text-xs font-semibold ${
-                                student.progress >= 75 ? 'text-emerald-600' : 
-                                student.progress >= 50 ? 'text-teal-600' : 
-                                student.progress >= 25 ? 'text-amber-600' : 
-                                'text-rose-600'
-                              }`}>
-                                {student.progress}% selesai
-                              </span>
-                            </div>
-                          </div>
+                          <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                            {student.daily_report?.length || 0}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => navigate(`/instansi/detail/${student.id}`)}
-                          className="bg-teal-500 text-white hover:text-white hover:bg-teal-600 transition-all duration-300 shadow-sm hover:shadow-md"
-                          onMouseEnter={() => setHoveredButtonId(student.id)}
-                          onMouseLeave={() => setHoveredButtonId(null)}
+                          onClick={() =>
+                            navigate(
+                              `/pembimbing-instansi/kerja-praktik/detail-mahasiswa/${student.pendaftaran_kp[0]?.id}`
+                            )
+                          }
+                          className="text-white transition-all duration-300 bg-teal-500 shadow-sm hover:text-white hover:bg-teal-600 hover:shadow-md"
+                          onMouseEnter={() => setHoveredButton(student.nim)}
+                          onMouseLeave={() => setHoveredButton(null)}
                         >
-                          {hoveredButtonId === student.id ? (
+                          {hoveredButton === student.nim ? (
                             <Eye size={16} className="mr-2" />
                           ) : (
                             <EyeClosed size={16} className="mr-2" />
@@ -562,62 +532,53 @@ const InstansiKerjaPraktikPage = () => {
                       </TableCell>
                     </TableRow>
                   ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      className="py-12 text-center text-gray-500 dark:text-gray-400"
+                    >
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <Search
+                          size={40}
+                          className="mx-auto mb-4 text-gray-300 dark:text-gray-600"
+                        />
+                        <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                          Tidak ada mahasiswa...
+                        </h3>
+                        <p className="mt-1 text-gray-500 dark:text-gray-400">
+                          {searchTerm
+                            ? `Tidak ada mahasiswa yang cocok dengan pencarian "${searchTerm}".`
+                            : "Belum ada mahasiswa yang terdaftar."}
+                        </p>
+                      </motion.div>
+                    </TableCell>
+                  </TableRow>
                 )}
               </TableBody>
             </Table>
-            
-            {/* Empty state when no students match search */}
-            <AnimatePresence>
-              {filteredStudents.length === 0 && !isLoading && (
-                <motion.div 
-                  className="py-12 flex flex-col items-center justify-center text-center"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <motion.div 
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.2, duration: 0.5 }}
-                  >
-                    <Search size={40} className="text-slate-300 mb-4" />
-                  </motion.div>
-                  <h3 className="text-lg font-medium text-slate-700">
-                    Tidak ada mahasiswa
-                  </h3>
-                  <p className="text-slate-500 mt-1 max-w-md">
-                    Tidak ada mahasiswa yang cocok dengan pencarian "{searchTerm}".
-                    Coba dengan kata kunci lain.
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
 
-            {/* Pagination */}
-            {filteredStudents.length > 0 && !isLoading && (
-              <motion.div 
-                className="py-4 px-6 border-t border-slate-100"
+            {filteredStudents.length > 0 && (
+              <motion.div
+                className="flex items-center px-6 py-6 border-t border-gray-200 dark:border-gray-700"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5, duration: 0.3 }}
               >
-                <div className="flex justify-between items-center w-full">
-                  <div className="flex-shrink-0">
-                    <p className="text-sm text-slate-500">
-                      {indexOfFirstItem + 1}-
-                      {Math.min(indexOfLastItem, filteredStudents.length)} dari{" "}
-                      {filteredStudents.length} Mahasiswa
-                    </p>
-                  </div>
-                  <div className="flex-shrink-0 ml-auto">
-                    <Pagination>
-                      <PaginationContent>
-                        {renderPaginationItems()}
-                      </PaginationContent>
-                    </Pagination>
-                  </div>
-                </div>
+                <p className="w-full text-sm text-gray-500 dark:text-gray-400">
+                  {indexOfFirstItem + 1}-
+                  {Math.min(indexOfLastItem, filteredStudents.length)} dari{" "}
+                  {filteredStudents.length} Mahasiswa
+                </p>
+                <Pagination className="flex items-center justify-end">
+                  <PaginationContent>
+                    {renderPaginationItems()}
+                  </PaginationContent>
+                </Pagination>
               </motion.div>
             )}
           </CardContent>
@@ -627,4 +588,4 @@ const InstansiKerjaPraktikPage = () => {
   );
 };
 
-export default InstansiKerjaPraktikPage;
+export default PembimbingInstansiKerjaPraktikMahasiswaPage;

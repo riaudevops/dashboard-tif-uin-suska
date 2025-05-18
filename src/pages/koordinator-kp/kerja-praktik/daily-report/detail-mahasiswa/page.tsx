@@ -1,15 +1,23 @@
-import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import {
   User,
+  BookOpen,
   Building,
   Calendar,
   FileText,
-  BookOpen,
-  SquareArrowOutUpRightIcon,
+  AlertTriangle,
+  ChevronLeft,
+  ChevronRight,
+  AlertTriangleIcon,
+  CheckCircle,
+  Eye,
+  XCircle,
 } from "lucide-react";
-import { useLocation } from "react-router-dom";
-import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -18,480 +26,803 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import ReviewBimbinganKP from "@/components/dosen/kerja-praktik/daily-report/ModalReviewBimbingan";
+import { Badge } from "@/components/ui/badge";
+import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
+import DetailDailyReportModal from "@/components/dosen/kerja-praktik/mahasiswa-bimbing/DetailDailyReportModal";
+import DetailBimbinganModal from "@/components/dosen/kerja-praktik/mahasiswa-bimbing/DetailBimbinganModal";
+import APIKerjaPraktik from "@/services/api/koordinator-kp/daily-report.service";
+import {
+  Bimbingan,
+  CalendarDay,
+  DailyReport,
+  MahasiswaDetailResponse,
+} from "@/interfaces/pages/mahasiswa/kerja-praktik/daily-report/daily-report.interface";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-export const KoordinatorKerjaPraktikDailyReportDetailPage = () => {
-  const { search } = useLocation();
-  const [activeTab, setActiveTab] = useState("Daily-Report");
-  const query = new URLSearchParams(search);
-  const name = query.get("name") || "-";
-  const nim = query.get("nim") || "-";
-  const [IsModalBimbinganDetail, setOpenModalBimbinganDetail] = useState(false);
+const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [agendaEntries, setAgendaEntries] = useState<DailyReport[]>([]);
+  const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([]);
+  const [activeTab, setActiveTab] = useState<string>("daily-report");
+  const [isDailyReportModalOpen, setDailyReportModalOpen] =
+    useState<boolean>(false);
+  const [isBimbinganModalOpen, setBimbinganModalOpen] =
+    useState<boolean>(false);
+  const [selectedDailyReport, setSelectedDailyReport] =
+    useState<DailyReport | null>(null);
+  const [selectedBimbingan, setSelectedBimbingan] = useState<Bimbingan | null>(
+    null
+  );
 
-  // Dummy data for daily reports - Data baru ditambahkan di awal array (untuk tampil di bagian atas)
-  const dailyReports = [
-    {
-      id: 1,
-      day: 30,
-      date: "02 Maret 2025",
-      status: "Selesai",
-      kegiatan: "Implementasi fitur login pada aplikasi",
-    },
-    {
-      id: 2,
-      day: 29,
-      date: "01 Maret 2025",
-      status: "Selesai",
-      kegiatan: "Desain database dan perancangan API",
-    },
-    {
-      id: 3,
-      day: 28,
-      date: "28 Februari 2025",
-      status: "Menunggu",
-      kegiatan: "Implementasi dashboard admin",
-    },
-    {
-      id: 4,
-      day: 27,
-      date: "27 Februari 2025",
-      status: "Selesai",
-      kegiatan: "Testing fitur registrasi pengguna",
-    },
-    {
-      id: 5,
-      day: 26,
-      date: "26 Februari 2025",
-      status: "Revisi",
-      kegiatan: "Desain UI/UX halaman profile",
-    },
-    {
-      id: 6,
-      day: 25,
-      date: "25 Februari 2025",
-      status: "Selesai",
-      kegiatan: "Rapat dengan tim terkait kebutuhan sistem",
-    },
-    {
-      id: 7,
-      day: 24,
-      date: "24 Februari 2025",
-      status: "Selesai",
-      kegiatan: "Mempelajari dokumentasi framework",
-    },
-    {
-      id: 8,
-      day: 23,
-      date: "23 Februari 2025",
-      status: "Revisi",
-      kegiatan: "Implementasi validasi form",
-    },
-    {
-      id: 9,
-      day: 22,
-      date: "22 Februari 2025",
-      status: "Revisi",
-      kegiatan: "Debugging pada fitur notifikasi",
-    },
-    {
-      id: 10,
-      day: 21,
-      date: "21 Februari 2025",
-      status: "Ditolak",
-      kegiatan: "Mengintegrasikan sistem pembayaran",
-    },
-  ];
+  const {
+    data: detailMahasiswa,
+    isLoading,
+    error,
+  } = useQuery<MahasiswaDetailResponse, Error>({
+    queryKey: ["detail-mahasiswa", id],
+    queryFn: () =>
+      APIKerjaPraktik.getAllDetailMahasiswa(id!).then((res) => res.data),
+    staleTime: Infinity,
+    enabled: !!id,
+  });
 
-  // Dummy data untuk riwayat bimbingan
-  const bimbinganData = [
-    {
-      id: 1,
-      tanggal: "05 Maret 2025",
-      waktumulai: "14:30 ",
-      waktuselesai: "15:30",
-      topik: "Finalisasi Laporan Kerja Praktik",
-      status: "Selesai",
-    },
-    {
-      id: 2,
-      tanggal: "28 Februari 2025",
-      waktumulai: "14:30 ",
-      waktuselesai: "15:30",
-      topik: "Pembahasan Bab 3 dan Bab 4",
-      status: "Revisi",
-    },
-    {
-      id: 3,
-      tanggal: "20 Februari 2025",
-      waktumulai: "14:30 ",
-      waktuselesai: "15:30",
-      topik: "Penentuan Judul Laporan",
-      status: "Selesai",
-    },
-    {
-      id: 4,
-      tanggal: "15 Februari 2025",
-      waktumulai: "14:30 ",
-      waktuselesai: "15:30",
-      topik: "Review Bab 1",
-      status: "Revisi",
-    },
-    {
-      id: 5,
-      tanggal: "08 Februari 2025",
-      waktumulai: "14:30 ",
-      waktuselesai: "15:30",
-      topik: "Diskusi Metodologi Penelitian",
-      status: "Menunggu",
-    },
-  ];
+  useEffect(() => {
+    if (detailMahasiswa?.daily_report && detailMahasiswa.tanggal_mulai) {
+      const entries: DailyReport[] = detailMahasiswa.daily_report.map(
+        (report, index) => ({
+          id: report.id,
+          hari_ke: index + 1,
+          tanggal_presensi: report.tanggal_presensi.split("T")[0],
+          status: report.status,
+          catatan_evaluasi: report.catatan_evaluasi,
+          detail_daily_report: report.detail_daily_report?.map((detail) => ({
+            id: detail.id,
+            waktu_mulai: detail.waktu_mulai,
+            waktu_selesai: detail.waktu_selesai,
+            judul_agenda: detail.judul_agenda,
+            deskripsi_agenda: detail.deskripsi_agenda,
+          })),
+        })
+      );
+      setAgendaEntries(entries);
+    }
+  }, [detailMahasiswa]);
 
-  // Urutkan data agar data terbaru muncul di atas (berdasarkan day)
-  const sortedDailyReports = [...dailyReports].sort((a, b) => b.day - a.day);
+  useEffect(() => {
+    if (detailMahasiswa?.tanggal_mulai && detailMahasiswa?.tanggal_selesai) {
+      const today = new Date();
+      const startDate = new Date(detailMahasiswa.tanggal_mulai);
+      const endDate = new Date(detailMahasiswa.tanggal_selesai);
 
-  // Fungsi untuk menentukan warna indikator status mahasiswa
-  const getstatusmahasiswa = (status: string) => {
+      if (today >= startDate && today <= endDate) {
+        setCurrentMonth(new Date(today.getFullYear(), today.getMonth(), 1));
+      } else {
+        setCurrentMonth(
+          new Date(startDate.getFullYear(), startDate.getMonth(), 1)
+        );
+      }
+    }
+  }, [detailMahasiswa]);
+
+  useEffect(() => {
+    if (detailMahasiswa?.tanggal_mulai && detailMahasiswa?.tanggal_selesai) {
+      setCalendarDays(
+        generateCalendarDays(
+          currentMonth,
+          new Date(detailMahasiswa.tanggal_mulai),
+          new Date(detailMahasiswa.tanggal_selesai)
+        )
+      );
+    }
+  }, [currentMonth, agendaEntries, detailMahasiswa]);
+
+  const generateCalendarDays = (
+    monthDate: Date,
+    startDate: Date,
+    endDate: Date
+  ): CalendarDay[] => {
+    const year = monthDate.getFullYear();
+    const month = monthDate.getMonth();
+
+    const firstDayOfMonth = new Date(year, month, 1);
+    const lastDayOfMonth = new Date(year, month + 1, 0);
+    const firstDayWeekday = firstDayOfMonth.getDay();
+    const daysFromPrevMonth = firstDayWeekday;
+
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    const prevMonthDays = Array.from({ length: daysFromPrevMonth }, (_, i) => {
+      const date = new Date(
+        year,
+        month - 1,
+        prevMonthLastDay - daysFromPrevMonth + i + 1
+      );
+      const dateStr = date.toISOString().split("T")[0];
+      const isWithinPeriod =
+        date >= new Date(startDate.setHours(0, 0, 0, 0)) &&
+        date <= new Date(endDate.setHours(23, 59, 59, 999));
+      const entry = agendaEntries.find(
+        (entry) => entry.tanggal_presensi === dateStr
+      );
+
+      return {
+        date,
+        isCurrentMonth: false,
+        isWithinPeriod,
+        hasEntry: !!entry,
+        entry: entry || null,
+        isStartDate: dateStr === startDate.toISOString().split("T")[0],
+        isEndDate: dateStr === endDate.toISOString().split("T")[0],
+      };
+    });
+
+    const currentMonthDays = Array.from(
+      { length: lastDayOfMonth.getDate() },
+      (_, i) => {
+        const date = new Date(year, month, i + 1);
+        const dateStr = date.toISOString().split("T")[0];
+        const isWithinPeriod =
+          date >= new Date(startDate.setHours(0, 0, 0, 0)) &&
+          date <= new Date(endDate.setHours(23, 59, 59, 999));
+        const entry = agendaEntries.find(
+          (entry) => entry.tanggal_presensi === dateStr
+        );
+
+        return {
+          date,
+          isCurrentMonth: true,
+          isWithinPeriod,
+          hasEntry: !!entry,
+          entry: entry || null,
+          isStartDate: dateStr === startDate.toISOString().split("T")[0],
+          isEndDate: dateStr === endDate.toISOString().split("T")[0],
+        };
+      }
+    );
+
+    const totalDaysShown = 42;
+    const daysFromNextMonth =
+      totalDaysShown - prevMonthDays.length - currentMonthDays.length;
+
+    const nextMonthDays = Array.from({ length: daysFromNextMonth }, (_, i) => {
+      const date = new Date(year, month + 1, i + 1);
+      const dateStr = date.toISOString().split("T")[0];
+      const isWithinPeriod =
+        date >= new Date(startDate.setHours(0, 0, 0, 0)) &&
+        date <= new Date(endDate.setHours(23, 59, 59, 999));
+      const entry = agendaEntries.find(
+        (entry) => entry.tanggal_presensi === dateStr
+      );
+
+      return {
+        date,
+        isCurrentMonth: false,
+        isWithinPeriod,
+        hasEntry: !!entry,
+        entry: entry || null,
+        isStartDate: dateStr === startDate.toISOString().split("T")[0],
+        isEndDate: dateStr === endDate.toISOString().split("T")[0],
+      };
+    });
+
+    return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
+  };
+
+  const formatMonthYear = (date: Date): string => {
+    return date.toLocaleDateString("id-ID", {
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const handlePrevMonth = (): void => {
+    const prevMonth = new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth() - 1,
+      1
+    );
+    const startMonth =
+      new Date(detailMahasiswa!.tanggal_mulai).getFullYear() * 12 +
+      new Date(detailMahasiswa!.tanggal_mulai).getMonth();
+    const prevMonthIndex = prevMonth.getFullYear() * 12 + prevMonth.getMonth();
+    if (prevMonthIndex >= startMonth) {
+      setCurrentMonth(prevMonth);
+    }
+  };
+
+  const handleNextMonth = (): void => {
+    const nextMonth = new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth() + 1,
+      1
+    );
+    const endMonth =
+      new Date(detailMahasiswa!.tanggal_selesai).getFullYear() * 12 +
+      new Date(detailMahasiswa!.tanggal_selesai).getMonth();
+    const nextMonthIndex = nextMonth.getFullYear() * 12 + nextMonth.getMonth();
+    if (nextMonthIndex <= endMonth) {
+      setCurrentMonth(nextMonth);
+    }
+  };
+
+  const isPrevDisabled = () => {
+    if (!detailMahasiswa?.tanggal_mulai) return true;
+    const prevMonth = new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth() - 1,
+      1
+    );
+    const startMonth =
+      new Date(detailMahasiswa.tanggal_mulai).getFullYear() * 12 +
+      new Date(detailMahasiswa.tanggal_mulai).getMonth();
+    return prevMonth.getFullYear() * 12 + prevMonth.getMonth() < startMonth;
+  };
+
+  const isNextDisabled = () => {
+    if (!detailMahasiswa?.tanggal_selesai) return true;
+    const nextMonth = new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth() + 1,
+      1
+    );
+    const endMonth =
+      new Date(detailMahasiswa.tanggal_selesai).getFullYear() * 12 +
+      new Date(detailMahasiswa.tanggal_selesai).getMonth();
+    return nextMonth.getFullYear() * 12 + nextMonth.getMonth() > endMonth;
+  };
+
+  const getStatusMahasiswa = (status: string): string => {
     switch (status) {
-      case "Baru":
-        return "bg-green-500";
       case "Lanjut":
-        return "bg-yellow-500";
+        return "bg-amber-500";
       case "Selesai":
-        return "bg-green-500";
+        return "bg-blue-500";
       case "Gagal":
         return "bg-red-500";
       default:
-        return "bg-gray-500";
+        return "bg-green-500";
     }
   };
 
-  // Fungsi untuk menentukan variant badge status laporan
-  const getStatusVariant = (status: string) => {
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const getStatusValidasi = (status: string): string => {
     switch (status) {
-      case "Selesai":
-        return "bg-green-100 text-green-800 hover:bg-green-200 border-green-200";
-      case "Menunggu":
-        return "bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-200";
+      case "Disetujui":
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
       case "Revisi":
-        return "bg-amber-100 text-amber-800 hover:bg-amber-200 border-amber-200";
+        return "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300";
       case "Ditolak":
-        return "bg-red-100 text-red-800 hover:bg-red-200 border-red-200";
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
       default:
-        return "bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-200";
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
     }
   };
 
-  // Mock data for biodata
-  const biodataMahasiswa = {
-    name: "John Doe",
-    nim: "123456789",
-    status: "Baru",
-    instansi: "PT. ABC",
-    pembimbingInstansi: "Dr. John Smith",
-    semester: 6,
-    judulkp:
-      "Pengembangan Sistem Informasi Manajemen Kerja Praktik Berbasis Web",
-    mulaikp: "1 Januari 2025",
-    selesaikp: "30 Juni 2025",
+  const getSemester = (nim: string): number => {
+    try {
+      const tahunAngkatan = parseInt("20" + nim.substring(1, 3), 10);
+      const now = new Date();
+      const tahunSekarang = now.getFullYear();
+      const bulanSekarang = now.getMonth();
+
+      let tahunBerjalan = tahunSekarang - tahunAngkatan;
+      let semester = tahunBerjalan * 2;
+
+      if (bulanSekarang >= 7) {
+        semester += 1;
+      }
+
+      return Math.max(semester, 1);
+    } catch {
+      return 1;
+    }
   };
+
+  // const calculateDay = (
+  //   tanggalPresensi: string,
+  //   tanggalMulai: string
+  // ): number => {
+  //   try {
+  //     const presensiDate = new Date(tanggalPresensi);
+  //     const mulaiDate = new Date(tanggalMulai);
+  //     const diffTime = presensiDate.getTime() - mulaiDate.getTime();
+  //     return Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  //   } catch {
+  //     return 0;
+  //   }
+  // };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1 }}
+            className="w-8 h-8 border-t-2 border-blue-500 rounded-full"
+          ></motion.div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error || !detailMahasiswa) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          <AlertTriangle className="w-12 h-12 mb-4 text-red-500" />
+          <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+            Gagal memuat data: {error?.message || "Data tidak ditemukan"}
+          </p>
+          <Button className="mt-4" onClick={() => window.location.reload()}>
+            Coba Lagi
+          </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
-    <>
-      <DashboardLayout>
+    <DashboardLayout>
+      <div className="p-6 space-y-6">
         {/* Biodata Section */}
-        <Card className="border-none shadow-md overflow-hidden">
-          <div className="bg-gradient-to-br from-purple-600 to-indigo-700 text-white p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-white dark:bg-gray-800 rounded-full h-12 w-12 flex items-center justify-center shadow-inner border border-primary/20">
-                <User className="h-7 w-7 text-primary" />
+        <Card className="overflow-hidden border-none shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md">
+          <div className="flex items-center justify-between p-6 text-white bg-gradient-to-br from-indigo-600 to-purple-700">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center justify-center border rounded-full shadow-inner w-14 h-14 bg-white/10 border-white/20">
+                <User className="w-8 h-8 text-white" />
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-50 dark:text-gray-100">
-                  {name}
+              <div className="space-y-1">
+                <h3 className="text-xl font-bold text-white">
+                  {detailMahasiswa.mahasiswa.nama || "-"}
                 </h3>
-                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                  <Badge
-                    variant="outline"
-                    className="bg-white text-gray-800 dark:bg-gray-800 border-gray-200 dark:border-gray-700 dark:text-gray-300 mr-2"
-                  >
-                    Semester {biodataMahasiswa.semester}
+                <div className="flex items-center gap-3 text-sm">
+                  <Badge className="text-white bg-white/20 border-white/30">
+                    Semester {getSemester(detailMahasiswa.mahasiswa.nim)}
                   </Badge>
                   <span className="flex items-center text-white">
                     <span
-                      className={`inline-block w-3 h-3 animate-pulse rounded-full mr-1.5 ${getstatusmahasiswa(
-                        biodataMahasiswa.status
+                      className={`inline-block w-3 h-3 animate-pulse rounded-full mr-1.5 ${getStatusMahasiswa(
+                        detailMahasiswa.status
                       )}`}
                     ></span>
-                    {biodataMahasiswa.status}
+                    {detailMahasiswa.status || "-"}
                   </span>
                 </div>
               </div>
             </div>
-            <Badge
-              variant="outline"
-              className="bg-white dark:bg-gray-800 dark:border-gray-700 px-3 py-1.5 text-xs font-medium text-gray-800 dark:text-gray-300"
-            >
-              {nim}
+            <Badge className="bg-white/20 text-white border-white/30 px-4 py-1.5 text-sm font-medium">
+              {detailMahasiswa.mahasiswa.nim || "-"}
             </Badge>
           </div>
-
           {/* Info Cards */}
-          <CardContent className="p-4 bg-gray-50 dark:bg-gray-800/20">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <CardContent className="p-6 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800/20 dark:to-gray-800">
+            <div className="grid grid-cols-1">
               {/* Judul Laporan Card */}
-              <div className="space-y-4">
-                {/* Report Title */}
-                <div className="bg-white border-gray-400 dark:bg-gray-800/30 border dark:border-gray-700 rounded-lg p-4">
-                  <div className="flex gap-2">
-                    <BookOpen className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+              {/* <Card className="p-6 border shadow-sm bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 rounded-xl">
+              <div className="flex gap-3">
+                <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <div>
+                  <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    Judul Kerja Praktik
+                  </h3>
+                  <p className="mt-1 text-base font-semibold text-gray-900 uppercase dark:text-white">
+                    {detailMahasiswa.judul_kp || "Tidak ada judul"}
+                  </p>
+                </div>
+              </div>
+            </Card> */}
+              {/* Informasi Kerja Praktik */}
+              <Card className="p-4 border shadow-sm bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 rounded-xl">
+                {/* <h3 className="mb-4 text-sm font-medium text-gray-600 dark:text-gray-400">
+                Informasi Kerja Praktik
+              </h3> */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="flex gap-3">
+                    <Building className="h-5 w-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
                     <div>
-                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Judul Laporan
-                      </h3>
-                      <p className="uppercase font-semibold text-gray-900 dark:text-white mt-1">
-                        {biodataMahasiswa.judulkp}
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Instansi
+                      </p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {detailMahasiswa.instansi.nama || "-"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <User className="h-5 w-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Pembimbing Instansi
+                      </p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {detailMahasiswa.pembimbing_instansi.nama || "-"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <Calendar className="h-5 w-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Mulai KP
+                      </p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {formatDate(detailMahasiswa.tanggal_mulai)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <Calendar className="h-5 w-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Selesai KP
+                      </p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {formatDate(detailMahasiswa.tanggal_selesai)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <User className="h-5 w-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Dosen Pembimbing
+                      </p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {detailMahasiswa.dosen_pembimbing.nama || "-"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <BookOpen className="h-5 w-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Judul KP
+                      </p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {detailMahasiswa.judul_kp || "Tidak ada judul"}{" "}
                       </p>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Pembimbing Instansi Card */}
-              <div className="space-y-4">
-                {/* Academic & KP Info */}
-                <div className="bg-white border-gray-400 dark:bg-gray-800/30 border dark:border-gray-700 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
-                    Informasi Kerja Praktik
-                  </h3>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex gap-2">
-                      <Building className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Instansi/Perusahaan
-                        </p>
-                        <p className="font-medium text-sm">
-                          {biodataMahasiswa.instansi}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <User className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Pembimbing Instansi
-                        </p>
-                        <p className="font-medium text-sm">
-                          {biodataMahasiswa.pembimbingInstansi}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Calendar className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Mulai KP
-                        </p>
-                        <p className="font-medium text-sm">
-                          {biodataMahasiswa.mulaikp}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Calendar className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Selesai KP
-                        </p>
-                        <p className="font-medium text-sm">
-                          {biodataMahasiswa.selesaikp}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              </Card>
             </div>
           </CardContent>
         </Card>
-
         {/* Tabs and Table */}
-        <div className="mt-4">
-          <Tabs
-            defaultValue="Daily-Report"
-            className="w-full"
-            onValueChange={setActiveTab}
-            value={activeTab}
-          >
-            <TabsList className="grid w-full bg-gray-100 dark:bg-gray-800 max-w-md grid-cols-2 mb-2">
-              <TabsTrigger
-                value="Daily-Report"
-                className="data-[state=active]:bg-blue-500 data-[state=active]:text-white dark:data-[state=active]:bg-blue-500"
-              >
-                <Calendar className="h-4 w-4 mr-2" />
-                Agenda Kerja Praktik
-              </TabsTrigger>
-              <TabsTrigger
-                value="Riwayat-bimbingan"
-                className="data-[state=active]:bg-blue-500 data-[state=active]:text-white dark:data-[state=active]:bg-blue-500"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Riwayat Bimbingan
-              </TabsTrigger>
-            </TabsList>
+        <Tabs
+          defaultValue="daily-report"
+          className="w-full space-y-6"
+          onValueChange={setActiveTab}
+          value={activeTab}
+        >
+          <TabsList className="grid w-full max-w-md grid-cols-2 p-1 mb-4 bg-gray-100 dark:bg-gray-800/50 rounded-xl">
+            <TabsTrigger
+              value="daily-report"
+              className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white dark:data-[state=active]:bg-indigo-700 rounded-lg py-2"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Daily Report
+            </TabsTrigger>
+            <TabsTrigger
+              value="riwayat-bimbingan"
+              className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white dark:data-[state=active]:bg-indigo-700 rounded-lg py-2"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Riwayat Bimbingan
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="daily-report">
+            <div className="overflow-hidden border border-gray-100 rounded-lg shadow-md bg-gray-50 dark:bg-gray-800/30 dark:border-gray-700">
+              <div className="flex items-center justify-between p-4 bg-white border-b border-gray-100 dark:border-gray-700 dark:bg-gray-800/50">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePrevMonth}
+                  className="flex items-center gap-1"
+                  disabled={isPrevDisabled()}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Prev
+                </Button>
+                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                  {formatMonthYear(currentMonth)}
+                </h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNextMonth}
+                  className="flex items-center gap-1"
+                  disabled={isNextDisabled()}
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="grid grid-cols-7 border-b border-gray-100 dark:border-gray-700">
+                {[
+                  "Minggu",
+                  "Senin",
+                  "Selasa",
+                  "Rabu",
+                  "Kamis",
+                  "Jumat",
+                  "Sabtu",
+                ].map((day, index) => (
+                  <div
+                    key={day}
+                    className={`py-3 text-center text-sm font-semibold ${
+                      index === 0 || index === 6
+                        ? "text-red-500 dark:text-red-400"
+                        : "text-gray-700 dark:text-gray-300"
+                    }`}
+                  >
+                    {day}
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 bg-white dark:bg-gray-800/20">
+                {calendarDays.map((day, index) => {
+                  const isWeekend =
+                    day.date.getDay() === 0 || day.date.getDay() === 6;
+                  const isToday =
+                    day.date.toDateString() === new Date().toDateString();
+                  const isMissingAttendance =
+                    day.isWithinPeriod &&
+                    !day.hasEntry &&
+                    !isWeekend &&
+                    day.date <= new Date(new Date().setHours(23, 59, 59, 999));
 
-            <TabsContent value="Daily-Report" className="space-y-4">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle>Laporan Harian</CardTitle>
-                  <CardDescription>
-                    Daftar laporan harian kegiatan kerja praktik
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Card className="rounded-lg shadow-sm border-none overflow-hidden">
-                    <Table className="dark:border-gray-700 border">
-                      <TableHeader className="bg-gray-200 dark:bg-gray-800/20">
-                        <TableRow>
-                          <TableHead className=" text-center">
-                            Hari ke-
-                          </TableHead>
-                          <TableHead className=" text-center">
-                            Tanggal
-                          </TableHead>
-                          <TableHead className=" text-center">Status</TableHead>
-                          <TableHead className=" text-center">Aksi</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {sortedDailyReports.map((report) => (
+                  return (
+                    <div
+                      key={index}
+                      className={`
+                        min-h-28 p-2 border-t border-l border-gray-100 dark:border-gray-700
+                        transition-colors duration-200
+                        ${
+                          day.isWithinPeriod
+                            ? day.isStartDate
+                              ? "bg-blue-50 dark:bg-blue-900/20"
+                              : day.isEndDate
+                              ? "bg-purple-50 dark:bg-purple-900/20"
+                              : isMissingAttendance
+                              ? "bg-red-50 dark:bg-red-900/20"
+                              : day.hasEntry
+                              ? "bg-green-50 dark:bg-green-900/20 cursor-pointer hover:bg-green-100 dark:hover:bg-green-900/30"
+                              : isWeekend
+                              ? "bg-gray-50 dark:bg-gray-800/30 opacity-50"
+                              : "bg-white dark:bg-gray-800/20"
+                            : !day.isCurrentMonth
+                            ? "bg-gray-50 dark:bg-gray-800/40 opacity-30"
+                            : "bg-white dark:bg-gray-800/20"
+                        }
+                        ${index % 7 === 0 ? "border-l-0" : ""}
+                        ${index < 7 ? "border-t-0" : ""}
+                        relative
+                      `}
+                      onClick={() => {
+                        setSelectedDailyReport(day.entry);
+                        setDailyReportModalOpen(true);
+                      }}
+                    >
+                      <div
+                        className={`
+                          absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full
+                          font-semibold text-sm
+                          ${
+                            day.isStartDate
+                              ? "bg-blue-500 text-white"
+                              : day.isEndDate
+                              ? "bg-purple-500 text-white"
+                              : day.hasEntry && day.entry
+                              ? day.entry.status === "Disetujui"
+                                ? "bg-green-500 text-white"
+                                : day.entry.status === "Revisi"
+                                ? "bg-amber-500 text-white"
+                                : day.entry.status === "Ditolak"
+                                ? "bg-red-500 text-white"
+                                : "bg-yellow-500 text-white"
+                              : isMissingAttendance
+                              ? "bg-red-200 text-red-800 dark:bg-red-900/30 dark:text-red-300"
+                              : isToday
+                              ? "bg-blue-200 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                              : day.isCurrentMonth
+                              ? "text-gray-700 dark:text-gray-400"
+                              : "text-gray-400 dark:text-gray-600"
+                          }
+                        `}
+                      >
+                        {day.date.getDate()}
+                      </div>
+                      {day.hasEntry && day.entry && (
+                        <div className="p-2 mt-8">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div
+                                  className={`
+                                    rounded-lg p-2 text-xs border
+                                    ${
+                                      day.entry.status === "Disetujui"
+                                        ? "bg-green-100 dark:bg-green-900/30 border-green-200 dark:border-green-900/50"
+                                        : day.entry.status === "Revisi"
+                                        ? "bg-amber-100 dark:bg-amber-900/30 border-amber-200 dark:border-amber-900/50"
+                                        : day.entry.status === "Ditolak"
+                                        ? "bg-red-100 dark:bg-red-900/30 border-red-200 dark:border-red-900/50"
+                                        : "bg-yellow-100 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-900/50"
+                                    }
+                                  `}
+                                >
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="font-semibold text-gray-700 dark:text-gray-300">
+                                      Hari Ke-{day.entry.hari_ke}
+                                    </span>
+                                    {day.entry.status === "Disetujui" ? (
+                                      <CheckCircle className="w-3 h-3 text-green-500" />
+                                    ) : day.entry.status === "Revisi" ? (
+                                      <AlertTriangleIcon className="w-3 h-3 text-amber-500" />
+                                    ) : day.entry.status === "Ditolak" ? (
+                                      <XCircle className="w-3 h-3 text-red-500" />
+                                    ) : (
+                                      <Eye className="w-3 h-3 text-yellow-500" />
+                                    )}
+                                  </div>
+                                  <div
+                                    className={`text-xs py-0.5 rounded-sm w-fit ${getStatusValidasi(
+                                      day.entry.status
+                                    )}`}
+                                  >
+                                    {day.entry.status}
+                                  </div>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                Klik untuk "Detail Agenda"
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      )}
+                      {isToday && (
+                        <div className="absolute w-2 h-2 bg-blue-500 rounded-full bottom-2 left-2"></div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="flex flex-wrap items-center gap-4 p-4 bg-white border-t border-gray-100 dark:border-gray-700 dark:bg-gray-800/50">
+                <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span>Tanggal Mulai</span>
+                </div>
+                <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
+                  <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                  <span>Tanggal Selesai</span>
+                </div>
+                <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span>Ada Agenda</span>
+                </div>
+                <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <span>Tidak Ada Agenda</span>
+                </div>
+
+                {agendaEntries.length === 0 && (
+                  <div className="ml-auto text-sm text-gray-500">
+                    <Calendar className="inline-block w-4 h-4 mr-1 opacity-50" />
+                    <span>Klik tombol "Presensi" untuk menambahkan.</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="riwayat-bimbingan">
+            <Card className="border-none shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md">
+              {/* <CardHeader className="pb-2">
+                <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Riwayat Bimbingan
+                </CardTitle>/
+                <CardDescription className="text-gray-600 dark:text-gray-400">
+                  Daftar Riwayat Bimbingan Kerja Praktik
+                </CardDescription>
+              </CardHeader> */}
+              <CardContent>
+                <Card className="overflow-hidden border-none shadow-sm rounded-xl">
+                  <Table className="border dark:border-gray-700">
+                    <TableHeader className="bg-indigo-50 dark:bg-indigo-900/20">
+                      <TableRow>
+                        <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-200">
+                          Bimbingan Ke-
+                        </TableHead>
+                        <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-200">
+                          Tanggal
+                        </TableHead>
+                        <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-200">
+                          Status
+                        </TableHead>
+                        <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-200">
+                          Aksi
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {(detailMahasiswa.bimbingan ?? []).length > 0 ? (
+                        detailMahasiswa.bimbingan?.map((bimbingan, index) => (
                           <TableRow
-                            key={report.id}
-                            className={
-                              report.id % 2 !== 0
-                                ? "bg-background dark:bg-gray-700/30 cursor-pointer"
-                                : "bg-secondary dark:bg-gray-700/10 cursor-pointer"
-                            }
+                            key={bimbingan.id}
+                            className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/20"
                           >
-                            <TableCell className="font-medium text-center">
-                              {report.day}
+                            <TableCell className="font-medium text-center text-gray-900 dark:text-white">
+                              {index + 1}
+                            </TableCell>
+                            <TableCell className="text-center text-gray-900 dark:text-white">
+                              {formatDate(bimbingan.tanggal_bimbingan)}
                             </TableCell>
                             <TableCell className="text-center">
-                              {report.date}
-                            </TableCell>
-                            <TableCell className="text-center">
-                              <Badge
-                                className={getStatusVariant(report.status)}
-                              >
-                                {report.status}
+                              <Badge className="text-green-800 bg-green-100 border-green-200 hover:bg-green-200">
+                                {bimbingan.status}
                               </Badge>
                             </TableCell>
                             <TableCell className="text-center">
                               <Button
                                 size="sm"
-                                className="bg-blue-500 border-blue-200 text-gray-50 hover:bg-blue-600"
-                                onClick={() =>
-                                  console.log(
-                                    `Viewing details for day ${report.day}`
-                                  )
-                                }
+                                className="text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-700 dark:hover:bg-indigo-800"
+                                onClick={() => {
+                                  setSelectedBimbingan(bimbingan);
+                                  setBimbinganModalOpen(true);
+                                }}
                               >
-                                <SquareArrowOutUpRightIcon className="h-4 w-4 mr-1" />
+                                <FileText className="w-4 h-4 mr-1" />
                                 Lihat Detail
                               </Button>
                             </TableCell>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </Card>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="Riwayat-bimbingan" className="space-y-4">
-              <Card>
-              <CardHeader className="pb-2">
-                  <CardTitle>Riwayat Bimbingan</CardTitle>
-                  <CardDescription>
-                    Daftar riwayat bimbingan kerja praktik
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Card className="rounded-lg shadow-sm border-none overflow-hidden">
-                    <Table className="dark:border-gray-700 border">
-                      <TableHeader className=" border  dark:border-gray-700 bg-gray-200 dark:bg-gray-800/10">
+                        ))
+                      ) : (
                         <TableRow>
-                          <TableHead className=" text-center">No</TableHead>
-                          <TableHead className=" text-center">
-                            Tanggal
-                          </TableHead>
-                          <TableHead className=" text-center">Waktu</TableHead>
-                          <TableHead className="text-center">Aksi</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {bimbinganData.map((bimbingan, index) => (
-                          <TableRow
-                            key={bimbingan.id}
-                            className={
-                              bimbingan.id % 2 !== 0
-                                ? "bg-background dark:bg-gray-700/30 cursor-pointer"
-                                : "bg-secondary dark:bg-gray-700/10 cursor-pointer"
-                            }
+                          <TableCell
+                            colSpan={4}
+                            className="py-6 text-center text-gray-500 dark:text-gray-400"
                           >
-                            <TableCell className="font-medium text-center">
-                              {index + 1}
-                            </TableCell>
-                            <TableCell className="text-center">
-                              {bimbingan.tanggal}
-                            </TableCell>
-                            <TableCell className="text-center">
-                              <div className="flex items-center justify-center">
-                                {bimbingan.waktumulai} -{" "}
-                                {bimbingan.waktuselesai}
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-center">
-                              <Button
-                                size={"sm"}
-                                className="bg-blue-500 text-gray-50 hover:bg-blue-600 dark:bg-blue-500 border dark:border-gray-700 dark:hover:bg-blue-600"
-                              onClick={() =>
-                                  setOpenModalBimbinganDetail(true)}
-                              >
-                                <FileText className="h-4 w-4 " />
-                                Lihat Detail
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </Card>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
-        <ReviewBimbinganKP
-          isOpen={IsModalBimbinganDetail}
-          onClose={() => setOpenModalBimbinganDetail(false)}
-        />
-      </DashboardLayout>
-    </>
+                            Belum ada bimbingan nih...
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </Card>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+      <DetailDailyReportModal
+        isOpen={isDailyReportModalOpen}
+        onClose={() => setDailyReportModalOpen(false)}
+        dailyReportData={selectedDailyReport || undefined}
+      />
+      <DetailBimbinganModal
+        isOpen={isBimbinganModalOpen}
+        onClose={() => setBimbinganModalOpen(false)}
+        bimbinganData={selectedBimbingan || undefined}
+      />
+    </DashboardLayout>
   );
 };
 

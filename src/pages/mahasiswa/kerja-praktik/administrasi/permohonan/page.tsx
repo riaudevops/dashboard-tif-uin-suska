@@ -66,9 +66,9 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
           <h2 className="text-xl font-semibold">
             Permohonan Pendaftaran Kerja Praktik
           </h2>
-          <p className="text-gray-600 mt-2 mb-4">
+          <p className="mt-2 mb-4 text-gray-600">
             Pengajuan pendaftaran kerja praktik anda dalam{" "}
-            <span className="text-blue-600 font-medium">
+            <span className="font-medium text-blue-600">
               proses kelengkapan berkas
             </span>
             ...
@@ -82,14 +82,14 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
                 <h3 className=" font-xl">
                   Nama Instansi Pengajuan :
                 </h3>
-                <p className="text-gray-700 mt-1">{submissionData?.company}</p>
+                <p className="mt-1 text-gray-700">{submissionData?.company}</p>
               </div>
 
               <div>
                 <h3 className="font-xl">
                   Proses Validasi Terkini Pada Alur :
                 </h3>
-                <p className="text-gray-700 mt-1">{submissionData?.status}</p>
+                <p className="mt-1 text-gray-700">{submissionData?.status}</p>
               </div>
             </div>
            </Card> 
@@ -97,10 +97,10 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
 
             {/* Progress Surat Pengantar Dekan */}
             <div className="w-1/2 mt-8">
-              <h3 className="text-center text-lg font-medium mb-4">
+              <h3 className="mb-4 text-lg font-medium text-center">
                 Progress Surat Pengantar Dekan:
               </h3>
-              <div className="flex items-center justify-between relative py-4">
+              <div className="relative flex items-center justify-between py-4">
                 {/* Progress Line */}
                 <motion.div
                   className="absolute h-1 bg-gray-200 rounded-full"
@@ -122,7 +122,7 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
                 {["Permohonan", "Cetak", "Selesai"].map((step, index) => (
                   <div
                     key={step}
-                    className="relative flex flex-col items-center z-10"
+                    className="relative z-10 flex flex-col items-center"
                   >
                     {index === 0 && (
                       <motion.div
@@ -140,9 +140,9 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
                       }`}
                     >
                       {index === 0 ? (
-                        <CheckCircle2 className="w-7 h-7 text-white" />
+                        <CheckCircle2 className="text-white w-7 h-7" />
                       ) : (
-                        <Info className="w-7 h-7 text-white" />
+                        <Info className="text-white w-7 h-7" />
                       )}
                     </motion.div>
                     <motion.span
@@ -167,9 +167,9 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             {isLoading ? (
-              <Skeleton className="h-8 w-48" />
+              <Skeleton className="w-48 h-8" />
             ) : (
-              <CardTitle className="text-2xl font-semibold pb-2 tracking-tight">
+              <CardTitle className="pb-2 text-2xl font-semibold tracking-tight">
                 📊 Detail Riwayat
               </CardTitle>
             )}
@@ -177,17 +177,17 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
           <div className="space-y-4">
             <div>
               {isLoading ? (
-                <Skeleton className="h-6 w-24 mb-3" />
+                <Skeleton className="w-24 h-6 mb-3" />
               ) : (
-                <h3 className="text-lg font-medium mb-3">🎯 Aktif</h3>
+                <h3 className="mb-3 text-lg font-medium">🎯 Aktif</h3>
               )}
               {isLoading ? (
-                <Skeleton className="h-40 w-full" />
+                <Skeleton className="w-full h-40" />
               ) : (
-                <Card className="bg-purple-800 hover:bg-purple-950 transition-colors duration-300">
-                  <CardContent className="py-6 px-6">
+                <Card className="transition-colors duration-300 bg-purple-800 hover:bg-purple-950">
+                  <CardContent className="px-6 py-6">
                     <div className="text-center text-white">
-                      <h1 className="font-xl font-bold">
+                      <h1 className="font-bold font-xl">
                         Anda sekarang tidak sedang melakukan pendaftaran atau
                         pelaksanaan kp
                       </h1>
@@ -199,35 +199,35 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
 
             <div>
               {isLoading ? (
-                <Skeleton className="h-6 w-40 mb-3" />
+                <Skeleton className="w-40 h-6 mb-3" />
               ) : (
-                <h3 className="text-lg font-medium mb-3">
+                <h3 className="mb-3 text-lg font-medium">
                   📜 Riwayat Sebelumnya
                 </h3>
               )}
               {isLoading ? (
-                <Skeleton className="h-40 w-full" />
+                <Skeleton className="w-full h-40" />
               ) : (
-                <Card className="bg-purple-800 hover:bg-purple-950 transition-colors duration-300">
-                  <CardContent className="py-8 px-6">
+                <Card className="transition-colors duration-300 bg-purple-800 hover:bg-purple-950">
+                  <CardContent className="px-6 py-8">
                     <div className="flex justify-between text-white">
                       <div className="space-y-4">
-                        <div className="flex items-center pb-2 gap-2">
-                          <Clipboard className="h-5 w-5" />
+                        <div className="flex items-center gap-2 pb-2">
+                          <Clipboard className="w-5 h-5" />
                           <Badge
-                            className="bg-white/20 px-3 py-1 text-sm"
+                            className="px-3 py-1 text-sm bg-white/20"
                             variant="destructive"
                           >
                             Status kp: {previousRegistration.status}
                           </Badge>
                           <div className="flex items-center gap-2">
-                            <MapPinHouse className="h-5 w-5" />
+                            <MapPinHouse className="w-5 h-5" />
                             <span className="text-sm">
                               {previousRegistration.company}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <CalendarDays className="h-5 w-5" />
+                            <CalendarDays className="w-5 h-5" />
                             <span className="text-sm">
                               {previousRegistration.date}
                             </span>
@@ -244,10 +244,10 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
                         <Button
                           variant="secondary"
                           size="sm"
-                          className="w-fit group hover:scale-105 transition-transform duration-200"
+                          className="transition-transform duration-200 w-fit group hover:scale-105"
                         >
                           View Detail
-                          <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
+                          <ArrowRight className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1" />
                         </Button>
                       </div>
                     </div>
@@ -258,28 +258,28 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
 
             <div>
               {isLoading ? (
-                <Skeleton className="h-40 w-full" />
+                <Skeleton className="w-full h-40" />
               ) : (
-                <Card className="bg-purple-800 hover:bg-purple-950 transition-colors duration-300">
-                  <CardContent className="py-8 px-6">
+                <Card className="transition-colors duration-300 bg-purple-800 hover:bg-purple-950">
+                  <CardContent className="px-6 py-8">
                     <div className="flex justify-between text-white">
                       <div className="space-y-4">
-                        <div className="flex items-center pb-2 gap-2">
-                          <Clipboard className="h-5 w-5" />
+                        <div className="flex items-center gap-2 pb-2">
+                          <Clipboard className="w-5 h-5" />
                           <Badge
-                            className="bg-white/20 px-3 py-1 text-sm"
+                            className="px-3 py-1 text-sm bg-white/20"
                             variant="destructive"
                           >
                             Status kp: {activeRegistration.status}
                           </Badge>
                           <div className="flex items-center gap-2">
-                            <MapPinHouse className="h-5 w-5" />
+                            <MapPinHouse className="w-5 h-5" />
                             <span className="text-sm">
                               {activeRegistration.company}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <CalendarDays className="h-5 w-5" />
+                            <CalendarDays className="w-5 h-5" />
                             <span className="text-sm">
                               {activeRegistration.date}
                             </span>
@@ -296,10 +296,10 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
                         <Button
                           variant="secondary"
                           size="sm"
-                          className="w-fit group hover:scale-105 transition-transform duration-200"
+                          className="transition-transform duration-200 w-fit group hover:scale-105"
                         >
                           View Detail
-                          <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
+                          <ArrowRight className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1" />
                         </Button>
                       </div>
                     </div>
@@ -318,7 +318,7 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
       <CardHeader className="p-0 pb-2.5">
         <CardTitle className="text-4xl font-bold">
           {isLoading ? (
-            <Skeleton className="h-8 w-64" />
+            <Skeleton className="w-64 h-8" />
           ) : (
             <span>✨ Pendaftaran Kerja Praktik </span>
           )}
@@ -328,7 +328,7 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
       <Card>
         <CardHeader>
           {isLoading ? (
-            <Skeleton className="h-8 w-64" />
+            <Skeleton className="w-64 h-8" />
           ) : (
             <CardTitle>📝 Permohonan Pendaftaran Kerja Praktik</CardTitle>
           )}
@@ -336,19 +336,19 @@ const MahasiswaKerjaPraktekDaftarKpPermohonanPage = () => {
         <CardContent>
           {isLoading ? (
             <div className="space-y-4">
-              <Skeleton className="h-6 w-3/4" />
-              <Skeleton className="h-10 w-40" />
+              <Skeleton className="w-3/4 h-6" />
+              <Skeleton className="w-40 h-10" />
             </div>
           ) : (
             <>
-              <p className="text-muted-foreground mb-4">
+              <p className="mb-4 text-muted-foreground">
                 Silakan Ajukan Permohonan Pendaftaran Kerja Praktik Pada Tombol Dibawah
                 ini!
               </p>
               <Link to="/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-pendaftaran">
-                <Button className="bg-white text-black hover:bg-gray-100 border-black border group">
+                <Button className="text-black bg-white border border-black hover:bg-gray-100 group">
                   Buat Permohonan
-                  <CircleFadingArrowUp className="h-4 w-4 group-hover:animate-bounce" />
+                  <CircleFadingArrowUp className="w-4 h-4 group-hover:animate-bounce" />
                 </Button>
               </Link>
             </>

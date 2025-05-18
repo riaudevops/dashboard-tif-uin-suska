@@ -14,9 +14,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import NilaiBelumValidModal from "@/components/koordinator/seminar/nilai-belumValid-modal";
-import NilaiValidModal from "@/components/koordinator/seminar/nilai-valid-modal";
-import NilaiApproveModal from "@/components/koordinator/seminar/nilai-approve-modal";
+import NilaiBelumValidModal from "@/components/koordinator-kp/seminar/nilai-belumValid-modal";
+import NilaiValidModal from "@/components/koordinator-kp/seminar/nilai-valid-modal";
+import NilaiApproveModal from "@/components/koordinator-kp/seminar/nilai-approve-modal";
 import { motion } from "framer-motion";
 
 // Type definitions

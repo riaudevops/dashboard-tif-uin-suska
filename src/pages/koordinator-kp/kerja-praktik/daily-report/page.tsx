@@ -9,8 +9,10 @@ import {
   Users,
   Briefcase,
   CheckCircle,
+  AlertTriangle,
+  X,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
@@ -24,87 +26,102 @@ import {
 } from "@/components/ui/table";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import APIKerjaPraktik from "@/services/api/koordinator-kp/daily-report.service";
 
-// Main component
-export default function KoordinatorKerjaPraktikDailyReportPage() {
-  const [academicYear, setAcademicYear] = useState("2023-2024 Ganjil");
-  const [activeTab, setActiveTab] = useState("Semua Riwayat");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [statsVisible, setStatsVisible] = useState(false);
-  const itemsPerPage = 10;
+interface DailyReport {
+  id: string;
+  status: string;
+}
+
+interface Instansi {
+  id: string;
+  nama: string;
+}
+
+interface Mahasiswa {
+  nama: string;
+  nim: string;
+}
+
+interface TahunAjaran {
+  nama: string;
+}
+
+interface MahasiswaKP {
+  id: string;
+  status: string;
+  tahun_ajaran: TahunAjaran;
+  mahasiswa: Mahasiswa;
+  instansi: Instansi;
+  daily_report?: DailyReport;
+}
+
+interface TableData {
+  id: string;
+  name: string;
+  nim: string;
+  Angkatan: string;
+  company: string;
+  status: string;
+  tahunAjaran: string;
+}
+
+interface CardData {
+  title: string;
+  value: number;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  color: string;
+  shadowColor: string;
+  description: string;
+}
+
+const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
   const navigate = useNavigate();
+  const [academicYear, setAcademicYear] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<string>("Semua Riwayat");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [statsVisible, setStatsVisible] = useState<boolean>(false);
+  const itemsPerPage = 10;
 
-  // Sample data with only 8 entries as requested
-  const tableData = [
-    {
-      id: 1,
-      name: "Gilang Ramadhan",
-      nim: "1225111212",
-      Angkatan: "2022",
-      dailyReports: 12,
-      company: "PT Teknologi Maju",
-    },
-    {
-      id: 2,
-      name: "Farhan Fadilla",
-      nim: "1225111213",
-      Angkatan: "2022",
-      dailyReports: 15,
-      company: "PT Digital Solution",
-    },
-    {
-      id: 3,
-      name: "Ahmad Kurniawan",
-      nim: "1225111214",
-      Angkatan: "2022",
-      dailyReports: 10,
-      company: "PT Informatika Nusantara",
-    },
-    {
-      id: 4,
-      name: "Muh Zaki Erbay",
-      nim: "1225111215",
-      Angkatan: "2024",
-      dailyReports: 5,
-      company: "PT Global Tech",
-    },
-    {
-      id: 5,
-      name: "M. Rafly Wirayudha",
-      nim: "1225111216",
-      Angkatan: "2023",
-      dailyReports: 8,
-      company: "CV Media Kreatif",
-    },
-    {
-      id: 6,
-      name: "Rizky Pratama",
-      nim: "1225111217",
-      Angkatan: "2022",
-      dailyReports: 14,
-      company: "PT Solusi Digital",
-    },
-    {
-      id: 7,
-      name: "Dimas Nugroho",
-      nim: "1225111218",
-      Angkatan: "2023",
-      dailyReports: 7,
-      company: "PT Inovasi Teknologi",
-    },
-    {
-      id: 8,
-      name: "Rahmat Hidayat",
-      nim: "1225111219",
-      Angkatan: "2024",
-      dailyReports: 3,
-      company: "CV Aplikasi Cerdas",
-    },
-  ];
+  const {
+    data: mahasiswaList,
+    isLoading,
+    error,
+  } = useQuery<MahasiswaKP[], Error>({
+    queryKey: ["all-mahasiswa"],
+    queryFn: () => APIKerjaPraktik.getAllMahasiswa().then((data) => data.data),
+    staleTime: Infinity,
+  });
 
-  // Card data - keeping only the top 4 cards
-  const cardData = [
+  const academicYears = [
+    ...new Set(mahasiswaList?.map((mhs) => mhs.tahun_ajaran?.nama || "") || []),
+  ].sort();
+
+  useEffect(() => {
+    if (academicYears.length > 0 && !academicYear) {
+      setAcademicYear(academicYears[0]);
+    }
+  }, [academicYears]);
+
+  const tableData: TableData[] = mahasiswaList
+    ? mahasiswaList.map((mhs) => {
+        const nim = mhs.mahasiswa?.nim || "";
+        const angkatan = nim.length >= 3 ? `20${nim.slice(1, 3)}` : "Unknown";
+        return {
+          id: mhs.id,
+          name: mhs.mahasiswa?.nama || "Unknown",
+          nim: nim,
+          Angkatan: angkatan,
+          company: mhs.instansi?.nama || "Unknown",
+          status: mhs.status || "Unknown",
+          tahunAjaran: mhs.tahun_ajaran?.nama || "Unknown",
+        };
+      })
+    : [];
+
+  const cardData: CardData[] = [
     {
       title: "Total Mahasiswa",
       value: tableData.length,
@@ -116,7 +133,11 @@ export default function KoordinatorKerjaPraktikDailyReportPage() {
     },
     {
       title: "Laporan Terkumpul",
-      value: tableData.reduce((sum, item) => sum + item.dailyReports, 0),
+      value: tableData.filter(
+        (item) =>
+          item.status !== "Gagal" &&
+          mahasiswaList?.find((m) => m.id === item.id)?.daily_report?.status
+      ).length,
       icon: FileText,
       color:
         "bg-gradient-to-br from-purple-500 to-purple-700 dark:from-purple-600 dark:to-purple-900",
@@ -128,18 +149,13 @@ export default function KoordinatorKerjaPraktikDailyReportPage() {
       value: [...new Set(tableData.map((item) => item.company))].length,
       icon: Briefcase,
       color:
-      "bg-gradient-to-br from-amber-500 to-amber-700 dark:from-amber-600 dark:to-amber-900",
-      shadowColor: "shadow-emerald-500/20 dark:shadow-emerald-800/30",
-      description: " Perusahaan yang Terdaftar ",
+        "bg-gradient-to-br from-amber-500 to-amber-700 dark:from-amber-600 dark:to-amber-900",
+      shadowColor: "shadow-amber-500/20 dark:shadow-amber-800/30",
+      description: "Perusahaan yang Terdaftar",
     },
     {
       title: "Progress 100%",
-      value: tableData.filter(item => {
-        // Assume max expected reports is 15
-        const maxReports = 15;
-        const percentage = Math.min(Math.round((item.dailyReports / maxReports) * 100), 100);
-        return percentage === 100;
-      }).length,
+      value: tableData.filter((item) => item.status === "Selesai").length,
       icon: CheckCircle,
       color:
         "bg-gradient-to-br from-emerald-500 to-emerald-700 dark:from-emerald-600 dark:to-emerald-900",
@@ -148,63 +164,71 @@ export default function KoordinatorKerjaPraktikDailyReportPage() {
     },
   ];
 
-  // Filter data based on active tab and search term
+  const angkatanYears = [
+    ...new Set(tableData.map((item) => item.Angkatan)),
+  ].sort();
+
   const filteredData = tableData.filter(
     (item) =>
       (activeTab === "Semua Riwayat" || item.Angkatan === activeTab) &&
+      (academicYear === "" || item.tahunAjaran === academicYear) &&
       (searchTerm === "" ||
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.nim.includes(searchTerm) ||
-        item.company.toLowerCase().includes(searchTerm.toLowerCase()))
+        item.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.status.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  // Calculate pagination
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Handle page changes
-  const handlePageChange = (page : number) => {
+  const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  // Go to previous page
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
 
-  // Go to next page
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
     }
   };
 
-  // Function to get progress color and percentage based on daily reports
-  const getProgressData = (reports : number) => {
-    // Assume max expected reports is 15
-    const maxReports = 15;
-    const percentage = Math.min(Math.round((reports / maxReports) * 100), 100);
-
-    // Color gradient based on percentage
-    let color;
-    if (percentage < 25) {
-      color = "bg-red-500";
-    } else if (percentage < 50) {
-      color = "bg-orange-500";
-    } else if (percentage < 75) {
-      color = "bg-yellow-500";
-    } else {
-      color = "bg-green-500";
+  const getStatusStyles = (status: string) => {
+    switch (status) {
+      case "Baru":
+        return {
+          badge:
+            "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+        };
+      case "Lanjut":
+        return {
+          badge:
+            "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
+        };
+      case "Gagal":
+        return {
+          badge: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
+        };
+      case "Selesai":
+        return {
+          badge:
+            "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+        };
+      default:
+        return {
+          badge:
+            "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+        };
     }
-
-    return { percentage, color };
   };
 
-  // Animation for cards section
   useEffect(() => {
     const timer = setTimeout(() => {
       setStatsVisible(true);
@@ -212,7 +236,10 @@ export default function KoordinatorKerjaPraktikDailyReportPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Container animations
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, activeTab, academicYear]);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -235,6 +262,40 @@ export default function KoordinatorKerjaPraktikDailyReportPage() {
     },
   };
 
+  const clearSearch = () => {
+    setSearchTerm("");
+  };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1 }}
+            className="w-8 h-8 border-t-2 border-blue-500 rounded-full"
+          ></motion.div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          <AlertTriangle className="w-12 h-12 mb-4 text-red-500" />
+          <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+            Gagal memuat data: {error.message}
+          </p>
+          <Button className="mt-4" onClick={() => window.location.reload()}>
+            Coba Lagi
+          </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <div className="p-4 space-y-6">
@@ -242,40 +303,42 @@ export default function KoordinatorKerjaPraktikDailyReportPage() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex justify-between items-center"
+          className="flex items-center justify-between"
         >
-          <h1 className="text-2xl font-bold">Dashboard Koordinator KP</h1>
-
-          {/* Academic Year Selector */}
+          <h1 className="text-2xl font-bold">Koordinator KP</h1>
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Tahun Ajaran
+              Tahun Ajaran:
             </span>
             <div className="relative">
               <select
-                className="border rounded-lg px-3 py-1 pr-8 text-sm appearance-none bg-white dark:bg-gray-800 shadow-sm dark:border-gray-700"
+                className="px-3 py-1 pr-8 text-sm bg-white border rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700"
                 value={academicYear}
                 onChange={(e) => setAcademicYear(e.target.value)}
+                disabled={academicYears.length === 0}
               >
-                <option value="2024-2025 Ganjil">2024-2025 Genap</option>
-                <option value="2023-2024 Ganjil">2023-2024 Ganjil</option>
-                <option value="2023-2024 Genap">2023-2024 Genap</option>
-                <option value="2022-2023 Ganjil">2022-2023 Ganjil</option>
-                <option value="2022-2023 Genap">2022-2023 Genap</option>
+                {academicYears.length > 0 ? (
+                  academicYears.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">-</option>
+                )}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
-                <ChevronRight className="h-4 w-4 text-gray-500 dark:text-gray-400 rotate-90" />
+              <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                <ChevronRight className="w-4 h-4 text-gray-500 rotate-90 dark:text-gray-400" />
               </div>
             </div>
           </div>
         </motion.div>
 
-        {/* Modern Cards Section */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate={statsVisible ? "visible" : "hidden"}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+          className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
         >
           {cardData.map((card, index) => (
             <motion.div
@@ -291,7 +354,7 @@ export default function KoordinatorKerjaPraktikDailyReportPage() {
                 className={`border-none overflow-hidden ${card.color} text-white h-full relative`}
               >
                 <motion.div
-                  className="absolute top-1/2 right-4 opacity-10 transform -translate-y-1/2"
+                  className="absolute transform -translate-y-1/2 top-1/2 right-4 opacity-10"
                   initial={{ scale: 0.7, rotate: -10 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{
@@ -301,18 +364,18 @@ export default function KoordinatorKerjaPraktikDailyReportPage() {
                     delay: index * 0.5,
                   }}
                 >
-                  <card.icon size={80} strokeWidth={1} />
+                  <card.icon />
                 </motion.div>
                 <CardContent className="p-6">
                   <div className="flex items-start mt-1">
-                    <div className="bg-white/20 rounded-lg p-2 mr-4">
-                      <card.icon className="h-6 w-6" />
+                    <div className="p-2 mr-4 rounded-lg bg-white/20">
+                      <card.icon className="w-6 h-6" />
                     </div>
                     <div>
                       <p className="text-sm font-medium opacity-90">
                         {card.title}
                       </p>
-                      <h3 className="text-3xl font-bold mt-1">{card.value}</h3>
+                      <h3 className="mt-1 text-3xl font-bold">{card.value}</h3>
                     </div>
                   </div>
                   <div className="mt-4 text-sm opacity-80">
@@ -324,24 +387,20 @@ export default function KoordinatorKerjaPraktikDailyReportPage() {
           ))}
         </motion.div>
 
-        {/* Divider and section title */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
-          className="border-b dark:border-gray-700 pb-2"
-        >
-          <h2 className="text-xl font-semibold mb-2">Daily Report Mahasiswa</h2>
-        </motion.div>
+          className="pb-2 border-b dark:border-gray-700"
+        /> */}
 
-        {/* Tabs and Search bar */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9 }}
-          className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4"
+          className="flex flex-col items-start justify-between gap-4 pt-4 md:flex-row md:items-center"
         >
-          <div className="flex gap-2 w-full md:w-auto">
+          <div className="flex w-full gap-2 md:w-auto">
             <Tabs
               value={activeTab}
               onValueChange={setActiveTab}
@@ -354,157 +413,255 @@ export default function KoordinatorKerjaPraktikDailyReportPage() {
                 >
                   Semua Angkatan
                 </TabsTrigger>
-                <TabsTrigger
-                  value="2022"
-                  className="text-sm font-medium data-[state=active]:bg-blue-500 dark:data-[state=active]:bg-blue-700 data-[state=active]:text-white rounded-md"
-                >
-                  2022
-                </TabsTrigger>
-                <TabsTrigger
-                  value="2023"
-                  className="text-sm font-medium data-[state=active]:bg-blue-500 dark:data-[state=active]:bg-blue-700 data-[state=active]:text-white rounded-md"
-                >
-                  2023
-                </TabsTrigger>
-                <TabsTrigger
-                  value="2024"
-                  className="text-sm font-medium data-[state=active]:bg-blue-500 dark:data-[state=active]:bg-blue-700 data-[state=active]:text-white rounded-md"
-                >
-                  2024
-                </TabsTrigger>
+                {angkatanYears.map((year) => (
+                  <TabsTrigger
+                    key={year}
+                    value={year}
+                    className="text-sm font-medium data-[state=active]:bg-blue-500 dark:data-[state=active]:bg-blue-700 data-[state=active]:text-white rounded-md"
+                  >
+                    {year}
+                  </TabsTrigger>
+                ))}
               </TabsList>
             </Tabs>
           </div>
 
-          <div className="relative w-full ">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <div className="relative w-full">
+            <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
             <input
-              placeholder="Cari nama, NIM, perusahaan..."
-              className="pl-10 pr-4 py-2 w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800"
+              placeholder="Cari nama, NIM, perusahaan, atau status..."
+              className="w-full py-2 pl-10 pr-10 border border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-800"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
+            <AnimatePresence>
+              {searchTerm && (
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.5 }}
+                  whileHover={{ scale: 1.2 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={clearSearch}
+                  className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-4 h-4" />
+                </motion.button>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
 
-        {/* Table */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.0 }}
+          className="flex flex-wrap gap-2 mb-4"
+        >
+          {academicYear && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex items-center gap-1 px-3 py-1 rounded-full shadow-sm bg-blue-50 dark:bg-blue-900/20"
+            >
+              <span className="text-sm text-blue-600 dark:text-blue-400">
+                {academicYear}
+              </span>
+              <motion.button
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setAcademicYear(academicYears[0] || "")}
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-800"
+              >
+                <X className="w-3 h-3" />
+              </motion.button>
+            </motion.div>
+          )}
+          {activeTab !== "Semua Riwayat" && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex items-center gap-1 px-3 py-1 rounded-full shadow-sm bg-blue-50 dark:bg-blue-900/20"
+            >
+              <span className="text-sm text-blue-600 dark:text-blue-400">
+                Angkatan: {activeTab}
+              </span>
+              <motion.button
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setActiveTab("Semua Riwayat")}
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-800"
+              >
+                <X className="w-3 h-3" />
+              </motion.button>
+            </motion.div>
+          )}
+          {searchTerm && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex items-center gap-1 px-3 py-1 rounded-full shadow-sm bg-blue-50 dark:bg-blue-900/20"
+            >
+              <span className="text-sm text-blue-600 dark:text-blue-400">
+                Search: {searchTerm}
+              </span>
+              <motion.button
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={clearSearch}
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-800"
+              >
+                <X className="w-3 h-3" />
+              </motion.button>
+            </motion.div>
+          )}
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.0 }}
-          className="w-full bg-white dark:bg-gray-800 rounded-md border dark:border-gray-700 shadow-md overflow-hidden"
+          className="w-full overflow-hidden bg-white border rounded-md shadow-md dark:bg-gray-800 dark:border-gray-700"
         >
           <Table>
             <TableHeader className="bg-gray-100 dark:bg-gray-900/40">
               <TableRow>
-                <TableHead className="text-center uppercase font-semibold text-gray-700 dark:text-gray-300">
+                <TableHead className="font-semibold text-center text-gray-700 uppercase dark:text-gray-300">
                   No
                 </TableHead>
-                <TableHead className="text-center uppercase font-semibold text-gray-700 dark:text-gray-300">
+                <TableHead className="font-semibold text-center text-gray-700 uppercase dark:text-gray-300">
                   Nama Mahasiswa
                 </TableHead>
-                <TableHead className="text-center uppercase font-semibold text-gray-700 dark:text-gray-300">
+                <TableHead className="font-semibold text-center text-gray-700 uppercase dark:text-gray-300">
                   NIM
                 </TableHead>
-                <TableHead className="text-center uppercase font-semibold text-gray-700 dark:text-gray-300">
+                <TableHead className="font-semibold text-center text-gray-700 uppercase dark:text-gray-300">
                   Angkatan
                 </TableHead>
-                <TableHead className="text-center uppercase font-semibold text-gray-700 dark:text-gray-300">
+                <TableHead className="font-semibold text-center text-gray-700 uppercase dark:text-gray-300">
                   Perusahaan
                 </TableHead>
-                <TableHead className="text-center uppercase font-semibold text-gray-700 dark:text-gray-300">
-                  Progres
+                <TableHead className="font-semibold text-center text-gray-700 uppercase dark:text-gray-300">
+                  Status Pendaftaran
                 </TableHead>
-                <TableHead className="text-center uppercase font-semibold text-gray-700 dark:text-gray-300">
+                <TableHead className="font-semibold text-center text-gray-700 uppercase dark:text-gray-300">
                   Aksi
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {currentItems.map((item) => (
-                <motion.tr
-                  key={item.id}
-                  className={
-                    item.id % 2 === 0
-                      ? "bg-gray-50 dark:bg-gray-900/10 hover:bg-gray-100 dark:hover:bg-gray-900/20 transition-colors"
-                      : "bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900/20 transition-colors"
-                  }
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1 + item.id * 0.05 }}
-                >
-                  <TableCell className="text-center font-medium">
-                    {item.id}
-                  </TableCell>
-                  <TableCell className="text-center font-medium">
-                    {item.name}
-                  </TableCell>
-                  <TableCell className="text-center">{item.nim}</TableCell>
-                  <TableCell className="text-center">{item.Angkatan}</TableCell>
-                  <TableCell className="text-center">{item.company}</TableCell>
-                  <TableCell className="text-center py-3 px-2">
-                    {(() => {
-                      const { percentage, color } = getProgressData(item.dailyReports);
-                      return (
-                        <div className="flex flex-col items-center">
-                          <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-1 overflow-hidden">
-                            <motion.div 
-                              className={`h-2.5 rounded-full ${color}`}
-                              initial={{ width: 0 }}
-                              animate={{ width: `${percentage}%` }}
-                              transition={{ duration: 1, delay: 1.2 + item.id * 0.05 }}
-                            />
-                          </div>
-                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                            {percentage}%
-                          </div>
-                        </div>
-                      );
-                    })()}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-md shadow-sm transition-colors dark:bg-blue-600 dark:hover:bg-blue-700"
-                      onClick={() =>
-                        navigate(
-                          `/koordinator-kp/kerja-praktik/daily-report/detail-mahasiswa?name=${item.name}&nim=${item.nim}`
-                        )
-                      }
+              {currentItems.length > 0 ? (
+                currentItems.map((item, index) => (
+                  <motion.tr
+                    key={item.id}
+                    className={
+                      parseInt(item.id, 10) % 2 === 0
+                        ? "bg-gray-50 dark:bg-gray-900/10 hover:bg-gray-100 dark:hover:bg-gray-900/20 transition-colors"
+                        : "bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900/20 transition-colors"
+                    }
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 1 + (parseInt(item.id, 10) % 100) * 0.05,
+                    }}
+                  >
+                    <TableCell className="font-medium text-center">
+                      {index + 1}
+                    </TableCell>
+                    <TableCell className="font-medium text-center">
+                      {item.name}
+                    </TableCell>
+                    <TableCell className="text-center">{item.nim}</TableCell>
+                    <TableCell className="text-center">
+                      {item.Angkatan}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {item.company}
+                    </TableCell>
+                    <TableCell className="px-2 py-3 text-center">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          getStatusStyles(item.status).badge
+                        }`}
+                      >
+                        {item.status}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium text-white transition-colors bg-blue-500 rounded-md shadow-sm hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+                        onClick={() =>
+                          navigate(
+                            `/koordinator-kp/kerja-praktik/daily-report/detail-mahasiswa?id=${item.id}`
+                          )
+                        }
+                      >
+                        <SquareArrowOutUpRight className="w-4 h-4" />
+                        Lihat Detail
+                      </motion.button>
+                    </TableCell>
+                  </motion.tr>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} className="py-6 text-center">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="flex flex-col items-center"
                     >
-                      <SquareArrowOutUpRight className="h-4 w-4" />
-                      Lihat Detail
-                    </motion.button>
+                      <AlertTriangle className="w-8 h-8 mb-2 text-gray-500" />
+                      <p className="text-gray-500 dark:text-gray-400">
+                        Tidak ada data yang sesuai dengan filter atau pencarian.
+                      </p>
+                      {(searchTerm ||
+                        activeTab !== "Semua Riwayat" ||
+                        academicYear) && (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="px-4 py-2 mt-4 text-sm text-white bg-blue-500 rounded-md"
+                          onClick={() => {
+                            setSearchTerm("");
+                            setActiveTab("Semua Riwayat");
+                            setAcademicYear(academicYears[0] || "");
+                            setCurrentPage(1);
+                          }}
+                        >
+                          Reset Filter
+                        </motion.button>
+                      )}
+                    </motion.div>
                   </TableCell>
-                </motion.tr>
-              ))}
+                </TableRow>
+              )}
             </TableBody>
           </Table>
-
-          {/* Pagination */}
-          <div className="p-4 border-t dark:border-gray-700 flex items-center justify-between">
+          <div className="flex items-center justify-between p-4 border-t dark:border-gray-700">
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              Menampilkan {indexOfFirstItem + 1}-
-              {Math.min(indexOfLastItem, filteredData.length)} dari{" "}
-              {filteredData.length} hasil
+              {indexOfFirstItem + 1}-
+              {Math.min(indexOfLastItem, filteredData.length)} of{" "}
+              {filteredData.length} row(s) selected.
             </div>
-
             <div className="flex items-center space-x-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handlePrevPage}
                 disabled={currentPage === 1}
-                className="h-8 w-8 p-0 flex items-center justify-center border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                className="flex items-center justify-center w-8 h-8 p-0 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="w-4 h-4" />
               </Button>
-
               <div className="flex items-center space-x-1">
                 {Array.from({ length: totalPages }, (_, i) => i + 1)
                   .filter((page) => {
-                    // Show first page, last page, current page, and pages around current page
                     return (
                       page === 1 ||
                       page === totalPages ||
@@ -512,7 +669,6 @@ export default function KoordinatorKerjaPraktikDailyReportPage() {
                     );
                   })
                   .map((page, index, array) => {
-                    // Add ellipsis when there are gaps
                     const showEllipsisBefore =
                       index > 0 && array[index - 1] !== page - 1;
                     const showEllipsisAfter =
@@ -525,7 +681,6 @@ export default function KoordinatorKerjaPraktikDailyReportPage() {
                             ...
                           </span>
                         )}
-
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
@@ -538,7 +693,6 @@ export default function KoordinatorKerjaPraktikDailyReportPage() {
                         >
                           {page}
                         </motion.button>
-
                         {showEllipsisAfter && (
                           <span className="mx-1 text-gray-400 dark:text-gray-500">
                             ...
@@ -548,15 +702,14 @@ export default function KoordinatorKerjaPraktikDailyReportPage() {
                     );
                   })}
               </div>
-
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
-                className="h-8 w-8 p-0 flex items-center justify-center border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                className="flex items-center justify-center w-8 h-8 p-0 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
               >
-                <ChevronRightIcon className="h-4 w-4" />
+                <ChevronRightIcon className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -564,4 +717,6 @@ export default function KoordinatorKerjaPraktikDailyReportPage() {
       </div>
     </DashboardLayout>
   );
-} 
+};
+
+export default KoordinatorKerjaPraktikDailyReportPage;

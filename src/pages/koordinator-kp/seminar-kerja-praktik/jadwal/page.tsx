@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import DashboardJadwalCard from "@/components/dosen/seminar-kp/DashboardJadwalCard";
-import EditJadwalSeminarModal from "@/components/koordinator/seminar/edit-jadwal-modal";
+import EditJadwalSeminarModal from "@/components/koordinator-kp/seminar/edit-jadwal-modal";
 
 // Interface untuk data seminar
 interface Seminar {
@@ -152,7 +152,7 @@ const KoordinatorJadwalSeminarPage: FC = () => {
 
           <DashboardJadwalCard seminars={seminars} />
 
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <Tabs
               defaultValue="semua"
               onValueChange={(value) =>
@@ -160,7 +160,7 @@ const KoordinatorJadwalSeminarPage: FC = () => {
               }
               className="w-full"
             >
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 w-full">
+              <div className="flex flex-col items-start justify-between w-full gap-4 md:flex-row md:items-center">
                 <TabsList className="dark:bg-gray-700">
                   <TabsTrigger
                     value="semua"
@@ -182,8 +182,8 @@ const KoordinatorJadwalSeminarPage: FC = () => {
                   </TabsTrigger>
                 </TabsList>
 
-                <div className="flex items-center w-full relative">
-                  <Search className="h-4 w-4 absolute left-3 text-gray-400" />
+                <div className="relative flex items-center w-full">
+                  <Search className="absolute w-4 h-4 text-gray-400 left-3" />
                   <Input
                     type="text"
                     placeholder="Cari nama mahasiswa..."
@@ -238,29 +238,29 @@ const SeminarTable: FC<{
   formatDate: (dateString: string) => string;
 }> = ({ seminars, onEdit, formatDate }) => {
   return (
-    <Card className="shadow-none rounded-none dark:bg-gray-900 dark:border-gray-700">
+    <Card className="rounded-none shadow-none dark:bg-gray-900 dark:border-gray-700">
       <Table>
         <TableHeader className="bg-gray-200 dark:bg-gray-700">
           <TableRow className="hover:bg-gray-300 dark:hover:bg-gray-600">
-            <TableHead className="w-12 text-center font-semibold dark:text-gray-200">
+            <TableHead className="w-12 font-semibold text-center dark:text-gray-200">
               No
             </TableHead>
             <TableHead className="font-semibold dark:text-gray-200">
               Nama Mahasiswa
             </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
+            <TableHead className="font-semibold text-center dark:text-gray-200">
               Ruangan
             </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
+            <TableHead className="font-semibold text-center dark:text-gray-200">
               Jam
             </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
+            <TableHead className="font-semibold text-center dark:text-gray-200">
               Tanggal Seminar
             </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
+            <TableHead className="font-semibold text-center dark:text-gray-200">
               Dosen Penguji
             </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
+            <TableHead className="font-semibold text-center dark:text-gray-200">
               Aksi
             </TableHead>
           </TableRow>
@@ -270,7 +270,7 @@ const SeminarTable: FC<{
             <TableRow className="dark:border-gray-700 dark:hover:bg-gray-700">
               <TableCell
                 colSpan={7}
-                className="text-center py-6 text-muted-foreground dark:text-gray-400"
+                className="py-6 text-center text-muted-foreground dark:text-gray-400"
               >
                 Tidak ada data yang ditemukan
               </TableCell>
@@ -303,7 +303,7 @@ const SeminarTable: FC<{
                   <Button
                     variant="default"
                     size="sm"
-                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                    className="text-white bg-blue-500 hover:bg-blue-600"
                     onClick={() => onEdit(seminar)}
                   >
                     <Edit className="h-3.5 w-3.5 mr-1" />

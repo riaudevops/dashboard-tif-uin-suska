@@ -36,8 +36,10 @@ interface StatusValidasiInterface {
 }
 
 export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [response, setResponse] = useState<CommonResponse | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [response, setResponse] = useState<CommonResponse | null>(null);
+  const [inputValue, setInputValue] = useState<string>("");
+  const [tanggalPendaftaran, setTanggalPendaftaran] = useState();
   const [dataKPTerbaru, setDataKPTerbaru] = useState<KPInterface>({
     status : "",
     tanggal_mulai : "",
@@ -78,7 +80,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
     <h3 className="font-bold text-lg">Dokumen Surat Pengantar dari Dekan</h3>
     <p className="text-xs text-slate-500">Silakan inputkan Link Gdrive dengan file harus berformat pdf.</p>
     <label className="font-bold text-sm mt-1" htmlFor="surat-pengantar-kp">Link : </label>
-    <input key="surat-pengantar" defaultValue={dataKPTerbaru?.link_surat_pengantar || ""} readOnly={dataKPTerbaru?.level_akses > 2} className={`mt-1 text-black p-2 border-[1px] border-slate-300 rounded-lg  ${dataKPTerbaru?.level_akses > 2 ? "hover:cursor-not-allowed" : ""}`} type="text" placeholder="Masukkan Link Berkas..." id="surat-pengantar-kp" name="linkSuratPengantarKP"/>
+    <input key="surat-pengantar" onChange={(e) => setInputValue(e.target.value)} value={inputValue} readOnly={dataKPTerbaru?.level_akses > 2} className={`mt-1 text-black p-2 border-[1px] border-slate-300 rounded-lg  ${dataKPTerbaru?.level_akses > 2 ? "hover:cursor-not-allowed" : ""}`} type="text" placeholder="Masukkan Link Berkas..." id="surat-pengantar-kp" name="linkSuratPengantarKP"/>
     </div>
   </div>
   }
@@ -106,7 +108,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
     <h3 className="font-bold text-lg">Dokumen Surat Jawaban dari Instansi</h3>
     <p className="text-xs text-slate-500">Silakan inputkan Link Gdrive dengan file harus berformat pdf.</p>
     <label className="font-bold text-sm mt-1" htmlFor="surat-balasan-kp">Link : </label>
-    <input key="surat-jawaban" defaultValue={dataKPTerbaru?.link_surat_balasan || ""} readOnly={dataKPTerbaru?.level_akses > 4} className={`mt-1 text-black p-2 border-[1px] border-slate-300 rounded-lg ${dataKPTerbaru?.level_akses > 4 ? "hover:cursor-not-allowed" : ""}`} type="text" placeholder="Masukkan Link Berkas..." id="surat-balasan-kp" name="linkSuratBalasanKP"/>
+    <input key="surat-jawaban" onChange={(e) => setInputValue(e.target.value)} value={inputValue} readOnly={dataKPTerbaru?.level_akses > 4} className={`mt-1 text-black p-2 border-[1px] border-slate-300 rounded-lg ${dataKPTerbaru?.level_akses > 4 ? "hover:cursor-not-allowed" : ""}`} type="text" placeholder="Masukkan Link Berkas..." id="surat-balasan-kp" name="linkSuratBalasanKP"/>
     </div>
   </div>
   }
@@ -139,7 +141,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
     <h3 className="font-bold text-lg">Id Pengajuan Portal FST</h3>
     <p className="text-xs text-slate-500">Silakan masukkan Id pengajuan yang telah diperoleh dari portal FST :</p>
     <label className="font-bold text-sm mt-1" htmlFor="id-pengajuan-dosen-pembimbing">Id Pengajuan Pembimbing KP : </label>
-    <input key="id-pengajuan-dospem" defaultValue={dataKPTerbaru?.id_surat_pengajuan_dospem || ""} readOnly={dataKPTerbaru?.level_akses > 6} className={`mt-1 text-black p-2 border-[1px] border-slate-300 rounded-lg ${dataKPTerbaru?.level_akses > 6 ? "hover:cursor-not-allowed" : ""}`} type="text" placeholder="Masukkan Id Pengajuan..." id="id-pengajuan-dosen-pembimbing" name="IdPengajuanDosenPembimbingKP"/>
+    <input key="id-pengajuan-dospem" onChange={(e) => setInputValue(e.target.value)} value={inputValue} readOnly={dataKPTerbaru?.level_akses > 6} className={`mt-1 text-black p-2 border-[1px] border-slate-300 rounded-lg ${dataKPTerbaru?.level_akses > 6 ? "hover:cursor-not-allowed" : ""}`} type="text" placeholder="Masukkan Id Pengajuan..." id="id-pengajuan-dosen-pembimbing" name="IdPengajuanDosenPembimbingKP"/>
     </div>
   </div>
   }
@@ -167,18 +169,25 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
     <h3 className="font-bold text-lg">Dokumen Penunjukkan Dosen Pembimbing</h3>
     <p className="text-xs text-slate-500">Silakan inputkan Link Gdrive dengan file harus berformat pdf.</p>
     <label className="font-bold text-sm mt-1" htmlFor="surat-penunjukkan-dosen-pembimbing">Link : </label>
-    <input key="surat-penunjukkan-dospem" defaultValue={dataKPTerbaru?.link_surat_penunjukan_dospem || ""} readOnly={dataKPTerbaru?.level_akses > 8} className={`mt-1 text-black p-2 border-[1px] border-slate-300 rounded-lg ${dataKPTerbaru?.level_akses > 8 ? "hover:cursor-not-allowed" : ""}`} type="text" placeholder="Masukkan Link Berkas..." id="surat-penunjukkan-dosen-pembimbing" name="linkSuratPenunjukkanDosenPembimbingKP"/>
+    <input key="surat-penunjukkan-dospem" onChange={(e) => setInputValue(e.target.value)} value={inputValue} readOnly={dataKPTerbaru?.level_akses > 8} className={`mt-1 text-black p-2 border-[1px] border-slate-300 rounded-lg ${dataKPTerbaru?.level_akses > 8 ? "hover:cursor-not-allowed" : ""}`} type="text" placeholder="Masukkan Link Berkas..." id="surat-penunjukkan-dosen-pembimbing" name="linkSuratPenunjukkanDosenPembimbingKP"/>
     </div>
   </div>
   }
 
   else if (currentPage === 9 && dataKPTerbaru?.level_akses! >= 9) {
+    url = "http://localhost:5000/daftar-kp/unggah-surat-perpanjangan-kp";
+    const isItOKDaftar = new Date(tanggalPendaftaran?.tanggal_akhir_pendaftaran_kp_lanjut).getTime() - (new Date()).getTime() > 0;
     InputField = <div className="border-[1px] border-slate-300 p-3 rounded-lg">
     <div className="flex flex-col">
     <h3 className="font-bold text-lg">Pendaftaran KP Berhasil</h3>
     <p className="text-sm text-slate-500">Silakan mengisi Daily Report Kerja Praktek</p>
+    <p>Atau</p>
+    {isItOKDaftar && <><p className="text-xs text-slate-500">Silakan inputkan Link Gdrive dengan file harus berformat pdf.</p>
+    <label className="font-bold text-sm mt-1" htmlFor="surat-penunjukkan-dosen-pembimbing">Link : </label>
+    <input key="surat-penunjukkan-dospem" onChange={(e) => setInputValue(e.target.value)} value={inputValue} readOnly={dataKPTerbaru?.level_akses > 8} className={`mt-1 text-black p-2 border-[1px] border-slate-300 rounded-lg ${dataKPTerbaru?.level_akses > 8 ? "hover:cursor-not-allowed" : ""}`} type="text" placeholder="Masukkan Link Berkas..." id="surat-penunjukkan-dosen-pembimbing" name="linkSuratPenunjukkanDosenPembimbingKP"/>
     <Link to={{pathname : "/mahasiswa/kerja-praktik/daily-report"}} className="text-center hover:cursor-pointer rounded-md bg-green-950 py-1 text-white font-bold tracking-wide mt-2">Pergi ke Halaman Daily Report</Link>
-    </div>
+    </>
+    }</div>
   </div>
   }
 
@@ -200,6 +209,12 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
           setCurrentPage(data.data.level_akses)
           }
         }
+        const response1 = await fetch("http://localhost:5000/daftar-kp/get-tanggal-daftar-kp");
+        if (!response1.ok) {
+          throw new Error("Gagal mendapatkan data tanggal")
+        }
+        const data1 = await response1.json();
+        setTanggalPendaftaran(data1.data);
       })()
     }, [])
 
@@ -237,8 +252,8 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
           <h4 className="font-bold text-sm tracking-wide my-2">🥚 Validasi Berkas</h4>
           {InputField}
       </div>
-      {currentPage === dataKPTerbaru?.level_akses! && dataKPTerbaru?.level_akses! !== 9 && <div className="flex justify-end items-center mt-2">
-      <button disabled={isLoading} type="reset" className=" px-16 tracking-wide py-1 font-semibold rounded-lg hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Kosongkan Formulir</button>
+      {currentPage === dataKPTerbaru?.level_akses! && (dataKPTerbaru?.level_akses! !== 9 || dataKPTerbaru?.level_akses! === 9 && new Date(tanggalPendaftaran?.tanggal_akhir_pendaftaran_kp_lanjut).getTime() - (new Date()).getTime() > 0) && <div className="flex justify-end items-center mt-2">
+      <button onClick={() => setInputValue("")} disabled={isLoading} type="reset" className=" px-16 tracking-wide py-1 font-semibold rounded-lg hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Kosongkan Formulir</button>
       <button disabled={isLoading} type="submit" className=" px-24 py-1 tracking-wide text-white font-medium rounded-lg bg-green-950 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Kirim</button>
       </div>}
   </form>

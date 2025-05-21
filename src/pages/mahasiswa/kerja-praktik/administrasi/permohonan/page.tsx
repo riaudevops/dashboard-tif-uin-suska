@@ -25,6 +25,27 @@ export default function MahasiswaKerjaPraktekDaftarKpPermohonanPage() {
 
   let StepComponent = <div></div>
 
+  useEffect(() => {
+    (async function() {
+      const response = await fetch("http://localhost:5000/daftar-kp/riwayat-pendaftaran-kp")
+      const data = await response.json();
+      if (!data) {
+        throw new Error("Gagal mendapatkan riwayat KP");
+      } else if (data.response) {
+        const result : KPInterface | undefined = (data.data as []).find(({status}) => status === "Baru");
+        if (result) {
+          setActiveKP(result)
+          setLevelAkses((result as KPInterface).level_akses)
+        } else {
+          setActiveKP(undefined);
+        }
+        setRiwayatKP(data.data)
+      } else {
+        throw new Error("Terjadi kesalahan pada sisi server")
+      }
+    })()
+  }, [])
+
   if (activeKP === undefined) {
     StepComponent = <div className="rounded-md border-green-500 border-2 py-2 px-4 bg-green-100">
     <h4 className="font-semibold text-lg">Permohonan Pendaftaran Kerja Praktek</h4>
@@ -69,27 +90,6 @@ export default function MahasiswaKerjaPraktekDaftarKpPermohonanPage() {
 </div>
   }
 
-  useEffect(() => {
-    (async function() {
-      const response = await fetch("http://localhost:5000/daftar-kp/riwayat-pendaftaran-kp")
-      const data = await response.json();
-      if (!data) {
-        console.log("Gagal mendapatkan riwayat KP")
-      } else if (data.response) {
-        const result : KPInterface | undefined = (data.data as []).find(({level_akses}) => level_akses > 0 && level_akses < 11)
-        if (result) {
-          setActiveKP(result)
-          setLevelAkses((result as KPInterface).level_akses)
-        } else {
-          setActiveKP(undefined);
-        }
-        setRiwayatKP(data.data)
-      } else {
-        throw new Error("Terjadi kesalahan pada sisi server")
-      }
-    })()
-  }, [])
-
   return (
     <DashboardLayout>
       <h3 className="font-bold text-xl">Pendaftaran Kerja Praktek</h3>
@@ -98,7 +98,7 @@ export default function MahasiswaKerjaPraktekDaftarKpPermohonanPage() {
       <div className="rounded-lg p-2 mt-3 shadow-lg">
             <h3 className="font-semibold tracking-wide">Detail Riwayat</h3>
             <h4 className="mt-2 font-medium text-[14px] mb-2">Aktif</h4>
-            {riwayatKP.map(({status, tanggal_mulai, instansi : {nama}}, i) => < RiwayatCard key={i} status={status} tanggalMulai={tanggal_mulai} namaInstansi={nama} />)}
+            {riwayatKP.map(({status, tanggal_mulai, instansi : {nama}}, i) => < RiwayatCard key={i} status={status} tanggalMulai={tanggal_mulai.slice(0,10).replaceAll("-", "/")} namaInstansi={nama} />)}
           </div>
     </DashboardLayout>
   );

@@ -21,6 +21,7 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
         (async function() {
             const response = await fetch("http://localhost:5000/daftar-kp/data-instansi")
             const data = await response.json()
+            console.log(data.data)
             setDataInstansi(data.data)
         })()
     }, [])
@@ -56,7 +57,7 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
                 clearTimeout(pointer)
             }, 1000)
         // console.log("tes4")
-        navigate("/pendaftaran-kerja-praktek")
+        navigate("/mahasiswa/kerja-praktik/daftar-kp/permohonan")
     }
     catch (e) {
         throw new Error("Data tanggal tidak valid")
@@ -64,12 +65,12 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
     }
 
     async function handleOnCancel() {
-        navigate("/pendaftaran-kerja-praktek")
+        navigate("/mahasiswa/kerja-praktik/daftar-kp/permohonan")
     }
 
     return <DashboardLayout>
     <form onSubmit={handleOnSubmit}>
-        {response && response.response && <div className="absolute left-1/2 py-2 -translate-x-1/2 rounded-lg w-80 bg-green-600 text-white">
+        {response && response.response && <div className="fixed left-1/2 py-2 -translate-x-1/2 rounded-lg w-80 bg-green-600 text-white">
         <p className="text-center text-white font-semibold tracking-wide">{response.message}</p>
         </div>}
         {response && !(response.response) && <div className="absolute left-1/2 -translate-x-1/2 rounded-lg w-80 py-2 bg-green-600">

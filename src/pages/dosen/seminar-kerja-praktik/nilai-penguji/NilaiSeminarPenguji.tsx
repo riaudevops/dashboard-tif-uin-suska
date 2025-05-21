@@ -11,10 +11,11 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useNavigate, useLocation } from "react-router-dom";
+import APISeminarKP from "@/services/api/dosen/seminar-kp.service";
 
-// Updated Student interface
+// Updated Student interface to include idNilai
 interface Student {
-  id: number;
+  id: string; // Matches idJadwalSeminar
   nim: string;
   name: string;
   semester: number;
@@ -27,9 +28,10 @@ interface Student {
   tanggalSeminar: string;
   status: "belum dinilai" | "selesai";
   tanggalDinilai?: string;
+  idNilai?: string; // Added to store id_nilai for grading
 }
 
-// Updated Scores interface to use number values instead of strings
+// Updated Scores interface to use number values
 interface Scores {
   penguasaan: number;
   presentasi: number;
@@ -48,6 +50,7 @@ interface CriteriaSectionProps {
   criteria: CriteriaDefinition;
   value: number;
   onChange: (id: keyof Scores, value: number) => void;
+  disabled: boolean;
 }
 
 const NilaiSeminarPenguji: React.FC = () => {
@@ -56,7 +59,7 @@ const NilaiSeminarPenguji: React.FC = () => {
 
   // Get student data from state, use default if not provided
   const studentFromState = (location.state?.student as Student) || {
-    id: 0,
+    id: "",
     nim: "",
     name: "",
     semester: 0,
@@ -68,19 +71,27 @@ const NilaiSeminarPenguji: React.FC = () => {
     jam: "",
     tanggalSeminar: "",
     status: "belum dinilai" as const,
+    idNilai: "",
   };
 
-  const [student] = useState<Student>(studentFromState);
+  const [student] = useState<Student>({
+    ...studentFromState,
+    status:
+      studentFromState.status === "Dinilai"
+        ? "selesai"
+        : studentFromState.status, // Map "Dinilai" to "selesai"
+  });
 
-  // Initialize scores with numerical values
+  // Initialize scores with numerical values; pre-fill for testing
   const [scores, setScores] = useState<Scores>({
-    penguasaan: 0,
-    presentasi: 0,
-    kesesuaian: 0,
+    penguasaan: 0, // Pre-filled for testing
+    presentasi: 0, // Pre-filled for testing
+    kesesuaian: 0, // Pre-filled for testing
   });
 
   const [totalScore, setTotalScore] = useState<number>(0);
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState<string>();
+  const [isLoading, setIsLoading] = useState(false);
 
   // Criteria definitions with weights
   const criteriaDefinitions: CriteriaDefinition[] = [
@@ -101,7 +112,7 @@ const NilaiSeminarPenguji: React.FC = () => {
     {
       id: "kesesuaian",
       title: "Kesesuaian Laporan dan Presentasi",
-      percentage: 40,
+      percentage: 35, // Adjusted to sum to 100% with presentasi's 25%
       description:
         "Penilaian terhadap kesesuaian antara isi laporan dengan materi yang dipresentasikan.",
     },
@@ -111,17 +122,17 @@ const NilaiSeminarPenguji: React.FC = () => {
   useEffect(() => {
     const total =
       scores.penguasaan * 0.4 +
-      scores.presentasi * 0.2 +
-      scores.kesesuaian * 0.4;
-
+      scores.presentasi * 0.25 +
+      scores.kesesuaian * 0.35;
     setTotalScore(parseFloat(total.toFixed(1)));
   }, [scores]);
 
   const handleGoBack = () => {
-    navigate(-1); // Navigate to the previous page
+    navigate(-1);
   };
 
   const handleScoreChange = (category: keyof Scores, value: number): void => {
+    if (student.status === "selesai") return; // Disable changes if already graded
     setScores((prev) => ({
       ...prev,
       [category]: value,
@@ -136,10 +147,18 @@ const NilaiSeminarPenguji: React.FC = () => {
     return "";
   };
 
-  const handleSubmit = (): void => {
-    // Check if any score is 0 (unset)
-    const isScoreComplete = Object.values(scores).every((score) => score > 0);
+  const handleSubmit = async (): Promise<void> => {
+    if (student.status === "selesai") {
+      toast({
+        title: "ℹ️ Informasi",
+        description: "Mahasiswa ini sudah dinilai.",
+        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
+        duration: 3000,
+      });
+      return;
+    }
 
+    const isScoreComplete = Object.values(scores).every((score) => score > 0);
     if (!isScoreComplete) {
       toast({
         title: "⚠️ Peringatan",
@@ -150,17 +169,48 @@ const NilaiSeminarPenguji: React.FC = () => {
       return;
     }
 
-    toast({
-      title: "👌 Berhasil",
-      description: "Penilaian berhasil disimpan!",
-      action: <ToastAction altText="Tutup">Tutup</ToastAction>,
-      duration: 3000,
-    });
+    if (!student.idNilai) {
+      toast({
+        title: "❌ Gagal",
+        description: "ID penilaian tidak ditemukan. Silakan coba lagi.",
+        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
+        duration: 3000,
+      });
+      return;
+    }
 
-    console.log("Submitted scores:", scores);
-    console.log("Total score:", totalScore);
-    console.log("Notes:", notes);
-    console.log("Student:", student);
+    setIsLoading(true);
+    try {
+      const response = await APISeminarKP.postNilaiPenguji({
+        id: student.idNilai,
+        penguasaanKeilmuan: scores.penguasaan,
+        kemampuanPresentasi: scores.presentasi,
+        kesesuaianUrgensi: scores.kesesuaian,
+        catatan: notes,
+        nim: student.nim,
+        idJadwalSeminar: student.id,
+      });
+
+      toast({
+        title: "👌 Berhasil",
+        description: "Penilaian berhasil disimpan!",
+        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
+        duration: 3000,
+      });
+
+      console.log("API Response:", response);
+      navigate(-1);
+    } catch (error) {
+      toast({
+        title: "❌ Gagal",
+        description: "Gagal menyimpan penilaian. Silakan coba lagi.",
+        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
+        duration: 3000,
+      });
+      console.error("Error submitting scores:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Custom circular progress indicator for the total score
@@ -212,44 +262,37 @@ const NilaiSeminarPenguji: React.FC = () => {
     criteria,
     value,
     onChange,
+    disabled,
   }) => {
-    // Use a ref to track the current slider value without causing re-renders
     const sliderValueRef = useRef(value);
     const [displayValue, setDisplayValue] = useState(value);
-
-    // Debounce timer ref
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Update the displayed value immediately for smooth UI
     const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (disabled) return;
       const newValue = parseInt(e.target.value);
       sliderValueRef.current = newValue;
       setDisplayValue(newValue);
 
-      // Clear any existing timer
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
       }
 
-      // Debounce the actual state update to reduce re-renders
       debounceTimerRef.current = setTimeout(() => {
         onChange(criteria.id, newValue);
       }, 50);
     };
 
-    // Handle direct input changes
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (disabled) return;
       const newValue = parseInt(e.target.value) || 0;
-      // Clamp the value between 0 and 100
       const clampedValue = Math.min(100, Math.max(0, newValue));
       setDisplayValue(clampedValue);
       sliderValueRef.current = clampedValue;
 
-      // Update the parent component's state
       onChange(criteria.id, clampedValue);
     };
 
-    // Ensure we update our local state if the value prop changes
     useEffect(() => {
       setDisplayValue(value);
       sliderValueRef.current = value;
@@ -311,6 +354,7 @@ const NilaiSeminarPenguji: React.FC = () => {
               onChange={handleInputChange}
               min="0"
               max="100"
+              disabled={disabled}
               className="w-16 text-center border border-gray-300 dark:border-gray-600 rounded-md py-1 px-2 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200"
             />
           </div>
@@ -330,6 +374,7 @@ const NilaiSeminarPenguji: React.FC = () => {
             max="100"
             value={displayValue}
             onChange={handleSliderChange}
+            disabled={disabled}
             className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb"
             style={{
               WebkitAppearance: "none",
@@ -344,7 +389,6 @@ const NilaiSeminarPenguji: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="p-5">
-        {/* Back Button */}
         <div className="mb-4">
           <button
             onClick={handleGoBack}
@@ -359,9 +403,7 @@ const NilaiSeminarPenguji: React.FC = () => {
           Penilaian Seminar Kerja Praktik
         </h2>
 
-        {/* Student Info Section  */}
         <div className="bg-white dark:bg-gray-900 rounded-lg p-5 border border-gray-200 dark:border-gray-800 mb-6 shadow-sm">
-          {/* Student's Basic Info */}
           <div className="flex justify-between items-center mb-4">
             <div>
               <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100">
@@ -376,7 +418,6 @@ const NilaiSeminarPenguji: React.FC = () => {
             </div>
           </div>
 
-          {/* Judul Section with Background */}
           <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 border border-green-100 dark:border-green-800">
             <div className="flex items-start gap-3">
               <div>
@@ -399,7 +440,6 @@ const NilaiSeminarPenguji: React.FC = () => {
 
         <style>
           {`
-            /* Custom styling for the range slider */
             input[type="range"] {
               -webkit-appearance: none;
               appearance: none;
@@ -410,7 +450,6 @@ const NilaiSeminarPenguji: React.FC = () => {
               background-repeat: no-repeat;
             }
             
-            /* Thumb styles for different browsers */
             input[type="range"]::-webkit-slider-thumb {
               -webkit-appearance: none;
               appearance: none;
@@ -446,7 +485,6 @@ const NilaiSeminarPenguji: React.FC = () => {
               transition: all 0.1s ease;
             }
             
-            /* Active state */
             input[type="range"]:active::-webkit-slider-thumb {
               transform: scale(1.2);
               box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
@@ -457,12 +495,10 @@ const NilaiSeminarPenguji: React.FC = () => {
               box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
             }
             
-            /* Focus state */
             input[type="range"]:focus {
               outline: none;
             }
             
-            /* Dark mode adjustments */
             .dark input[type="range"] {
               background: #374151;
               background-image: linear-gradient(#059669, #059669);
@@ -480,7 +516,6 @@ const NilaiSeminarPenguji: React.FC = () => {
         </style>
 
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Left Column - Criteria Assessment */}
           <div className="flex flex-col">
             <div className="bg-gradient-to-r from-emerald-500 to-teal-400 dark:from-emerald-600 dark:to-teal-500 text-white p-4 rounded-t-lg shadow-sm">
               <h3 className="font-bold">Kriteria Penilaian</h3>
@@ -496,12 +531,12 @@ const NilaiSeminarPenguji: React.FC = () => {
                   criteria={criteria}
                   value={scores[criteria.id]}
                   onChange={handleScoreChange}
+                  disabled={student.status === "selesai"}
                 />
               ))}
             </div>
           </div>
 
-          {/* Right Column - Summary */}
           <div className="flex flex-col">
             <div className="bg-gradient-to-r from-emerald-500 to-teal-400 dark:from-emerald-600 dark:to-teal-500 text-white p-4 rounded-t-lg shadow-sm">
               <h3 className="font-bold">Ringkasan Penilaian</h3>
@@ -553,7 +588,6 @@ const NilaiSeminarPenguji: React.FC = () => {
                   <CircularProgress value={totalScore} />
                 </div>
 
-                {/* Notes Section - Moved to be below the total score */}
                 <div className="pt-2 pb-4">
                   <div className="flex items-center gap-2 mb-2 text-green-700 dark:text-green-400">
                     <MessageSquare size={18} />
@@ -566,6 +600,7 @@ const NilaiSeminarPenguji: React.FC = () => {
                     placeholder="Masukkan catatan, komentar, atau saran untuk mahasiswa..."
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
+                    disabled={student.status === "selesai"}
                   ></textarea>
                 </div>
 
@@ -580,23 +615,29 @@ const NilaiSeminarPenguji: React.FC = () => {
                   <button
                     onClick={handleSubmit}
                     className={`py-2.5 px-4 rounded-md font-medium transition-colors text-sm flex items-center justify-center ${
+                      student.status === "selesai" ||
+                      isLoading ||
                       Object.values(scores).some((score) => score === 0)
                         ? "bg-gray-400 text-white cursor-not-allowed"
                         : "bg-green-700 hover:bg-green-800 text-white"
                     }`}
-                    disabled={Object.values(scores).some(
-                      (score) => score === 0
-                    )}
+                    disabled={
+                      student.status === "selesai" ||
+                      isLoading ||
+                      Object.values(scores).some((score) => score === 0)
+                    }
                   >
                     <Save size={16} className="mr-1" />
-                    Simpan Nilai
+                    {isLoading ? "Menyimpan..." : "Simpan Nilai"}
                   </button>
                 </div>
 
-                {/* Validation Message */}
-                {Object.values(scores).some((score) => score === 0) && (
+                {(student.status === "selesai" ||
+                  Object.values(scores).some((score) => score === 0)) && (
                   <p className="text-center text-xs text-red-500 dark:text-red-400 mt-2">
-                    Mohon lengkapi semua kriteria penilaian
+                    {student.status === "selesai"
+                      ? "Mahasiswa ini sudah dinilai."
+                      : "Mohon lengkapi semua kriteria penilaian"}
                   </p>
                 )}
               </div>
@@ -604,19 +645,24 @@ const NilaiSeminarPenguji: React.FC = () => {
           </div>
         </div>
 
-        {/* Submit Button (only for mobile view) */}
         <div className="mt-6 flex justify-center md:hidden">
           <button
             onClick={handleSubmit}
-            disabled={Object.values(scores).some((score) => score === 0)}
+            disabled={
+              student.status === "selesai" ||
+              isLoading ||
+              Object.values(scores).some((score) => score === 0)
+            }
             className={`flex items-center px-6 py-3 rounded-lg font-medium text-white transition-all ${
+              student.status === "selesai" ||
+              isLoading ||
               Object.values(scores).some((score) => score === 0)
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-md hover:shadow-lg"
             }`}
           >
             <Save size={20} className="mr-2" />
-            Simpan Penilaian
+            {isLoading ? "Menyimpan..." : "Simpan Penilaian"}
           </button>
         </div>
       </div>

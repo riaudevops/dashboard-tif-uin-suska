@@ -1,6 +1,7 @@
 import KoordinatorKerjaPraktikPermohonanDetailPage from "@/pages/koordinator-kp/kerja-praktik/permohonan/detail-permohonan/page";
 import ProtectedRoute from "./protected.router";
 import KoordinatorValidasiBerkasPage from "@/pages/koordinator-kp/seminar-kerja-praktik/validasi-berkas/page";
+import KoordinatorDetailValidasiBerkasPage from "@/pages/koordinator-kp/seminar-kerja-praktik/validasi-berkas/detail-validasi-berkas/page";
 import KoordinatorNilaiPage from "@/pages/koordinator-kp/seminar-kerja-praktik/nilai/page";
 import KoordinatorKerjaPraktikPermohonanPage from "@/pages/koordinator-kp/kerja-praktik/permohonan/page";
 import KoordinatorKerjaPraktikDailyReportPage from "@/pages/koordinator-kp/kerja-praktik/daily-report/page";
@@ -48,6 +49,14 @@ export const koordinatorKPRouter = [
       </ProtectedRoute>
     ),
   },
+  // {
+  //   path: "/koordinator-kp/seminar-kp/validasi-berkas/:nim",
+  //   element: (
+  //     <ProtectedRoute roles={["koordinator-kp"]}>
+  //       <KoordinatorDetailValidasiBerkasPage />
+  //     </ProtectedRoute>
+  //   ),
+  // },
   {
     path: "/koordinator-kp/seminar-kp/nilai",
     element: (

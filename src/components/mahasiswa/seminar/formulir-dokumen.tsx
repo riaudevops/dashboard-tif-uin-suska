@@ -8,7 +8,7 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const DocumentCard = ({
   judulDokumen,
@@ -18,32 +18,34 @@ const DocumentCard = ({
   onLinkChange,
 }: {
   judulDokumen: string;
-  status: "default" | "validasi" | "revisi" | "diterima";
+  status: "default" | "Terkirim" | "Divalidasi" | "Ditolak";
   catatan?: string;
   link?: string;
   onLinkChange?: (value: string) => void;
 }) => {
-  // Local state to manage the input value
+  console.log(`Document: ${judulDokumen}, Status: ${status}`);
   const [inputValue, setInputValue] = useState(link || "");
 
-  // Update local state when the prop changes (for reset functionality)
   useEffect(() => {
     setInputValue(link || "");
   }, [link]);
 
-  // Handle input change
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setInputValue(value);
-    if (onLinkChange) {
-      onLinkChange(value);
-    }
-  };
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setInputValue(value);
+      if (onLinkChange) {
+        onLinkChange(value);
+      }
+    },
+    [onLinkChange]
+  );
 
-  // Render appropriate card based on status
+  const isReadOnly = status === "Terkirim" || status === "Divalidasi";
+
   const renderCard = () => {
-    // Diterima status - read-only - badge "diterima"
-    if (status === "diterima") {
+    // Status "Divalidasi" → Badge "Diterima"
+    if (status === "Divalidasi") {
       return (
         <Card className="border dark:border-none bg-white dark:bg-gray-800/80 shadow-sm relative hover:shadow-md dark:hover:shadow-sm dark:hover:shadow-green-600 transition-all duration-200">
           <div className="absolute top-8 right-6">
@@ -51,7 +53,6 @@ const DocumentCard = ({
               <CheckCircle className="h-3 w-3 mr-1" /> Diterima
             </p>
           </div>
-
           <CardHeader className="pb-2">
             <div className="flex items-center gap-3">
               <div className="mt-1 p-2 bg-green-50 dark:bg-green-900/20 rounded-md">
@@ -82,7 +83,7 @@ const DocumentCard = ({
                     inputValue ||
                     "https://drive.google.com/drive/folders/file.pdf"
                   }
-                  readOnly
+                  readOnly={isReadOnly}
                   className="pl-9 bg-gray-50 dark:bg-gray-800 cursor-text select-all border-green-200 dark:border-green-800/40"
                 />
                 <Upload className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
@@ -93,16 +94,15 @@ const DocumentCard = ({
       );
     }
 
-    // Validasi status - read-only - badge "menunggu validasi"
-    if (status === "validasi") {
+    // Status "Terkirim" → Badge "Menunggu"
+    if (status === "Terkirim") {
       return (
-        <Card className="border dark:border-none bg-white dark:bg-gray-800/80 shadow-sm relative hover:shadow-md dark:hover:shadow-sm dark:hover:shadow-yellow-600 transition-all duration-200 ">
+        <Card className="border dark:border-none bg-white dark:bg-gray-800/80 shadow-sm relative hover:shadow-md dark:hover:shadow-sm dark:hover:shadow-yellow-600 transition-all duration-200">
           <div className="absolute top-8 right-6">
             <p className="font-medium text-xs text-yellow-600 dark:text-yellow-400 flex items-center bg-yellow-50 dark:bg-yellow-900/20 py-1 px-2 rounded">
-              <Clock className="h-3 w-3 mr-1" /> Menunggu validasi
+              <Clock className="h-3 w-3 mr-1" /> Menunggu
             </p>
           </div>
-
           <CardHeader className="pb-2">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-md">
@@ -115,7 +115,6 @@ const DocumentCard = ({
               </div>
             </div>
           </CardHeader>
-
           <CardContent>
             <div className="space-y-2">
               <Label
@@ -134,7 +133,7 @@ const DocumentCard = ({
                     inputValue ||
                     "https://drive.google.com/drive/folders/file.pdf"
                   }
-                  readOnly
+                  readOnly={isReadOnly}
                   className="pl-9 bg-gray-50 dark:bg-gray-800 cursor-text select-all"
                 />
                 <Upload className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
@@ -145,8 +144,8 @@ const DocumentCard = ({
       );
     }
 
-    // Revisi status - ada catatan - badge "revisi"
-    if (status === "revisi") {
+    // Status "Ditolak" → Badge "Revisi" dan tampilkan catatan
+    if (status === "Ditolak") {
       return (
         <Card className="border dark:border-none bg-white dark:bg-gray-800/80 shadow-sm relative hover:shadow-md dark:hover:shadow-sm dark:hover:shadow-red-600 transition-all duration-200">
           <div className="absolute top-8 right-6">
@@ -154,7 +153,6 @@ const DocumentCard = ({
               <AlertCircle className="h-3 w-3 mr-1" /> Revisi
             </p>
           </div>
-
           <CardHeader className="pb-2">
             <div className="flex items-center gap-3">
               <div className="mt-1 p-2 bg-red-50 dark:bg-red-900/20 rounded-md">
@@ -189,22 +187,22 @@ const DocumentCard = ({
                 <Upload className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
               </div>
             </div>
-
-            <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-md border border-red-100 dark:border-red-800/40">
-              <h4 className="text-xs font-semibold text-red-800 dark:text-red-300 mb-1">
-                Catatan:
-              </h4>
-              <p className="text-xs text-red-700 dark:text-red-200">
-                {catatan ||
-                  "Dokumen perlu direvisi sesuai dengan format yang ditentukan."}
-              </p>
-            </div>
+            {catatan && (
+              <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-md border border-red-100 dark:border-red-800/40">
+                <h4 className="text-xs font-semibold text-red-800 dark:text-red-300 mb-1">
+                  Catatan:
+                </h4>
+                <p className="text-xs text-red-700 dark:text-red-200">
+                  {catatan}
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       );
     }
 
-    // Default status
+    // Status "default" → Form input
     return (
       <Card className="border dark:border-none bg-white dark:bg-gray-800/80 shadow-sm hover:shadow-md dark:hover:shadow-xl transition-all duration-200">
         <CardHeader className="pb-2">
@@ -239,6 +237,7 @@ const DocumentCard = ({
                 placeholder="https://drive.google.com/drive/folders/file.pdf"
                 value={inputValue}
                 onChange={handleInputChange}
+                readOnly={isReadOnly}
                 className="pl-9 border-gray-200 dark:border-gray-700 focus:border-green-500 focus:ring-1 focus:ring-green-500 dark:focus:border-green-500 dark:focus:ring-green-500/50"
               />
               <Upload className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
@@ -249,7 +248,6 @@ const DocumentCard = ({
     );
   };
 
-  // Use a key to force re-render when status changes
   return <div key={`card-${status}-${judulDokumen}`}>{renderCard()}</div>;
 };
 

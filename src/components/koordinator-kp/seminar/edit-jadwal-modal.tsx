@@ -1,4 +1,5 @@
 import { type FC, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Calendar,
   Clock,
@@ -8,7 +9,6 @@ import {
   MapPin,
   FileText,
 } from "lucide-react";
-
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,22 +20,54 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "@/hooks/use-toast";
+import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 
-interface Seminar {
-  id: number;
-  namaMahasiswa: string;
+// Tipe untuk data seminar (sesuai dengan KoordinatorJadwalSeminarPage)
+interface Mahasiswa {
+  nama: string;
+  nim: string;
+  semester: number;
+}
+
+interface JadwalSeminar {
+  id: string;
+  mahasiswa: Mahasiswa;
+  status_kp: "Baru" | "Lanjut";
   ruangan: string;
   jam: string;
-  tanggalSeminar: string;
-  dosenPenguji: string;
-  status: "terjadwal" | "selesai" | "diganti";
+  tanggal: string;
+  dosen_penguji: string;
+  dosen_pembimbing: string;
+  instansi: string;
+  pembimbing_instansi: string;
+  status: "Menunggu" | "Selesai" | "Jadwal_Ulang";
+}
+
+// Tipe untuk data dosen dan ruangan dari API
+interface Dosen {
+  nip: string;
+  nama: string;
+}
+
+interface Ruangan {
+  nama: string;
 }
 
 interface EditJadwalSeminarModalProps {
   isOpen: boolean;
   onClose: () => void;
-  seminar: Seminar | null;
-  onSave: (updatedSeminar: Seminar) => void;
+  seminar: JadwalSeminar | null;
+  onSave: (updatedSeminar: JadwalSeminar) => void;
+}
+
+// Definisikan tipe payload yang sesuai dengan API
+interface UpdateJadwalPayload {
+  id: string;
+  tanggal?: string;
+  waktu_mulai?: string;
+  nama_ruangan?: string;
+  nip_penguji?: string;
 }
 
 const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
@@ -46,21 +78,116 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
 }) => {
   if (!seminar) return null;
 
-  const [editSeminar, setEditSeminar] = useState<Seminar>({ ...seminar });
-  // const [isEditJadwal, setIsEditJadwal] = useState(false);
-  // const [isEditDosenPenguji, setIsEditDosenPenguji] = useState(false);
+  const queryClient = useQueryClient();
+  const [editSeminar, setEditSeminar] = useState<JadwalSeminar>({ ...seminar });
 
-  // Dummy data for dropdowns
-  const ruanganOptions = ["FST301", "FST302", "FST303", "FST304", "FST305"];
-  const dosenOptions = [
-    "Dr. Ahmad Fauzi",
-    "Dr. Siti Aminah",
-    "Prof. Arif Rahman",
-    "Dr. Dewi Susanti",
-    "Prof. Eko Prasetyo",
-  ];
+  // Ambil data dosen dan ruangan menggunakan useQuery
+  const { data: dosenData, isLoading: isLoadingDosen } = useQuery<Dosen[]>({
+    queryKey: ["dosen-list"],
+    queryFn: APISeminarKP.getAllDosen,
+  });
 
-  const handleInputChange = (field: keyof Seminar, value: string) => {
+  const { data: ruanganData, isLoading: isLoadingRuangan } = useQuery<
+    Ruangan[]
+  >({
+    queryKey: ["ruangan-list"],
+    queryFn: APISeminarKP.getAllRuangan,
+  });
+
+  // Gunakan useMutation untuk operasi PUT
+  const mutation = useMutation({
+    mutationFn: (payload: UpdateJadwalPayload) =>
+      APISeminarKP.putJadwal(payload),
+    onSuccess: (data) => {
+      // Perbarui state lokal dengan data yang dikembalikan dari API
+      setEditSeminar((prev) => ({
+        ...prev,
+        tanggal: data.tanggal || prev.tanggal,
+        jam: data.waktu_mulai || prev.jam,
+        ruangan: data.nama_ruangan || prev.ruangan,
+        dosen_penguji: data.nip_penguji
+          ? dosenData?.find((d) => d.nip === data.nip_penguji)?.nama ||
+            prev.dosen_penguji
+          : prev.dosen_penguji,
+      }));
+      // Panggil onSave untuk memberi tahu komponen induk
+      onSave({
+        ...editSeminar,
+        tanggal: data.tanggal || editSeminar.tanggal,
+        jam: data.waktu_mulai || editSeminar.jam,
+        ruangan: data.nama_ruangan || editSeminar.ruangan,
+        dosen_penguji: data.nip_penguji
+          ? dosenData?.find((d) => d.nip === data.nip_penguji)?.nama ||
+            editSeminar.dosen_penguji
+          : editSeminar.dosen_penguji,
+      });
+      // Invalidasi query untuk memperbarui tabel di halaman utama
+      queryClient.invalidateQueries({
+        queryKey: ["koordinator-jadwal-seminar"],
+      });
+      // Tampilkan toast sukses
+      toast({
+        title: "Sukses",
+        description: "Jadwal berhasil diperbarui!",
+        duration: 3000,
+      });
+      onClose();
+    },
+    onError: (error: any) => {
+      console.error("Gagal memperbarui jadwal:", error);
+      // Parsing pesan error dari struktur respons API
+      let errorMessage = "Gagal memperbarui jadwal. Silakan coba lagi.";
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      // Deteksi tipe error berdasarkan pesan dari backend
+      if (errorMessage.includes("Ruangan tidak tersedia")) {
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+          duration: 5000,
+        });
+      } else if (errorMessage.includes("Jadwal mahasiswa konflik")) {
+        toast({
+          title: "Konflik",
+          description: errorMessage,
+          variant: "destructive",
+          duration: 7000,
+        });
+      } else if (errorMessage.includes("Jadwal dosen penguji konflik")) {
+        toast({
+          title: "Konflik",
+          description: errorMessage,
+          variant: "destructive",
+          duration: 7000,
+        });
+      } else if (errorMessage.includes("Jadwal dosen pembimbing konflik")) {
+        toast({
+          title: "Konflik",
+          description: errorMessage,
+          variant: "destructive",
+          duration: 7000,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+          duration: 5000,
+        });
+      }
+    },
+  });
+
+  const handleInputChange = (field: keyof JadwalSeminar, value: string) => {
     setEditSeminar((prev) => ({
       ...prev,
       [field]: value,
@@ -68,8 +195,54 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
   };
 
   const handleSave = () => {
-    onSave(editSeminar);
-    onClose();
+    // Siapkan payload untuk API, hanya sertakan field yang diubah
+    const payload: UpdateJadwalPayload = {
+      id: editSeminar.id,
+    };
+
+    // Bandingkan dengan data awal untuk menentukan field yang diubah
+    if (editSeminar.tanggal !== seminar.tanggal) {
+      // Konversi format tanggal dari "Minggu, 18 Mei 2025" ke "2025-05-18"
+      const dateParts = editSeminar.tanggal.split(", ")[1].split(" ");
+      const day = dateParts[0];
+      const monthMap: { [key: string]: string } = {
+        Januari: "01",
+        Februari: "02",
+        Maret: "03",
+        April: "04",
+        Mei: "05",
+        Juni: "06",
+        Juli: "07",
+        Agustus: "08",
+        September: "09",
+        Oktober: "10",
+        November: "11",
+        Desember: "12",
+      };
+      const month = monthMap[dateParts[1]];
+      const year = dateParts[2];
+      payload.tanggal = `${year}-${month}-${day}`;
+    }
+
+    if (editSeminar.jam !== seminar.jam) {
+      payload.waktu_mulai = editSeminar.jam;
+    }
+
+    if (editSeminar.ruangan !== seminar.ruangan) {
+      payload.nama_ruangan = editSeminar.ruangan;
+    }
+
+    if (editSeminar.dosen_penguji !== seminar.dosen_penguji) {
+      const selectedDosen = dosenData?.find(
+        (d) => d.nama === editSeminar.dosen_penguji
+      );
+      if (selectedDosen) {
+        payload.nip_penguji = selectedDosen.nip;
+      }
+    }
+
+    // Panggil API untuk memperbarui jadwal
+    mutation.mutate(payload);
   };
 
   return (
@@ -88,21 +261,21 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg">
-                        {seminar.namaMahasiswa}
+                        {editSeminar.mahasiswa.nama}
                       </h3>
                       <div className="flex items-center gap-2 text-xs">
                         <span className="bg-white/90 dark:bg-gray-800/90 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full shadow-sm text-center">
-                          Semester 6
+                          Semester {editSeminar.mahasiswa.semester}
                         </span>
                         <span className="flex items-center bg-emerald-600/40 dark:bg-emerald-700/40 px-2 py-0.5 rounded-full">
                           <span className="bg-white dark:bg-gray-200 w-1.5 h-1.5 rounded-full mr-1"></span>
-                          LANJUT
+                          {editSeminar.status_kp.toUpperCase()}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="bg-white/90 dark:bg-gray-800/90 text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-md text-xs font-medium shadow-sm">
-                    12250111527
+                    {editSeminar.mahasiswa.nim}
                   </div>
                 </div>
               </div>
@@ -116,7 +289,7 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                       INSTANSI
                     </div>
                     <div className="font-medium text-xs text-gray-800 dark:text-gray-200">
-                      PT RAPP
+                      {editSeminar.instansi}
                     </div>
                   </div>
                 </div>
@@ -127,7 +300,7 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                       PEMBIMBING INSTANSI
                     </div>
                     <div className="font-medium text-xs text-gray-800 dark:text-gray-200">
-                      MR. JOHN DOE
+                      {editSeminar.pembimbing_instansi}
                     </div>
                   </div>
                 </div>
@@ -138,7 +311,7 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                       DOSEN PEMBIMBING
                     </div>
                     <div className="font-medium text-xs text-gray-800 dark:text-gray-200">
-                      PIZAINI, S.T, M.Kom
+                      {editSeminar.dosen_pembimbing}
                     </div>
                   </div>
                 </div>
@@ -149,7 +322,7 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                       DOSEN PENGUJI
                     </div>
                     <div className="font-medium text-xs text-gray-800 dark:text-gray-200">
-                      {editSeminar.dosenPenguji}
+                      {editSeminar.dosen_penguji}
                     </div>
                   </div>
                 </div>
@@ -194,11 +367,17 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                             <SelectValue placeholder="Pilih ruangan seminar" />
                           </SelectTrigger>
                           <SelectContent>
-                            {ruanganOptions.map((room) => (
-                              <SelectItem key={room} value={room}>
-                                {room}
+                            {isLoadingRuangan ? (
+                              <SelectItem value="loading" disabled>
+                                Memuat ruangan...
                               </SelectItem>
-                            ))}
+                            ) : (
+                              ruanganData?.map((room) => (
+                                <SelectItem key={room.nama} value={room.nama}>
+                                  {room.nama}
+                                </SelectItem>
+                              ))
+                            )}
                           </SelectContent>
                         </Select>
                       </div>
@@ -216,13 +395,10 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                           <Calendar className="h-4 w-4 absolute left-3 top-2.5 text-gray-400" />
                           <Input
                             id="tanggalSeminar"
-                            type="date"
-                            value={editSeminar.tanggalSeminar}
+                            type="text"
+                            value={editSeminar.tanggal}
                             onChange={(e) =>
-                              handleInputChange(
-                                "tanggalSeminar",
-                                e.target.value
-                              )
+                              handleInputChange("tanggal", e.target.value)
                             }
                             className="pl-9 bg-white dark:bg-gray-800"
                           />
@@ -270,9 +446,9 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                     <div className="relative">
                       <GraduationCap className="h-4 w-4 absolute left-3 top-3 text-gray-400 z-10" />
                       <Select
-                        value={editSeminar.dosenPenguji}
+                        value={editSeminar.dosen_penguji}
                         onValueChange={(value) =>
-                          handleInputChange("dosenPenguji", value)
+                          handleInputChange("dosen_penguji", value)
                         }
                       >
                         <SelectTrigger
@@ -282,11 +458,17 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                           <SelectValue placeholder="Pilih dosen penguji" />
                         </SelectTrigger>
                         <SelectContent>
-                          {dosenOptions.map((dosen) => (
-                            <SelectItem key={dosen} value={dosen}>
-                              {dosen}
+                          {isLoadingDosen ? (
+                            <SelectItem value="loading" disabled>
+                              Memuat dosen...
                             </SelectItem>
-                          ))}
+                          ) : (
+                            dosenData?.map((dosen) => (
+                              <SelectItem key={dosen.nip} value={dosen.nama}>
+                                {dosen.nama}
+                              </SelectItem>
+                            ))
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
@@ -303,14 +485,16 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
             variant="outline"
             onClick={onClose}
             className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+            disabled={mutation.isPending}
           >
             Kembali
           </Button>
           <Button
             onClick={handleSave}
             className="bg-green-600 hover:bg-green-700 text-white"
+            disabled={mutation.isPending}
           >
-            Validasi Perubahan
+            {mutation.isPending ? "Menyimpan..." : "Validasi Perubahan"}
           </Button>
         </div>
       </DialogContent>

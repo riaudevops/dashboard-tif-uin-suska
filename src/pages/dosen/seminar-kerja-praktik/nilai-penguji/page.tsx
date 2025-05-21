@@ -2,6 +2,8 @@ import { useState, type FC } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import { Search, Eye, Edit, FileText, Calendar } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import APISeminarKP from "@/services/api/dosen/seminar-kp.service";
 
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,9 +28,8 @@ import {
 } from "@/components/ui/dialog";
 import DashboardCards from "@/components/dosen/seminar-kp/DashboardCard";
 
-// Updated Student interface
 interface Student {
-  id: number;
+  id: string;
   nim: string;
   name: string;
   semester: number;
@@ -37,10 +38,42 @@ interface Student {
   dosenPembimbing: string;
   pembimbingInstansi: string;
   ruangan: string;
-  jam: string;
+  waktu_mulai: string;
+  waktu_selesai: string;
   tanggalSeminar: string;
   status: "belum dinilai" | "selesai";
   tanggalDinilai?: string;
+  idNilai?: string;
+}
+
+interface Jadwal {
+  id: string;
+  nim: string;
+  nama: string;
+  ruangan: string;
+  tanggal: string;
+  waktu_mulai: string;
+  waktu_selesai: string;
+  status: string;
+  semester: number;
+  dosen_pembimbing: string;
+  pembimbing_instansi: string;
+  judul_kp: string;
+  lokasi_kp: string;
+  status_jadwal: string;
+  id_nilai: string;
+  id_pendaftaran_kp: string;
+}
+
+interface ApiResponse {
+  statistics: {
+    totalMahasiswa: number;
+    mahasiswaDinilai: number;
+    mahasiswaBelumDinilai: number;
+    persentaseDinilai: number;
+  };
+  jadwalHariIni: Jadwal[];
+  semuaJadwal: Jadwal[];
 }
 
 const DosenPengujiNilaiPage: FC = () => {
@@ -52,103 +85,87 @@ const DosenPengujiNilaiPage: FC = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Updated mock data with the new Student interface
-  const students: Student[] = [
-    {
-      id: 1,
-      nim: "1234567890",
-      name: "M Farhan Aulia Pratama",
-      semester: 6,
-      judul: "Implementasi Machine Learning untuk Prediksi Cuaca",
-      lokasi: "PT. Teknologi Maju Indonesia",
-      dosenPembimbing: "Dr. Ahmad Fauzi",
-      pembimbingInstansi: "Ir. Budi Santoso",
-      ruangan: "FST301",
-      jam: "09:00",
-      tanggalSeminar: "2025-05-06",
-      status: "selesai",
-      tanggalDinilai: "2025-05-12",
-    },
-    {
-      id: 2,
-      nim: "1234567891",
-      name: "Gilang Ramadhan",
-      semester: 6,
-      judul: "Pengembangan Aplikasi Mobile untuk Manajemen Inventaris",
-      lokasi: "CV. Digital Solution",
-      dosenPembimbing: "Dr. Siti Aminah",
-      pembimbingInstansi: "Hendra Wijaya, S.Kom",
-      ruangan: "FST301",
-      jam: "10:30",
-      tanggalSeminar: "2025-05-06",
-      status: "selesai",
-      tanggalDinilai: "2025-05-12",
-    },
-    {
-      id: 3,
-      nim: "1234567892",
-      name: "Farhan Fadilla",
-      semester: 6,
-      judul: "Sistem Informasi Manajemen Rumah Sakit Berbasis Web",
-      lokasi: "RS Sehat Sejahtera",
-      dosenPembimbing: "Prof. Arif Rahman",
-      pembimbingInstansi: "dr. Diana Putri",
-      ruangan: "FST302",
-      jam: "13:00",
-      tanggalSeminar: "2025-07-08",
-      status: "belum dinilai",
-      tanggalDinilai: "",
-    },
-    {
-      id: 4,
-      nim: "1234567893",
-      name: "Ahmad Kurniawan",
-      semester: 6,
-      judul: "Analisis Keamanan Jaringan pada Perusahaan Fintech",
-      lokasi: "PT. Finance Technology",
-      dosenPembimbing: "Dr. Dewi Susanti",
-      pembimbingInstansi: "Rudi Hermawan, M.TI",
-      ruangan: "FST303",
-      jam: "14:00",
-      tanggalSeminar: "2025-07-08",
-      status: "belum dinilai",
-      tanggalDinilai: "",
-    },
-    {
-      id: 5,
-      nim: "1234567894",
-      name: " M. Farhan Aulia Pratama",
-      semester: 6,
-      judul: "Pengembangan Chatbot untuk Layanan Pelanggan",
-      lokasi: "PT. Solusi Digital",
-      dosenPembimbing: "Prof. Eko Prasetyo",
-      pembimbingInstansi: "Sinta Dewi, S.Kom",
-      ruangan: "FST304",
-      jam: "09:30",
-      tanggalSeminar: "2025-08-08",
-      status: "belum dinilai",
-      tanggalDinilai: "",
-    },
+  const {
+    data: apiData,
+    isLoading,
+    error,
+  } = useQuery<ApiResponse>({
+    queryKey: ["mahasiswaDiuji"],
+    queryFn: APISeminarKP.getDataMahasiswaDiuji,
+  });
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="p-6 text-center dark:text-gray-300">
+          <p>Loading data...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="p-6 text-center dark:text-gray-300">
+          <p>Error loading data: {(error as Error).message}</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  console.log("API Data:", apiData);
+
+  const combinedJadwal = [
+    ...new Map(
+      [...apiData!.jadwalHariIni, ...apiData!.semuaJadwal].map((jadwal) => [
+        jadwal.id || "unknown-id",
+        jadwal,
+      ])
+    ).values(),
   ];
 
-  // Get upcoming seminars (only those that are not graded yet)
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // Set to beginning of today
+  const students: Student[] = combinedJadwal.map((jadwal) => ({
+    id: jadwal.id,
+    nim: jadwal.nim,
+    name: jadwal.nama,
+    semester: jadwal.semester,
+    judul: jadwal.judul_kp,
+    lokasi: jadwal.lokasi_kp,
+    dosenPembimbing: jadwal.dosen_pembimbing,
+    pembimbingInstansi: jadwal.pembimbing_instansi,
+    ruangan: jadwal.ruangan,
+    waktu_mulai: jadwal.waktu_mulai,
+    waktu_selesai: jadwal.waktu_selesai,
+    tanggalSeminar: jadwal.tanggal,
+    status: jadwal.status === "Belum Dinilai" ? "belum dinilai" : "selesai",
+    tanggalDinilai:
+      jadwal.status === "Belum Dinilai" ? undefined : jadwal.tanggal,
+    idNilai: jadwal.id_nilai,
+  }));
 
-  const upcomingSeminars = students
-    .filter(
-      (student) =>
-        student.status === "belum dinilai" &&
-        new Date(student.tanggalSeminar) >= today
-    )
-    .sort(
-      (a, b) =>
-        new Date(a.tanggalSeminar).getTime() -
-        new Date(b.tanggalSeminar).getTime()
-    )
-    .slice(0, 3); // Get only the closest 3 upcoming seminars
+  // Menggunakan jadwalHariIni sebagai sumber utama untuk Seminar Hari Ini
+  const todaySeminars: Student[] = apiData!.jadwalHariIni
+    .map((jadwal) => ({
+      id: jadwal.id,
+      nim: jadwal.nim,
+      name: jadwal.nama,
+      semester: jadwal.semester,
+      judul: jadwal.judul_kp,
+      lokasi: jadwal.lokasi_kp,
+      dosenPembimbing: jadwal.dosen_pembimbing,
+      pembimbingInstansi: jadwal.pembimbing_instansi,
+      ruangan: jadwal.ruangan,
+      waktu_mulai: jadwal.waktu_mulai,
+      waktu_selesai: jadwal.waktu_selesai,
+      tanggalSeminar: jadwal.tanggal,
+      status: jadwal.status === "Belum Dinilai" ? "belum dinilai" : "selesai",
+      tanggalDinilai:
+        jadwal.status === "Belum Dinilai" ? undefined : jadwal.tanggal,
+      idNilai: jadwal.id_nilai,
+    }))
+    .filter((student) => student.status === "belum dinilai");
 
-  // Filter students based on active tab and search query
   const filteredStudents = students.filter((student) => {
     const matchesSearch = student.name
       .toLowerCase()
@@ -160,7 +177,6 @@ const DosenPengujiNilaiPage: FC = () => {
     return matchesSearch && matchesTab;
   });
 
-  // Handle navigation to input nilai page
   const handleOpenInputNilaiPage = (student: Student) => {
     setSelectedStudent(student);
     navigate(`/dosen/seminar-kp/nilai-penguji/input-nilai`, {
@@ -168,7 +184,6 @@ const DosenPengujiNilaiPage: FC = () => {
     });
   };
 
-  // Handle view nilai page
   const handleOpenViewNilaiPage = (student: Student) => {
     setSelectedStudent(student);
     navigate(`/dosen/seminar-kp/nilai-penguji/lihat-nilai`, {
@@ -176,15 +191,29 @@ const DosenPengujiNilaiPage: FC = () => {
     });
   };
 
-  // Handle view detail
   const handleOpenDetailModal = (student: Student) => {
     setSelectedStudent(student);
     setIsDetailModalOpen(true);
   };
 
-  // Function to format date for display
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    const [day, month, year] = dateString.split(" ");
+    const monthMap: { [key: string]: string } = {
+      Januari: "January",
+      Februari: "February",
+      Maret: "March",
+      April: "April",
+      Mei: "May",
+      Juni: "June",
+      Juli: "July",
+      Agustus: "August",
+      September: "September",
+      Oktober: "October",
+      November: "November",
+      Desember: "December",
+    };
+    const formattedMonth = monthMap[month] || month;
+    const date = new Date(`${day} ${formattedMonth} ${year}`);
     return date.toLocaleDateString("id-ID", {
       weekday: "long",
       year: "numeric",
@@ -196,7 +225,6 @@ const DosenPengujiNilaiPage: FC = () => {
   return (
     <DashboardLayout>
       <div className="transition-colors duration-300 p-6">
-        {/* Header */}
         <div className="space-y-6">
           <div>
             <h1 className="text-2xl font-bold mb-4 dark:text-white">
@@ -215,22 +243,23 @@ const DosenPengujiNilaiPage: FC = () => {
             </div>
           </div>
 
-          {/* Dashboard Cards with student data */}
-          <DashboardCards students={students} />
+          <DashboardCards
+            students={students}
+            statistics={apiData!.statistics}
+          />
 
-          {/* Seminar Hari Ini Section */}
           <div className="mt-8 mb-6">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-extrabold flex items-center dark:text-white">
                 <span className="bg-gradient-to-br from-blue-600 to-violet-600 text-white p-1.5 rounded-lg mr-3">
-                  <Calendar className="h-4 w-4 Diseño sin título(1).png" />
+                  <Calendar className="h-4 w-4" />
                 </span>
                 Seminar Hari Ini
               </h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {upcomingSeminars.length === 0 ? (
+              {todaySeminars.length === 0 ? (
                 <div className="col-span-3 p-8 rounded-2xl bg-gray-50 dark:bg-gray-800/40 flex flex-col items-center justify-center border border-gray-100 dark:border-gray-800">
                   <Calendar className="h-12 w-12 text-gray-300 dark:text-gray-600 mb-3" />
                   <p className="text-gray-400 dark:text-gray-500 font-medium">
@@ -238,7 +267,7 @@ const DosenPengujiNilaiPage: FC = () => {
                   </p>
                 </div>
               ) : (
-                upcomingSeminars.map((seminar) => (
+                todaySeminars.map((seminar) => (
                   <div
                     key={seminar.id}
                     className="group rounded-2xl bg-gray-50 hover:bg-white dark:bg-gray-800/40 dark:hover:bg-gray-800/70 overflow-hidden border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10"
@@ -249,7 +278,7 @@ const DosenPengujiNilaiPage: FC = () => {
                           {seminar.ruangan}
                         </Badge>
                         <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">
-                          {seminar.jam}
+                          {seminar.waktu_mulai} - {seminar.waktu_selesai}
                         </div>
                       </div>
 
@@ -264,7 +293,7 @@ const DosenPengujiNilaiPage: FC = () => {
                       <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700/50">
                         <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                           <Calendar className="h-3.5 w-3.5 mr-1.5" />
-                          {formatDate(seminar.tanggalSeminar)}
+                          {seminar.tanggalSeminar}
                         </div>
                       </div>
                     </div>
@@ -274,7 +303,6 @@ const DosenPengujiNilaiPage: FC = () => {
             </div>
           </div>
 
-          {/* Tabs and Search Bar */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <Tabs
               defaultValue="belum_dinilai"
@@ -299,7 +327,6 @@ const DosenPengujiNilaiPage: FC = () => {
                   </TabsTrigger>
                 </TabsList>
 
-                {/* Search Bar */}
                 <div className="flex items-center w-full relative">
                   <Search className="h-4 w-4 absolute left-3 text-gray-400" />
                   <Input
@@ -332,8 +359,6 @@ const DosenPengujiNilaiPage: FC = () => {
           </div>
         </div>
 
-        {/* Detail Modal */}
-        {/* Detail Modal */}
         <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
           <DialogContent className="sm:max-w-[750px] p-4 dark:bg-gray-900 dark:border-gray-700">
             <DialogHeader className="pb-2">
@@ -347,9 +372,7 @@ const DosenPengujiNilaiPage: FC = () => {
             {selectedStudent && (
               <div className="py-2">
                 <div className="grid grid-cols-2 gap-3 mb-3">
-                  {/* Left column */}
                   <div className="space-y-3">
-                    {/* Student Info */}
                     <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
                       <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">
                         Informasi Mahasiswa
@@ -382,7 +405,6 @@ const DosenPengujiNilaiPage: FC = () => {
                       </div>
                     </div>
 
-                    {/* Jadwal Seminar */}
                     <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
                       <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">
                         Jadwal Seminar
@@ -401,7 +423,8 @@ const DosenPengujiNilaiPage: FC = () => {
                             Jam
                           </p>
                           <p className="text-sm font-medium dark:text-gray-200">
-                            {selectedStudent.jam}
+                            {selectedStudent.waktu_mulai} -{" "}
+                            {selectedStudent.waktu_selesai}
                           </p>
                         </div>
                         <div>
@@ -409,20 +432,14 @@ const DosenPengujiNilaiPage: FC = () => {
                             Tanggal
                           </p>
                           <p className="text-sm font-medium dark:text-gray-200">
-                            {
-                              formatDate(selectedStudent.tanggalSeminar).split(
-                                ", "
-                              )[1]
-                            }
+                            {selectedStudent.tanggalSeminar}
                           </p>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Right column */}
                   <div className="space-y-3">
-                    {/* Status Penilaian */}
                     <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
                       <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">
                         Status Penilaian
@@ -465,7 +482,6 @@ const DosenPengujiNilaiPage: FC = () => {
                       </div>
                     </div>
 
-                    {/* Pembimbing */}
                     <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
                       <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">
                         Pembimbing
@@ -492,7 +508,6 @@ const DosenPengujiNilaiPage: FC = () => {
                   </div>
                 </div>
 
-                {/* Full width for Kerja Praktik */}
                 <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
                   <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">
                     Kerja Praktik
@@ -536,8 +551,6 @@ const DosenPengujiNilaiPage: FC = () => {
   );
 };
 
-// Separate component for the students table
-// Badge configuration for student status
 const statusBadgeConfig = {
   "belum dinilai": {
     label: "Belum Dinilai",
@@ -580,13 +593,13 @@ const StudentTable: FC<{
               NIM
             </TableHead>
             <TableHead className="text-center font-semibold dark:text-gray-200">
-              Ruangan
+              Tanggal Seminar
             </TableHead>
             <TableHead className="text-center font-semibold dark:text-gray-200">
               Jam
             </TableHead>
             <TableHead className="text-center font-semibold dark:text-gray-200">
-              Tanggal Seminar
+              Ruangan
             </TableHead>
             <TableHead className="text-center font-semibold dark:text-gray-200">
               Status
@@ -625,14 +638,15 @@ const StudentTable: FC<{
                   {student.nim}
                 </TableCell>
                 <TableCell className="text-center dark:text-gray-300">
-                  {student.ruangan}
-                </TableCell>
-                <TableCell className="text-center dark:text-gray-300">
-                  {student.jam}
-                </TableCell>
-                <TableCell className="text-center dark:text-gray-300">
                   {student.tanggalSeminar}
                 </TableCell>
+                <TableCell className="text-center dark:text-gray-300">
+                  {student.waktu_mulai} - {student.waktu_selesai}
+                </TableCell>
+                <TableCell className="text-center dark:text-gray-300">
+                  {student.ruangan}
+                </TableCell>
+
                 <TableCell className="text-center">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${

@@ -1,5 +1,5 @@
 import { useState, type FC } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import { Search, Edit } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -15,79 +15,81 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import DashboardJadwalCard from "@/components/dosen/seminar-kp/DashboardJadwalCard";
-import EditJadwalSeminarModal from "@/components/koordinator-kp/seminar/edit-jadwal-modal";
+import EditJadwalSeminarModal from "@/components/koordinator/seminar/edit-jadwal-modal";
+import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 
-// Interface untuk data seminar
-interface Seminar {
-  id: number;
-  namaMahasiswa: string;
+// Tipe untuk data seminar
+interface Mahasiswa {
+  nama: string;
+  nim: string;
+  semester: number;
+}
+
+interface JadwalSeminar {
+  id: string;
+  mahasiswa: Mahasiswa;
+  status_kp: "Baru" | "Lanjut";
   ruangan: string;
   jam: string;
-  tanggalSeminar: string;
-  dosenPenguji: string;
-  status: "terjadwal" | "selesai" | "diganti";
+  tanggal: string;
+  dosen_penguji: string;
+  dosen_pembimbing: string;
+  instansi: string;
+  pembimbing_instansi: string;
+  status: "Menunggu" | "Selesai" | "Jadwal_Ulang";
+}
+
+interface JadwalResponse {
+  total_seminar: number;
+  total_seminar_minggu_ini: number;
+  total_jadwal_ulang: number;
+  jadwal: {
+    semua: JadwalSeminar[];
+    hari_ini: JadwalSeminar[];
+    minggu_ini: JadwalSeminar[];
+  };
+  tahun_ajaran: {
+    id: number;
+    nama: string;
+  };
 }
 
 // Komponen Utama
 const KoordinatorJadwalSeminarPage: FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedSeminar, setSelectedSeminar] = useState<Seminar | null>(null);
+  const [selectedSeminar, setSelectedSeminar] = useState<JadwalSeminar | null>(
+    null
+  );
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<
     "semua" | "hari_ini" | "minggu_ini"
   >("semua");
-  // const navigate = useNavigate();
 
-  // Data dummy seminar
-  const [seminars, setSeminars] = useState<Seminar[]>([
-    {
-      id: 1,
-      namaMahasiswa: "M Farhan Aulia Pratama",
-      ruangan: "FST301",
-      jam: "09:00",
-      tanggalSeminar: "2025-05-08",
-      dosenPenguji: "Dr. Ahmad Fauzi",
-      status: "terjadwal",
-    },
-    {
-      id: 2,
-      namaMahasiswa: "Gilang Ramadhan",
-      ruangan: "FST302",
-      jam: "10:30",
-      tanggalSeminar: "2025-05-08",
-      dosenPenguji: "Dr. Siti Aminah",
-      status: "selesai",
-    },
-    {
-      id: 3,
-      namaMahasiswa: "Farhan Fadilla",
-      ruangan: "FST303",
-      jam: "13:00",
-      tanggalSeminar: "2025-05-09",
-      dosenPenguji: "Prof. Arif Rahman",
-      status: "diganti",
-    },
-    {
-      id: 4,
-      namaMahasiswa: "Ahmad Kurniawan",
-      ruangan: "FST304",
-      jam: "14:00",
-      tanggalSeminar: "2025-05-10",
-      dosenPenguji: "Dr. Dewi Susanti",
-      status: "terjadwal",
-    },
-    {
-      id: 5,
-      namaMahasiswa: "Anisa Putri",
-      ruangan: "FST305",
-      jam: "09:30",
-      tanggalSeminar: "2025-05-11",
-      dosenPenguji: "Prof. Eko Prasetyo",
-      status: "terjadwal",
-    },
-  ]);
+  // Fetch data menggunakan TanStack Query
+  const { data, isLoading, isError, error } = useQuery<JadwalResponse>({
+    queryKey: ["koordinator-jadwal-seminar"],
+    queryFn: APISeminarKP.getJadwalSeminar,
+  });
 
-  const handleOpenModal = (seminar: Seminar) => {
+  // Ambil data untuk masing-masing tab dari API
+  const semuaSeminars: JadwalSeminar[] = data?.jadwal?.semua || [];
+  const hariIniSeminars: JadwalSeminar[] = data?.jadwal?.hari_ini || [];
+  const mingguIniSeminars: JadwalSeminar[] = data?.jadwal?.minggu_ini || [];
+
+  // Filter berdasarkan pencarian nama mahasiswa untuk setiap tab
+  const filteredSemuaSeminars = semuaSeminars.filter((seminar) =>
+    seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredHariIniSeminars = hariIniSeminars.filter((seminar) =>
+    seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredMingguIniSeminars = mingguIniSeminars.filter((seminar) =>
+    seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleOpenModal = (seminar: JadwalSeminar) => {
     setSelectedSeminar(seminar);
     setIsModalOpen(true);
   };
@@ -97,62 +99,52 @@ const KoordinatorJadwalSeminarPage: FC = () => {
     setSelectedSeminar(null);
   };
 
-  const handleSaveSeminar = (updatedSeminar: Seminar) => {
-    // Update the seminar data in the state
-    setSeminars((prevSeminars) =>
-      prevSeminars.map((seminar) =>
-        seminar.id === updatedSeminar.id ? updatedSeminar : seminar
-      )
-    );
+  const handleSaveSeminar = (updatedSeminar: JadwalSeminar) => {
     console.log("Updated seminar:", updatedSeminar);
+    handleCloseModal();
   };
 
-  // Filter seminars berdasarkan tab dan pencarian
-  const filteredSeminars = seminars.filter((seminar) => {
-    const matchesSearch = seminar.namaMahasiswa
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const seminarDate = new Date(seminar.tanggalSeminar);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="text-center text-gray-600 dark:text-gray-300">
+          Memuat jadwal seminar...
+        </div>
+      </DashboardLayout>
+    );
+  }
 
-    const thisWeekStart = new Date(today);
-    thisWeekStart.setDate(today.getDate() - today.getDay());
-
-    if (activeTab === "hari_ini") {
-      return (
-        matchesSearch && seminarDate.toDateString() === today.toDateString()
-      );
-    } else if (activeTab === "minggu_ini") {
-      return (
-        matchesSearch &&
-        seminarDate >= thisWeekStart &&
-        seminarDate <=
-          new Date(thisWeekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
-      );
-    }
-    return matchesSearch;
-  });
-
-  // Format tanggal
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
+  if (isError) {
+    return (
+      <DashboardLayout>
+        <div className="text-center text-red-600 dark:text-red-300">
+          Gagal mengambil data: {(error as Error).message}
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
       <div>
         <div className="space-y-6">
-          <h1 className="text-2xl font-bold dark:text-white">Jadwal Seminar</h1>
+          <div>
+            <h1 className="text-2xl font-bold dark:text-white">
+              Jadwal Seminar
+            </h1>
+            <div className="mt-2">
+              <span className="mr-2 text-gray-600 dark:text-gray-300">
+                Tahun Ajaran
+              </span>
+              <span className="inline-flex items-center rounded-md bg-gray-100 dark:bg-gray-900 dark:text-gray-300 px-2 py-1 text-sm font-medium">
+                {data?.tahun_ajaran?.nama || "Tidak tersedia"}
+              </span>
+            </div>
+          </div>
 
-          <DashboardJadwalCard seminars={seminars} />
+          <DashboardJadwalCard />
 
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <Tabs
               defaultValue="semua"
               onValueChange={(value) =>
@@ -196,23 +188,20 @@ const KoordinatorJadwalSeminarPage: FC = () => {
 
               <TabsContent value="semua" className="mt-4">
                 <SeminarTable
-                  seminars={filteredSeminars}
+                  seminars={filteredSemuaSeminars}
                   onEdit={handleOpenModal}
-                  formatDate={formatDate}
                 />
               </TabsContent>
               <TabsContent value="hari_ini" className="mt-4">
                 <SeminarTable
-                  seminars={filteredSeminars}
+                  seminars={filteredHariIniSeminars}
                   onEdit={handleOpenModal}
-                  formatDate={formatDate}
                 />
               </TabsContent>
               <TabsContent value="minggu_ini" className="mt-4">
                 <SeminarTable
-                  seminars={filteredSeminars}
+                  seminars={filteredMingguIniSeminars}
                   onEdit={handleOpenModal}
-                  formatDate={formatDate}
                 />
               </TabsContent>
             </Tabs>
@@ -220,7 +209,6 @@ const KoordinatorJadwalSeminarPage: FC = () => {
         </div>
       </div>
 
-      {/* Render the modal */}
       <EditJadwalSeminarModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
@@ -233,10 +221,9 @@ const KoordinatorJadwalSeminarPage: FC = () => {
 
 // Komponen Tabel Seminar
 const SeminarTable: FC<{
-  seminars: Seminar[];
-  onEdit: (seminar: Seminar) => void;
-  formatDate: (dateString: string) => string;
-}> = ({ seminars, onEdit, formatDate }) => {
+  seminars: JadwalSeminar[];
+  onEdit: (seminar: JadwalSeminar) => void;
+}> = ({ seminars, onEdit }) => {
   return (
     <Card className="rounded-none shadow-none dark:bg-gray-900 dark:border-gray-700">
       <Table>
@@ -257,10 +244,16 @@ const SeminarTable: FC<{
             <TableHead className="font-semibold text-center dark:text-gray-200">
               Tanggal Seminar
             </TableHead>
-            <TableHead className="font-semibold text-center dark:text-gray-200">
+            <TableHead className="text-center font-semibold dark:text-gray-200">
+              Dosen Pembimbing
+            </TableHead>
+            <TableHead className="text-center font-semibold dark:text-gray-200">
               Dosen Penguji
             </TableHead>
-            <TableHead className="font-semibold text-center dark:text-gray-200">
+            <TableHead className="text-center font-semibold dark:text-gray-200">
+              Status
+            </TableHead>
+            <TableHead className="text-center font-semibold dark:text-gray-200">
               Aksi
             </TableHead>
           </TableRow>
@@ -269,8 +262,8 @@ const SeminarTable: FC<{
           {seminars.length === 0 ? (
             <TableRow className="dark:border-gray-700 dark:hover:bg-gray-700">
               <TableCell
-                colSpan={7}
-                className="py-6 text-center text-muted-foreground dark:text-gray-400"
+                colSpan={9}
+                className="text-center py-6 text-muted-foreground dark:text-gray-400"
               >
                 Tidak ada data yang ditemukan
               </TableCell>
@@ -285,7 +278,7 @@ const SeminarTable: FC<{
                   {index + 1}
                 </TableCell>
                 <TableCell className="dark:text-gray-300">
-                  {seminar.namaMahasiswa}
+                  {seminar.mahasiswa.nama}
                 </TableCell>
                 <TableCell className="text-center dark:text-gray-300">
                   {seminar.ruangan}
@@ -294,10 +287,16 @@ const SeminarTable: FC<{
                   {seminar.jam}
                 </TableCell>
                 <TableCell className="text-center dark:text-gray-300">
-                  {formatDate(seminar.tanggalSeminar)}
+                  {seminar.tanggal}
                 </TableCell>
                 <TableCell className="text-center dark:text-gray-300">
-                  {seminar.dosenPenguji}
+                  {seminar.dosen_pembimbing}
+                </TableCell>
+                <TableCell className="text-center dark:text-gray-300">
+                  {seminar.dosen_penguji}
+                </TableCell>
+                <TableCell className="text-center dark:text-gray-300">
+                  {seminar.status}
                 </TableCell>
                 <TableCell className="text-center">
                   <Button

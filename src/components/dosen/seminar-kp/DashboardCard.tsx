@@ -3,9 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, CheckCircle, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
-// Updated Student interface
-interface Student {
-  id: number;
+export interface Student {
+  id: string;
   nim: string;
   name: string;
   semester: number;
@@ -17,41 +16,27 @@ interface Student {
   jam: string;
   tanggalSeminar: string;
   status: "belum dinilai" | "selesai";
+  tanggalDinilai?: string;
 }
 
 interface DashboardCardsProps {
   students: Student[];
+  statistics: {
+    totalMahasiswa: number;
+    mahasiswaDinilai: number;
+    mahasiswaBelumDinilai: number;
+    persentaseDinilai: number;
+  };
 }
 
-const DashboardCards: FC<DashboardCardsProps> = ({ students }) => {
-  // Calculate statistics for dashboard cards
-  const totalStudents = students.length;
-  const belumDinilaiCount = students.filter(
-    (s) => s.status === "belum dinilai"
-  ).length;
-  const selesaiCount = students.filter((s) => s.status === "selesai").length;
-  const totalPercentage = totalStudents
-    ? Math.round((selesaiCount / totalStudents) * 100)
-    : 0;
+const DashboardCards: FC<DashboardCardsProps> = ({ statistics }) => {
+  const {
+    totalMahasiswa,
+    mahasiswaDinilai,
+    mahasiswaBelumDinilai,
+    persentaseDinilai,
+  } = statistics;
 
-  // Averages by semester (new card)
-  const semesterCounts = students.reduce((acc, student) => {
-    acc[student.semester] = (acc[student.semester] || 0) + 1;
-    return acc;
-  }, {} as Record<number, number>);
-
-  const highestSemester = Object.keys(semesterCounts).reduce(
-    (highest, semester) => {
-      const semNum = Number(semester);
-      return semesterCounts[semNum] > semesterCounts[highest]
-        ? semNum
-        : highest;
-    },
-    Number(Object.keys(semesterCounts)[0]) || 0
-  );
-  console.log(highestSemester);
-
-  // Animation variants
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -95,7 +80,7 @@ const DashboardCards: FC<DashboardCardsProps> = ({ students }) => {
               transition={{ type: "spring", delay: 0.1 }}
               className="text-5xl font-bold text-indigo-800 dark:text-white"
             >
-              {totalStudents}
+              {totalMahasiswa}
             </motion.div>
             <p className="text-sm text-indigo-600 dark:text-indigo-300 mt-1">
               Mahasiswa Diuji
@@ -134,19 +119,19 @@ const DashboardCards: FC<DashboardCardsProps> = ({ students }) => {
                 transition={{ type: "spring", delay: 0.1 }}
                 className="text-5xl font-bold text-emerald-800 dark:text-white"
               >
-                {totalPercentage}
+                {persentaseDinilai}
               </motion.div>
               <span className="text-xl font-bold text-emerald-600 dark:text-emerald-300">
                 %
               </span>
             </div>
             <p className="text-sm text-emerald-600 dark:text-emerald-300 mt-1">
-              {selesaiCount} dari {totalStudents} telah dinilai
+              {mahasiswaDinilai} dari {totalMahasiswa} telah dinilai
             </p>
             <div className="h-2 w-full bg-emerald-100 dark:bg-emerald-900 rounded-full mt-3">
               <motion.div
                 initial={{ width: "0%" }}
-                animate={{ width: `${totalPercentage}%` }}
+                animate={{ width: `${persentaseDinilai}%` }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
                 className="h-2 bg-emerald-500 rounded-full"
               />
@@ -176,7 +161,7 @@ const DashboardCards: FC<DashboardCardsProps> = ({ students }) => {
               transition={{ type: "spring", delay: 0.1 }}
               className="text-5xl font-bold text-amber-800 dark:text-white"
             >
-              {belumDinilaiCount}
+              {mahasiswaBelumDinilai}
             </motion.div>
             <p className="text-sm text-amber-600 dark:text-amber-300 mt-1">
               Mahasiswa belum dinilai
@@ -185,7 +170,9 @@ const DashboardCards: FC<DashboardCardsProps> = ({ students }) => {
               <motion.div
                 initial={{ width: "0%" }}
                 animate={{
-                  width: `${(belumDinilaiCount / totalStudents) * 100}%`,
+                  width: totalMahasiswa
+                    ? `${(mahasiswaBelumDinilai / totalMahasiswa) * 100}%`
+                    : "0%",
                 }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
                 className="h-2 bg-amber-500 rounded-full"

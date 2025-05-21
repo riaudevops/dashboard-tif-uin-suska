@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Map,
   UserRound,
@@ -27,149 +27,158 @@ interface InfoData {
   [key: string]: string | undefined; // Index signature to allow any string key
 }
 
-// Default data
-const defaultInfoData: InfoData = {
-  judul: "Analisis Sistem Keamanan Sistem Perencanaan Divisi Sdm PT. RAPP",
-  lokasi: "PT RAPP",
-  dosenPembimbing: "Pizaini, S.T, M.Kom",
-  dosenPenguji: "Iwan Iskandar, M.T",
-  lamaKerjaPraktek: "20 Januari 2025 - 18 Juni 2025",
-  kontakPembimbing: "081234567890",
-  kontakPenguji: "089876543210",
-  jadwal: "10.00 WIB / 13 Juni 2025",
-  ruangan: "FST 301",
-  nilai: "100",
-};
-
 // Define the props type for the component
 interface InfoCardProps {
-  data?: InfoData;
+  data: InfoData;
   displayItems?: string[];
   className?: string;
 }
 
-const InfoCard: React.FC<InfoCardProps> = ({
-  data = defaultInfoData,
-  displayItems = [],
-  className = "",
-}) => {
-  // Map of icons for each info item
-  const iconMap: Record<string, React.ReactNode> = {
-    judul: <Book className="size-4 text-emerald-500 dark:text-emerald-400" />,
-    lokasi: <Map className="size-4 text-emerald-500 dark:text-emerald-400" />,
-    lamaKerjaPraktek: (
-      <Clock className="size-4 text-emerald-500 dark:text-emerald-400" />
-    ),
-    dosenPembimbing: (
-      <UserRound className="size-4 text-emerald-500 dark:text-emerald-400" />
-    ),
-    kontakPembimbing: (
-      <Phone className="size-4 text-emerald-500 dark:text-emerald-400" />
-    ),
-    dosenPenguji: (
-      <User className="size-4 text-emerald-500 dark:text-emerald-400" />
-    ),
-    kontakPenguji: (
-      <Phone className="size-4 text-emerald-500 dark:text-emerald-400" />
-    ),
-    jadwal: (
-      <CalendarDays className="size-4 text-emerald-500 dark:text-emerald-400" />
-    ),
-    ruangan: (
-      <DoorOpen className="size-4 text-emerald-500 dark:text-emerald-400" />
-    ),
-    nilai: <Award className="size-4 text-emerald-500 dark:text-emerald-400" />,
-  };
+const InfoCard: React.FC<InfoCardProps> = React.memo(
+  ({ data, displayItems = [], className = "" }) => {
+    // Debugging: Log data hanya saat data berubah
+    useEffect(() => {
+      console.log("InfoCard Data:", data);
+    }, [data]); // Hanya log saat data berubah
 
-  // Map of titles for each info item
-  const titleMap: Record<string, string> = {
-    judul: "Judul Laporan",
-    lokasi: "Lokasi Kerja Praktik",
-    lamaKerjaPraktek: "Lama Kerja Praktek",
-    dosenPembimbing: "Dosen Pembimbing",
-    kontakPembimbing: "Kontak Pembimbing",
-    dosenPenguji: "Dosen Penguji",
-    kontakPenguji: "Kontak Penguji",
-    jadwal: "Jadwal",
-    ruangan: "Ruangan",
-    nilai: "Nilai Mata Kuliah KP Anda",
-  };
+    // Map of icons for each info item
+    const iconMap: Record<string, React.ReactNode> = {
+      judul: <Book className="size-4 text-emerald-500 dark:text-emerald-400" />,
+      lokasi: <Map className="size-4 text-emerald-500 dark:text-emerald-400" />,
+      lamaKerjaPraktek: (
+        <Clock className="size-4 text-emerald-500 dark:text-emerald-400" />
+      ),
+      dosenPembimbing: (
+        <UserRound className="size-4 text-emerald-500 dark:text-emerald-400" />
+      ),
+      kontakPembimbing: (
+        <Phone className="size-4 text-emerald-500 dark:text-emerald-400" />
+      ),
+      dosenPenguji: (
+        <User className="size-4 text-emerald-500 dark:text-emerald-400" />
+      ),
+      kontakPenguji: (
+        <Phone className="size-4 text-emerald-500 dark:text-emerald-400" />
+      ),
+      jadwal: (
+        <CalendarDays className="size-4 text-emerald-500 dark:text-emerald-400" />
+      ),
+      ruangan: (
+        <DoorOpen className="size-4 text-emerald-500 dark:text-emerald-400" />
+      ),
+      nilai: (
+        <Award className="size-4 text-emerald-500 dark:text-emerald-400" />
+      ),
+    };
 
-  // Separate judul and nilai from other display items
-  const judulItem = displayItems.includes("judul") ? "judul" : null;
-  const nilaiItem = displayItems.includes("nilai") ? "nilai" : null;
-  const otherItems = displayItems.filter(
-    (item) => item !== "judul" && item !== "nilai"
-  );
+    // Map of titles for each info item
+    const titleMap: Record<string, string> = {
+      judul: "Judul Laporan",
+      lokasi: "Lokasi Kerja Praktik",
+      lamaKerjaPraktek: "Lama Kerja Praktik",
+      dosenPembimbing: "Dosen Pembimbing",
+      kontakPembimbing: "Kontak Pembimbing",
+      dosenPenguji: "Dosen Penguji",
+      kontakPenguji: "Kontak Penguji",
+      jadwal: "Jadwal",
+      ruangan: "Ruangan",
+      nilai: "Nilai Mata Kuliah KP Anda",
+    };
 
-  return (
-    <div
-      className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-none rounded-lg p-4 ${className}`}
-    >
-      <div className="flex flex-col md:flex-row gap-4">
-        {/* Nilai section - 1/5 of container width */}
-        {nilaiItem && (
-          <div className="md:w-1/5 w-full">
-            <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-md p-4 h-full flex flex-col items-center justify-center">
-              <div className="flex flex-col items-center justify-center">
-                <h3 className="text-sm font-semibold text-emerald-600 dark:text-emerald-300 text-center mb-2">
-                  Nilai Mata Kuliah KP Anda
-                </h3>
-                <p className="text-4xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">
-                  {data[nilaiItem] || "-"}
-                </p>
+    // Separate judul and nilai from other display items
+    const judulItem = displayItems.includes("judul") ? "judul" : null;
+    const nilaiItem = displayItems.includes("nilai") ? "nilai" : null;
+    const otherItems = displayItems.filter(
+      (item) => item !== "judul" && item !== "nilai"
+    );
+
+    // Jika data kosong, tampilkan placeholder
+    if (!data || Object.keys(data).length === 0) {
+      return <div>Data tidak tersedia</div>;
+    }
+
+    return (
+      <div
+        className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-none rounded-lg p-4 ${className}`}
+      >
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Nilai section - 1/5 of container width */}
+          {nilaiItem && (
+            <div className="md:w-1/5 w-full">
+              <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-md p-4 h-full flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center">
+                  <h3 className="text-sm font-semibold text-emerald-600 dark:text-emerald-300 text-center mb-2">
+                    Nilai Mata Kuliah KP Anda
+                  </h3>
+                  <p className="text-4xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">
+                    {typeof data[nilaiItem] === "string"
+                      ? data[nilaiItem]
+                      : "-"}
+                  </p>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Right side content - 4/5 of container width */}
-        <div className="flex-1 md:w-4/5">
-          {/* Judul Laporan - Full Row */}
-          {judulItem && (
-            <div className="mb-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-md p-3 w-full">
-              <div className="flex items-center">
-                {iconMap[judulItem]}
-                <h3 className="ml-2 text-sm font-semibold text-emerald-600 dark:text-emerald-300">
-                  {titleMap[judulItem]}
-                </h3>
-              </div>
-              <p className="pl-6 text-sm font-medium text-gray-800 dark:text-gray-200 break-words mt-1">
-                {data[judulItem] || "Belum diisi"}
-              </p>
             </div>
           )}
 
-          {/* Other items in a single row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-            {otherItems.map((key) => {
-              const icon = iconMap[key] || (
-                <Info className="size-4 text-emerald-500 dark:text-emerald-400" />
-              );
-              const title = titleMap[key] || key;
-
-              return (
-                <div
-                  key={key}
-                  className="bg-gray-50 dark:bg-gray-800/50 rounded-md p-3"
-                >
-                  <div className="flex items-center">
-                    {icon}
-                    <h3 className="ml-2 text-xs font-semibold text-emerald-600 dark:text-emerald-300">
-                      {title}
-                    </h3>
-                  </div>
-                  <p className="pl-6 text-xs text-gray-700 dark:text-gray-300 break-words mt-1">
-                    {data[key] || "Belum diisi"}
-                  </p>
+          {/* Right side content - 4/5 of container width */}
+          <div className="flex-1 md:w-4/5">
+            {/* Judul Laporan - Full Row */}
+            {judulItem && (
+              <div className="mb-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-md p-3 w-full">
+                <div className="flex items-center">
+                  {iconMap[judulItem]}
+                  <h3 className="ml-2 text-sm font-semibold text-emerald-600 dark:text-emerald-300">
+                    {titleMap[judulItem]}
+                  </h3>
                 </div>
-              );
-            })}
+                <p className="pl-6 text-sm font-medium text-gray-800 dark:text-gray-200 break-words mt-1">
+                  {typeof data[judulItem] === "string"
+                    ? data[judulItem]
+                    : "Belum diisi"}
+                </p>
+              </div>
+            )}
+
+            {/* Other items in a single row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              {otherItems.map((key) => {
+                const icon = iconMap[key] || (
+                  <Info className="size-4 text-emerald-500 dark:text-emerald-400" />
+                );
+                const title = titleMap[key] || key;
+
+                return (
+                  <div
+                    key={key}
+                    className="bg-gray-50 dark:bg-gray-800/50 rounded-md p-3"
+                  >
+                    <div className="flex items-center">
+                      {icon}
+                      <h3 className="ml-2 text-xs font-semibold text-emerald-600 dark:text-emerald-300">
+                        {title}
+                      </h3>
+                    </div>
+                    <p className="pl-6 text-xs text-gray-700 dark:text-gray-300 break-words mt-1">
+                      {typeof data[key] === "string"
+                        ? data[key]
+                        : "Belum diisi"}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  },
+  (prevProps, nextProps) => {
+    return (
+      prevProps.data === nextProps.data &&
+      prevProps.displayItems === nextProps.displayItems &&
+      prevProps.className === nextProps.className
+    );
+  }
+);
 
 export default InfoCard;

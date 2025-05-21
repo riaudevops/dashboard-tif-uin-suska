@@ -53,7 +53,7 @@ export default function Step6({ activeStep, status }: Step6Props) {
   };
 
   return (
-    <DashboardLayout>
+    <div>
       <h1 className="text-2xl font-bold mb-8">
         Validasi Kelengkapan Berkas Seminar Kerja Praktik
       </h1>
@@ -145,6 +145,6 @@ export default function Step6({ activeStep, status }: Step6Props) {
           )
         )}
       </div>
-    </DashboardLayout>
+    </div>
   );
 }

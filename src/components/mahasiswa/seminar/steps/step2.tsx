@@ -1,5 +1,5 @@
-import { FC } from "react";
-import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
+import { FC, useState, useEffect, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Stepper from "@/components/mahasiswa/seminar/stepper";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,24 +8,47 @@ import { CheckCircle2, ExternalLink } from "lucide-react";
 import Status from "../status";
 import { Label } from "@/components/ui/label";
 import InfoCard from "../informasi-seminar";
+import { toast } from "@/hooks/use-toast";
+import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
+// Type definitions
 type StatusType = "belum" | "validasi" | "ditolak";
+type DocumentStatus = "default" | "Terkirim" | "Divalidasi" | "Ditolak";
 
 interface Step2Props {
   activeStep: number;
-  status: StatusType;
 }
 
 interface CardHeaderProps {
   title: string;
 }
 
+interface IDInputCardProps {
+  status: DocumentStatus;
+  readOnly?: boolean;
+  defaultValue?: string;
+  onSubmit?: (idPengajuan: string) => void;
+  onChange?: (value: string) => void;
+}
+
+// Komponen CardHeaderGradient
 const CardHeaderGradient: FC<CardHeaderProps> = ({ title }) => (
   <div className="bg-gradient-to-r from-emerald-600 to-green-500 px-6 py-4">
     <CardTitle className="text-white text-lg font-medium">{title}</CardTitle>
   </div>
 );
 
+// Komponen InstructionCard
 const InstructionCard: FC = () => (
   <Card className="h-full overflow-hidden rounded-xl border dark:bg-gray-900 shadow-none dark:border-none">
     <CardHeaderGradient title="Silakan Lakukan Pengajuan Pembuatan Surat Undangan" />
@@ -55,18 +78,35 @@ const InstructionCard: FC = () => (
   </Card>
 );
 
-interface IDInputCardProps {
-  status: StatusType;
-  readOnly?: boolean;
-  defaultValue?: string;
-}
-
+// Komponen IDInputCard
 const IDInputCard: FC<IDInputCardProps> = ({
   status,
   readOnly = false,
   defaultValue,
+  onSubmit,
+  onChange,
 }) => {
-  const isEditable = status !== "validasi";
+  const [inputValue, setInputValue] = useState(defaultValue || "");
+
+  useEffect(() => {
+    setInputValue(defaultValue || "");
+  }, [defaultValue]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInputValue(value);
+    if (onChange) {
+      onChange(value);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (onSubmit) {
+      onSubmit(inputValue);
+    }
+  };
+
+  const isEditable = status === "default" || status === "Ditolak";
 
   return (
     <Card className="h-full overflow-hidden rounded-xl border shadow-none dark:border-none dark:bg-gray-900">
@@ -82,8 +122,13 @@ const IDInputCard: FC<IDInputCardProps> = ({
           <div className="relative">
             <Input
               id="id-input"
-              placeholder={defaultValue || "Masukkan ID Pengajuan"}
-              defaultValue={defaultValue}
+              placeholder={
+                status === "Terkirim"
+                  ? defaultValue || "Masukkan ID Pengajuan"
+                  : defaultValue || "Masukkan ID Pengajuan"
+              }
+              value={inputValue}
+              onChange={handleInputChange}
               className="border-gray-200 dark:border-gray-700 focus:border-emerald-500 focus:ring-emerald-500 dark:focus:border-emerald-400 dark:focus:ring-emerald-400 pl-3 pr-3 py-2"
               readOnly={readOnly}
             />
@@ -94,7 +139,10 @@ const IDInputCard: FC<IDInputCardProps> = ({
         </div>
         {isEditable && (
           <div className="flex justify-end gap-3 mt-auto">
-            <Button className="bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-500 hover:to-green-400 text-white border-none">
+            <Button
+              className="bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-500 hover:to-green-400 text-white border-none"
+              onClick={handleSubmit}
+            >
               Kirim
             </Button>
           </div>
@@ -104,33 +152,105 @@ const IDInputCard: FC<IDInputCardProps> = ({
   );
 };
 
-const getStatusConfig = (status: StatusType) => {
-  const configs = {
-    belum: {
-      title: "Anda belum memasukkan ID Pengajuan Surat Undangan Seminar KP",
-      subtitle: "Silakan masukkan ID Pengajuan Surat Undangan Seminar KP!",
-      readonly: false,
-      defaultValue: undefined,
-    },
-    validasi: {
-      title: "Input ID Pengajuan Surat Undangan anda dalam proses validasi",
-      subtitle: "Silakan menunggu konfirmasi berikutnya!",
-      readonly: true,
-      defaultValue: "12JDUAHAHIOH",
-    },
-    ditolak: {
-      title: "Input ID Pengajuan Surat Undangan Anda Ditolak",
-      subtitle: "Silakan masukkan kode yang benar!",
-      readonly: false,
-      defaultValue: undefined,
-    },
-  };
+// Main Component
+const Step2: FC<Step2Props> = ({ activeStep }) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [idPengajuan, setIdPengajuan] = useState<string>("");
+  const [lastSubmittedId, setLastSubmittedId] = useState<string>(""); // Simpan ID yang terakhir dikirim
+  const [step2Status, setStep2Status] = useState<DocumentStatus>("default");
+  const [komentar, setKomentar] = useState<string | undefined>(undefined);
 
-  return configs[status];
-};
+  // Fetch data menggunakan TanStack Query
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["seminar-kp-dokumen-step2"],
+    queryFn: APISeminarKP.getDataMydokumen,
+    staleTime: Infinity,
+  });
 
-const Step2: FC<Step2Props> = ({ activeStep, status }) => {
-  const statusConfig = getStatusConfig(status);
+  // Mutation untuk POST ID Pengajuan
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (newIdPengajuan: string) => {
+      const nim = data?.data.nim;
+      const id_pendaftaran_kp = data?.data.pendaftaran_kp[0]?.id;
+      const url = "/seminar-kp/dokumen/id-surat-undangan";
+      return APISeminarKP.postLinkDokumen({
+        nim,
+        link_path: newIdPengajuan,
+        id_pendaftaran_kp,
+        url,
+      });
+    },
+    onSuccess: (response, newIdPengajuan) => {
+      toast({
+        title: "👌 Berhasil",
+        description: `ID Pengajuan berhasil dikirim dengan ID: ${response.id}`,
+        duration: 3000,
+      });
+      setLastSubmittedId(newIdPengajuan); // Simpan ID yang dikirim
+      setIdPengajuan(newIdPengajuan); // Perbarui idPengajuan
+      queryClient.invalidateQueries({ queryKey: ["seminar-kp-dokumen-step2"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "❌ Gagal",
+        description: `Gagal mengirim ID Pengajuan: ${error.message}`,
+        duration: 3000,
+      });
+    },
+  });
+
+  // Inisialisasi data berdasarkan API
+  useEffect(() => {
+    if (data?.data) {
+      const step2Docs = data.data.dokumen_seminar_kp.step2 || [];
+      const step2Accessible = data.data.steps_info.step2_accessible;
+
+      if (step2Docs.length > 0) {
+        const apiIdPengajuan = step2Docs[0].id_pengajuan || "";
+        // Prioritaskan lastSubmittedId jika ada, jika tidak gunakan dari API
+        setIdPengajuan(lastSubmittedId || apiIdPengajuan);
+        setStep2Status(step2Docs[0].status as DocumentStatus);
+        setKomentar(step2Docs[0].komentar || undefined);
+      } else {
+        // Jika tidak ada data dokumen, gunakan lastSubmittedId jika ada
+        if (lastSubmittedId) {
+          setIdPengajuan(lastSubmittedId);
+          setStep2Status("Terkirim");
+        } else {
+          setIdPengajuan("");
+          setStep2Status(step2Accessible ? "default" : "Terkirim");
+        }
+      }
+    }
+  }, [data, lastSubmittedId]);
+
+  // Hitung infoData untuk InfoCard
+  const infoData = useMemo(() => {
+    return data?.data
+      ? {
+          judul: data.data.pendaftaran_kp[0]?.judul_kp || "Belum diisi",
+          lokasi: data.data.pendaftaran_kp[0]?.instansi?.nama || "Belum diisi",
+          dosenPembimbing:
+            data.data.pendaftaran_kp[0]?.dosen_pembimbing?.nama ||
+            "Belum diisi",
+          kontakPembimbing:
+            data.data.pendaftaran_kp[0]?.dosen_pembimbing?.no_hp ||
+            "Belum diisi",
+          lamaKerjaPraktek: `${
+            data.data.pendaftaran_kp[0]?.tanggal_mulai
+              ? new Date(
+                  data.data.pendaftaran_kp[0].tanggal_mulai
+                ).toLocaleDateString("id-ID", {
+                  day: "2-digit",
+                  month: "long",
+                  year: "numeric",
+                })
+              : "Belum diisi"
+          } - ${data.data.pendaftaran_kp[0]?.tanggal_selesai || "Belum diisi"}`,
+        }
+      : {};
+  }, [data]);
 
   const informasiSeminarFields = [
     "lokasi",
@@ -140,30 +260,156 @@ const Step2: FC<Step2Props> = ({ activeStep, status }) => {
     "judul",
   ];
 
-  return (
-    <DashboardLayout>
-      <h1 className="text-2xl font-bold mb-8">
-        Validasi Kelengkapan Berkas Seminar Kerja Praktik
-      </h1>
-      <Stepper activeStep={activeStep} />
+  // Tentukan status untuk Status component berdasarkan API
+  const status: StatusType = useMemo(() => {
+    if (!data?.data) return "belum"; // Default jika data belum dimuat
+    const step2Docs = data.data.dokumen_seminar_kp.step2 || [];
+    const step2Accessible = data.data.steps_info.step2_accessible;
 
+    if (step2Docs.length === 0 && step2Accessible) {
+      return "belum";
+    } else if (step2Docs.some((doc: any) => doc.status === "Ditolak")) {
+      return "ditolak";
+    } else if (
+      step2Docs.some(
+        (doc: any) => doc.status === "Terkirim" || doc.status === "Divalidasi"
+      )
+    ) {
+      return "validasi";
+    }
+    return "belum"; // Fallback
+  }, [data]);
+
+  const getStatusConfig = (apiStatus: DocumentStatus) => {
+    switch (apiStatus) {
+      case "Terkirim":
+        return {
+          title: "Input ID Pengajuan Surat Undangan anda dalam proses validasi",
+          subtitle: "Silakan menunggu konfirmasi berikutnya!",
+          readonly: true,
+          defaultValue: idPengajuan || lastSubmittedId || "",
+        };
+      case "Divalidasi":
+        return {
+          title: "Input ID Pengajuan Surat Undangan anda dalam proses validasi",
+          subtitle: "Silakan menunggu konfirmasi berikutnya!",
+          readonly: true,
+          defaultValue: idPengajuan || lastSubmittedId || "",
+        };
+      case "Ditolak":
+        return {
+          title: "Input ID Pengajuan Surat Undangan Anda Ditolak",
+          subtitle: komentar || "Silakan masukkan kode yang benar!",
+          readonly: false,
+          defaultValue: undefined,
+        };
+      case "default":
+      default:
+        return {
+          title: "Anda belum memasukkan ID Pengajuan Surat Undangan Seminar KP",
+          subtitle: "Silakan masukkan ID Pengajuan Surat Undangan Seminar KP!",
+          readonly: false,
+          defaultValue: undefined,
+        };
+    }
+  };
+
+  const statusConfig = getStatusConfig(step2Status);
+
+  const handleSubmit = (idPengajuan: string) => {
+    setIsDialogOpen(true);
+    setIdPengajuan(idPengajuan);
+  };
+
+  const handleConfirm = () => {
+    setIsDialogOpen(false);
+    if (idPengajuan) {
+      console.log(`Sending ID Pengajuan: ${idPengajuan}`);
+      mutation.mutate(idPengajuan);
+    } else {
+      toast({
+        title: "⚠️ Peringatan",
+        description: "Harap masukkan ID Pengajuan terlebih dahulu!",
+        duration: 3000,
+      });
+    }
+  };
+
+  // Render status notification
+  const renderStatusNotification = () => {
+    if (isLoading) {
+      return <div>Loading...</div>;
+    }
+    if (isError) {
+      toast({
+        title: "❌ Gagal",
+        description: `Gagal mengambil data: ${error.message}`,
+        duration: 3000,
+      });
+      return <div>Error: {error.message}</div>;
+    }
+    return (
       <Status
         status={status}
         title={statusConfig.title}
         subtitle={statusConfig.subtitle}
       />
+    );
+  };
 
-      <InfoCard displayItems={informasiSeminarFields} />
+  return (
+    <div className="space-y-4">
+      <h1 className="text-2xl font-medium mb-8">
+        Validasi Kelengkapan Berkas Seminar Kerja Praktik
+      </h1>
+
+      <Stepper activeStep={activeStep} />
+
+      {renderStatusNotification()}
+
+      {isLoading ? (
+        <div>Loading InfoCard...</div>
+      ) : (
+        <InfoCard displayItems={informasiSeminarFields} data={infoData} />
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
         <InstructionCard />
-        <IDInputCard
-          status={status}
-          readOnly={statusConfig.readonly}
-          defaultValue={statusConfig.defaultValue}
-        />
+        <div>
+          <IDInputCard
+            status={step2Status}
+            readOnly={statusConfig.readonly}
+            defaultValue={statusConfig.defaultValue}
+            onSubmit={handleSubmit}
+            onChange={setIdPengajuan}
+          />
+        </div>
       </div>
-    </DashboardLayout>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Konfirmasi Pengiriman</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin mengirim ID Pengajuan ini untuk
+              divalidasi? ID yang telah dikirim tidak dapat diubah sampai proses
+              validasi selesai.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirm}
+              className="bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-500 hover:to-green-600 text-white"
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending ? "Mengirim..." : "Yakin"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 };
 

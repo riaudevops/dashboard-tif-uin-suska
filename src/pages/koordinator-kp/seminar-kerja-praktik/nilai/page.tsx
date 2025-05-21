@@ -1,4 +1,5 @@
 import { useState, type FC } from "react";
+import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import { Search, Eye, Users, CheckCircle, AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -14,33 +15,33 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import NilaiBelumValidModal from "@/components/koordinator-kp/seminar/nilai-belumValid-modal";
-import NilaiValidModal from "@/components/koordinator-kp/seminar/nilai-valid-modal";
-import NilaiApproveModal from "@/components/koordinator-kp/seminar/nilai-approve-modal";
+import DetailNilaiModal from "@/components/koordinator/seminar/detail-nilai-modal";
 import { motion } from "framer-motion";
+import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 
 // Type definitions
-type Stage = "pendaftaran" | "idSurat" | "suratUndangan" | "pascaSeminar";
 type NilaiStatus = "nilaiBelumValid" | "nilaiValid" | "nilaiApprove";
-type Status = "baru" | "lanjut" | "selesai";
+type status_daftar_kp = "Baru" | "Lanjut" | "Selesai";
 
-interface Student {
-  id: number;
+interface Mahasiswa {
   nim: string;
-  name: string;
-  status: Status;
-  timeAgo: string;
-  stage: Stage;
-  semester: number;
-  dosenPembimbing: string;
-  dosenPenguji: string;
-  pembimbingInstansi: string;
-  nilaiInstansi: string;
-  nilaiPembimbing: string;
-  nilaiPenguji: string;
-  nilaiStatus: NilaiStatus;
+  nama: string;
   kelas: string;
+  status_daftar_kp: status_daftar_kp;
+  status_nilai: string;
+  semester: string;
   instansi: string;
+  pembimbing_instansi: string;
+  dosen_pembimbing: string;
+  dosen_penguji: string;
+}
+
+interface NilaiResponse {
+  tahunAjaran: string;
+  jumlahNilaiBelumValid: number;
+  jumlahNilaiValid: number;
+  jumlahNilaiApprove: number;
+  detailMahasiswa: Mahasiswa[];
 }
 
 // Badge variants and colors mapped to application stages with modern transparent design
@@ -107,248 +108,90 @@ const KoordinatorNilaiPage: FC = () => {
 
   // State untuk dialog
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<Mahasiswa | null>(
+    null
+  );
 
-  // Mock data
-  // Mock data
-  const students: Student[] = [
-    {
-      id: 1,
-      nim: "12250111523",
-      name: "M Farhan Aulia Pratama",
-      status: "baru",
-      timeAgo: "9 Hari yang lalu",
-      stage: "pascaSeminar",
-      semester: 6,
-      dosenPembimbing: "Pizaini, S.T, M.Kom",
-      dosenPenguji: "Rahmad Abdillah, S.T, M.Kom",
-      pembimbingInstansi: "Iwan Iskandar",
-      nilaiInstansi: "100",
-      nilaiStatus: "nilaiBelumValid",
-      kelas: "C",
-      instansi: "Prodi TIF UIN Suska Riau",
-      nilaiPembimbing: "",
-      nilaiPenguji: "",
-    },
-    {
-      id: 2,
-      nim: "12250111527",
-      name: "Gilang Ramadhan",
-      status: "baru",
-      timeAgo: "20 Menit yang lalu",
-      stage: "pendaftaran",
-      semester: 6,
-      dosenPembimbing: "Pizaini, S.T, M.Kom",
-      dosenPenguji: "Rahmad Abdillah, S.t, M.Kom",
-      pembimbingInstansi: "Iwan Iskandar",
-      nilaiInstansi: "100",
-      nilaiStatus: "nilaiValid",
-      kelas: "C",
-      instansi: "Prodi TIF UIN Suska Riau",
-      nilaiPembimbing: "100",
-      nilaiPenguji: "100",
-    },
-    {
-      id: 3,
-      nim: "12250111528",
-      name: "Farhan Fadilla",
-      status: "baru",
-      timeAgo: "2 Hari yang lalu",
-      stage: "pendaftaran",
-      semester: 6,
-      dosenPembimbing: "Affandes, S.T, M.Kom",
-      dosenPenguji: "Rahmad Abdillah, S.t, M.Kom",
-      pembimbingInstansi: "Iwan Iskandar",
-      nilaiInstansi: "100",
-      nilaiStatus: "nilaiApprove",
-      kelas: "C",
-      instansi: "Prodi TIF UIN Suska Riau",
-      nilaiPembimbing: "100",
-      nilaiPenguji: "100",
-    },
-    {
-      id: 4,
-      nim: "12250111529",
-      name: "Ahmad Kurniawan",
-      status: "baru",
-      timeAgo: "1 Bulan yang lalu",
-      stage: "suratUndangan",
-      semester: 6,
-      dosenPembimbing: "Affandes, S.T, M.Kom",
-      dosenPenguji: "Rahmad Abdillah, S.T, M.Kom",
-      pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "100",
-      nilaiStatus: "nilaiBelumValid",
-      kelas: "C",
-      instansi: "Prodi TIF UIN Suska Riau",
-      nilaiPembimbing: "",
-      nilaiPenguji: "",
-    },
-    {
-      id: 5,
-      nim: "12250111521",
-      name: "Muh Zaki Erbay Syas",
-      status: "baru",
-      timeAgo: "7 Hari yang lalu",
-      stage: "idSurat",
-      semester: 6,
-      dosenPembimbing: "Pizaini, S.T, M.Kom",
-      dosenPenguji: "Rahmad Abdillah, S.t, M.Kom",
-      pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "100",
-      nilaiStatus: "nilaiValid",
-      kelas: "C",
-      instansi: "Prodi TIF UIN Suska Riau",
-      nilaiPembimbing: "100",
-      nilaiPenguji: "100",
-    },
-    {
-      id: 6,
-      nim: "12250111522",
-      name: "Muhammad Rafly Wirayudha",
-      status: "baru",
-      timeAgo: "9 Hari yang lalu",
-      stage: "pascaSeminar",
-      semester: 6,
-      dosenPembimbing: "Affandes, S.T, M.Kom",
-      dosenPenguji: "Rahmad Abdillah, S.T, M.Kom",
-      pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "100",
-      nilaiStatus: "nilaiApprove",
-      kelas: "C",
-      instansi: "Prodi TIF UIN Suska Riau",
-      nilaiPembimbing: "100",
-      nilaiPenguji: "100",
-    },
-    {
-      id: 7,
-      nim: "12250111523",
-      name: "Abmi Sukma Edri",
-      status: "baru",
-      timeAgo: "9 Hari yang lalu",
-      stage: "pascaSeminar",
-      semester: 6,
-      dosenPembimbing: "Iwan Iskandar, S.T, M.Kom",
-      dosenPenguji: "Rahmad Abdillah, S.T, M.Kom",
-      pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "100",
-      nilaiStatus: "nilaiBelumValid",
-      kelas: "C",
-      instansi: "Prodi TIF UIN Suska Riau",
-      nilaiPembimbing: "",
-      nilaiPenguji: "",
-    },
-    {
-      id: 8,
-      nim: "12250111523",
-      name: "Hafiz Alhadid Rahman",
-      status: "baru",
-      timeAgo: "9 Hari yang lalu",
-      stage: "suratUndangan",
-      semester: 6,
-      dosenPembimbing: "Iwan Iskandar, S.T, M.Kom",
-      dosenPenguji: "Rahmad Abdillah, S.T, M.Kom",
-      pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "100",
-      nilaiStatus: "nilaiValid",
-      kelas: "C",
-      instansi: "Prodi TIF UIN Suska Riau",
-      nilaiPembimbing: "100",
-      nilaiPenguji: "100",
-    },
-    {
-      id: 9,
-      nim: "12250111523",
-      name: "M. Nabil Dawami",
-      status: "baru",
-      timeAgo: "9 Hari yang lalu",
-      stage: "idSurat",
-      semester: 6,
-      dosenPembimbing: "Iwan Iskandar, S.T, M.Kom",
-      dosenPenguji: "Rahmad Abdillah, S.t, M.Kom",
-      pembimbingInstansi: "Liza Afriyanti",
-      nilaiInstansi: "100",
-      nilaiStatus: "nilaiApprove",
-      kelas: "C",
-      instansi: "Prodi TIF UIN Suska Riau",
-      nilaiPembimbing: "100",
-      nilaiPenguji: "100",
-    },
-    {
-      id: 10,
-      nim: "12250111523",
-      name: "Cahyo Kumolo",
-      status: "lanjut",
-      timeAgo: "9 Hari yang lalu",
-      stage: "pendaftaran",
-      semester: 6,
-      dosenPembimbing: "Iwan Iskandar, S.T, M.Kom",
-      dosenPenguji: "Rahmad Abdillah, S.t, M.Kom",
-      pembimbingInstansi: "Nurrahman",
-      nilaiInstansi: "100",
-      nilaiStatus: "nilaiBelumValid",
-      kelas: "C",
-      instansi: "Prodi TIF UIN Suska Riau",
-      nilaiPembimbing: "",
-      nilaiPenguji: "",
-    },
-  ];
+  // Fetch data menggunakan TanStack Query
+  const { data, isLoading, isError, error } = useQuery<NilaiResponse>({
+    queryKey: ["koordinator-nilai"],
+    queryFn: APISeminarKP.getNilai,
+  });
 
-  // Filter students based on active tab and search query
+  // Transform data dari API ke format yang sesuai
+  const students: Mahasiswa[] =
+    data?.detailMahasiswa.map((student) => ({
+      nim: student.nim,
+      nama: student.nama,
+      kelas: student.kelas,
+      status_daftar_kp: student.status_daftar_kp as status_daftar_kp,
+      status_nilai: student.status_nilai,
+      semester: student.semester,
+      instansi: student.instansi,
+      pembimbing_instansi: student.pembimbing_instansi,
+      dosen_pembimbing: student.dosen_pembimbing,
+      dosen_penguji: student.dosen_penguji,
+    })) || [];
   const filteredStudents = students.filter((student) => {
-    const matchesSearch = student.name
+    const matchesSearch = student.nama
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesTab =
-      activeTab === "semua" || student.nilaiStatus === activeTab;
+      activeTab === "semua" ||
+      (activeTab === "nilaiBelumValid" &&
+        student.status_nilai === "Nilai Belum Valid") ||
+      (activeTab === "nilaiValid" && student.status_nilai === "Nilai Valid") ||
+      (activeTab === "nilaiApprove" &&
+        student.status_nilai === "Nilai Approve");
     return matchesSearch && matchesTab;
   });
 
-  // Calculate statistics
-  const totalStudents = 10;
-  const belumValidCount = 4;
-  const validCount = 3;
-  const approveCount = 3;
+  // Calculate statistics from API data
+  const totalStudents = students.length || 0;
+  const belumValidCount = data?.jumlahNilaiBelumValid || 0;
+  const validCount = data?.jumlahNilaiValid || 0;
+  const approveCount = data?.jumlahNilaiApprove || 0;
 
   // Function to open dialog with selected student
-  const handleOpenDialog = (student: Student) => {
-    setSelectedStudent(student);
+  const handleOpenDialog = (student: Mahasiswa) => {
+    // Cari data lengkap berdasarkan nim dari detailMahasiswa asli
+    const fullStudentData = data?.detailMahasiswa.find(
+      (s) => s.nim === student.nim
+    );
+    setSelectedStudent(fullStudentData || student);
     setIsDialogOpen(true);
   };
 
-  // Render the appropriate modal based on student stage
+  // Render the modal
   const renderModal = () => {
-    if (!selectedStudent) return null;
-
-    switch (selectedStudent.nilaiStatus) {
-      case "nilaiBelumValid":
-        return (
-          <NilaiBelumValidModal
-            isOpen={isDialogOpen}
-            onClose={() => setIsDialogOpen(false)}
-            student={selectedStudent}
-          />
-        );
-      case "nilaiValid":
-        return (
-          <NilaiValidModal
-            isOpen={isDialogOpen}
-            onClose={() => setIsDialogOpen(false)}
-            student={selectedStudent}
-          />
-        );
-      case "nilaiApprove":
-        return (
-          <NilaiApproveModal
-            isOpen={isDialogOpen}
-            onClose={() => setIsDialogOpen(false)}
-            student={selectedStudent}
-          />
-        );
-      default:
-        return null;
-    }
+    return (
+      <DetailNilaiModal
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        student={selectedStudent}
+      />
+    );
   };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="text-center text-gray-600 dark:text-gray-300">
+          Memuat data nilai...
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (isError) {
+    return (
+      <DashboardLayout>
+        <div className="text-center text-red-600 dark:text-red-300">
+          Gagal mengambil data: {(error as Error).message}
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -369,7 +212,7 @@ const KoordinatorNilaiPage: FC = () => {
                 variant="outline"
                 className="bg-gray-100 dark:bg-gray-900 dark:text-gray-300"
               >
-                2023-2024 Ganjil
+                {data?.tahunAjaran || "Tidak tersedia"}
               </Badge>
             </div>
           </div>
@@ -411,7 +254,9 @@ const KoordinatorNilaiPage: FC = () => {
                     <motion.div
                       initial={{ width: "0%" }}
                       animate={{
-                        width: `${(belumValidCount / totalStudents) * 100}%`,
+                        width: totalStudents
+                          ? `${(belumValidCount / totalStudents) * 100}%`
+                          : "0%",
                       }}
                       transition={{ duration: 1.5, ease: "easeOut" }}
                       className="h-2 bg-blue-500 rounded-full"
@@ -451,7 +296,9 @@ const KoordinatorNilaiPage: FC = () => {
                     <motion.div
                       initial={{ width: "0%" }}
                       animate={{
-                        width: `${(validCount / totalStudents) * 100}%`,
+                        width: totalStudents
+                          ? `${(validCount / totalStudents) * 100}%`
+                          : "0%",
                       }}
                       transition={{ duration: 1.5, ease: "easeOut" }}
                       className="h-2 bg-purple-500 rounded-full"
@@ -491,7 +338,9 @@ const KoordinatorNilaiPage: FC = () => {
                     <motion.div
                       initial={{ width: "0%" }}
                       animate={{
-                        width: `${(approveCount / totalStudents) * 100}%`,
+                        width: totalStudents
+                          ? `${(approveCount / totalStudents) * 100}%`
+                          : "0%",
                       }}
                       transition={{ duration: 1.5, ease: "easeOut" }}
                       className="h-2 bg-emerald-500 rounded-full"
@@ -584,7 +433,7 @@ const KoordinatorNilaiPage: FC = () => {
         </div>
       </div>
 
-      {/* Render the appropriate modal */}
+      {/* Render the modal */}
       {renderModal()}
     </DashboardLayout>
   );
@@ -592,8 +441,8 @@ const KoordinatorNilaiPage: FC = () => {
 
 // Separate component for the students table
 const StudentTable: FC<{
-  students: Student[];
-  onViewDetail: (student: Student) => void;
+  students: Mahasiswa[];
+  onViewDetail: (student: Mahasiswa) => void;
 }> = ({ students, onViewDetail }) => {
   return (
     <Card className="shadow-none rounded-none dark:bg-gray-900 dark:border-gray-700">
@@ -603,11 +452,14 @@ const StudentTable: FC<{
             <TableHead className="w-12 text-center font-semibold dark:text-gray-200">
               No
             </TableHead>
-            <TableHead className=" font-semibold dark:text-gray-200">
+            <TableHead className="font-semibold dark:text-gray-200">
               Nama Mahasiswa
             </TableHead>
             <TableHead className="text-center font-semibold dark:text-gray-200">
-              Status
+              NIM
+            </TableHead>
+            <TableHead className="text-center font-semibold dark:text-gray-200">
+              Status KP
             </TableHead>
             <TableHead className="text-center font-semibold dark:text-gray-200">
               Kelas
@@ -624,40 +476,41 @@ const StudentTable: FC<{
           {students.length === 0 ? (
             <TableRow className="dark:border-gray-700 dark:hover:bg-gray-700">
               <TableCell
-                colSpan={6}
+                colSpan={7}
                 className="text-center py-6 text-muted-foreground dark:text-gray-400"
               >
                 Tidak ada data yang ditemukan
               </TableCell>
             </TableRow>
           ) : (
-            students.map((student) => (
+            students.map((student, index) => (
               <TableRow
-                key={student.id}
+                key={student.nim}
                 className="dark:border-gray-700 dark:hover:bg-gray-700"
               >
                 <TableCell className="font-medium text-center dark:text-gray-300">
-                  {student.id}
+                  {index + 1}
                 </TableCell>
                 <TableCell className="dark:text-gray-300">
-                  {student.name}
+                  {student.nama}
+                </TableCell>
+                <TableCell className="text-center dark:text-gray-300">
+                  {student.nim}
                 </TableCell>
                 <TableCell className="text-center">
                   <Badge
                     variant={
-                      student.status === "baru" ? "secondary" : "outline"
+                      student.status_daftar_kp === "Baru"
+                        ? "secondary"
+                        : "outline"
                     }
                     className={
-                      student.status === "baru"
+                      student.status_daftar_kp === "Baru"
                         ? "dark:bg-gray-700 dark:text-gray-200"
                         : "dark:border-gray-600 dark:text-gray-300"
                     }
                   >
-                    {student.status === "baru"
-                      ? "Baru"
-                      : student.status === "lanjut"
-                      ? "Lanjut"
-                      : "Selesai"}
+                    {student.status_daftar_kp}
                   </Badge>
                 </TableCell>
                 <TableCell className="dark:text-gray-300 text-center">
@@ -666,16 +519,40 @@ const StudentTable: FC<{
                 <TableCell className="text-center">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      nilaiStatusBadgeConfig[student.nilaiStatus].bgColor
+                      nilaiStatusBadgeConfig[
+                        student.status_nilai === "Nilai Belum Valid"
+                          ? "nilaiBelumValid"
+                          : student.status_nilai === "Nilai Valid"
+                          ? "nilaiValid"
+                          : "nilaiApprove"
+                      ].bgColor
                     } ${
-                      nilaiStatusBadgeConfig[student.nilaiStatus].textColor
+                      nilaiStatusBadgeConfig[
+                        student.status_nilai === "Nilai Belum Valid"
+                          ? "nilaiBelumValid"
+                          : student.status_nilai === "Nilai Valid"
+                          ? "nilaiValid"
+                          : "nilaiApprove"
+                      ].textColor
                     } ${
-                      nilaiStatusBadgeConfig[student.nilaiStatus].darkBgColor
+                      nilaiStatusBadgeConfig[
+                        student.status_nilai === "Nilai Belum Valid"
+                          ? "nilaiBelumValid"
+                          : student.status_nilai === "Nilai Valid"
+                          ? "nilaiValid"
+                          : "nilaiApprove"
+                      ].darkBgColor
                     } ${
-                      nilaiStatusBadgeConfig[student.nilaiStatus].darkTextColor
+                      nilaiStatusBadgeConfig[
+                        student.status_nilai === "Nilai Belum Valid"
+                          ? "nilaiBelumValid"
+                          : student.status_nilai === "Nilai Valid"
+                          ? "nilaiValid"
+                          : "nilaiApprove"
+                      ].darkTextColor
                     }`}
                   >
-                    {nilaiStatusBadgeConfig[student.nilaiStatus].label}
+                    {student.status_nilai}
                   </span>
                 </TableCell>
                 <TableCell className="text-center">

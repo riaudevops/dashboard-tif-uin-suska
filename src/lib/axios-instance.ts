@@ -10,8 +10,6 @@ export const api = () =>{
       "Authorization": `Bearer ${accessToken()}`,
     },
   });
-
   return axiosInstance;
-
 }
 

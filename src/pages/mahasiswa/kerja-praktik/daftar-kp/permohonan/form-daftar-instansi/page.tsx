@@ -48,7 +48,7 @@ function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
 
     return <DashboardLayout>
     <form onSubmit={handleOnSubmit} >
-        {response && response.response && <div className="absolute left-1/2 py-2 -translate-x-1/2 rounded-lg w-80 bg-green-600 text-white">
+        {response && response.response && <div className="fixed left-1/2 py-2 -translate-x-1/2 rounded-lg w-80 bg-green-600 text-white">
         <p className="text-center text-white font-semibold tracking-wide">{response.message}</p>
         </div>}
         {response && !(response.response) && <div className="absolute left-1/2 -translate-x-1/2 rounded-lg w-80 py-2 bg-green-600">

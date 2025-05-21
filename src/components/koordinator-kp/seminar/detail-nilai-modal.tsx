@@ -5,15 +5,12 @@ import {
   Award,
   Building,
   GraduationCap,
-  FileText,
-  ChevronDown,
 } from "lucide-react";
 
 import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import {
   Accordion,

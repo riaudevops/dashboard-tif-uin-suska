@@ -64,6 +64,7 @@ const KoordinatorJadwalSeminarPage: FC = () => {
   const [activeTab, setActiveTab] = useState<
     "semua" | "hari_ini" | "minggu_ini"
   >("semua");
+  console.log("Active Tab:", activeTab);
 
   // Fetch data menggunakan TanStack Query
   const { data, isLoading, isError, error } = useQuery<JadwalResponse>({

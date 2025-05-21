@@ -17,10 +17,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import ValidasiPendaftaranModal from "@/components/koordinator/seminar/validasi-pendaftaran-modal";
-import ValidasiIdModal from "@/components/koordinator/seminar/validasi-id-modal";
-import ValidasiSuratUndanganModal from "@/components/koordinator/seminar/validasi-suratUndangan-modal";
-import ValidasipascaSeminarModal from "@/components/koordinator/seminar/validasi-pascaSeminar-modal";
+import ValidasiPendaftaranModal from "@/components/koordinator-kp/seminar/validasi-pendaftaran-modal";
+import ValidasiIdModal from "@/components/koordinator-kp/seminar/validasi-id-modal";
+import ValidasiSuratUndanganModal from "@/components/koordinator-kp/seminar/validasi-suratUndangan-modal";
+import ValidasipascaSeminarModal from "@/components/koordinator-kp/seminar/validasi-pascaSeminar-modal";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 
 // Type definitions

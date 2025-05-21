@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import DetailNilaiModal from "@/components/koordinator/seminar/detail-nilai-modal";
+import DetailNilaiModal from "@/components/koordinator-kp/seminar/detail-nilai-modal";
 import { motion } from "framer-motion";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 

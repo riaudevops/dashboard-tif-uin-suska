@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import DashboardJadwalCard from "@/components/dosen/seminar-kp/DashboardJadwalCard";
-import EditJadwalSeminarModal from "@/components/koordinator/seminar/edit-jadwal-modal";
+import EditJadwalSeminarModal from "@/components/koordinator-kp/seminar/edit-jadwal-modal";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 
 // Tipe untuk data seminar

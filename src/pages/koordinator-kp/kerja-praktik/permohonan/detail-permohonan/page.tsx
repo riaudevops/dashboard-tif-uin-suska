@@ -12,12 +12,44 @@ import {
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useState, useEffect, FormEvent } from "react";
+import { KPDetailsInterface } from "@/interfaces/pages/mahasiswa/pendaftaran-kp.interface";
 
 const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [response, setResponse] = useState<{response : Boolean, message : string} | null>(null);
+  const [isRejectButtonClicked, setIsRejectButtonClicked] = useState<boolean>(false);
+  const [rejectMessage, setRejectMessage] = useState<string>("");
   const { search } = useLocation();
   const query = new URLSearchParams(search);
+  const [biodataMahasiswa, setBiodataMahasiswa] = useState<KPDetailsInterface>({
+    id : "4432432",
+    mahasiswa : {
+      nim : "122414132532",
+      nama : "Olav Thomas",
+      no_hp : "0823323293123",
+      email : "olav@gmail.com"
+    },
+    level_akses : 1,
+    status: "Baru", 
+    tujuan_surat_instansi : "Jl Kebun Kopi",
+    instansi : {
+      nama : "test123",
+      pembimbing_instansi : {
+        nama : "Pembimbing Instansi"
+      }
+    },
+    dosen_pembimbing : {
+      nama : "dosen_pembimbing"
+    },
+    tanggal_mulai: "2025-05-02T00:00:00.000Z",
+    tanggal_selesai: "2025-05-02T00:00:00.000Z",
+    link_surat_pengantar: "",
+    alasan_lanjut_kp: "Habis masa waktu",
+  });
   const name = query.get("name") || "-";
   const nim = query.get("nim") || "-";
+  const idKP = query.get("idKP") || "-";
 
   const getstatusmahasiswa = (status: string) => {
     switch (status) {
@@ -34,20 +66,115 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
     }
   };
 
+  async function handleOnAccept(e : FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setIsLoading((prev) => !prev);
+    try {
+      const response = await fetch("http://localhost:5000/daftar-kp/berkas-mahasiswa", {
+          method : "POST",
+          headers : {
+          'Content-Type' : "application/json",
+          },
+          body : JSON.stringify({
+          "id" : idKP
+})
+        }
+      )
+
+      if (!(response.ok)) {
+              setIsLoading(prev => !prev)
+              throw new Error("Terjadi suatu kesalahan di server")
+          }
+
+            const responseBiodata = await fetch(`http://localhost:5000/daftar-kp/get-data-kp/${idKP}`);
+
+            if (!responseBiodata.ok) {
+              throw new Error("Gagal mendapatkan data mahasiswa")
+            }
+
+            const data = await response.json();
+              setResponse(data)
+              const pointer = setTimeout(() => {
+                  setResponse(null)
+                  clearTimeout(pointer)
+              }, 1000)
+
+            const dataMahasiswa = await responseBiodata.json();
+            setBiodataMahasiswa(dataMahasiswa.data || []);
+              
+    } catch (e) {
+      throw new Error("Terjadi kesalahan pada sistem")
+    }
+  }
+
+    async function handleOnReject(e : FormEvent<HTMLFormElement>) {
+      e.stopPropagation();
+      e.preventDefault();
+        try {
+      const response = await fetch("http://localhost:5000/daftar-kp/tolak-berkas-mahasiswa", {
+          method : "POST",
+          headers : {
+          'Content-Type' : "application/json",
+          },
+          body : JSON.stringify({
+          "id" : idKP,
+          "message" : rejectMessage
+        })
+        }
+      )
+
+      if (!(response.ok)) {
+              setIsLoading(prev => !prev)
+              throw new Error("Terjadi suatu kesalahan di server")
+          }
+
+            const responseBiodata = await fetch(`http://localhost:5000/daftar-kp/get-data-kp/${idKP}`);
+
+            if (!responseBiodata.ok) {
+              throw new Error("Gagal mendapatkan data mahasiswa")
+            }
+
+            const data = await response.json();
+              setResponse(data)
+              const pointer = setTimeout(() => {
+                  setResponse(null)
+                  clearTimeout(pointer)
+              }, 1000)
+
+            const dataMahasiswa = await responseBiodata.json();
+            setBiodataMahasiswa(dataMahasiswa.data || []);
+            setIsRejectButtonClicked(prev => !prev)
+    } catch (e) {
+      throw new Error("Terjadi kesalahan pada sistem")
+    }
+  }
+
+  useEffect(() => {
+    (async function() {
+      const response = await fetch(`http://localhost:5000/daftar-kp/get-data-kp/${idKP}`)
+      if (!response.ok) {
+        throw new Error("Gagal mendapatkan data mahasiswa")
+      }
+      const data = await response.json();
+      setBiodataMahasiswa(data.data || []);
+
+    })()
+  }, [])
+
   // Mock data - in a real app, this would come from your API
-  const biodataMahasiswa = {
-    name: "John Doe",
-    nim: "123456789",
-    status: "Baru", 
-    instansi: "PT. ABC",
-    semester: 6,
-    PembimbingInstansi: "Jane Smith",
-    dosenPembimbing: "Dr. John Smith",
-    tanggalMulai: "03/02/2024",
-    tanggalSelesai: "03/05/2024",
-    linkGdrive: "http://drive.google.com/drive/folders/file.pdf",
-    alasanPerpanjangan: "Habis masa waktu",
-  };
+  // const biodataMahasiswa = {
+  //   name: "John Doe",
+  //   nim: "123456789",
+  //   status: "Baru", 
+  //   instansi: "PT. ABC",
+  //   semester: 6,
+  //   PembimbingInstansi: "Jane Smith",
+  //   dosenPembimbing: "Dr. John Smith",
+  //   tanggalMulai: "03/02/2024",
+  //   tanggalSelesai: "03/05/2024",
+  //   linkGdrive: "http://drive.google.com/drive/folders/file.pdf",
+  //   alasanPerpanjangan: "Habis masa waktu",
+  // };
 
   // Render different content based on status
   const renderStatusContent = () => {
@@ -78,7 +205,9 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                         <Calendar className="h-4 w-4 text-gray-500" />
                       </div>
                       <input
-                        type="date"
+                      value={biodataMahasiswa.tanggal_mulai.slice(0,10).replaceAll("-", "/")}
+                      key="tanggal-mulai"
+                        type="input"
                         className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-md block w-full pl-10 p-2.5 
                         dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:placeholder-gray-400 
                         focus:ring-primary focus:border-primary focus:outline-none"
@@ -99,6 +228,8 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                       Nama Instansi / Perusahaan
                     </label>
                     <input
+                    key="nama-instansi"
+                    value={biodataMahasiswa.instansi?.nama || "Tidak tersedia"}
                       type="text"
                       className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-md block w-full p-2.5 
                       dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:placeholder-gray-400 
@@ -112,6 +243,8 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                       Tujuan Surat Instansi/ Perusahaan
                     </label>
                     <textarea
+                    key="tujuan_surat_instansi"
+                      value={biodataMahasiswa?.tujuan_surat_instansi || "Tidak tersedia"}
                       className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-md block w-full p-2.5 
                       dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:placeholder-gray-400 
                       focus:ring-primary focus:border-primary focus:outline-none min-h-24 resize-none"
@@ -120,22 +253,52 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                   </div>
                 </div>
 
+                <div className="rounded-lg border border-gray-100 shadow-sm p-4 mb-6">
+                  <h3 className="font-bold tracking-wide text-md text-gray-600">Berkas Mahasiswa</h3>
+                  <div className={`mb-3 p-2 rounded-lg flex flex-col ${biodataMahasiswa.level_akses === 2 ? "bg-green-600" : ""}`} >
+                    <label htmlFor="surat-pengantar">Surat Pengantar : </label>
+                    <input className="p-2 border border-gray-300 rounded-lg bg-gray-100" type="text" id="surat-pengantar" value={biodataMahasiswa?.link_surat_pengantar || ""} />
+                  </div>
+
+                  <div className={`mb-3 p-2 rounded-lg flex flex-col ${biodataMahasiswa.level_akses === 4 ? "bg-green-600" : ""}`} >
+                    <label htmlFor="surat-balasan">Surat Balasan Instansi : </label>
+                    <input className="p-2 border border-gray-300 rounded-lg bg-gray-100" type="text" id="surat-balasan" value={biodataMahasiswa?.link_surat_balasan || ""} />
+                  </div>
+
+                  <div className={`mb-3 p-2 rounded-lg flex flex-col ${biodataMahasiswa.level_akses === 6 ? "bg-green-600" : ""}`} >
+                    <label htmlFor="id-pengajuan">Id Pengajuan Dosen Pembimbing : </label>
+                    <input className="p-2 border border-gray-300 rounded-lg bg-gray-100" type="text" id="id-pengajuan" value={biodataMahasiswa?.id_surat_pengajuan_dospem || ""} />
+                  </div>
+
+                  <div className={`mb-3 p-2 rounded-lg flex flex-col ${biodataMahasiswa.level_akses === 8 ? "bg-green-600" : ""}`} >
+                    <label htmlFor="surat-penunjukkan">Surat Penunjukkan Dosen Pembimbing : </label>
+                    <input className="p-2 border border-gray-300 rounded-lg bg-gray-100" type="text" id="surat-penunjukkan" value={biodataMahasiswa?.link_surat_penunjukan_dospem || ""} />
+                  </div>
+
+                  <div className={`mb-3 p-2 rounded-lg flex flex-col ${biodataMahasiswa.level_akses === 10 ? "bg-green-600" : ""}`} >
+                    <label htmlFor="surat-lanjut">Surat Perpanjangan KP : </label>
+                    <input className="p-2 border border-gray-300 rounded-lg bg-gray-100" type="text" id="surat-lanjut" value={biodataMahasiswa?.link_surat_perpanjangan_kp || ""} />
+                  </div>
+                </div>
+
                 {/* Action Buttons */}
-                <div className="flex justify-end gap-3 mt-6">
-                  <button className="px-4 py-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-md shadow-sm transition-all duration-200">
+
+                {biodataMahasiswa?.level_akses !== 0 && biodataMahasiswa?.level_akses % 2 === 0 && <div className="flex justify-end gap-3 mt-6">
+                  <button onClick={() => setIsRejectButtonClicked(true)} disabled={isLoading} className={"px-4 py-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-md shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"}>
                     Tolak Permohonan
                   </button>
-                  <button className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-md shadow-sm transition-all duration-200">
+                  <form onSubmit={handleOnAccept}>
+                  <button disabled={isLoading} className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-md shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50">
                     Validasi Permohonan
                   </button>
-                </div>
+                  </form>
+                </div>}
               </div>
             </Card>
           </>
         );
-
-      case "Lanjut":
       case "Gagal":
+      case "Lanjut":
         return (
           <>
             <Card className="mt-6 rounded-lg border border-gray-100 dark:border-gray-700 shadow-md overflow-hidden">
@@ -163,6 +326,8 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                         </div>
                         <input
                           type="date"
+                          key="tanggal_mulai_gagal"
+                          value={biodataMahasiswa.tanggal_mulai.slice(0, 10).replaceAll("-", "/")}
                           className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-md block w-full pl-10 p-2.5 
                           dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:placeholder-gray-400 
                           focus:ring-primary focus:border-primary focus:outline-none"
@@ -178,6 +343,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                           <Calendar className="h-4 w-4 text-gray-500" />
                         </div>
                         <input
+                        key="tanggal_selesai_gagal"
                           type="date"
                           className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-md block w-full pl-10 p-2.5 
                           dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:placeholder-gray-400 
@@ -209,6 +375,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                       Link gdrive <span className="text-red-500">*</span>
                     </label>
                     <textarea
+                    key="dokumen_penunjukkan_dosen_pembimbing"
                       placeholder="Masukkan link gdrive..."
                       className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-md block w-full p-2.5 
                       dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:placeholder-gray-400 
@@ -226,6 +393,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
 
                   <div>
                     <textarea
+                    key="tujuan_surat_instansi_perpanjangan_kp"
                       placeholder="Masukkan alasan perpanjangan..."
                       className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-md block w-full p-2.5 
                       dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:placeholder-gray-400 
@@ -236,10 +404,10 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
 
                 {/* Action Buttons */}
                 <div className="flex justify-end gap-3 mt-6">
-                  <Button className="px-4 py-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 rounded-md shadow-sm transition-all duration-200">
+                  <Button disabled={isLoading} className="px-4 py-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 rounded-md shadow-sm transition-all duration-200">
                     Tolak Permohonan
                   </Button>
-                  <Button className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-md shadow-sm transition-all duration-200">
+                  <Button disabled={isLoading} className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-md shadow-sm transition-all duration-200">
                     Validasi Permohonan
                   </Button>
                 </div>
@@ -255,6 +423,21 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
   return (
     <>
       <DashboardLayout>
+        <div className={`${isRejectButtonClicked ? "z-[49]": ""}`} onClick={() => isRejectButtonClicked ? setIsRejectButtonClicked(prev => !prev) : ""}>
+       {response && <div className="fixed p-2 left-[50%] -translate-x-0.5 rounded-lg bg-green-600 text-white">{response && response.message}</div> }
+       {isRejectButtonClicked && <div onClick={(e : any) => e.stopPropagation()} className="fixed flex flex-col justify-between h-[30%] gap-2 z-50 p-2 border-[1px] border-black bg-white rounded-lg left-[50%] top-[50%] -translate-x-[50%] -translate-y-[50%]">
+        <h3 className="font-bold tracking-wide text-lg">Penolakan Berkas Mahasiswa</h3>
+        <div className="flex flex-col">
+        <label htmlFor="alasan-penolakan">Alasan Penolakan Berkas : </label>
+        <input value={rejectMessage} onChange={(e) => setRejectMessage(e.currentTarget.value)} type="text" id="alasan-penolakan" className="rounded-lg border-[1px] border-slate-300 p-2" />
+        </div>
+        <div className="flex justify-end gap-2">
+          <button onClick={() => setIsRejectButtonClicked(prev => !prev)} className="rounded-lg p-2">Batal</button>
+          <form onClick={handleOnReject}>
+          <button className="rounded-lg text-white bg-red-500 p-2">Tolak Berkas</button>
+          </form>
+        </div>
+        </div>}
         {/* Biodata Section */}
         <div className="bg-gradient-to-r from-white to-gray-50 dark:from-gray-800/40 dark:to-gray-800/20 rounded-lg border border-gray-100 dark:border-gray-700 shadow-md overflow-hidden">
           {/* Header Section with Avatar */}
@@ -269,7 +452,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                 </h3>
                 <div className="flex items-center  text-sm text-gray-500 dark:text-gray-400">
                   <span className="bg-white text-gray-800 dark:bg-gray-800 border-gray-50 dark:border-gray-50 dark:text-gray-50 px-2 py-0.5 rounded-full text-xs font-medium mr-2">
-                    Semester {biodataMahasiswa.semester}
+                    Semester {6}
                   </span>
                   <span className="flex items-center text-white">
                     <span
@@ -304,9 +487,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                       Instansi
                     </p>
                     <p className="text-base  text-gray-500 dark:text-gray-200">
-                      {biodataMahasiswa.status === "Baru"
-                        ? "Belum ada instansi"
-                        : biodataMahasiswa.instansi}
+                      {biodataMahasiswa?.instansi?.nama || "Belum Ada Instansi"}
                     </p>
                   </div>
                 </div>
@@ -325,7 +506,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                       Pembimbing Instansi
                     </p>
                     <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                      {biodataMahasiswa.PembimbingInstansi}
+                      {biodataMahasiswa?.instansi?.pembimbing_instansi?.nama || "Belum Ada Pembimbing Instansi"}
                     </p>
                   </div>
                 </div>
@@ -344,7 +525,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                       Dosen Pembimbing
                     </p>
                     <p className="text-base font-bold text-gray-800 dark:text-gray-200">
-                      {biodataMahasiswa.dosenPembimbing}
+                      {biodataMahasiswa?.dosen_pembimbing?.nama || "Belum Ada Dosen Pembimbing"}
                     </p>
                   </div>
                 </div>
@@ -355,6 +536,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
 
         {/* Render content based on status */}
         {renderStatusContent()}
+        </div>
       </DashboardLayout>
     </>
   );

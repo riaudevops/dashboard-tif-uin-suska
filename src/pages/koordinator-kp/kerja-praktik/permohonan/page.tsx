@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, ChevronRight, ArrowUpRight } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -12,12 +12,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useNavigate } from "react-router-dom";
+import { KPInterface } from "@/interfaces/pages/mahasiswa/pendaftaran-kp.interface";
 
 // Main component
 export default function KoordinatorKerjaPraktikPermohonanPage() {
-  const [academicYear, setAcademicYear] = useState("2023-2024 Ganjil");
+  const [academicYear, setAcademicYear] = useState(202420251);
   const [activeTab, setActiveTab] = useState("Semua Riwayat");
   const [searchTerm, setSearchTerm] = useState("");
+  const [applicationData, setApplicationData] = useState<KPInterface[]>([])
   const navigate = useNavigate();
 
   const stats = [
@@ -28,44 +30,56 @@ export default function KoordinatorKerjaPraktikPermohonanPage() {
     { title: "Selesai", count: 5, label: "Mahasiswa" },
   ];
 
+  useEffect(() => {
+    (async function() {
+      const response = await fetch("http://localhost:5000/daftar-kp/get-data-kp");
+      if (!response.ok) {
+        throw new Error("Gagal mendapatkan data mahasiswa")
+      }
+      const data = await response.json();
+      setApplicationData(data.data || []);
+
+    })()
+  }, [])
+
   // Data from the image
-  const applicationData = [
-    {
-      id: 1,
-      name: "Gilang Ramadhan",
-      nim: "12251112",
-      status: "Baru",
-      time: "20 Menit yang lalu",
-    },
-    {
-      id: 2,
-      name: "Farhan Fadilla",
-      nim: "1225111212",
-      status: "Baru",
-      time: "2 Hari yang lalu",
-    },
-    {
-      id: 3,
-      name: "Ahmad Kurniawan",
-      nim: "1225111212",
-      status: "Lanjut",
-      time: "1 Bulan yang lalu",
-    },
-    {
-      id: 4,
-      name: "Muh Zaki Erbay",
-      nim: "1225111212",
-      status: "Baru",
-      time: "7 Hari yang lalu",
-    },
-    {
-      id: 5,
-      name: "M. Rafly Wirayudha",
-      nim: "1225111212",
-      status: "Lanjut",
-      time: "9 Hari yang lalu",
-    },
-  ];
+  // const applicationData = [
+  //   {
+  //     id: 1,
+  //     name: "Gilang Ramadhan",
+  //     nim: "12251112",
+  //     status: "Baru",
+  //     time: "20 Menit yang lalu",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Farhan Fadilla",
+  //     nim: "1225111212",
+  //     status: "Baru",
+  //     time: "2 Hari yang lalu",
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Ahmad Kurniawan",
+  //     nim: "1225111212",
+  //     status: "Lanjut",
+  //     time: "1 Bulan yang lalu",
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Muh Zaki Erbay",
+  //     nim: "1225111212",
+  //     status: "Baru",
+  //     time: "7 Hari yang lalu",
+  //   },
+  //   {
+  //     id: 5,
+  //     name: "M. Rafly Wirayudha",
+  //     nim: "1225111212",
+  //     status: "Lanjut",
+  //     time: "9 Hari yang lalu",
+  //   },
+  // ];
 
   // Filter data based on active tab and search query
   const filteredData = applicationData
@@ -73,12 +87,12 @@ export default function KoordinatorKerjaPraktikPermohonanPage() {
       (item) =>
         // Filter by active tab
         activeTab === "Semua Riwayat" || item.status === activeTab
-    )
+    ).filter((item)  => item.id_tahun_ajaran === academicYear)
     .filter(
       (item) =>
         // Filter by search query (case insensitive)
         searchTerm === "" ||
-        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+        item?.mahasiswa?.nama.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
   return (
@@ -96,12 +110,13 @@ export default function KoordinatorKerjaPraktikPermohonanPage() {
               <select
                 className="border rounded-md px-3 py-1 pr-8 text-sm appearance-none dark:bg-gray-800 shadow-sm"
                 value={academicYear}
-                onChange={(e) => setAcademicYear(e.target.value)}
+                onChange={(e) => setAcademicYear(parseInt(e.target.value))}
               >
-                <option value="2023-2024 Ganjil">2023-2024 Ganjil</option>
-                <option value="2023-2024 Genap">2023-2024 Genap</option>
-                <option value="2022-2023 Ganjil">2022-2023 Ganjil</option>
-                <option value="2022-2023 Genap">2022-2023 Genap</option>
+                <option value={202420251}>2024-2025 Ganjil</option>
+                <option value={202320241}>2023-2024 Ganjil</option>
+                <option value={202320242}>2023-2024 Genap</option>
+                <option value={202220231}>2022-2023 Ganjil</option>
+                <option value={202220232}>2022-2023 Genap</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
                 <ChevronRight className="h-4 w-4 text-gray-500 rotate-90" />
@@ -199,19 +214,19 @@ export default function KoordinatorKerjaPraktikPermohonanPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredData.map((item) => (
+              {filteredData.map((item, i) => (
                 <TableRow
                   key={item.id}
                   className={
-                    item.id % 2 === 0
+                    i % 2 === 0
                       ? "bg-white dark:bg-gray-800"
                       : "bg-gray-50 dark:bg-gray-900/30"
                   }
                 >
                   <TableCell className="text-center font-medium">
-                    {item.id}
+                    {i+1}
                   </TableCell>
-                  <TableCell className="text-center">{item.name}</TableCell>
+                  <TableCell className="text-center">{item?.mahasiswa?.nama || "John"}</TableCell>
                   <TableCell className="text-center">
                     {activeTab === "Semua Riwayat" ? (
                       <span
@@ -226,17 +241,17 @@ export default function KoordinatorKerjaPraktikPermohonanPage() {
                         {item.status}
                       </span>
                     ) : (
-                      item.nim
+                      item?.mahasiswa?.nim || "1323123121"
                     )}
                   </TableCell>
-                  <TableCell className="text-center">{item.time}</TableCell>
+                  <TableCell className="text-center">{item && item.tanggal_mulai && item.tanggal_mulai.slice(0,10).replaceAll("-", "/")}</TableCell>
                   <TableCell className="text-center">
                     <Button
                       size="sm"
                       className="bg-blue-500 text-white hover:bg-blue-600 font-medium flex items-center gap-1 mx-auto"
                       onClick={() =>
                         navigate(
-                          `/koordinator-kp/kerja-praktik/permohonan/detail-permohonan?name=${item.name}&nim=${item.nim}`
+                          `/koordinator-kp/kerja-praktik/permohonan/detail-permohonan?name=${item?.mahasiswa?.nama || "John"}&nim=${item?.mahasiswa?.nim || "1323123121"}&idKP=${item.id}`
                         )
                       }
                     >

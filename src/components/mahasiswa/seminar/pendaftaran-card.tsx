@@ -13,7 +13,6 @@ import {
   TypingAnimation,
   AnimatedSpan,
 } from "@/components/magic-ui/terminal";
-import { useNavigate } from "react-router-dom";
 
 // Define interfaces clearly with proper documentation
 interface CheckItems {
@@ -34,6 +33,8 @@ interface PendaftaranCardProps {
   };
   /** Navigation function to call when button is clicked */
   navigateFunction?: () => void;
+  /** Indicates if step 1 is accessible */
+  step1Accessible: boolean;
 }
 
 /**
@@ -42,16 +43,14 @@ interface PendaftaranCardProps {
 const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
   infoPengajuanSeminar,
   navigateFunction,
+  step1Accessible,
 }) => {
-  const navigate = useNavigate();
-  console.log(navigate);
-
   // Default checkmark values
   const defaultCheckmarks: CheckItems = {
     hapalan: true,
     kerja_praktik: true,
     bimbingan: true,
-    nilaiInstansi: false, // Example of one unmet requirement
+    nilaiInstansi: false,
     dailyReport: true,
   };
 
@@ -127,9 +126,9 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
 
       <CardContent>
         <Terminal className="shadow-none border-none dark:bg-slate-800 flex-1 h-full flex flex-col min-h-64">
-          <TypingAnimation>&gt; tif kerja-praktik@latest</TypingAnimation>
+          <TypingAnimation> tif kerja-praktik@latest</TypingAnimation>
 
-          {renderCheckItem(checkmarks.hapalan, "Muroja'ah 1-16 .", 500)}
+          {renderCheckItem(checkmarks.hapalan, "Muroja'ah 1-16.", 500)}
           {renderCheckItem(
             checkmarks.kerja_praktik,
             "Masih Terdaftar Melaksanakan Kerja Praktik.",
@@ -196,14 +195,17 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
       <CardFooter>
         <Button
           className={`w-full ${
-            allRequirementsMet
+            allRequirementsMet && step1Accessible
               ? "bg-green-600 hover:bg-green-700 dark:bg-green-400 dark:hover:bg-green-500"
-              : "bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 cursor-not-allowed"
+              : "bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-700 cursor-not-allowed"
           }`}
-          disabled={!allRequirementsMet}
+          disabled={!allRequirementsMet || !step1Accessible}
           onClick={handleButtonClick}
         >
-          Buat Permohonan {!allRequirementsMet && <Lock className="ml-2" />}
+          Buat Permohonan
+          {(!allRequirementsMet || !step1Accessible) && (
+            <Lock className="ml-2" />
+          )}
         </Button>
       </CardFooter>
     </Card>

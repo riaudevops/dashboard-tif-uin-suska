@@ -1,52 +1,36 @@
 import { type FC } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, CheckCircle, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 
-// Interface untuk data seminar
-interface Seminar {
-  id: number;
-  namaMahasiswa: string;
-  ruangan: string;
-  jam: string;
-  tanggalSeminar: string;
-  dosenPenguji: string;
-  status: "terjadwal" | "selesai" | "diganti";
+// Tipe untuk data seminar
+interface JadwalResponse {
+  total_seminar: number;
+  total_seminar_minggu_ini: number;
+  total_jadwal_ulang: number;
+  jadwal: {
+    semua: any[];
+    hari_ini: any[];
+    minggu_ini: any[];
+  };
+  tahun_ajaran: {
+    id: number;
+    nama: string;
+  };
 }
 
-interface DashboardCardsProps {
-  seminars: Seminar[];
-}
+const DashboardJadwalCard: FC = () => {
+  // Fetch data menggunakan TanStack Query
+  const { data, isLoading, isError } = useQuery<JadwalResponse>({
+    queryKey: ["koordinator-jadwal-seminar"],
+    queryFn: APISeminarKP.getJadwalSeminar,
+  });
 
-const DashboardJadwalCard: FC<DashboardCardsProps> = ({ seminars }) => {
-  // Calculate statistics for dashboard cards
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const thisWeekStart = new Date(today);
-  thisWeekStart.setDate(today.getDate() - today.getDay());
-
-  const totalSeminars = seminars.length;
-
-  const seminarsThisWeek = seminars.filter((seminar) => {
-    const seminarDate = new Date(seminar.tanggalSeminar);
-    return (
-      seminarDate >= thisWeekStart &&
-      seminarDate <= new Date(thisWeekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
-    );
-  }).length;
-
-  // const completedSeminars = seminars.filter(
-  //   (seminar) => seminar.status === "selesai"
-  // ).length;
-
-  const rescheduledSeminars = seminars.filter(
-    (seminar) => seminar.status === "diganti"
-  ).length;
-
-  // const completionPercentage = totalSeminars
-  //   ? Math.round((completedSeminars / totalSeminars) * 100)
-  //   : 0;
+  const totalSeminars = data?.total_seminar || 0;
+  const seminarsThisWeek = data?.total_seminar_minggu_ini || 0;
+  const rescheduledSeminars = data?.total_jadwal_ulang || 0;
 
   // Animation variants
   const container = {
@@ -63,6 +47,22 @@ const DashboardJadwalCard: FC<DashboardCardsProps> = ({ seminars }) => {
     hidden: { y: 20, opacity: 0 },
     show: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300 } },
   };
+
+  if (isLoading) {
+    return (
+      <div className="text-center text-gray-600 dark:text-gray-300">
+        Memuat statistik...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="text-center text-red-600 dark:text-red-300">
+        Gagal memuat statistik
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -139,7 +139,9 @@ const DashboardJadwalCard: FC<DashboardCardsProps> = ({ seminars }) => {
               <motion.div
                 initial={{ width: "0%" }}
                 animate={{
-                  width: `${(seminarsThisWeek / totalSeminars) * 100}%`,
+                  width: totalSeminars
+                    ? `${(seminarsThisWeek / totalSeminars) * 100}%`
+                    : "0%",
                 }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
                 className="h-2 bg-green-500 rounded-full"
@@ -179,7 +181,9 @@ const DashboardJadwalCard: FC<DashboardCardsProps> = ({ seminars }) => {
               <motion.div
                 initial={{ width: "0%" }}
                 animate={{
-                  width: `${(rescheduledSeminars / totalSeminars) * 100}%`,
+                  width: totalSeminars
+                    ? `${(rescheduledSeminars / totalSeminars) * 100}%`
+                    : "0%",
                 }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
                 className="h-2 bg-amber-500 rounded-full"

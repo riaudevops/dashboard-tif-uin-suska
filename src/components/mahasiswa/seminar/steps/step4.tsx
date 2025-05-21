@@ -1,17 +1,17 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { motion } from "framer-motion";
-import { PartyPopper, Calendar, Clock, Lock, ArrowRight } from "lucide-react";
-import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
+import { PartyPopper, Calendar, Clock } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import Stepper from "@/components/mahasiswa/seminar/stepper";
 import InfoCard from "../informasi-seminar";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useNavigate } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
+import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
 
 // Types
 interface Step4Props {
   activeStep: number;
-  countdownDays?: number; // Added prop to control countdown days
 }
 
 interface CardHeaderProps {
@@ -82,16 +82,23 @@ const AnimatedClock: FC = () => (
   </div>
 );
 
-// CountdownCard component with isToday prop
-const CountdownCard: FC<{ countdownDays: number }> = ({ countdownDays }) => {
-  const isToday = countdownDays === 0;
-
-  // Styles for today version (purple)
+// CountdownCard component with isToday and isPast props
+const CountdownCard: FC<{
+  countdownDays: number;
+  isToday: boolean;
+  isPast: boolean;
+}> = ({ countdownDays, isToday, isPast }) => {
   const todayBgClass =
     "from-purple-500 to-violet-600 dark:from-purple-600 dark:to-violet-700";
-  // Styles for countdown version (teal)
   const countdownBgClass =
     "from-emerald-400 to-teal-600 dark:from-emerald-500 dark:to-teal-700";
+  const pastBgClass =
+    "from-red-500 to-rose-600 dark:from-red-600 dark:to-rose-700";
+  const bgClass = isPast
+    ? pastBgClass
+    : isToday
+    ? todayBgClass
+    : countdownBgClass;
 
   return (
     <motion.div
@@ -101,29 +108,22 @@ const CountdownCard: FC<{ countdownDays: number }> = ({ countdownDays }) => {
       animate={{ opacity: 1, y: 0 }}
     >
       <div
-        className={`relative h-full w-full overflow-hidden bg-gradient-to-br ${
-          isToday ? todayBgClass : countdownBgClass
-        } rounded-xl p-6 text-center flex flex-col justify-center items-center transform-gpu shadow-lg`}
+        className={`relative h-full w-full overflow-hidden bg-gradient-to-br ${bgClass} rounded-xl p-6 text-center flex flex-col justify-center items-center transform-gpu shadow-lg`}
       >
-        {/* Background particles */}
         <BackgroundParticles />
 
-        {/* Glowing circle behind clock */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-white/10 blur-xl" />
 
-        {/* Animated clock */}
         <AnimatedClock />
 
-        {/* Countdown or Today display - UPDATED FONT SIZES HERE */}
         <h2
           className={`font-bold text-white mt-3 drop-shadow-lg ${
             isToday ? "text-4xl" : "text-6xl"
           }`}
         >
-          {isToday ? "Hari Ini" : `H-${countdownDays}`}
+          {isPast ? "Lewat" : isToday ? "Hari Ini" : `H-${countdownDays}`}
         </h2>
 
-        {/* Pulse effect behind text */}
         <motion.div
           className="absolute w-32 h-12 rounded-full bg-white/10 blur-md"
           style={{ top: "60%" }}
@@ -131,12 +131,10 @@ const CountdownCard: FC<{ countdownDays: number }> = ({ countdownDays }) => {
           transition={{ duration: 3, repeat: Infinity }}
         />
 
-        {/* Label */}
         <span className="relative text-xs text-emerald-100 uppercase tracking-wider font-medium mt-3 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
-          {isToday ? "SEMINAR" : "MENUJU SEMINAR"}
+          {isPast ? "SEMINAR" : isToday ? "SEMINAR" : "MENUJU SEMINAR"}
         </span>
 
-        {/* Decorative corner accents */}
         <div className="absolute top-3 left-3 w-3 h-3 border-t-2 border-l-2 border-white/30 rounded-tl-lg" />
         <div className="absolute top-3 right-3 w-3 h-3 border-t-2 border-r-2 border-white/30 rounded-tr-lg" />
         <div className="absolute bottom-3 left-3 w-3 h-3 border-b-2 border-l-2 border-white/30 rounded-bl-lg" />
@@ -154,10 +152,8 @@ const AnnouncementCard: FC = () => (
     animate={{ opacity: 1 }}
     transition={{ duration: 0.5 }}
   >
-    {/* Background gradient */}
     <div className="absolute inset-0 bg-gradient-to-br from-blue-100/60 dark:from-purple-600/20 dark:via-transparent via-transparent to-purple-100/60 dark:to-blue-600/20"></div>
 
-    {/* Decorative Bubbles */}
     <motion.div
       className="absolute -top-4 -left-4 w-16 h-16 rounded-full bg-blue-400/20 dark:bg-purple-500/30 blur-md"
       animate={{ y: [0, -10, 0], scale: [1, 1.1, 1] }}
@@ -264,52 +260,127 @@ const RequirementsList: FC = () => (
   </Card>
 );
 
-// Continue button component that changes based on countdown
-const ContinueButton: FC<{ isToday: boolean }> = ({ isToday }) => {
-  const navigate = useNavigate();
-  // Button styles
-  const enabledBgClass = "bg-blue-500 hover:bg-blue-600 text-white";
-  const disabledBgClass =
-    "bg-gray-200 text-gray-500 dark:bg-gray-800 dark:text-gray-400";
-  const enabledButtonClass =
-    "flex items-center gap-2 rounded-xl px-4 py-2 font-medium transition-all text-xs";
-
-  const handleNavigate = () => {
-    navigate("/mahasiswa/seminar/step5");
-  };
-
-  console.log(handleNavigate);
-
-  // Render appropriate button based on isToday state
-  if (isToday) {
-    return (
-      <div className="flex items-center justify-center gap-4 px-2">
-        <p className="text-xs">Jika Telah Selesai Seminar, Silakan Lanjut</p>
-        <button
-          className={`${enabledButtonClass} ${enabledBgClass}`}
-          // onClick={handleNavigate}
-        >
-          Lanjut <ArrowRight size={16} />
-        </button>
-      </div>
-    );
-  } else {
-    return (
-      <div className="flex items-center justify-center gap-4 px-2">
-        <p className="text-xs">Jika Telah Selesai Seminar, Silakan Lanjut</p>
-        <button
-          className={`${enabledButtonClass} ${disabledBgClass} cursor-not-allowed`}
-          disabled
-        >
-          Lanjut <Lock size={16} />
-        </button>
-      </div>
-    );
-  }
-};
-
 // Main component
-const Step4: FC<Step4Props> = ({ activeStep, countdownDays = 5 }) => {
+const Step4: FC<Step4Props> = ({ activeStep }) => {
+  // Fetch data menggunakan TanStack Query
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["seminar-kp-step4"],
+    queryFn: APISeminarKP.getDataMydokumen,
+    staleTime: Infinity,
+  });
+
+  // Hitung countdownDays, isToday, dan isPast berdasarkan data countdown dari API
+  const { countdownDays, isToday, isPast } = useMemo(() => {
+    if (
+      !data?.data?.jadwal ||
+      !Array.isArray(data.data.jadwal) ||
+      data.data.jadwal.length === 0
+    ) {
+      return { countdownDays: 5, isToday: false, isPast: false }; // Default jika jadwal tidak ada
+    }
+
+    const countdown = data.data.jadwal[0].countdown || "H-5"; // Default jika countdown tidak ada
+
+    let countdownDays = 5;
+    let isToday = false;
+    let isPast = false;
+
+    if (countdown === "Hari Ini") {
+      countdownDays = 0;
+      isToday = true;
+      isPast = false;
+    } else if (countdown === "Lewat") {
+      countdownDays = 0;
+      isToday = false;
+      isPast = true;
+    } else if (countdown.startsWith("H-")) {
+      const days = parseInt(countdown.replace("H-", ""), 10);
+      countdownDays = isNaN(days) ? 5 : days;
+      isToday = false;
+      isPast = false;
+    }
+
+    return { countdownDays, isToday, isPast };
+  }, [data]);
+
+  // Data untuk InfoCard
+  const infoData = useMemo(() => {
+    if (!data?.data) {
+      return {};
+    }
+
+    return {
+      judul: data.data.pendaftaran_kp?.[0]?.judul_kp || "Belum diisi",
+      jadwal: data.data.jadwal?.[0]?.tanggal
+        ? (() => {
+            const seminarDate = new Date(data.data.jadwal[0].tanggal);
+            const datePart = seminarDate.toLocaleDateString("id-ID", {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+              timeZone: "Asia/Jakarta",
+            });
+            const timeStart = data.data.jadwal[0]?.waktu_mulai
+              ? new Date(data.data.jadwal[0].waktu_mulai).toLocaleTimeString(
+                  "id-ID",
+                  {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    timeZone: "Asia/Jakarta",
+                  }
+                )
+              : "Waktu belum ditentukan";
+            const timeEnd = data.data.jadwal[0]?.waktu_selesai
+              ? new Date(data.data.jadwal[0].waktu_selesai).toLocaleTimeString(
+                  "id-ID",
+                  {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    timeZone: "Asia/Jakarta",
+                  }
+                )
+              : null;
+            return timeEnd
+              ? `${datePart}, ${timeStart} - ${timeEnd}`
+              : `${datePart}, ${timeStart}`;
+          })()
+        : "Belum diisi",
+      ruangan: data.data.jadwal?.[0]?.ruangan?.nama || "Belum diisi",
+      dosenPembimbing:
+        data.data.pendaftaran_kp?.[0]?.dosen_pembimbing?.nama || "Belum diisi",
+      dosenPenguji:
+        data.data.pendaftaran_kp?.[0]?.dosen_penguji?.nama || "Belum diisi",
+      lokasi: data.data.pendaftaran_kp?.[0]?.instansi?.nama || "Belum diisi",
+      lamaKerjaPraktek: `${
+        data.data.pendaftaran_kp?.[0]?.tanggal_mulai
+          ? new Date(
+              data.data.pendaftaran_kp[0].tanggal_mulai
+            ).toLocaleDateString("id-ID", {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+              timeZone: "Asia/Jakarta",
+            })
+          : "Belum diisi"
+      } - ${
+        data.data.pendaftaran_kp?.[0]?.tanggal_selesai
+          ? new Date(
+              data.data.pendaftaran_kp[0].tanggal_selesai
+            ).toLocaleDateString("id-ID", {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+              timeZone: "Asia/Jakarta",
+            })
+          : "Belum diisi"
+      }`,
+      kontakPembimbing:
+        data.data.pendaftaran_kp?.[0]?.dosen_pembimbing?.no_hp || "Belum diisi",
+      kontakPenguji:
+        data.data.pendaftaran_kp?.[0]?.dosen_penguji?.no_hp || "Belum diisi",
+    };
+  }, [data]);
+
   const informasiSeminarFields = [
     "judul",
     "jadwal",
@@ -322,36 +393,50 @@ const Step4: FC<Step4Props> = ({ activeStep, countdownDays = 5 }) => {
     "kontakPenguji",
   ];
 
-  const isToday = countdownDays === 0;
+  // Penanganan error fetching
+  if (isError) {
+    toast({
+      title: "❌ Gagal",
+      description: `Gagal mengambil data: ${error.message}`,
+      duration: 3000,
+    });
+  }
 
   return (
-    <DashboardLayout>
+    <div className="space-y-4">
       <h1 className="text-2xl font-bold mb-8">
         Validasi Kelengkapan Berkas Seminar Kerja Praktik
       </h1>
 
       <Stepper activeStep={activeStep} />
 
-      <div>
+      <div className="space-y-4">
         {/* Header section with countdown and announcement */}
         <div className="flex flex-col lg:flex-row gap-4 relative overflow-hidden w-full">
-          <CountdownCard countdownDays={countdownDays} />
+          <CountdownCard
+            countdownDays={countdownDays}
+            isToday={isToday}
+            isPast={isPast}
+          />
           <AnnouncementCard />
         </div>
 
-        {/* Continue button section */}
-        <div className="flex justify-center my-4">
-          <div className="bg-white dark:bg-gray-900 border dark:border-gray-800 py-2 rounded-2xl shadow-sm">
-            <ContinueButton isToday={isToday} />
-          </div>
-        </div>
-
-        <InfoCard displayItems={informasiSeminarFields} className="mb-4" />
+        {isLoading ? (
+          <div>Loading InfoCard...</div>
+        ) : isError ? (
+          <div>Error: {error.message}</div>
+        ) : (
+          <InfoCard
+            displayItems={informasiSeminarFields}
+            data={infoData}
+            className="mb-4"
+          />
+        )}
 
         {/* Requirements section */}
         <RequirementsList />
       </div>
-    </DashboardLayout>
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
-import { FC, useState } from "react";
-import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
+import { FC, useState, useEffect, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Stepper from "@/components/mahasiswa/seminar/stepper";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import Status from "@/components/mahasiswa/seminar/status";
 import InfoCard from "../informasi-seminar";
 import DocumentCard from "../formulir-dokumen";
 import { toast } from "@/hooks/use-toast";
-
+import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,11 +22,12 @@ import {
 
 // Type definitions
 type StepStatus = "belum" | "validasi" | "ditolak" | "diterima";
-type DocumentStatus = "default" | "validasi" | "revisi" | "diterima";
+type DocumentStatus = "default" | "Terkirim" | "Divalidasi" | "Ditolak";
 
 interface FormActionsProps {
   onReset?: () => void;
   onSubmit?: () => void;
+  disabledReset?: boolean;
 }
 
 interface CardHeaderProps {
@@ -35,7 +36,6 @@ interface CardHeaderProps {
 
 interface Step1Props {
   activeStep: number;
-  status: StepStatus;
 }
 
 interface DocumentInfo {
@@ -52,6 +52,29 @@ const DOCUMENTS = [
   "Laporan Tambahan Tugas Kerja Praktik",
 ];
 
+// Pemetaan title ke jenis_dokumen API
+const DOCUMENT_TYPE_MAP: Record<string, string> = {
+  "Dokumen Surat Keterangan Selesai Kerja Praktik Dari Instansi":
+    "SURAT_KETERANGAN_SELESAI_KP",
+  "Menghadiri Seminar Kerja Praktik Mahasiswa Lain Minimal 5 Kali":
+    "FORM_KEHADIRAN_SEMINAR",
+  "Laporan Tambahan Tugas Kerja Praktik": "LAPORAN_TAMBAHAN_KP",
+};
+
+// Pemetaan title dokumen ke URL
+const DOCUMENT_URLS: Record<string, string> = {
+  "Dokumen Surat Keterangan Selesai Kerja Praktik Dari Instansi":
+    "/seminar-kp/dokumen/surat-keterangan-selesai-kp",
+  "Menghadiri Seminar Kerja Praktik Mahasiswa Lain Minimal 5 Kali":
+    "/seminar-kp/dokumen/form-kehadiran-seminar",
+  "Laporan Tambahan Tugas Kerja Praktik":
+    "/seminar-kp/dokumen/laporan-tambahan-kp",
+};
+
+// Regex untuk validasi Google Drive Link
+const gdriveLinkRegex =
+  /^https:\/\/drive\.google\.com\/(file\/d\/|drive\/folders\/|open\?id=)([a-zA-Z0-9_-]+)(\/?|\?usp=sharing|\&authuser=0)/;
+
 // Component for gradient card header
 const CardHeaderGradient: FC<CardHeaderProps> = ({ title }) => (
   <div className="bg-gradient-to-r from-emerald-600 to-green-500 px-6 py-4">
@@ -60,13 +83,18 @@ const CardHeaderGradient: FC<CardHeaderProps> = ({ title }) => (
 );
 
 // Form actions component for reuse
-const FormActions: FC<FormActionsProps> = ({ onReset, onSubmit }) => (
+const FormActions: FC<FormActionsProps> = ({
+  onReset,
+  onSubmit,
+  disabledReset,
+}) => (
   <div className="flex justify-end mt-5">
     <div className="flex gap-3">
       <Button
         variant="outline"
         className="border-green-200 dark:border-green-800/50 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-2"
         onClick={onReset}
+        disabled={disabledReset}
       >
         <RefreshCw className="h-4 w-4" />
         Kosongkan Formulir
@@ -107,7 +135,7 @@ const DocumentForm: FC<DocumentFormProps> = ({
       <CardContent className="p-5 flex flex-col gap-5">
         {documents.map((doc, index) => (
           <DocumentCard
-            key={index}
+            key={doc.title}
             judulDokumen={doc.title}
             status={doc.status}
             catatan={doc.notes}
@@ -117,24 +145,100 @@ const DocumentForm: FC<DocumentFormProps> = ({
         ))}
       </CardContent>
     </Card>
-    {showActions && <FormActions onReset={onReset} onSubmit={onSubmit} />}
+    {showActions && (
+      <FormActions
+        onReset={onReset}
+        onSubmit={onSubmit}
+        disabledReset={documents.every(
+          (doc) => doc.status !== "default" && doc.status !== "Ditolak"
+        )}
+      />
+    )}
   </>
 );
 
 // Main component
-const Step1: FC<Step1Props> = ({ activeStep, status }) => {
+const Step1: FC<Step1Props> = ({ activeStep }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  // Add state to track form data
-  const [formDocuments, setFormDocuments] = useState<DocumentInfo[]>(() =>
-    getInitialDocumentConfig(status)
-  );
+  const [formDocuments, setFormDocuments] = useState<DocumentInfo[]>([]);
+
+  // Fetch data
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["seminar-kp-dokumen"],
+    queryFn: APISeminarKP.getDataMydokumen,
+    staleTime: Infinity,
+  });
+
+  // Mutation untuk POST link dokumen
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: APISeminarKP.postLinkDokumen,
+    onError: (error: any) => {
+      toast({
+        title: "❌ Gagal",
+        description: `Gagal mengirim dokumen: ${error.message}`,
+        duration: 3000,
+      });
+    },
+  });
+
+  // Inisialisasi formDocuments berdasarkan data API
+  useEffect(() => {
+    if (data?.data) {
+      const step1Docs = data.data.dokumen_seminar_kp.step1 || [];
+      const step1Accessible = data.data.steps_info.step1_accessible;
+
+      const initialDocs = DOCUMENTS.map((title) => {
+        const apiDoc =
+          step1Docs.find(
+            (doc: any) => DOCUMENT_TYPE_MAP[title] === doc.jenis_dokumen
+          ) || {};
+        return {
+          title,
+          status:
+            (apiDoc.status as DocumentStatus) ||
+            (step1Accessible ? "default" : "Terkirim"),
+          notes: apiDoc.komentar || "",
+          link: apiDoc.link_path || "",
+        };
+      });
+      setFormDocuments(initialDocs);
+    }
+  }, [data]);
+
+  // Hitung infoData hanya saat data berubah
+  const infoData = useMemo(() => {
+    return data?.data
+      ? {
+          judul: data.data.pendaftaran_kp[0]?.judul_kp || "Belum diisi",
+          lokasi: data.data.pendaftaran_kp[0]?.instansi?.nama || "Belum diisi",
+          dosenPembimbing:
+            data.data.pendaftaran_kp[0]?.dosen_pembimbing?.nama ||
+            "Belum diisi",
+          kontakPembimbing:
+            data.data.pendaftaran_kp[0]?.dosen_pembimbing?.no_hp ||
+            "Belum diisi",
+          lamaKerjaPraktek: `${
+            data.data.pendaftaran_kp[0]?.tanggal_mulai
+              ? new Date(
+                  data.data.pendaftaran_kp[0].tanggal_mulai
+                ).toLocaleDateString("id-ID", {
+                  day: "2-digit",
+                  month: "long",
+                  year: "numeric",
+                })
+              : "Belum diisi"
+          } - ${data.data.pendaftaran_kp[0]?.tanggal_selesai || "Belum diisi"}`,
+        }
+      : {};
+  }, [data]);
 
   const informasiSeminarFields = [
+    "judul",
     "lokasi",
-    "lamaKerjaPraktek",
     "dosenPembimbing",
     "kontakPembimbing",
-    "judul",
+    "lamaKerjaPraktek",
   ];
 
   // Handler for link changes
@@ -145,117 +249,199 @@ const Step1: FC<Step1Props> = ({ activeStep, status }) => {
   };
 
   const handleReset = () => {
-    // Reset the form data by clearing all links
-    const resetDocs = formDocuments.map((doc) => ({
-      ...doc,
-      link: "", // Clear the link value
-    }));
+    const resetDocs = formDocuments.map((doc) => {
+      if (doc.status === "default" || doc.status === "Ditolak") {
+        return { ...doc, link: "" };
+      }
+      return doc;
+    });
     setFormDocuments(resetDocs);
-
-    // Show toast notification for reset confirmation
     toast({
       title: "✅ Berhasil",
       description: "Formulir berhasil dikosongkan",
       duration: 3000,
     });
-
-    console.log("Form reset");
   };
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setIsDialogOpen(false);
-    // Show success toast
-    toast({
-      title: "👌 Berhasil",
-      description: "Dokumen berhasil dikirim untuk divalidasi",
-      duration: 3000,
+    const nim = data?.data.nim;
+    const id_pendaftaran_kp = data?.data.pendaftaran_kp[0]?.id;
+
+    // Kirim hanya dokumen dengan status "default" atau "Ditolak" yang memiliki link
+    const documentsToSubmit = formDocuments.filter(
+      (doc) =>
+        doc.link && (doc.status === "default" || doc.status === "Ditolak")
+    );
+
+    if (documentsToSubmit.length === 0) {
+      toast({
+        title: "⚠️ Peringatan",
+        description: "Harap isi setidaknya satu link dokumen",
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Validasi link: periksa apakah ada link yang bukan Google Drive
+    const invalidDocs = documentsToSubmit.filter(
+      (doc) => !gdriveLinkRegex.test(doc.link!)
+    );
+
+    if (invalidDocs.length > 0) {
+      const invalidDocTitles = invalidDocs.map((doc) => doc.title).join(", ");
+      toast({
+        title: "❌ Gagal Mengirim",
+        description: `Link dokumen berikut bukan Google Drive yang valid: ${invalidDocTitles}`,
+        duration: 5000,
+      });
+      return;
+    }
+
+    // Array untuk melacak dokumen yang berhasil dikirim
+    const successfullySubmittedDocs: string[] = [];
+
+    // Kirim semua dokumen secara paralel dan lacak yang berhasil
+    const submissionPromises = documentsToSubmit.map((doc) => {
+      const url = DOCUMENT_URLS[doc.title];
+      if (!url) {
+        toast({
+          title: "⚠️ Peringatan",
+          description: `URL untuk dokumen "${doc.title}" tidak ditemukan!`,
+          duration: 3000,
+        });
+        return Promise.resolve(null);
+      }
+
+      console.log(`Mengirim link untuk "${doc.title}": ${doc.link}`);
+      return mutation
+        .mutateAsync({
+          nim,
+          link_path: doc.link!,
+          id_pendaftaran_kp,
+          url,
+        })
+        .then(() => {
+          successfullySubmittedDocs.push(doc.title);
+        })
+        .catch((error) => {
+          console.error(`Gagal mengirim dokumen "${doc.title}":`, error);
+          return null;
+        });
     });
-    console.log("Form submitted with documents:", formDocuments);
+
+    // Tunggu semua pengiriman selesai
+    await Promise.all(submissionPromises);
+
+    // Tampilkan toast dengan daftar dokumen yang berhasil dikirim
+    if (successfullySubmittedDocs.length > 0) {
+      const docList = successfullySubmittedDocs.join(", ");
+      toast({
+        title: "✅ Berhasil",
+        description: `Berhasil mengirim link dokumen: ${docList}`,
+        duration: 3000,
+      });
+      queryClient.invalidateQueries({ queryKey: ["seminar-kp-dokumen"] });
+    }
   };
 
-  // Get initial document configuration based on status
-  function getInitialDocumentConfig(currentStatus: StepStatus): DocumentInfo[] {
-    switch (currentStatus) {
-      case "belum":
-        return DOCUMENTS.map((title) => ({
-          title,
-          status: "default",
-          link: "", // Initialize with empty link
-        }));
+  // Tentukan status berdasarkan data API dengan logika yang lebih akurat
+  const status: StepStatus = useMemo(() => {
+    if (!data?.data) return "belum";
 
-      case "validasi":
-        return DOCUMENTS.map((title) => ({
-          title,
-          status: "validasi",
-          link: "", // Initialize with empty link
-        }));
+    const step1Docs = data.data.dokumen_seminar_kp.step1 || [];
+    const step1Accessible = data.data.steps_info.step1_accessible;
 
-      case "ditolak":
-        return [
-          {
-            title: DOCUMENTS[0],
-            status: "diterima",
-            link: "",
-          },
-          {
-            title: DOCUMENTS[1],
-            status: "diterima",
-            link: "",
-          },
-          {
-            title: DOCUMENTS[2],
-            status: "revisi",
-            notes:
-              "Format laporan tidak sesuai dengan template yang diberikan. Mohon untuk menyusun ulang sesuai dengan panduan.",
-            link: "",
-          },
-        ];
-
-      default:
-        return [];
+    // Jika step1_accessible true dan belum ada dokumen yang dikirim, status adalah "belum"
+    if (step1Accessible && step1Docs.length === 0) {
+      return "belum";
     }
-  }
 
-  // Render status notification if needed
+    // Jika ada dokumen yang ditolak, status adalah "ditolak"
+    if (step1Docs.some((doc: any) => doc.status === "Ditolak")) {
+      return "ditolak";
+    }
+
+    // Jika semua dokumen sudah divalidasi, status adalah "diterima"
+    if (
+      step1Docs.length === DOCUMENTS.length &&
+      step1Docs.every((doc: any) => doc.status === "Divalidasi")
+    ) {
+      return "diterima";
+    }
+
+    // Jika ada dokumen yang dikirim tetapi belum divalidasi, status adalah "validasi"
+    if (step1Docs.length > 0) {
+      return "validasi";
+    }
+
+    // Default status jika tidak ada kondisi di atas
+    return "belum";
+  }, [data]);
+
+  // Render status notification
   const renderStatusNotification = () => {
-    if (status === "belum") {
-      return (
-        <Status
-          status="belum"
-          title="Anda Belum Mengupload Dokumen Form Pendaftaran Diseminasi KP"
-          subtitle="Silakan lengkapi dokumen terlebih dahulu."
-        />
-      );
+    if (isLoading) {
+      return <div>Loading...</div>;
     }
-
-    if (status === "validasi") {
-      return (
-        <Status
-          status="validasi"
-          title="Dokumen Anda Sedang dalam Proses Validasi"
-        />
-      );
+    if (isError) {
+      toast({
+        title: "❌ Gagal",
+        description: `Gagal mengambil data: ${error.message}`,
+        duration: 3000,
+      });
+      return <div>Error: {error.message}</div>;
     }
-
-    if (status === "ditolak") {
-      return (
-        <Status
-          status="ditolak"
-          title="Validasi Dokumen Anda Ditolak"
-          subtitle="Silakan isi kembali Form sesuai perintah dengan benar!"
-        />
-      );
+    switch (status) {
+      case "belum":
+        return (
+          <Status
+            status="belum"
+            title="Anda Belum Mengupload Dokumen Form Pendaftaran Diseminasi KP"
+            subtitle="Silakan lengkapi dokumen terlebih dahulu."
+          />
+        );
+      case "validasi":
+        return (
+          <Status
+            status="validasi"
+            title="Dokumen Anda Sedang dalam Proses Validasi"
+          />
+        );
+      case "ditolak":
+        return (
+          <Status
+            status="ditolak"
+            title="Validasi Dokumen Anda Ditolak"
+            subtitle="Silakan isi kembali Form sesuai perintah dengan benar!"
+          />
+        );
+      case "diterima":
+        return (
+          <Status
+            status="validasi"
+            title="Dokumen Anda Telah Divalidasi"
+            subtitle="Semua dokumen Anda telah diterima. Silakan lanjutkan ke langkah berikutnya."
+          />
+        );
+      default:
+        return null;
     }
-
-    return null;
   };
+
+  // Tentukan apakah tombol action harus ditampilkan berdasarkan status dokumen
+  const shouldShowActions = useMemo(() => {
+    return formDocuments.some(
+      (doc) => doc.status === "default" || doc.status === "Ditolak"
+    );
+  }, [formDocuments]);
 
   return (
-    <DashboardLayout>
+    <div className="space-y-4">
       <h1 className="text-2xl font-bold mb-8">
         Validasi Kelengkapan Berkas Seminar Kerja Praktik
       </h1>
@@ -264,13 +450,17 @@ const Step1: FC<Step1Props> = ({ activeStep, status }) => {
 
       {renderStatusNotification()}
 
-      <InfoCard displayItems={informasiSeminarFields} />
+      {isLoading ? (
+        <div>Loading InfoCard...</div>
+      ) : (
+        <InfoCard displayItems={informasiSeminarFields} data={infoData} />
+      )}
 
       <div className={`${status === "ditolak" ? "flex flex-col gap-4" : ""}`}>
         <DocumentForm
           documents={formDocuments}
-          showHeader={status !== "validasi"}
-          showActions={status !== "validasi"}
+          showHeader={status !== "validasi" && status !== "diterima"}
+          showActions={shouldShowActions}
           onReset={handleReset}
           onSubmit={handleOpenDialog}
           onLinkChange={handleLinkChange}
@@ -293,13 +483,14 @@ const Step1: FC<Step1Props> = ({ activeStep, status }) => {
             <AlertDialogAction
               onClick={handleConfirm}
               className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-600 text-white"
+              disabled={mutation.isPending}
             >
-              Yakin
+              {mutation.isPending ? "Mengirim..." : "Yakin"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </DashboardLayout>
+    </div>
   );
 };
 

@@ -1,12 +1,14 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import {
   Calendar,
+  DownloadIcon,
   FileDigit,
   GraduationCap,
   History,
   Printer,
   Rocket,
   User,
+  X,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -23,7 +25,6 @@ import { useQuery } from "@tanstack/react-query";
 import APISetoran from "@/services/api/mahasiswa/setoran-hafalan.service";
 import { useFilteringSetoranSurat } from "@/hooks/use-filtering-setor-surat";
 import { colourLabelingCategory } from "@/helpers/colour-labeling-category";
-import { GeneratePDF } from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/generate-pdf-setoran-hafalan";
 import { Skeleton } from "@/components/ui/skeleton";
 import ModalBoxDetailSetoran from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/ModalBoxDetailSetoran";
 import { useState } from "react";
@@ -51,8 +52,82 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
   const { dataCurrent, setTabState, tabState, setSearch, search } =
     useFilteringSetoranSurat(dataRingkasan?.setoran.detail, "default");
 
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfName, setPdfName] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleCetakKartuMurojaahMobile = async () => {
+    const response = await APISetoran.getKartuMurojaahSaya();
+    
+    const pdfName = response.headers["content-disposition"].split("filename=")[1].replaceAll('"', '');
+    const blob = new Blob([response.data], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url || "";
+    link.download = pdfName || "";
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);   
+  }
+
+  const handleCetakKartuMurojaah = async () => {
+    const response = await APISetoran.getKartuMurojaahSaya();
+    
+    const pdfName = response.headers["content-disposition"].split("filename=")[1].replaceAll('"', '');
+    const blob = new Blob([response.data], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+
+    setPdfUrl(url);
+    setPdfName(pdfName);
+    setShowModal(true);    
+  }
+
+  const handeDownloadPDF = async () => {
+    const link = document.createElement("a");
+    link.href = pdfUrl || "";
+    link.download = pdfName || "";
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
+
+    setShowModal(false);
+    setPdfUrl(null);
+    setPdfName(null);
+  }
+
   return (
     <>
+      {showModal && pdfUrl && (
+        <div className="fixed z-[999] w-screen h-screen flex items-center justify-center bg-black bg-opacity-70">
+          <div className="w-[80%] h-[90%] flex flex-col justify-center items-end gap-1">
+            <div className="flex gap-1 h-10 w-full">
+              <div className="w-full h-full rounded-md bg-green-800 flex justify-start items-center px-4">
+                <p className="text-white text-center font-medium">{ pdfName }</p>
+              </div>
+              <Button variant={"default"} className="bg-yellow-700 active:bg-yellow-700 hover:bg-yellow-800 justify-center flex h-full hover:scale-95 active:scale-100"
+                  onClick={handeDownloadPDF}
+                >
+                  <DownloadIcon width={50} height={50} color="white" />
+              </Button>
+              <Button variant={"destructive"} className="justify-center flex h-full hover:scale-95 active:scale-100"
+                  onClick={() => {
+                    setShowModal(false);
+                    setPdfUrl(null);
+                  }}
+                >
+                  <X width={50} height={50} color="white" />
+              </Button>
+            </div>
+            <iframe
+              src={pdfUrl}
+              title={pdfName || ""}
+              className="border rounded w-full h-full"
+            ></iframe>
+          </div>
+        </div>
+      )}
+
       <DashboardLayout>
         <ModalBoxDetailSetoran
           openDialog={openDialog}
@@ -229,21 +304,18 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                 </Button>
                 <Button
                   variant={"default"}
-                  className="bg-blue-500 text-white hover:bg-blue-700 active:scale-95"
-                  onClick={() =>
-                    GeneratePDF({
-                      props: {
-                        nama: dataRingkasan?.info.nama,
-                        nim: dataRingkasan?.info.nim,
-                        dataSurah: dataRingkasan?.setoran.detail,
-                        dosen_pa: dataRingkasan?.info.dosen_pa.nama,
-                        nip_dosen: dataRingkasan?.info.dosen_pa.nip,
-                      },
-                    })
-                  }
+                  className="hidden md:flex bg-blue-500 text-white hover:bg-blue-700 active:scale-95"
+                  onClick={handleCetakKartuMurojaah}
                 >
                   <Printer />
-                  <span className="hidden md:block">Cetak Kartu Muroja'ah</span>
+                  Cetak Kartu Muroja'ah
+                </Button>
+                <Button
+                  variant={"default"}
+                  className="md:hidden flex bg-blue-500 text-white hover:bg-blue-700 active:scale-95"
+                  onClick={handleCetakKartuMurojaahMobile}
+                >
+                  <Printer />
                 </Button>
               </div>
             </div>

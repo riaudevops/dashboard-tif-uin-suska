@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
-import { Award } from "lucide-react";
+import { Award, LayoutGridIcon } from "lucide-react";
 
-import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import Stepper from "@/components/mahasiswa/seminar/stepper";
 import InfoCard from "../informasi-seminar";
 import Status from "../status";
@@ -54,9 +53,15 @@ export default function Step6({ activeStep, status }: Step6Props) {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-8">
-        Validasi Kelengkapan Berkas Seminar Kerja Praktik
-      </h1>
+      <div className="flex mb-5">
+        <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+          <span
+            className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+          />
+          <LayoutGridIcon className="w-4 h-4 mr-1.5" />
+          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa            
+        </span>
+      </div>
 
       <Stepper activeStep={activeStep} />
 

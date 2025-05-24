@@ -210,7 +210,7 @@ const MahasiswaKerjaPraktikBimbinganPage = () => {
         {/* Main Content*/}
         {!isLoading && !isError && bimbinganSaya && (
           <>
-            <div className="grid grid-cols-1 gap-6 mb-6 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 mb-6 lg:grid-cols-3">
               {/* Progress Card*/}
               <Card className="col-span-2 overflow-hidden text-white border-0 shadow-lg bg-gradient-to-br from-purple-600 to-indigo-700">
                 <CardContent className="p-0">
@@ -388,10 +388,10 @@ const MahasiswaKerjaPraktikBimbinganPage = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50 dark:bg-gray-700/50">
-                    <TableHead className="w-24 text-center sm:w-auto">
+                    <TableHead className="max-w-14 text-center sm:w-auto">
                       Bimbingan Ke-
                     </TableHead>
-                    <TableHead className="w-24 text-center sm:w-auto">
+                    <TableHead className="min-w-44 text-center sm:w-auto">
                       Tanggal
                     </TableHead>
                     <TableHead className="w-24 text-center sm:w-auto">
@@ -426,7 +426,7 @@ const MahasiswaKerjaPraktikBimbinganPage = () => {
                           }
                         >
                           <TableCell className="font-medium text-center">
-                            {index + 1}
+                            {index + 1}.
                           </TableCell>
                           <TableCell className="text-center">
                             {formatDate(item.tanggal_bimbingan)}
@@ -434,7 +434,7 @@ const MahasiswaKerjaPraktikBimbinganPage = () => {
                           <TableCell className="text-center">
                             <Badge
                               variant="outline"
-                              className="px-3 py-1 font-medium text-green-800 bg-green-100 rounded-lg hover:bg-green-100"
+                              className="px-3 py-1 font-medium text-green-900 bg-green-200 rounded-lg hover:bg-green-100"
                             >
                               {item.status}
                             </Badge>

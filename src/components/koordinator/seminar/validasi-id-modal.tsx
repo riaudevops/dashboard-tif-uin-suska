@@ -10,7 +10,6 @@ import {
   FileText,
   Calendar,
   Clock,
-  MapPin,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
@@ -26,13 +25,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "@/hooks/use-toast";
+import toast from "react-hot-toast";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
+import { AxiosError } from "axios";
 
 // Helper to get current date-time in WIB (UTC+7)
 const getCurrentDateTime = () => {
   const now = new Date();
   return new Date(now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
+};
+
+// Helper to calculate end time (1 hour after start time)
+const calculateEndTime = (startTime: string): string => {
+  if (!startTime) return "";
+  const [hours, minutes] = startTime.split(":").map(Number);
+  const date = new Date();
+  date.setHours(hours);
+  date.setMinutes(minutes);
+  date.setHours(date.getHours() + 1); // Add 1 hour
+  const newHours = date.getHours().toString().padStart(2, "0");
+  const newMinutes = date.getMinutes().toString().padStart(2, "0");
+  return `${newHours}:${newMinutes}`;
 };
 
 interface Dokumen {
@@ -87,6 +100,7 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
     nama_ruangan: "",
     tanggal: "",
     waktu_mulai: "",
+    waktu_selesai: "",
     nip_penguji: "",
   });
   const queryClient = useQueryClient();
@@ -104,11 +118,7 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
   const validateMutation = useMutation({
     mutationFn: (id: string) => APISeminarKP.postValidasiDokumen({ id }),
     onSuccess: () => {
-      toast({
-        title: "✅ Berhasil",
-        description: "Dokumen berhasil divalidasi.",
-        duration: 3000,
-      });
+      toast.success("Dokumen berhasil divalidasi.");
       queryClient.invalidateQueries({
         queryKey: ["koordinator-seminar-kp-detail", student?.nim],
       });
@@ -116,12 +126,12 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
         queryKey: ["koordinator-seminar-kp-dokumen"],
       });
     },
-    onError: (error) => {
-      toast({
-        title: "❌ Gagal",
-        description: `Gagal memvalidasi dokumen: ${(error as Error).message}`,
-        duration: 3000,
-      });
+    onError: (error: unknown) => {
+      const errorMessage =
+        error instanceof AxiosError && error.response?.data?.message
+          ? error.response.data.message
+          : "Gagal memvalidasi dokumen.";
+      toast.error(errorMessage);
     },
   });
 
@@ -129,11 +139,7 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
     mutationFn: ({ id, komentar }: { id: string; komentar: string }) =>
       APISeminarKP.postTolakDokumen({ id, komentar }),
     onSuccess: () => {
-      toast({
-        title: "✅ Berhasil",
-        description: "Dokumen berhasil ditolak.",
-        duration: 3000,
-      });
+      toast.success("Dokumen berhasil ditolak.");
       queryClient.invalidateQueries({
         queryKey: ["koordinator-seminar-kp-detail", student?.nim],
       });
@@ -141,12 +147,12 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
         queryKey: ["koordinator-seminar-kp-dokumen"],
       });
     },
-    onError: (error) => {
-      toast({
-        title: "❌ Gagal",
-        description: `Gagal menolak dokumen: ${(error as Error).message}`,
-        duration: 3000,
-      });
+    onError: (error: unknown) => {
+      const errorMessage =
+        error instanceof AxiosError && error.response?.data?.message
+          ? error.response.data.message
+          : "Gagal menolak dokumen.";
+      toast.error(errorMessage);
     },
   });
 
@@ -156,85 +162,32 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
         throw new Error("ID Pendaftaran KP tidak ditemukan!");
       }
       const payload = {
-        tanggal: formData.tanggal, // Use raw string (e.g., "2025-05-20")
-        waktu_mulai: formData.waktu_mulai, // Use raw string (e.g., "09:00")
+        tanggal: formData.tanggal,
+        waktu_mulai: formData.waktu_mulai,
+        waktu_selesai: formData.waktu_selesai,
         nim: student?.nim || "",
         nama_ruangan: formData.nama_ruangan,
         id_pendaftaran_kp: student?.id_pendaftaran_kp || "",
         nip_penguji: formData.nip_penguji,
       };
-      console.log("Payload sent to postJadwal:", payload); // Verify payload
+      console.log("Payload sent to postJadwal:", payload);
       return APISeminarKP.postJadwal(payload);
     },
     onSuccess: () => {
-      toast({
-        title: "✅ Berhasil",
-        description: "Jadwal seminar berhasil disimpan.",
-        duration: 3000,
-      });
+      toast.success("Jadwal seminar berhasil disimpan.");
       queryClient.invalidateQueries({
         queryKey: ["koordinator-seminar-kp-dokumen"],
       });
       onClose();
     },
-    onError: (error) => {
-      const errorMessage = (error as Error).message;
-      if (errorMessage.includes("ID Pendaftaran KP tidak ditemukan!")) {
-        toast({
-          title: "❌ Gagal",
-          description:
-            "ID Pendaftaran KP tidak ditemukan. Periksa data mahasiswa.",
-          duration: 3000,
-        });
-      } else {
-        if (
-          errorMessage.includes("Waduh, dokumen nya belum divalidasi ni! 😭")
-        ) {
-          toast({
-            title: "❌ Gagal",
-            description: "Waduh, dokumen nya belum divalidasi ni! 😭",
-            duration: 3000,
-          });
-        } else if (
-          errorMessage.includes("Waduh, pendaftaran KP tidak ditemukan! 😭")
-        ) {
-          toast({
-            title: "❌ Gagal",
-            description: "Waduh, pendaftaran KP tidak ditemukan! 😭",
-            duration: 3000,
-          });
-        } else if (errorMessage.includes("Jadwal mahasiswa konflik")) {
-          toast({
-            title: "❌ Gagal",
-            description: errorMessage,
-            duration: 3200,
-          });
-        } else if (errorMessage.includes("Jadwal dosen penguji konflik")) {
-          toast({
-            title: "❌ Gagal",
-            description: errorMessage,
-            duration: 3200,
-          });
-        } else if (errorMessage.includes("Jadwal dosen pembimbing konflik")) {
-          toast({
-            title: "❌ Gagal",
-            description: errorMessage,
-            duration: 3200,
-          });
-        } else if (errorMessage.includes("Ruangan tidak tersedia")) {
-          toast({
-            title: "❌ Gagal",
-            description: "Ruangan tidak tersedia pada waktu yang dipilih",
-            duration: 3200,
-          });
-        } else {
-          toast({
-            title: "❌ Gagal",
-            description: `Gagal menyimpan jadwal: ${errorMessage}`,
-            duration: 3200,
-          });
-        }
-      }
+    onError: (error: unknown) => {
+      const errorMessage =
+        error instanceof AxiosError && error.response?.data?.message
+          ? error.response.data.message
+          : error instanceof Error
+          ? error.message
+          : "Gagal menyimpan jadwal.";
+      toast.error(errorMessage);
     },
   });
 
@@ -266,6 +219,7 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
         nama_ruangan: "",
         tanggal: "",
         waktu_mulai: "",
+        waktu_selesai: "",
         nip_penguji: "",
       });
     }
@@ -276,10 +230,10 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
       !student?.dosenPembimbing ||
       student.dosenPembimbing === "Tidak tersedia"
     ) {
-      return undefined; // Ubah dari null ke undefined
+      return undefined;
     }
     const nipMatch = student.dosenPembimbing.match(/NIP: (\d+)/);
-    return nipMatch ? nipMatch[1] : undefined; // Ubah dari null ke undefined
+    return nipMatch ? nipMatch[1] : undefined;
   }, [student]);
 
   const handleReject = (docId: string) => {
@@ -330,41 +284,48 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
   };
 
   const handleFormChange = (field: keyof typeof formData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (field === "waktu_mulai") {
+      setFormData((prev) => ({
+        ...prev,
+        waktu_mulai: value,
+        waktu_selesai: calculateEndTime(value),
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    }
   };
 
   const handleConfirm = async () => {
     const hasAccepted = documents.some((doc) => doc.isAccepted);
     const hasRejected = documents.some((doc) => doc.isRejected);
 
-    // Jika ada dokumen yang diterima dan showSection aktif, periksa field jadwal
     if (hasAccepted && showSection) {
       if (
         !formData.nama_ruangan ||
         !formData.tanggal ||
         !formData.waktu_mulai ||
+        !formData.waktu_selesai ||
         !formData.nip_penguji
       ) {
-        toast({
-          title: "❌ Gagal",
-          description: "Semua field jadwal harus diisi.",
-          duration: 3000,
-        });
+        toast.error("Semua field jadwal harus diisi.");
+        return;
+      }
+
+      const startTime = new Date(`1970-01-01T${formData.waktu_mulai}:00`);
+      const endTime = new Date(`1970-01-01T${formData.waktu_selesai}:00`);
+      if (endTime <= startTime) {
+        toast.error("Waktu selesai harus lebih besar dari waktu mulai.");
         return;
       }
     }
 
-    // Jika hanya ada dokumen yang ditolak, pastikan alasan penolakan diisi
     const allRejectionsHaveReason = documents
       .filter((doc) => doc.isRejected)
       .every((doc) => doc.rejectionReason.trim() !== "");
     if (hasRejected && !allRejectionsHaveReason) {
-      toast({
-        title: "❌ Gagal",
-        description:
-          "Alasan penolakan harus diisi untuk semua dokumen yang ditolak.",
-        duration: 3000,
-      });
+      toast.error(
+        "Alasan penolakan harus diisi untuk semua dokumen yang ditolak."
+      );
       return;
     }
 
@@ -389,20 +350,14 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
         );
         const currentDateTime = getCurrentDateTime();
         if (selectedDateTime <= currentDateTime) {
-          toast({
-            title: "❌ Gagal",
-            description: "Tanggal dan waktu harus lebih dari waktu saat ini.",
-            duration: 3000,
-          });
+          toast.error(
+            "Tanggal dan waktu mulai harus lebih dari waktu saat ini."
+          );
           return;
         }
         await scheduleMutation.mutateAsync();
       }
-      toast({
-        title: "✅ Berhasil",
-        description: "Semua perubahan telah dikonfirmasi.",
-        duration: 3000,
-      });
+      toast.success("Semua perubahan telah dikonfirmasi.");
       queryClient.invalidateQueries({
         queryKey: ["koordinator-seminar-kp-detail", student?.nim],
       });
@@ -412,11 +367,11 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
       onClose();
       setShowSection(false);
     } catch (error) {
-      toast({
-        title: "❌ Gagal",
-        description: `Terjadi kesalahan: ${(error as Error).message}`,
-        duration: 3000,
-      });
+      const errorMessage =
+        error instanceof AxiosError && error.response?.data?.message
+          ? error.response.data.message
+          : "Terjadi kesalahan saat mengonfirmasi perubahan.";
+      toast.error(errorMessage);
     }
   };
 
@@ -445,7 +400,10 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
       (formData.nama_ruangan &&
         formData.tanggal &&
         formData.waktu_mulai &&
-        formData.nip_penguji));
+        formData.waktu_selesai &&
+        formData.nip_penguji &&
+        new Date(`1970-01-01T${formData.waktu_selesai}:00`) >
+          new Date(`1970-01-01T${formData.waktu_mulai}:00`)));
   const currentDateTime = getCurrentDateTime();
   const selectedDateTime =
     formData.tanggal && formData.waktu_mulai
@@ -453,7 +411,7 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
       : null;
   const isPastDateTime = selectedDateTime
     ? selectedDateTime <= currentDateTime
-    : false; // Ubah agar selalu boolean
+    : false;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -590,7 +548,7 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
                               variant="ghost"
                               className={`h-6 w-6 rounded-full p-0 ${
                                 docState?.isAccepted
-                                  ? "text-emerald-500 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/50"
+                                  ? "text-emerald-500 dark:text-emerald-400 bg-em Emerald-100 dark:bg-emerald-900/50"
                                   : "text-gray-500 dark:text-gray-400"
                               } hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50`}
                               onClick={() => handleAccept(doc.id)}
@@ -637,35 +595,35 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
                 variants={sectionVariants}
               >
                 <div className="grid gap-4">
-                  <div className="grid gap-2">
-                    <Label
-                      htmlFor="nama_ruangan"
-                      className="text-sm text-gray-600 dark:text-gray-300"
-                    >
-                      Ruangan Seminar
-                    </Label>
-                    <Select
-                      onValueChange={(value) =>
-                        handleFormChange("nama_ruangan", value)
-                      }
-                      value={formData.nama_ruangan}
-                    >
-                      <SelectTrigger
-                        id="nama_ruangan"
-                        className="text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-                      >
-                        <SelectValue placeholder="Pilih ruangan" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {ruanganData.map((ruangan: any) => (
-                          <SelectItem key={ruangan.nama} value={ruangan.nama}>
-                            {ruangan.nama}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
                   <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label
+                        htmlFor="nama_ruangan"
+                        className="text-sm text-gray-600 dark:text-gray-300"
+                      >
+                        Ruangan Seminar
+                      </Label>
+                      <Select
+                        onValueChange={(value) =>
+                          handleFormChange("nama_ruangan", value)
+                        }
+                        value={formData.nama_ruangan}
+                      >
+                        <SelectTrigger
+                          id="nama_ruangan"
+                          className="text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+                        >
+                          <SelectValue placeholder="Pilih ruangan" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ruanganData.map((ruangan: any) => (
+                            <SelectItem key={ruangan.nama} value={ruangan.nama}>
+                              {ruangan.nama}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div className="grid gap-2">
                       <Label
                         htmlFor="tanggal"
@@ -687,6 +645,9 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
                         />
                       </div>
                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
                       <Label
                         htmlFor="waktu_mulai"
@@ -707,7 +668,28 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
                         />
                       </div>
                     </div>
+                    <div className="grid gap-2">
+                      <Label
+                        htmlFor="waktu_selesai"
+                        className="text-sm text-gray-600 dark:text-gray-300"
+                      >
+                        Waktu Selesai
+                      </Label>
+                      <div className="relative">
+                        <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Input
+                          id="waktu_selesai"
+                          type="time"
+                          value={formData.waktu_selesai}
+                          onChange={(e) =>
+                            handleFormChange("waktu_selesai", e.target.value)
+                          }
+                          className="pl-10 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+                        />
+                      </div>
+                    </div>
                   </div>
+
                   <div className="grid gap-2">
                     <Label
                       htmlFor="nip_penguji"

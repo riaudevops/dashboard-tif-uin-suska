@@ -20,7 +20,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-// Type definitions
 type StepStatus = "belum" | "validasi" | "ditolak" | "diterima";
 type DocumentStatus = "default" | "Terkirim" | "Divalidasi" | "Ditolak";
 
@@ -38,21 +37,49 @@ interface Step1Props {
   activeStep: number;
 }
 
+interface ApiDoc {
+  jenis_dokumen?: string;
+  status?: DocumentStatus;
+  komentar?: string;
+  link_path?: string;
+}
+
 interface DocumentInfo {
   title: string;
   status: DocumentStatus;
-  notes?: string;
-  link?: string;
+  notes: string;
+  link: string;
 }
 
-// Constants
+interface SeminarData {
+  nim: string;
+  pendaftaran_kp: Array<{
+    id: string;
+    judul_kp: string;
+    instansi: { nama: string };
+    dosen_pembimbing: { nama: string; no_hp: string };
+    tanggal_mulai: string;
+    tanggal_selesai: string | null;
+  }>;
+  dokumen_seminar_kp: {
+    step1: Array<{
+      jenis_dokumen: string;
+      status: DocumentStatus;
+      komentar?: string;
+      link_path?: string;
+    }>;
+  };
+  steps_info: {
+    step1_accessible: boolean;
+  };
+}
+
 const DOCUMENTS = [
   "Dokumen Surat Keterangan Selesai Kerja Praktik Dari Instansi",
   "Menghadiri Seminar Kerja Praktik Mahasiswa Lain Minimal 5 Kali",
   "Laporan Tambahan Tugas Kerja Praktik",
 ];
 
-// Pemetaan title ke jenis_dokumen API
 const DOCUMENT_TYPE_MAP: Record<string, string> = {
   "Dokumen Surat Keterangan Selesai Kerja Praktik Dari Instansi":
     "SURAT_KETERANGAN_SELESAI_KP",
@@ -61,7 +88,6 @@ const DOCUMENT_TYPE_MAP: Record<string, string> = {
   "Laporan Tambahan Tugas Kerja Praktik": "LAPORAN_TAMBAHAN_KP",
 };
 
-// Pemetaan title dokumen ke URL
 const DOCUMENT_URLS: Record<string, string> = {
   "Dokumen Surat Keterangan Selesai Kerja Praktik Dari Instansi":
     "/seminar-kp/dokumen/surat-keterangan-selesai-kp",
@@ -71,18 +97,15 @@ const DOCUMENT_URLS: Record<string, string> = {
     "/seminar-kp/dokumen/laporan-tambahan-kp",
 };
 
-// Regex untuk validasi Google Drive Link
 const gdriveLinkRegex =
   /^https:\/\/drive\.google\.com\/(file\/d\/|drive\/folders\/|open\?id=)([a-zA-Z0-9_-]+)(\/?|\?usp=sharing|\&authuser=0)/;
 
-// Component for gradient card header
 const CardHeaderGradient: FC<CardHeaderProps> = ({ title }) => (
   <div className="bg-gradient-to-r from-emerald-600 to-green-500 px-6 py-4">
     <CardTitle className="text-white text-lg font-medium">{title}</CardTitle>
   </div>
 );
 
-// Form actions component for reuse
 const FormActions: FC<FormActionsProps> = ({
   onReset,
   onSubmit,
@@ -109,7 +132,6 @@ const FormActions: FC<FormActionsProps> = ({
   </div>
 );
 
-// Document list component
 interface DocumentFormProps {
   documents: DocumentInfo[];
   showHeader?: boolean;
@@ -157,19 +179,18 @@ const DocumentForm: FC<DocumentFormProps> = ({
   </>
 );
 
-// Main component
 const Step1: FC<Step1Props> = ({ activeStep }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formDocuments, setFormDocuments] = useState<DocumentInfo[]>([]);
 
-  // Fetch data
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, error } = useQuery<{
+    data: SeminarData;
+  }>({
     queryKey: ["seminar-kp-dokumen"],
     queryFn: APISeminarKP.getDataMydokumen,
     staleTime: Infinity,
   });
 
-  // Mutation untuk POST link dokumen
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: APISeminarKP.postLinkDokumen,
@@ -182,31 +203,27 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
     },
   });
 
-  // Inisialisasi formDocuments berdasarkan data API
   useEffect(() => {
     if (data?.data) {
       const step1Docs = data.data.dokumen_seminar_kp.step1 || [];
       const step1Accessible = data.data.steps_info.step1_accessible;
 
       const initialDocs = DOCUMENTS.map((title) => {
-        const apiDoc =
+        const apiDoc: ApiDoc =
           step1Docs.find(
-            (doc: any) => DOCUMENT_TYPE_MAP[title] === doc.jenis_dokumen
+            (doc) => DOCUMENT_TYPE_MAP[title] === doc.jenis_dokumen
           ) || {};
         return {
           title,
-          status:
-            (apiDoc.status as DocumentStatus) ||
-            (step1Accessible ? "default" : "Terkirim"),
-          notes: apiDoc.komentar || "",
-          link: apiDoc.link_path || "",
+          status: apiDoc.status || (step1Accessible ? "default" : "Terkirim"),
+          notes: apiDoc.komentar ?? "",
+          link: apiDoc.link_path ?? "",
         };
       });
       setFormDocuments(initialDocs);
     }
   }, [data]);
 
-  // Hitung infoData hanya saat data berubah
   const infoData = useMemo(() => {
     return data?.data
       ? {
@@ -241,7 +258,6 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
     "lamaKerjaPraktek",
   ];
 
-  // Handler for link changes
   const handleLinkChange = (index: number, value: string) => {
     const updatedDocs = [...formDocuments];
     updatedDocs[index] = { ...updatedDocs[index], link: value };
@@ -272,10 +288,19 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
     const nim = data?.data.nim;
     const id_pendaftaran_kp = data?.data.pendaftaran_kp[0]?.id;
 
-    // Kirim hanya dokumen dengan status "default" atau "Ditolak" yang memiliki link
+    if (!nim || !id_pendaftaran_kp) {
+      toast({
+        title: "❌ Gagal",
+        description: "Data mahasiswa atau pendaftaran tidak lengkap",
+        duration: 3000,
+      });
+      return;
+    }
+
     const documentsToSubmit = formDocuments.filter(
-      (doc) =>
-        doc.link && (doc.status === "default" || doc.status === "Ditolak")
+      (doc): doc is DocumentInfo & { link: string } =>
+        doc.link !== "" &&
+        (doc.status === "default" || doc.status === "Ditolak")
     );
 
     if (documentsToSubmit.length === 0) {
@@ -287,9 +312,8 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
       return;
     }
 
-    // Validasi link: periksa apakah ada link yang bukan Google Drive
     const invalidDocs = documentsToSubmit.filter(
-      (doc) => !gdriveLinkRegex.test(doc.link!)
+      (doc) => !gdriveLinkRegex.test(doc.link)
     );
 
     if (invalidDocs.length > 0) {
@@ -302,10 +326,8 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
       return;
     }
 
-    // Array untuk melacak dokumen yang berhasil dikirim
     const successfullySubmittedDocs: string[] = [];
 
-    // Kirim semua dokumen secara paralel dan lacak yang berhasil
     const submissionPromises = documentsToSubmit.map((doc) => {
       const url = DOCUMENT_URLS[doc.title];
       if (!url) {
@@ -321,7 +343,7 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
       return mutation
         .mutateAsync({
           nim,
-          link_path: doc.link!,
+          link_path: doc.link,
           id_pendaftaran_kp,
           url,
         })
@@ -334,10 +356,8 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
         });
     });
 
-    // Tunggu semua pengiriman selesai
     await Promise.all(submissionPromises);
 
-    // Tampilkan toast dengan daftar dokumen yang berhasil dikirim
     if (successfullySubmittedDocs.length > 0) {
       const docList = successfullySubmittedDocs.join(", ");
       toast({
@@ -349,41 +369,34 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
     }
   };
 
-  // Tentukan status berdasarkan data API dengan logika yang lebih akurat
   const status: StepStatus = useMemo(() => {
     if (!data?.data) return "belum";
 
     const step1Docs = data.data.dokumen_seminar_kp.step1 || [];
     const step1Accessible = data.data.steps_info.step1_accessible;
 
-    // Jika step1_accessible true dan belum ada dokumen yang dikirim, status adalah "belum"
     if (step1Accessible && step1Docs.length === 0) {
       return "belum";
     }
 
-    // Jika ada dokumen yang ditolak, status adalah "ditolak"
-    if (step1Docs.some((doc: any) => doc.status === "Ditolak")) {
+    if (step1Docs.some((doc) => doc.status === "Ditolak")) {
       return "ditolak";
     }
 
-    // Jika semua dokumen sudah divalidasi, status adalah "diterima"
     if (
       step1Docs.length === DOCUMENTS.length &&
-      step1Docs.every((doc: any) => doc.status === "Divalidasi")
+      step1Docs.every((doc) => doc.status === "Divalidasi")
     ) {
       return "diterima";
     }
 
-    // Jika ada dokumen yang dikirim tetapi belum divalidasi, status adalah "validasi"
     if (step1Docs.length > 0) {
       return "validasi";
     }
 
-    // Default status jika tidak ada kondisi di atas
     return "belum";
   }, [data]);
 
-  // Render status notification
   const renderStatusNotification = () => {
     if (isLoading) {
       return <div>Loading...</div>;
@@ -433,7 +446,6 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
     }
   };
 
-  // Tentukan apakah tombol action harus ditampilkan berdasarkan status dokumen
   const shouldShowActions = useMemo(() => {
     return formDocuments.some(
       (doc) => doc.status === "default" || doc.status === "Ditolak"
@@ -467,7 +479,6 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
         />
       </div>
 
-      {/* Confirmation Dialog */}
       <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

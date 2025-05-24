@@ -59,6 +59,8 @@ const InstructionCard: FC = () => (
         </p>
         <a
           href="https://seminar-fst.uin-suska.ac.id/akademik/prosedur/seminar"
+          target="_blank"
+          rel="noopener noreferrer"
           className="cursor-pointer inline-flex items-center font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline transition-colors duration-200"
         >
           https://seminar-fst.uin-suska.ac.id/akademik/prosedur/seminar
@@ -184,7 +186,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
     onSuccess: (response, newIdPengajuan) => {
       toast({
         title: "👌 Berhasil",
-        description: `ID Pengajuan berhasil dikirim dengan ID: ${response.id}`,
+        description: `ID Pengajuan berhasil dikirim`,
         duration: 3000,
       });
       setLastSubmittedId(newIdPengajuan); // Simpan ID yang dikirim

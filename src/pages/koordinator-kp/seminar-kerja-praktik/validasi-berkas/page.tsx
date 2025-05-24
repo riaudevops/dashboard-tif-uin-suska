@@ -15,7 +15,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ValidasiPendaftaranModal from "@/components/koordinator-kp/seminar/validasi-pendaftaran-modal";
 import ValidasiIdModal from "@/components/koordinator-kp/seminar/validasi-id-modal";

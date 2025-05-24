@@ -13,7 +13,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import APIKerjaPraktik from "@/services/api/mahasiswa/daily-report.service";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   GeistSansBold,
   GeistSansRegular,
@@ -47,6 +47,7 @@ import {
   XCircle,
   Eye,
   AlertTriangleIcon,
+  BookOpen,
 } from "lucide-react";
 import {
   CalendarDay,
@@ -765,12 +766,19 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
   return (
     <DashboardLayout>
       <Toaster position="top-right" />
-      <CardHeader className="pb-2">
-        <CardTitle className="mb-2 text-2xl font-bold sm:text-3xl sm:mb-0">
-          Daily Report Kerja Praktik
-        </CardTitle>
+      <CardHeader className="p-0 pb-2 sm:pb-3 pt-0 sm:pt-0">
+          <div className="flex">
+            <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+              <span
+                className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+              />
+              <BookOpen className="w-4 h-4 mr-1.5" />
+              Daily Report Kerja Praktik Mahasiswa            
+            </span>
+          </div>
+          {/* Tanggal Realtime Dalam Format Humanize */}
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         {/* Error Message */}
         {isError && (
           <Card className="inline-block border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-700">
@@ -814,7 +822,7 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
               </div>
             </div>
             <div className="p-4">
-              <Skeleton className="w-48 h-8 mx-auto mb-4" />
+              <Skeleton className="w-full h-8 mx-auto mb-4 -mt-5" />
               <div className="grid grid-cols-7 gap-2">
                 {Array(7)
                   .fill(0)
@@ -834,7 +842,7 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
         )}
         {/* Main Content */}
         {!isLoading && !isError && dailyReportSaya?.data && (
-          <div className="space-y-6">
+          <div className="space-y-5">
             {/* Biodata Section */}
             <div className="overflow-hidden border border-gray-100 rounded-lg shadow-md bg-gradient-to-r from-white to-gray-50 dark:from-gray-800/40 dark:to-gray-800/20 dark:border-gray-700">
               <div className="flex items-center justify-between p-4 text-white border-b border-gray-100 bg-gradient-to-br from-purple-600 to-indigo-700 dark:border-gray-700">
@@ -865,7 +873,7 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
                     </div>
                   </div>
                 </div>
-                <div className="px-3 py-0.5 bg-white border border-gray-200 rounded-full shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                <div className="px-3 hidden sm:block py-0.5 bg-white border border-gray-200 rounded-full shadow-sm dark:bg-gray-800 dark:border-gray-700">
                   <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
                     {dailyReportSaya.data.tahun_ajaran?.nama}
                   </span>
@@ -966,8 +974,8 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
                       </TooltipTrigger>
                       <TooltipContent>
                         {hasAttendedToday
-                          ? "Kamu sudah presensi hari ini..."
-                          : "Presensi harian kerja praktik..."}
+                          ? "Kamu sudah presensi hari ini!"
+                          : "Presensi harian kerja praktik."}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>

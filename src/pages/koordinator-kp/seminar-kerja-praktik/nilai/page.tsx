@@ -1,7 +1,7 @@
 import { useState, type FC } from "react";
 import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { Search, Eye, Users, CheckCircle, AlertCircle } from "lucide-react";
+import { Search, Eye, Users, CheckCircle, AlertCircle, CalendarCheck2Icon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -197,24 +197,28 @@ const KoordinatorNilaiPage: FC = () => {
     <DashboardLayout>
       <div className="transition-colors duration-300">
         {/* Header */}
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-2xl font-bold mb-4 dark:text-white">
-              Nilai Kerja Praktik Mahasiswa
-            </h1>
-
+        <div className="space-y-5">
+          <div className="flex justify-between items-center">
+            <div className="flex">
+              <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+                <span
+                  className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+                />
+                <CalendarCheck2Icon className="w-4 h-4 mr-1.5" />
+                Nilai Kerja Praktik Mahasiswa
+              </span>
+            </div>
+              
             {/* Academic Year */}
             <div>
-              <span className="mr-2 text-gray-600 dark:text-gray-300">
-                Tahun Ajaran
-              </span>
               <Badge
                 variant="outline"
-                className="bg-gray-100 dark:bg-gray-900 dark:text-gray-300"
+                className="bg-gray-100 text-sm font-medium dark:bg-gray-900 dark:text-gray-300"
               >
                 {data?.tahunAjaran || "Tidak tersedia"}
               </Badge>
             </div>
+
           </div>
 
           {/* Cards Section */}

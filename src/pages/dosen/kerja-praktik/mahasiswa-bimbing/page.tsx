@@ -20,6 +20,7 @@ import {
   FileText,
   Award,
   AlertTriangle,
+  UserRoundPenIcon,
 } from "lucide-react";
 
 const DosenKerjaPraktikMahasiswaBimbingPage = () => {
@@ -314,16 +315,22 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen p-4 md:p-6">
+      <div className="min-h-screen">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.5 }}
           className="mb-6"
         >
-          <h1 className="mb-4 text-2xl font-bold">
-            Mahasiswa Bimbingan Kerja Praktik
-          </h1>
+          <div className="flex mb-5">
+            <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+              <span
+                className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+              />
+              <UserRoundPenIcon className="w-4 h-4 mr-1.5" />
+              Mahasiswa Bimbingan Kerja Praktik
+            </span>
+          </div>
           {/* Academic Year Selector */}
           <div className="flex items-center gap-2 dark:text-gray-200">
             <span className="text-sm font-medium">Tahun Ajaran</span>

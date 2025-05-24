@@ -4,7 +4,7 @@ import Stepper from "@/components/mahasiswa/seminar/stepper";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, ExternalLink } from "lucide-react";
+import { CheckCircle2, ExternalLink, LayoutGridIcon } from "lucide-react";
 import Status from "../status";
 import { Label } from "@/components/ui/label";
 import InfoCard from "../informasi-seminar";
@@ -359,9 +359,15 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-medium mb-8">
-        Validasi Kelengkapan Berkas Seminar Kerja Praktik
-      </h1>
+      <div className="flex mb-5">
+        <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+          <span
+            className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+          />
+          <LayoutGridIcon className="w-4 h-4 mr-1.5" />
+          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa            
+        </span>
+      </div>
 
       <Stepper activeStep={activeStep} />
 

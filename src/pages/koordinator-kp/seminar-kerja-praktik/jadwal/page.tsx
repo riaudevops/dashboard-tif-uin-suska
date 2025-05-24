@@ -18,7 +18,7 @@ import DashboardJadwalCard from "@/components/dosen/seminar-kp/DashboardJadwalCa
 import EditJadwalSeminarModal from "@/components/koordinator-kp/seminar/edit-jadwal-modal";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 import { Toaster } from "react-hot-toast";
-import LogJadwalModal from "@/components/koordinator/seminar/log-jadwal-modal";
+import LogJadwalModal from "@/components/koordinator-kp/seminar/log-jadwal-modal";
 
 // Tipe untuk data seminar
 interface Mahasiswa {

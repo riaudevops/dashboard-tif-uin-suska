@@ -66,43 +66,43 @@ const DashboardJadwalCard: FC = () => {
 
   return (
     <motion.div
-      className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+      className="grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
       variants={container}
       initial="hidden"
       animate="show"
     >
       {/* Total Seminar Card */}
       <motion.div variants={item}>
-        <Card className="overflow-hidden border-none shadow-lg bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-950 dark:to-gray-900">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xl font-medium text-blue-800 dark:text-blue-300">
+        <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-950 dark:to-gray-900">
+          <CardHeader className="flex flex-row items-center justify-between pb-1 pt-3 px-3">
+            <CardTitle className="text-sm font-medium text-blue-800 dark:text-blue-300">
               Total Seminar
             </CardTitle>
             <motion.div
               whileHover={{ rotate: 15 }}
-              className="bg-blue-200 p-2 rounded-full dark:bg-blue-800"
+              className="bg-blue-200 p-1.5 rounded-full dark:bg-blue-800"
             >
-              <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+              <Calendar className="h-3.5 w-3.5 text-blue-600 dark:text-blue-300" />
             </motion.div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3 pb-3">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", delay: 0.1 }}
-              className="text-5xl font-bold text-blue-800 dark:text-white"
+              className="text-2xl font-bold text-blue-800 dark:text-white"
             >
               {totalSeminars}
             </motion.div>
-            <p className="text-sm text-blue-600 dark:text-blue-300 mt-1">
+            <p className="text-xs text-blue-600 dark:text-blue-300 mt-0.5">
               Seminar Terjadwal
             </p>
-            <div className="h-2 w-full bg-blue-100 dark:bg-blue-900 rounded-full mt-3">
+            <div className="h-1.5 w-full bg-blue-100 dark:bg-blue-900 rounded-full mt-2">
               <motion.div
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
-                className="h-2 bg-blue-500 rounded-full"
+                className="h-1.5 bg-blue-500 rounded-full"
               />
             </div>
           </CardContent>
@@ -111,31 +111,31 @@ const DashboardJadwalCard: FC = () => {
 
       {/* Seminar Minggu Ini Card */}
       <motion.div variants={item}>
-        <Card className="overflow-hidden border-none shadow-lg bg-gradient-to-br from-green-100 to-green-50 dark:from-green-950 dark:to-gray-900">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xl font-medium text-green-800 dark:text-green-300">
+        <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-green-100 to-green-50 dark:from-green-950 dark:to-gray-900">
+          <CardHeader className="flex flex-row items-center justify-between pb-1 pt-3 px-3">
+            <CardTitle className="text-sm font-medium text-green-800 dark:text-green-300">
               Seminar Minggu Ini
             </CardTitle>
             <motion.div
               whileHover={{ rotate: 15 }}
-              className="bg-green-200 p-2 rounded-full dark:bg-green-800"
+              className="bg-green-200 p-1.5 rounded-full dark:bg-green-800"
             >
-              <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-300" />
+              <CheckCircle className="h-3.5 w-3.5 text-green-600 dark:text-green-300" />
             </motion.div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3 pb-3">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", delay: 0.1 }}
-              className="text-5xl font-bold text-green-800 dark:text-white"
+              className="text-2xl font-bold text-green-800 dark:text-white"
             >
               {seminarsThisWeek}
             </motion.div>
-            <p className="text-sm text-green-600 dark:text-green-300 mt-1">
+            <p className="text-xs text-green-600 dark:text-green-300 mt-0.5">
               Seminar Terjadwal
             </p>
-            <div className="h-2 w-full bg-green-100 dark:bg-green-900 rounded-full mt-3">
+            <div className="h-1.5 w-full bg-green-100 dark:bg-green-900 rounded-full mt-2">
               <motion.div
                 initial={{ width: "0%" }}
                 animate={{
@@ -144,7 +144,7 @@ const DashboardJadwalCard: FC = () => {
                     : "0%",
                 }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
-                className="h-2 bg-green-500 rounded-full"
+                className="h-1.5 bg-green-500 rounded-full"
               />
             </div>
           </CardContent>
@@ -153,31 +153,31 @@ const DashboardJadwalCard: FC = () => {
 
       {/* Jadwal Diganti Card */}
       <motion.div variants={item}>
-        <Card className="overflow-hidden border-none shadow-lg bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-950 dark:to-gray-900">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xl font-medium text-amber-800 dark:text-amber-300">
+        <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-950 dark:to-gray-900">
+          <CardHeader className="flex flex-row items-center justify-between pb-1 pt-3 px-3">
+            <CardTitle className="text-sm font-medium text-amber-800 dark:text-amber-300">
               Jadwal Diganti
             </CardTitle>
             <motion.div
               whileHover={{ rotate: 15 }}
-              className="bg-amber-200 p-2 rounded-full dark:bg-amber-800"
+              className="bg-amber-200 p-1.5 rounded-full dark:bg-amber-800"
             >
-              <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-300" />
+              <AlertCircle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-300" />
             </motion.div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3 pb-3">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", delay: 0.1 }}
-              className="text-5xl font-bold text-amber-800 dark:text-white"
+              className="text-2xl font-bold text-amber-800 dark:text-white"
             >
               {rescheduledSeminars}
             </motion.div>
-            <p className="text-sm text-amber-600 dark:text-amber-300 mt-1">
+            <p className="text-xs text-amber-600 dark:text-amber-300 mt-0.5">
               Seminar Dijadwal Ulang
             </p>
-            <div className="h-2 w-full bg-amber-100 dark:bg-amber-900 rounded-full mt-3">
+            <div className="h-1.5 w-full bg-amber-100 dark:bg-amber-900 rounded-full mt-2">
               <motion.div
                 initial={{ width: "0%" }}
                 animate={{
@@ -186,7 +186,7 @@ const DashboardJadwalCard: FC = () => {
                     : "0%",
                 }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
-                className="h-2 bg-amber-500 rounded-full"
+                className="h-1.5 bg-amber-500 rounded-full"
               />
             </div>
           </CardContent>

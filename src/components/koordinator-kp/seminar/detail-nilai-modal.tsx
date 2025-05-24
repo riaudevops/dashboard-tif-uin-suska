@@ -1,23 +1,7 @@
-import { type FC } from "react";
-import {
-  Eye,
-  User,
-  Award,
-  Building,
-  GraduationCap,
-} from "lucide-react";
+import { ReactNode, type FC } from "react";
+import { User, Award, Building, GraduationCap } from "lucide-react";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-} from "@/components/ui/dialog";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 
 interface DetailNilaiModalProps {
   isOpen: boolean;
@@ -34,6 +18,7 @@ interface DetailNilaiModalProps {
     dosen_pembimbing: string;
     dosen_penguji: string;
     nilai_instansi?: number;
+    nilai_pembimbing?: number;
     nilai_penguji?: number;
     nilai_akhir?: number;
     nilai_huruf?: string;
@@ -46,14 +31,17 @@ interface DetailNilaiModalProps {
       inisiatif?: number;
       masukan?: string;
     };
+    komponen_nilai_pembimbing?: {
+      penyelesaian_masalah?: number;
+      bimbingan_sikap?: number;
+      kualitas_laporan?: number;
+      catatan?: string;
+    };
     komponen_nilai_penguji?: {
       penguasaan_keilmuan?: number;
       kemampuan_presentasi?: number;
       kesesuaian_urgensi?: number;
       catatan?: string;
-    };
-    komponen_nilai_pembimbing?: {
-      [key: string]: number | string | undefined;
     };
   } | null;
 }
@@ -65,79 +53,148 @@ const DetailNilaiModal: FC<DetailNilaiModalProps> = ({
 }) => {
   if (!student) return null;
 
+  const renderKomponenGrid = (
+    komponenData: { [key: string]: string | number | undefined },
+    labels: { [key: string]: string }
+  ): ReactNode => {
+    return (
+      <div className="space-y-3">
+        {Object.entries(komponenData).map(([key, value]) => {
+          if (key === "masukan" || key === "catatan") {
+            return (
+              <div
+                key={key}
+                className="bg-gray-50 border border-gray-200 rounded-lg p-4"
+              >
+                <div className="text-sm font-medium text-gray-700 mb-2">
+                  {labels[key] ||
+                    key.charAt(0).toUpperCase() +
+                      key.slice(1).replace(/_/g, " ")}
+                </div>
+                <div className="text-sm text-gray-600 leading-relaxed">
+                  {value ||
+                    "Tidak ada " + (key === "masukan" ? "masukan" : "catatan")}
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div
+              key={key}
+              className="flex items-center justify-between py-3 px-4 bg-white border border-gray-200 rounded-lg"
+            >
+              <span className="text-sm font-medium text-gray-700">
+                {labels[key] ||
+                  key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, " ")}
+              </span>
+              <span className="font-bold text-lg text-emerald-600">
+                {value || 0}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+  const instansiLabels = {
+    deliverables: "Deliverables",
+    ketepatan_waktu: "Ketepatan Waktu",
+    kedisiplinan: "Kedisiplinan",
+    attitude: "Attitude",
+    kerjasama_tim: "Kerjasama Tim",
+    inisiatif: "Inisiatif",
+    masukan: "Masukan",
+  };
+
+  const pembimbingLabels = {
+    penyelesaian_masalah: "Penyelesaian Masalah",
+    bimbingan_sikap: "Bimbingan Sikap",
+    kualitas_laporan: "Kualitas Laporan",
+    catatan: "Catatan",
+  };
+
+  const pengujiLabels = {
+    penguasaan_keilmuan: "Penguasaan Materi (40%)",
+    kemampuan_presentasi: "Teknik Presentasi (25%)",
+    kesesuaian_urgensi: "Kesesuaian Laporan dan Presentasi (35%)",
+    catatan: "Catatan",
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[85vh] overflow-hidden flex flex-col p-0 rounded-xl bg-white dark:bg-gray-900">
-        <div className="pt-12 px-4">
+      <DialogContent className="max-w-6xl max-h-screen overflow-hidden flex flex-col p-0 rounded-2xl bg-white shadow-2xl">
+        {/* Header Section */}
+        <div className="p-6 pb-4">
           <DialogHeader>
-            <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800">
-              <div className="bg-gradient-to-r from-emerald-500 to-teal-400 dark:from-emerald-600 dark:to-teal-500 p-3 text-white">
+            <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-lg bg-white">
+              <div className="bg-gradient-to-r from-emerald-500 to-teal-400 p-4 text-white">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-white/90 dark:bg-gray-800/90 rounded-full p-1 w-10 h-10 flex items-center justify-center shadow-sm">
-                      <User className="text-emerald-600 dark:text-emerald-400 w-6 h-6" />
+                  <div className="flex items-center gap-4">
+                    <div className="bg-white/95 rounded-full p-2 w-12 h-12 flex items-center justify-center shadow-md">
+                      <User className="text-emerald-600 w-6 h-6" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg">{student.nama}</h3>
-                      <div className="flex items-center gap-2 text-xs">
-                        <span className="bg-white/90 dark:bg-gray-800/90 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full shadow-sm text-center">
+                      <h3 className="font-bold text-xl mb-1">{student.nama}</h3>
+                      <div className="flex items-center gap-3 text-sm">
+                        <span className="bg-white/95 text-emerald-700 px-3 py-1 rounded-full shadow-sm font-medium">
                           Semester {student.semester}
                         </span>
-                        <span className="flex items-center bg-emerald-600/40 dark:bg-emerald-700/40 px-2 py-0.5 rounded-full">
-                          <span className="bg-white dark:bg-gray-200 w-1.5 h-1.5 rounded-full mr-1"></span>
+                        <span className="flex items-center bg-emerald-600/30 px-3 py-1 rounded-full">
+                          <span className="bg-white w-2 h-2 rounded-full mr-2"></span>
                           {student.status_daftar_kp}
                         </span>
                       </div>
                     </div>
                   </div>
-                  <div className="bg-white/90 dark:bg-gray-800/90 text-emerald-700 dark:text-emerald-400 px-2 py-1 rounded-md text-xs font-medium shadow-sm">
+                  <div className="bg-white/95 text-emerald-700 px-4 py-2 rounded-lg text-sm font-bold shadow-md">
                     {student.nim}
                   </div>
                 </div>
               </div>
 
-              {/* Profile Details - horizontal layout */}
-              <div className="grid grid-cols-4 gap-0 border-t border-gray-100 dark:border-gray-700">
-                <div className="p-3 flex items-center gap-2 border-r border-gray-100 dark:border-gray-700">
-                  <Award className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
-                  <div>
-                    <div className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+              {/* Profile Details */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 border-t border-gray-100">
+                <div className="p-4 flex items-center gap-3 border-r border-gray-100 border-b lg:border-b-0">
+                  <Award className="w-6 h-6 text-emerald-500 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
                       Instansi
                     </div>
-                    <div className="font-medium text-xs text-gray-800 dark:text-gray-200">
+                    <div className="font-semibold text-sm text-gray-800 truncate">
                       {student.instansi}
                     </div>
                   </div>
                 </div>
-                <div className="p-3 flex items-center gap-2 border-r border-gray-100 dark:border-gray-700">
-                  <Building className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
-                  <div>
-                    <div className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                <div className="p-4 flex items-center gap-3 border-r lg:border-r border-gray-100 border-b lg:border-b-0">
+                  <Building className="w-6 h-6 text-emerald-500 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
                       Pembimbing Instansi
                     </div>
-                    <div className="font-medium text-xs text-gray-800 dark:text-gray-200">
+                    <div className="font-semibold text-sm text-gray-800 truncate">
                       {student.pembimbing_instansi}
                     </div>
                   </div>
                 </div>
-                <div className="p-3 flex items-center gap-2">
-                  <GraduationCap className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
-                  <div>
-                    <div className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                <div className="p-4 flex items-center gap-3 border-r border-gray-100">
+                  <GraduationCap className="w-6 h-6 text-emerald-500 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
                       Dosen Pembimbing
                     </div>
-                    <div className="font-medium text-xs text-gray-800 dark:text-gray-200">
+                    <div className="font-semibold text-sm text-gray-800 truncate">
                       {student.dosen_pembimbing}
                     </div>
                   </div>
                 </div>
-                <div className="p-3 flex items-center gap-2">
-                  <GraduationCap className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
-                  <div>
-                    <div className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                <div className="p-4 flex items-center gap-3">
+                  <GraduationCap className="w-6 h-6 text-emerald-500 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
                       Dosen Penguji
                     </div>
-                    <div className="font-medium text-xs text-gray-800 dark:text-gray-200">
+                    <div className="font-semibold text-sm text-gray-800 truncate">
                       {student.dosen_penguji}
                     </div>
                   </div>
@@ -147,224 +204,141 @@ const DetailNilaiModal: FC<DetailNilaiModalProps> = ({
           </DialogHeader>
         </div>
 
-        {/* Total Grade Card */}
-        <div className="flex justify-center">
-          <div className="relative bg-gradient-to-r from-emerald-500 to-green-500 text-white py-3 px-8 rounded-xl shadow-lg flex flex-col items-center justify-center">
-            <div className="text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
-              TOTAL
-            </div>
-            <span className="font-bold text-2xl">
-              {student.nilai_akhir || student.nilai_instansi || 0} (
-              {student.nilai_huruf || "N/A"})
-            </span>
-          </div>
-        </div>
-
-        {/* Grade Cards Container with new, cooler design */}
-        <div className="grid grid-cols-3 gap-4 mb-4 px-4">
-          {/* Pembimbing Instansi Card */}
-          <div className="rounded-xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-300">
-            <div className="relative h-20 bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center p-3">
-              <div className="text-center">
-                <div className="text-xs font-medium text-emerald-100 uppercase tracking-wide">
-                  Nilai
-                </div>
-                <h3 className="text-white font-semibold">
-                  Pembimbing Instansi
-                </h3>
-              </div>
-            </div>
-
-            <div className="p-4 flex flex-col items-center mt-5">
-              {student.nilai_instansi ? (
-                <>
-                  <div className="text-4xl font-bold text-gray-800 dark:text-gray-100">
-                    {student.nilai_instansi}
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto px-6 pb-6">
+          <div className="w-full space-y-4">
+            <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6">
+                <div className="flex items-center justify-between w-full">
+                  <div className="text-center flex-1">
+                    <div className="text-sm font-medium opacity-90 mb-2">
+                      NILAI AKHIR
+                    </div>
+                    <div className="text-4xl font-bold mb-1">
+                      {student.nilai_akhir?.toFixed(1) || "0.0"}
+                    </div>
+                    <div className="text-xl font-semibold">
+                      ({student.nilai_huruf || "N/A"})
+                    </div>
                   </div>
-                  {student.komponen_nilai_instansi && (
-                    <Accordion
-                      type="single"
-                      collapsible
-                      className="w-full mt-6"
-                    >
-                      <AccordionItem value="instansi">
-                        <AccordionTrigger className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center justify-center hover:bg-emerald-50 dark:hover:bg-gray-600 transition-colors">
-                          <Eye className="w-3 h-3 mr-1" />
-                          <span>Lihat Detail</span>
-                        </AccordionTrigger>
-                        <AccordionContent className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-2">
-                          <div className="grid grid-cols-2 gap-2 text-sm text-gray-800 dark:text-gray-200">
-                            <div>
-                              Deliverables:{" "}
-                              {student.komponen_nilai_instansi.deliverables ||
-                                "N/A"}
-                            </div>
-                            <div>
-                              Ketepatan Waktu:{" "}
-                              {student.komponen_nilai_instansi
-                                .ketepatan_waktu || "N/A"}
-                            </div>
-                            <div>
-                              Kedisiplinan:{" "}
-                              {student.komponen_nilai_instansi.kedisiplinan ||
-                                "N/A"}
-                            </div>
-                            <div>
-                              Attitude:{" "}
-                              {student.komponen_nilai_instansi.attitude ||
-                                "N/A"}
-                            </div>
-                            <div>
-                              Kerjasama Tim:{" "}
-                              {student.komponen_nilai_instansi.kerjasama_tim ||
-                                "N/A"}
-                            </div>
-                            <div>
-                              Inisiatif:{" "}
-                              {student.komponen_nilai_instansi.inisiatif ||
-                                "N/A"}
-                            </div>
-                            <div className="col-span-2">
-                              Masukan:{" "}
-                              {student.komponen_nilai_instansi.masukan ||
-                                "Tidak ada masukan"}
-                            </div>
+                </div>
+              </div>
+              <div className="px-6 py-4">
+                {/* Grade Cards Grid - Symmetric Layout */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                  {/* Nilai Pembimbing Instansi Card */}
+                  <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                    <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-4 text-center">
+                      <h3 className="font-semibold text-sm">
+                        Pembimbing Instansi
+                      </h3>
+                    </div>
+                    <div className="p-6 text-center">
+                      {student.nilai_instansi ? (
+                        <>
+                          <div className="text-3xl font-bold text-emerald-600 mb-2">
+                            {student.nilai_instansi}
                           </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  )}
-                </>
-              ) : (
-                <div className="flex flex-col items-center py-2">
-                  <div className="text-red-500 dark:text-red-400 font-semibold animate-pulse">
-                    Belum Mengisi!
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Menunggu Penilaian
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Dosen Pembimbing Card */}
-          <div className="rounded-xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-300">
-            <div className="relative h-20 bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center p-3">
-              <div className="text-center">
-                <div className="text-xs font-medium text-emerald-100 uppercase tracking-wide">
-                  Nilai
-                </div>
-                <h3 className="text-white font-semibold">Dosen Pembimbing</h3>
-              </div>
-            </div>
-
-            <div className="p-4 flex flex-col items-center mt-5">
-              <div className="flex flex-col items-center py-2">
-                <div className="text-red-500 dark:text-red-400 font-semibold animate-pulse">
-                  Belum Mengisi!
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Menunggu Penilaian
-                </div>
-              </div>
-
-              <Accordion type="single" collapsible className="w-full mt-6">
-                <AccordionItem value="pembimbing">
-                  <AccordionTrigger className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center justify-center hover:bg-emerald-50 dark:hover:bg-gray-600 transition-colors">
-                    <Eye className="w-3 h-3 mr-1" />
-                    <span>Lihat Detail</span>
-                  </AccordionTrigger>
-                  <AccordionContent className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-2">
-                    {student.komponen_nilai_pembimbing ? (
-                      <div className="grid grid-cols-2 gap-2 text-sm text-gray-800 dark:text-gray-200">
-                        {Object.entries(student.komponen_nilai_pembimbing).map(
-                          ([key, value]) => (
-                            <div key={key}>
-                              {key.charAt(0).toUpperCase() +
-                                key.slice(1).replace(/_/g, " ")}
-                              : {value || "N/A"}
-                            </div>
-                          )
+                          <div className="text-xs text-green-600 font-medium">
+                            ✓ Sudah Dinilai
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="text-2xl font-bold text-red-500 mb-2">
+                            Belum Dinilai
+                          </div>
+                          <div className="text-xs text-red-500">
+                            Menunggu Penilaian
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    {student.komponen_nilai_instansi && (
+                      <div className="px-6 pb-4">
+                        {renderKomponenGrid(
+                          student.komponen_nilai_instansi,
+                          instansiLabels
                         )}
                       </div>
-                    ) : (
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        Belum ada data komponen nilai.
+                    )}
+                  </div>
+
+                  {/* Nilai Dosen Pembimbing Card */}
+                  <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                    <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 text-center">
+                      <h3 className="font-semibold text-sm">
+                        Dosen Pembimbing
+                      </h3>
+                    </div>
+                    <div className="p-6 text-center">
+                      {student.nilai_pembimbing ? (
+                        <>
+                          <div className="text-3xl font-bold text-blue-600 mb-2">
+                            {student.nilai_pembimbing}
+                          </div>
+                          <div className="text-xs text-green-600 font-medium">
+                            ✓ Sudah Dinilai
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="text-2xl font-bold text-red-500 mb-2">
+                            Belum Dinilai
+                          </div>
+                          <div className="text-xs text-red-500">
+                            Menunggu Penilaian
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    {student.komponen_nilai_pembimbing && (
+                      <div className="px-6 pb-4">
+                        {renderKomponenGrid(
+                          student.komponen_nilai_pembimbing,
+                          pembimbingLabels
+                        )}
                       </div>
                     )}
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
-          </div>
-
-          {/* Dosen Penguji Card */}
-          <div className="rounded-xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-300">
-            <div className="relative h-20 bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center p-3">
-              <div className="text-center">
-                <div className="text-xs font-medium text-emerald-100 uppercase tracking-wide">
-                  Nilai
-                </div>
-                <h3 className="text-white font-semibold">Dosen Penguji</h3>
-              </div>
-            </div>
-
-            <div className="p-4 flex flex-col items-center mt-5">
-              {student.nilai_penguji ? (
-                <>
-                  <div className="text-4xl font-bold text-gray-800 dark:text-gray-100">
-                    {student.nilai_penguji}
                   </div>
-                  {student.komponen_nilai_penguji && (
-                    <Accordion
-                      type="single"
-                      collapsible
-                      className="w-full mt-6"
-                    >
-                      <AccordionItem value="penguji">
-                        <AccordionTrigger className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center justify-center hover:bg-emerald-50 dark:hover:bg-gray-600 transition-colors">
-                          <Eye className="w-3 h-3 mr-1" />
-                          <span>Lihat Detail</span>
-                        </AccordionTrigger>
-                        <AccordionContent className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-2">
-                          <div className="grid grid-cols-2 gap-2 text-sm text-gray-800 dark:text-gray-200">
-                            <div>
-                              Penguasaan Keilmuan:{" "}
-                              {student.komponen_nilai_penguji
-                                .penguasaan_keilmuan || "N/A"}
-                            </div>
-                            <div>
-                              Kemampuan Presentasi:{" "}
-                              {student.komponen_nilai_penguji
-                                .kemampuan_presentasi || "N/A"}
-                            </div>
-                            <div>
-                              Kesesuaian Urgensi:{" "}
-                              {student.komponen_nilai_penguji
-                                .kesesuaian_urgensi || "N/A"}
-                            </div>
-                            <div className="col-span-2">
-                              Catatan:{" "}
-                              {student.komponen_nilai_penguji.catatan ||
-                                "Tidak ada catatan"}
-                            </div>
+
+                  {/* Nilai Dosen Penguji Card */}
+                  <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                    <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 text-center">
+                      <h3 className="font-semibold text-sm">Dosen Penguji</h3>
+                    </div>
+                    <div className="p-6 text-center">
+                      {student.nilai_penguji ? (
+                        <>
+                          <div className="text-3xl font-bold text-purple-600 mb-2">
+                            {student.nilai_penguji}
                           </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  )}
-                </>
-              ) : (
-                <div className="flex flex-col items-center py-2">
-                  <div className="text-red-500 dark:text-red-400 font-semibold animate-pulse">
-                    Belum Mengisi!
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Menunggu Penilaian
+                          <div className="text-xs text-green-600 font-medium">
+                            ✓ Sudah Dinilai
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="text-2xl font-bold text-red-500 mb-2">
+                            Belum Dinilai
+                          </div>
+                          <div className="text-xs text-red-500">
+                            Menunggu Penilaian
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    {student.komponen_nilai_penguji && (
+                      <div className="px-6 pb-4">
+                        {renderKomponenGrid(
+                          student.komponen_nilai_penguji,
+                          pengujiLabels
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>

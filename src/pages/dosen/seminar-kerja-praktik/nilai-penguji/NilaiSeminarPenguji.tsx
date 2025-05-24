@@ -12,10 +12,10 @@ import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useNavigate, useLocation } from "react-router-dom";
 import APISeminarKP from "@/services/api/dosen/seminar-kp.service";
+import { useMutation } from "@tanstack/react-query";
 
-// Updated Student interface to include idNilai
 interface Student {
-  id: string; // Matches idJadwalSeminar
+  id: string;
   nim: string;
   name: string;
   semester: number;
@@ -24,21 +24,23 @@ interface Student {
   dosenPembimbing: string;
   pembimbingInstansi: string;
   ruangan: string;
-  jam: string;
+  waktu_mulai: string;
+  waktu_selesai: string;
   tanggalSeminar: string;
-  status: "belum dinilai" | "selesai";
-  tanggalDinilai?: string;
-  idNilai?: string; // Added to store id_nilai for grading
+  status: "Dinilai" | "Belum Dinilai";
+  idNilai?: string;
+  penguasaanKeilmuan?: number;
+  kemampuanPresentasi?: number;
+  kesesuaianUrgensi?: number;
+  catatanPenguji?: string;
 }
 
-// Updated Scores interface to use number values
 interface Scores {
   penguasaan: number;
   presentasi: number;
   kesesuaian: number;
 }
 
-// Interface for criteria definition
 interface CriteriaDefinition {
   id: keyof Scores;
   title: string;
@@ -50,14 +52,12 @@ interface CriteriaSectionProps {
   criteria: CriteriaDefinition;
   value: number;
   onChange: (id: keyof Scores, value: number) => void;
-  disabled: boolean;
 }
 
 const NilaiSeminarPenguji: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get student data from state, use default if not provided
   const studentFromState = (location.state?.student as Student) || {
     id: "",
     nim: "",
@@ -68,32 +68,28 @@ const NilaiSeminarPenguji: React.FC = () => {
     dosenPembimbing: "",
     pembimbingInstansi: "",
     ruangan: "",
-    jam: "",
+    waktu_mulai: "",
+    waktu_selesai: "",
     tanggalSeminar: "",
-    status: "belum dinilai" as const,
+    status: "Belum Dinilai" as const,
     idNilai: "",
   };
 
   const [student] = useState<Student>({
     ...studentFromState,
-    status:
-      studentFromState.status === "Dinilai"
-        ? "selesai"
-        : studentFromState.status, // Map "Dinilai" to "selesai"
   });
 
-  // Initialize scores with numerical values; pre-fill for testing
   const [scores, setScores] = useState<Scores>({
-    penguasaan: 0, // Pre-filled for testing
-    presentasi: 0, // Pre-filled for testing
-    kesesuaian: 0, // Pre-filled for testing
+    penguasaan: studentFromState.penguasaanKeilmuan || 0,
+    presentasi: studentFromState.kemampuanPresentasi || 0,
+    kesesuaian: studentFromState.kesesuaianUrgensi || 0,
   });
 
   const [totalScore, setTotalScore] = useState<number>(0);
-  const [notes, setNotes] = useState<string>();
-  const [isLoading, setIsLoading] = useState(false);
+  const [notes, setNotes] = useState<string>(
+    studentFromState.catatanPenguji || ""
+  );
 
-  // Criteria definitions with weights
   const criteriaDefinitions: CriteriaDefinition[] = [
     {
       id: "penguasaan",
@@ -112,13 +108,12 @@ const NilaiSeminarPenguji: React.FC = () => {
     {
       id: "kesesuaian",
       title: "Kesesuaian Laporan dan Presentasi",
-      percentage: 35, // Adjusted to sum to 100% with presentasi's 25%
+      percentage: 35,
       description:
         "Penilaian terhadap kesesuaian antara isi laporan dengan materi yang dipresentasikan.",
     },
   ];
 
-  // Calculate total score whenever scores change
   useEffect(() => {
     const total =
       scores.penguasaan * 0.4 +
@@ -132,10 +127,9 @@ const NilaiSeminarPenguji: React.FC = () => {
   };
 
   const handleScoreChange = (category: keyof Scores, value: number): void => {
-    if (student.status === "selesai") return; // Disable changes if already graded
     setScores((prev) => ({
       ...prev,
-      [category]: value,
+      [category]: Math.min(100, Math.max(0, value)),
     }));
   };
 
@@ -147,73 +141,72 @@ const NilaiSeminarPenguji: React.FC = () => {
     return "";
   };
 
-  const handleSubmit = async (): Promise<void> => {
-    if (student.status === "selesai") {
-      toast({
-        title: "ℹ️ Informasi",
-        description: "Mahasiswa ini sudah dinilai.",
-        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
-        duration: 3000,
-      });
-      return;
-    }
-
-    const isScoreComplete = Object.values(scores).every((score) => score > 0);
-    if (!isScoreComplete) {
-      toast({
-        title: "⚠️ Peringatan",
-        description: "Mohon lengkapi semua kriteria penilaian",
-        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
-        duration: 3000,
-      });
-      return;
-    }
-
-    if (!student.idNilai) {
-      toast({
-        title: "❌ Gagal",
-        description: "ID penilaian tidak ditemukan. Silakan coba lagi.",
-        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
-        duration: 3000,
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const response = await APISeminarKP.postNilaiPenguji({
-        id: student.idNilai,
-        penguasaanKeilmuan: scores.penguasaan,
-        kemampuanPresentasi: scores.presentasi,
-        kesesuaianUrgensi: scores.kesesuaian,
-        catatan: notes,
-        nim: student.nim,
-        idJadwalSeminar: student.id,
-      });
-
+  const { mutate, isPending: isLoading } = useMutation({
+    mutationFn: APISeminarKP.createUpdateNilaiPenguji,
+    onSuccess: () => {
       toast({
         title: "👌 Berhasil",
         description: "Penilaian berhasil disimpan!",
         action: <ToastAction altText="Tutup">Tutup</ToastAction>,
         duration: 3000,
       });
-
-      console.log("API Response:", response);
       navigate(-1);
-    } catch (error) {
+    },
+    onError: (error: any) => {
+      console.error("API Error:", {
+        message: error.message,
+        stack: error.stack,
+      });
+      const errorMessage =
+        error.response?.data?.message ||
+        "Gagal menyimpan penilaian. Silakan coba lagi.";
       toast({
         title: "❌ Gagal",
-        description: "Gagal menyimpan penilaian. Silakan coba lagi.",
+        description: errorMessage,
         action: <ToastAction altText="Tutup">Tutup</ToastAction>,
         duration: 3000,
       });
-      console.error("Error submitting scores:", error);
-    } finally {
-      setIsLoading(false);
+    },
+  });
+
+  // Kirim penilaian
+  const handleSubmit = (): void => {
+    // Validasi input
+    if (Object.values(scores).some((score) => score === 0)) {
+      toast({
+        title: "❌ Gagal",
+        description: "Mohon lengkapi semua kriteria penilaian.",
+        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
+        duration: 3000,
+      });
+      return;
     }
+
+    if (!student.nim || !student.id || !student.idNilai) {
+      toast({
+        title: "❌ Gagal",
+        description:
+          "Data mahasiswa tidak lengkap (NIM, ID jadwal, atau ID nilai).",
+        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
+        duration: 3000,
+      });
+      return;
+    }
+
+    const payload = {
+      nilaiId: student.idNilai,
+      penguasaanKeilmuan: scores.penguasaan,
+      kemampuanPresentasi: scores.presentasi,
+      kesesuaianUrgensi: scores.kesesuaian,
+      catatan: notes,
+      nim: student.nim,
+      idJadwalSeminar: student.id,
+    };
+
+    mutate(payload);
   };
 
-  // Custom circular progress indicator for the total score
+  // Komponen untuk indikator progres melingkar
   const CircularProgress = ({ value }: { value: number }) => {
     const radius = 45;
     const circumference = 2 * Math.PI * radius;
@@ -257,19 +250,17 @@ const NilaiSeminarPenguji: React.FC = () => {
     );
   };
 
-  // Component for individual criteria with slider
+  // Komponen untuk kriteria dengan slider
   const CriteriaSection: React.FC<CriteriaSectionProps> = ({
     criteria,
     value,
     onChange,
-    disabled,
   }) => {
     const sliderValueRef = useRef(value);
     const [displayValue, setDisplayValue] = useState(value);
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (disabled) return;
       const newValue = parseInt(e.target.value);
       sliderValueRef.current = newValue;
       setDisplayValue(newValue);
@@ -284,7 +275,6 @@ const NilaiSeminarPenguji: React.FC = () => {
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (disabled) return;
       const newValue = parseInt(e.target.value) || 0;
       const clampedValue = Math.min(100, Math.max(0, newValue));
       setDisplayValue(clampedValue);
@@ -346,7 +336,7 @@ const NilaiSeminarPenguji: React.FC = () => {
                   : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400"
               }`}
             >
-              {displayValue > 0 ? getScoreLabel(displayValue) : "Belum dinilai"}
+              {displayValue > 0 ? getScoreLabel(displayValue) : "Belum Dinilai"}
             </span>
             <input
               type="number"
@@ -354,7 +344,6 @@ const NilaiSeminarPenguji: React.FC = () => {
               onChange={handleInputChange}
               min="0"
               max="100"
-              disabled={disabled}
               className="w-16 text-center border border-gray-300 dark:border-gray-600 rounded-md py-1 px-2 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200"
             />
           </div>
@@ -374,7 +363,6 @@ const NilaiSeminarPenguji: React.FC = () => {
             max="100"
             value={displayValue}
             onChange={handleSliderChange}
-            disabled={disabled}
             className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb"
             style={{
               WebkitAppearance: "none",
@@ -531,7 +519,6 @@ const NilaiSeminarPenguji: React.FC = () => {
                   criteria={criteria}
                   value={scores[criteria.id]}
                   onChange={handleScoreChange}
-                  disabled={student.status === "selesai"}
                 />
               ))}
             </div>
@@ -600,8 +587,7 @@ const NilaiSeminarPenguji: React.FC = () => {
                     placeholder="Masukkan catatan, komentar, atau saran untuk mahasiswa..."
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    disabled={student.status === "selesai"}
-                  ></textarea>
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 pt-2">
@@ -615,14 +601,12 @@ const NilaiSeminarPenguji: React.FC = () => {
                   <button
                     onClick={handleSubmit}
                     className={`py-2.5 px-4 rounded-md font-medium transition-colors text-sm flex items-center justify-center ${
-                      student.status === "selesai" ||
                       isLoading ||
                       Object.values(scores).some((score) => score === 0)
                         ? "bg-gray-400 text-white cursor-not-allowed"
                         : "bg-green-700 hover:bg-green-800 text-white"
                     }`}
                     disabled={
-                      student.status === "selesai" ||
                       isLoading ||
                       Object.values(scores).some((score) => score === 0)
                     }
@@ -632,12 +616,9 @@ const NilaiSeminarPenguji: React.FC = () => {
                   </button>
                 </div>
 
-                {(student.status === "selesai" ||
-                  Object.values(scores).some((score) => score === 0)) && (
+                {Object.values(scores).some((score) => score === 0) && (
                   <p className="text-center text-xs text-red-500 dark:text-red-400 mt-2">
-                    {student.status === "selesai"
-                      ? "Mahasiswa ini sudah dinilai."
-                      : "Mohon lengkapi semua kriteria penilaian"}
+                    Mohon lengkapi semua kriteria penilaian
                   </p>
                 )}
               </div>
@@ -649,14 +630,10 @@ const NilaiSeminarPenguji: React.FC = () => {
           <button
             onClick={handleSubmit}
             disabled={
-              student.status === "selesai" ||
-              isLoading ||
-              Object.values(scores).some((score) => score === 0)
+              isLoading || Object.values(scores).some((score) => score === 0)
             }
             className={`flex items-center px-6 py-3 rounded-lg font-medium text-white transition-all ${
-              student.status === "selesai" ||
-              isLoading ||
-              Object.values(scores).some((score) => score === 0)
+              isLoading || Object.values(scores).some((score) => score === 0)
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-md hover:shadow-lg"
             }`}

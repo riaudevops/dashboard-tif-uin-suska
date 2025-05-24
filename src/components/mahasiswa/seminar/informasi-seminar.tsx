@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Map,
   UserRound,
@@ -24,7 +24,7 @@ interface InfoData {
   jadwal?: string;
   ruangan?: string;
   nilai?: string;
-  [key: string]: string | undefined; // Index signature to allow any string key
+  [key: string]: string | undefined;
 }
 
 // Define the props type for the component
@@ -36,12 +36,6 @@ interface InfoCardProps {
 
 const InfoCard: React.FC<InfoCardProps> = React.memo(
   ({ data, displayItems = [], className = "" }) => {
-    // Debugging: Log data hanya saat data berubah
-    useEffect(() => {
-      console.log("InfoCard Data:", data);
-    }, [data]); // Hanya log saat data berubah
-
-    // Map of icons for each info item
     const iconMap: Record<string, React.ReactNode> = {
       judul: <Book className="size-4 text-emerald-500 dark:text-emerald-400" />,
       lokasi: <Map className="size-4 text-emerald-500 dark:text-emerald-400" />,

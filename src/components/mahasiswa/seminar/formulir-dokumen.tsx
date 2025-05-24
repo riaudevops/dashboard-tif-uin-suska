@@ -23,7 +23,6 @@ const DocumentCard = ({
   link?: string;
   onLinkChange?: (value: string) => void;
 }) => {
-  console.log(`Document: ${judulDokumen}, Status: ${status}`);
   const [inputValue, setInputValue] = useState(link || "");
 
   useEffect(() => {

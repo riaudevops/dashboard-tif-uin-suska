@@ -239,7 +239,7 @@ const Step5: FC<Step5Props> = ({ activeStep }) => {
     onSuccess: (response) => {
       toast({
         title: "👌 Berhasil",
-        description: `Dokumen berhasil dikirim dengan ID: ${response.id}`,
+        description: `Dokumen berhasil dikirim`,
         duration: 3000,
       });
       queryClient.invalidateQueries({ queryKey: ["seminar-kp-step5"] });
@@ -368,7 +368,7 @@ const Step5: FC<Step5Props> = ({ activeStep }) => {
         doc.link && (doc.status === "default" || doc.status === "Ditolak")
     );
     if (documentsToSubmit.length > 0) {
-      documentsToSubmit.forEach((doc, index) => {
+      documentsToSubmit.forEach((doc) => {
         const url = DOCUMENT_URLS[doc.title];
         if (!url) {
           toast({

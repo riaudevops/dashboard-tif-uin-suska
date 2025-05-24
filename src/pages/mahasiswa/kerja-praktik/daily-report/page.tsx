@@ -31,6 +31,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Printer,
   Calendar,
@@ -102,6 +103,7 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
       dailyReportSaya?.data?.daily_report &&
       dailyReportSaya.data.tanggal_mulai
     ) {
+      console.log(dailyReportSaya.data.daily_report);
       const entries: DailyReport[] = dailyReportSaya.data.daily_report.map(
         (report, index) => ({
           id: report.id,
@@ -127,15 +129,25 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
       dailyReportSaya?.data?.tanggal_mulai &&
       dailyReportSaya?.data?.tanggal_selesai
     ) {
-      const today = new Date();
+      const today = new Date(
+        Date.UTC(
+          new Date().getUTCFullYear(),
+          new Date().getUTCMonth(),
+          new Date().getUTCDate()
+        )
+      );
       const startDate = new Date(dailyReportSaya.data.tanggal_mulai);
       const endDate = new Date(dailyReportSaya.data.tanggal_selesai);
 
       if (today >= startDate && today <= endDate) {
-        setCurrentMonth(new Date(today.getFullYear(), today.getMonth(), 1));
+        setCurrentMonth(
+          new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1))
+        );
       } else {
         setCurrentMonth(
-          new Date(startDate.getFullYear(), startDate.getMonth(), 1)
+          new Date(
+            Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), 1)
+          )
         );
       }
     }
@@ -149,8 +161,8 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
       setCalendarDays(
         generateCalendarDays(
           currentMonth,
-          new Date(dailyReportSaya.data.tanggal_mulai),
-          new Date(dailyReportSaya.data.tanggal_selesai)
+          dailyReportSaya.data.tanggal_mulai,
+          dailyReportSaya.data.tanggal_selesai
         )
       );
     }
@@ -158,28 +170,44 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
 
   const generateCalendarDays = (
     monthDate: Date,
-    startDate: Date,
-    endDate: Date
+    startDate: string,
+    endDate: string
   ): CalendarDay[] => {
-    const year = monthDate.getFullYear();
-    const month = monthDate.getMonth();
+    const year = monthDate.getUTCFullYear();
+    const month = monthDate.getUTCMonth();
 
-    const firstDayOfMonth = new Date(year, month, 1);
-    const lastDayOfMonth = new Date(year, month + 1, 0);
-    const firstDayWeekday = firstDayOfMonth.getDay();
+    // Extract YYYY-MM-DD from API dates
+    const startDateStr = startDate.split("T")[0];
+    const endDateStr = endDate.split("T")[0];
+
+    // Create start and end dates at midnight UTC
+    const start = new Date(
+      Date.UTC(
+        parseInt(startDateStr.split("-")[0]),
+        parseInt(startDateStr.split("-")[1]) - 1,
+        parseInt(startDateStr.split("-")[2])
+      )
+    );
+    const end = new Date(
+      Date.UTC(
+        parseInt(endDateStr.split("-")[0]),
+        parseInt(endDateStr.split("-")[1]) - 1,
+        parseInt(endDateStr.split("-")[2])
+      )
+    );
+
+    const firstDayOfMonth = new Date(Date.UTC(year, month, 1));
+    const lastDayOfMonth = new Date(Date.UTC(year, month + 1, 0));
+    const firstDayWeekday = firstDayOfMonth.getUTCDay();
     const daysFromPrevMonth = firstDayWeekday;
 
-    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    const prevMonthLastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
     const prevMonthDays = Array.from({ length: daysFromPrevMonth }, (_, i) => {
       const date = new Date(
-        year,
-        month - 1,
-        prevMonthLastDay - daysFromPrevMonth + i + 1
+        Date.UTC(year, month - 1, prevMonthLastDay - daysFromPrevMonth + i + 1)
       );
       const dateStr = date.toISOString().split("T")[0];
-      const isWithinPeriod =
-        date >= new Date(startDate.setHours(0, 0, 0, 0)) &&
-        date <= new Date(endDate.setHours(23, 59, 59, 999));
+      const isWithinPeriod = date >= start && date <= end;
       const entry = agendaEntries.find(
         (entry) => entry.tanggal_presensi === dateStr
       );
@@ -190,19 +218,17 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
         isWithinPeriod,
         hasEntry: !!entry,
         entry: entry || null,
-        isStartDate: dateStr === startDate.toISOString().split("T")[0],
-        isEndDate: dateStr === endDate.toISOString().split("T")[0],
+        isStartDate: dateStr === startDateStr,
+        isEndDate: dateStr === endDateStr,
       };
     });
 
     const currentMonthDays = Array.from(
-      { length: lastDayOfMonth.getDate() },
+      { length: lastDayOfMonth.getUTCDate() },
       (_, i) => {
-        const date = new Date(year, month, i + 1);
+        const date = new Date(Date.UTC(year, month, i + 1));
         const dateStr = date.toISOString().split("T")[0];
-        const isWithinPeriod =
-          date >= new Date(startDate.setHours(0, 0, 0, 0)) &&
-          date <= new Date(endDate.setHours(23, 59, 59, 999));
+        const isWithinPeriod = date >= start && date <= end;
         const entry = agendaEntries.find(
           (entry) => entry.tanggal_presensi === dateStr
         );
@@ -213,8 +239,8 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
           isWithinPeriod,
           hasEntry: !!entry,
           entry: entry || null,
-          isStartDate: dateStr === startDate.toISOString().split("T")[0],
-          isEndDate: dateStr === endDate.toISOString().split("T")[0],
+          isStartDate: dateStr === startDateStr,
+          isEndDate: dateStr === endDateStr,
         };
       }
     );
@@ -224,11 +250,9 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
       totalDaysShown - prevMonthDays.length - currentMonthDays.length;
 
     const nextMonthDays = Array.from({ length: daysFromNextMonth }, (_, i) => {
-      const date = new Date(year, month + 1, i + 1);
+      const date = new Date(Date.UTC(year, month + 1, i + 1));
       const dateStr = date.toISOString().split("T")[0];
-      const isWithinPeriod =
-        date >= new Date(startDate.setHours(0, 0, 0, 0)) &&
-        date <= new Date(endDate.setHours(23, 59, 59, 999));
+      const isWithinPeriod = date >= start && date <= end;
       const entry = agendaEntries.find(
         (entry) => entry.tanggal_presensi === dateStr
       );
@@ -239,12 +263,64 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
         isWithinPeriod,
         hasEntry: !!entry,
         entry: entry || null,
-        isStartDate: dateStr === startDate.toISOString().split("T")[0],
-        isEndDate: dateStr === endDate.toISOString().split("T")[0],
+        isStartDate: dateStr === startDateStr,
+        isEndDate: dateStr === endDateStr,
       };
     });
 
     return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
+  };
+
+  const handlePrevMonth = () => {
+    setCurrentMonth(
+      new Date(
+        Date.UTC(
+          currentMonth.getUTCFullYear(),
+          currentMonth.getUTCMonth() - 1,
+          1
+        )
+      )
+    );
+  };
+
+  const handleNextMonth = () => {
+    setCurrentMonth(
+      new Date(
+        Date.UTC(
+          currentMonth.getUTCFullYear(),
+          currentMonth.getUTCMonth() + 1,
+          1
+        )
+      )
+    );
+  };
+
+  const isPrevDisabled = () => {
+    if (!dailyReportSaya?.data?.tanggal_mulai) return true;
+    const startDate = new Date(
+      dailyReportSaya.data.tanggal_mulai.split("T")[0]
+    );
+    const prevMonth = new Date(
+      Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() - 1, 1)
+    );
+    return (
+      prevMonth <
+      new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), 1))
+    );
+  };
+
+  const isNextDisabled = () => {
+    if (!dailyReportSaya?.data?.tanggal_selesai) return true;
+    const endDate = new Date(
+      dailyReportSaya.data.tanggal_selesai.split("T")[0]
+    );
+    const nextMonth = new Date(
+      Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() + 1, 1)
+    );
+    return (
+      nextMonth >
+      new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), 1))
+    );
   };
 
   const formatMonthYear = (date: Date): string => {
@@ -252,62 +328,6 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
       month: "long",
       year: "numeric",
     });
-  };
-
-  const handlePrevMonth = (): void => {
-    const prevMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() - 1,
-      1
-    );
-    const startMonth =
-      new Date(dailyReportSaya!.data!.tanggal_mulai).getFullYear() * 12 +
-      new Date(dailyReportSaya!.data!.tanggal_mulai).getMonth();
-    const prevMonthIndex = prevMonth.getFullYear() * 12 + prevMonth.getMonth();
-    if (prevMonthIndex >= startMonth) {
-      setCurrentMonth(prevMonth);
-    }
-  };
-
-  const handleNextMonth = (): void => {
-    const nextMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() + 1,
-      1
-    );
-    const endMonth =
-      new Date(dailyReportSaya!.data!.tanggal_selesai).getFullYear() * 12 +
-      new Date(dailyReportSaya!.data!.tanggal_selesai).getMonth();
-    const nextMonthIndex = nextMonth.getFullYear() * 12 + nextMonth.getMonth();
-    if (nextMonthIndex <= endMonth) {
-      setCurrentMonth(nextMonth);
-    }
-  };
-
-  const isPrevDisabled = () => {
-    if (!dailyReportSaya?.data?.tanggal_mulai) return true;
-    const prevMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() - 1,
-      1
-    );
-    const startMonth =
-      new Date(dailyReportSaya.data.tanggal_mulai).getFullYear() * 12 +
-      new Date(dailyReportSaya.data.tanggal_mulai).getMonth();
-    return prevMonth.getFullYear() * 12 + prevMonth.getMonth() < startMonth;
-  };
-
-  const isNextDisabled = () => {
-    if (!dailyReportSaya?.data?.tanggal_selesai) return true;
-    const nextMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() + 1,
-      1
-    );
-    const endMonth =
-      new Date(dailyReportSaya.data.tanggal_selesai).getFullYear() * 12 +
-      new Date(dailyReportSaya.data.tanggal_selesai).getMonth();
-    return nextMonth.getFullYear() * 12 + nextMonth.getMonth() > endMonth;
   };
 
   const handleDateClick = (day: CalendarDay): void => {
@@ -385,6 +405,18 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
     }
   };
 
+  const formatCetakDate = (date: string): string => {
+    try {
+      return new Date(date).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+    } catch {
+      return "-";
+    }
+  };
+
   const getSemester = (nim: string): number => {
     try {
       const tahunAngkatan = parseInt("20" + nim.substring(1, 3), 10);
@@ -434,12 +466,20 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
   };
 
   const today = new Date().toISOString().split("T")[0];
-
   const hasAttendedToday =
     dailyReportSaya?.data?.daily_report?.some(
       (report: { tanggal_presensi: string }) =>
         report.tanggal_presensi.split("T")[0] === today
     ) || false;
+
+  const isWithinPeriod =
+    dailyReportSaya?.data?.tanggal_mulai &&
+    dailyReportSaya?.data?.tanggal_selesai
+      ? today >= dailyReportSaya.data.tanggal_mulai.split("T")[0] &&
+        today <= dailyReportSaya.data.tanggal_selesai.split("T")[0]
+      : false;
+
+  const isPresensiDisabled = hasAttendedToday || !isWithinPeriod;
 
   const handleConfirmPresensi = async () => {
     if (!mahasiswaLocation) {
@@ -502,10 +542,9 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
     dailyReportSaya?.data?.nilai &&
     dailyReportSaya.data.nilai.some(
       (nilai) => typeof nilai.nilai_instansi === "number"
-    ) &&
-    dailyReportSaya.data.nilai.some((nilai) => !isNaN(nilai.nilai_instansi));
+    );
 
-  const handleCetakClick = async () => {
+  const handleCetakClick = () => {
     if (!dailyReportSaya?.data || approvedCount < 22) return;
 
     setIsPrinting(true);
@@ -524,64 +563,55 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
       // Header
       doc.setFont("GeistSans", "bold");
       doc.setFontSize(16);
-      doc.setTextColor("#111827");
-      doc.text("Laporan Harian Kerja Praktik Mahasiswa", 50, 20);
+      doc.setTextColor("#000000");
+      doc.text("Daily Report Kerja Praktik Mahasiswa", 50, 18);
       doc.setFontSize(12);
       doc.setFont("GeistSans", "normal");
-      doc.text("Universitas Islam Negeri Sultan Syarif Kasim Riau", 50, 28);
-      doc.text("Fakultas Sains dan Teknologi", 50, 34);
+      doc.text("Teknik Informatika", 50, 26);
+      doc.text("Fakultas Sains dan Teknologi", 50, 32);
+      doc.text("Universitas Islam Negeri Sultan Syarif Kasim Riau", 50, 38);
 
       // Biodata Section
-      doc.setFont("GeistSans", "bold");
-      doc.setFontSize(14);
-      doc.text("Biodata Mahasiswa", 15, 50);
       doc.setLineWidth(0.5);
-      doc.setDrawColor("#4F46E5");
-      doc.line(15, 52, 195, 52);
+      doc.setDrawColor("#000000");
+      doc.line(15, 46, 195, 46);
 
       const biodata = [
         [
           { content: "Nama", styles: { fontStyle: "bold" } },
-          dailyReportSaya.data.mahasiswa?.nama || "-",
+          `:   ${dailyReportSaya.data.mahasiswa?.nama || "-"}`,
         ],
         [
           { content: "NIM", styles: { fontStyle: "bold" } },
-          dailyReportSaya.data.mahasiswa?.nim || "-",
+          `:   ${dailyReportSaya.data.mahasiswa?.nim || "-"}`,
         ],
-        [
-          { content: "Tahun Ajaran", styles: { fontStyle: "bold" } },
-          dailyReportSaya.data.tahun_ajaran?.nama || "-",
-        ],
-        [
-          { content: "Judul Kerja Praktik", styles: { fontStyle: "bold" } },
-          dailyReportSaya.data.judul_kp || "-",
-        ],
+
         [
           { content: "Instansi", styles: { fontStyle: "bold" } },
-          dailyReportSaya.data.instansi?.nama || "-",
+          `:   ${dailyReportSaya.data.instansi?.nama || "-"}`,
         ],
         [
           { content: "Pembimbing Instansi", styles: { fontStyle: "bold" } },
-          dailyReportSaya.data.pembimbing_instansi?.nama || "-",
+          `:   ${dailyReportSaya.data.pembimbing_instansi?.nama || "-"}`,
         ],
         [
           { content: "Dosen Pembimbing", styles: { fontStyle: "bold" } },
-          dailyReportSaya.data.dosen_pembimbing?.nama || "-",
+          `:   ${dailyReportSaya.data.dosen_pembimbing?.nama || "-"}`,
         ],
         [
-          { content: "Periode", styles: { fontStyle: "bold" } },
-          `${formatDate(dailyReportSaya.data.tanggal_mulai)} - ${formatDate(
-            dailyReportSaya.data.tanggal_selesai
-          )}`,
+          { content: "Judul Kerja Praktik", styles: { fontStyle: "bold" } },
+          `:   ${dailyReportSaya.data.judul_kp || "-"}`,
         ],
         [
-          { content: "Status", styles: { fontStyle: "bold" } },
-          dailyReportSaya.data.status || "-",
+          { content: "Periode Kerja Praktik", styles: { fontStyle: "bold" } },
+          `:   ${formatCetakDate(
+            dailyReportSaya.data.tanggal_mulai
+          )} - ${formatCetakDate(dailyReportSaya.data.tanggal_selesai)}`,
         ],
       ];
 
       autoTable(doc, {
-        startY: 55,
+        startY: 50,
         body: biodata.map((row) =>
           row.map((cell) =>
             typeof cell === "string"
@@ -599,7 +629,7 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
           )
         ),
         theme: "plain",
-        styles: { font: "GeistSans", fontSize: 10, textColor: "#111827" },
+        styles: { font: "GeistSans", fontSize: 10, textColor: "#000000" },
         columnStyles: {
           0: { cellWidth: 50, fontStyle: "bold" },
           1: { cellWidth: 130 },
@@ -608,102 +638,205 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
       });
 
       // Daily Report Table
-      let finalY = (doc as any).lastAutoTable.finalY + 10;
-      doc.setFont("GeistSans", "bold");
-      doc.setFontSize(14);
-      doc.text("Daftar Laporan Harian", 15, finalY);
-      doc.setLineWidth(0.5);
-      doc.setDrawColor("#4F46E5");
-      doc.line(15, finalY + 2, 195, finalY + 2);
-      finalY += 8;
-
+      let finalY = (doc as any).lastAutoTable.finalY + 6;
       const dailyReportData = (dailyReportSaya.data.daily_report || []).map(
-        (report, index) => ({
-          no: index + 1,
-          tanggal: formatDate(report.tanggal_presensi),
-          status: report.status || "Menunggu",
-          catatan: report.catatan_evaluasi || "-",
-          details: report.detail_daily_report || [],
-        })
+        (report, index) => {
+          const details = report.detail_daily_report || [];
+          const waktu = details
+            .map(
+              (detail) =>
+                `${detail.waktu_mulai || "-"} - ${detail.waktu_selesai || "-"}`
+            )
+            .join("\n\n");
+          const kegiatan = details
+            .map((detail) => detail.deskripsi_agenda || "-")
+            .join("\n\n");
+
+          return {
+            hariKe: index + 1,
+            tanggal: formatCetakDate(report.tanggal_presensi),
+            waktu,
+            kegiatan,
+            catatanEvaluasi: report.catatan_evaluasi || "-",
+          };
+        }
       );
 
-      dailyReportData.forEach((report, index) => {
-        autoTable(doc, {
-          startY: finalY,
-          head: [["Hari Ke-", "Tanggal", "Status", "Catatan Evaluasi"]],
-          body: [
-            [
-              report.no,
-              report.tanggal,
-              {
-                content: report.status,
-                styles: {
-                  fillColor: getStatusValidasi(report.status),
-                  textColor: "#FFFFFF",
-                  halign: "center",
-                  cellPadding: { top: 2, bottom: 2, left: 4, right: 4 },
-                },
-              },
-              report.catatan,
-            ],
-          ],
-          theme: "striped",
-          styles: { font: "GeistSans", fontSize: 10, textColor: "#111827" },
-          headStyles: {
-            fillColor: "#4F46E5",
-            textColor: "#FFFFFF",
-            fontStyle: "bold",
-          },
-          alternateRowStyles: {
-            fillColor: index % 2 === 0 ? "#F3F4F6" : "#FFFFFF",
-          },
-          margin: { left: 15, right: 15 },
-          columnStyles: {
-            0: { cellWidth: 20 },
-            1: { cellWidth: 50 },
-            2: { cellWidth: 30 },
-            3: { cellWidth: 60 },
-          },
-        });
-
-        finalY = (doc as any).lastAutoTable.finalY + 5;
-
-        if (report.details.length > 0) {
-          autoTable(doc, {
-            startY: finalY,
-            head: [
-              [
-                "Waktu Mulai",
-                "Waktu Selesai",
-                "Judul Agenda",
-                "Deskripsi Agenda",
-              ],
-            ],
-            body: report.details.map((detail) => [
-              detail.waktu_mulai || "-",
-              detail.waktu_selesai || "-",
-              detail.judul_agenda || "-",
-              detail.deskripsi_agenda || "-",
-            ]),
-            theme: "striped",
-            styles: { font: "GeistSans", fontSize: 9, textColor: "#111827" },
-            headStyles: {
-              fillColor: "#6B7280",
-              textColor: "#FFFFFF",
-              fontStyle: "bold",
-            },
-            alternateRowStyles: { fillColor: "#F9FAFB" },
-            margin: { left: 25, right: 15 },
-            columnStyles: {
-              0: { cellWidth: 30 },
-              1: { cellWidth: 30 },
-              2: { cellWidth: 50 },
-              3: { cellWidth: 60 },
-            },
-          });
-          finalY = (doc as any).lastAutoTable.finalY + 10;
-        }
+      // Single Daily Report Table
+      autoTable(doc, {
+        startY: finalY,
+        head: [
+          ["Hari Ke-", "Tanggal", "Waktu", "Kegiatan", "Catatan Evaluasi"],
+        ],
+        body: dailyReportData.map((report) => [
+          report.hariKe,
+          report.tanggal,
+          report.waktu,
+          report.kegiatan,
+          report.catatanEvaluasi,
+        ]),
+        theme: "striped",
+        styles: {
+          font: "GeistSans",
+          fontSize: 8,
+          textColor: "#000000",
+          cellPadding: 3,
+          overflow: "linebreak",
+        },
+        headStyles: {
+          fillColor: "#000000",
+          textColor: "#ffffff",
+          halign: "center",
+          fontStyle: "bold",
+          fontSize: 9,
+        },
+        margin: { left: 15, right: 15 },
+        columnStyles: {
+          0: { cellWidth: 25, halign: "center" }, // Hari Ke-
+          1: { cellWidth: 25, halign: "center" }, // Tanggal
+          2: { cellWidth: 30, halign: "center" }, // Waktu
+          3: { cellWidth: 65 }, // Kegiatan
+          4: { cellWidth: 35 }, // Catatan Evaluasi
+        },
       });
+
+      finalY = (doc as any).lastAutoTable.finalY + 20;
+
+      const currentY = finalY;
+      const pageHeight = doc.internal.pageSize.height - 20; // Subtract margin from bottom
+      if (currentY > pageHeight - 100) {
+        // Check if there's enough space (adjust 100 based on content height)
+        doc.addPage();
+        finalY = 20; // Reset Y position for new page
+      }
+
+      doc.setFont("GeistSans", "bold");
+      doc.setFontSize(10);
+      doc.text("KESIMPULAN KEGIATAN KERJA PRAKTIK", 15, finalY);
+      finalY += 4;
+      doc.setLineWidth(0.5);
+      doc.setDrawColor("#000000");
+      doc.rect(15, finalY, 180, 65);
+
+      doc.setFont("GeistSans", "normal");
+      doc.setFontSize(10);
+      doc.text(
+        "Berdasarkan daily report dan kesimpulan kegiatan KP yang telah selesai dilaksanakan oleh mahasiswa, maka yang bersangkutan dinyatakan telah selesai melaksanakan KP dan mendapatkan persetujuan untuk mendaftar Diseminasi KP.",
+        15,
+        finalY + 65 + 10, // Start below the rectangle with some padding
+        { maxWidth: 180, align: "justify" }
+      );
+      finalY += 95;
+
+      // First Row: Pembimbing Instansi and Mahasiswa
+      doc.setFont("GeistSans", "normal");
+      doc.setFontSize(10);
+      doc.text("Mengetahui,", 15, finalY);
+      doc.text(
+        "Pekanbaru, " + formatCetakDate(new Date().toISOString()),
+        135,
+        finalY
+      );
+      finalY += 5;
+      doc.text("Pembimbing Instansi KP", 15, finalY);
+      doc.text("Mahasiswa yang bersangkutan,", 135, finalY);
+      finalY += 30;
+
+      // Signature placeholders for Pembimbing Instansi and Mahasiswa
+      if (finalY > pageHeight - 40) {
+        // Check space for signature lines
+        doc.addPage();
+        finalY = 20;
+      }
+      doc.setLineWidth(0.5);
+      doc.setDrawColor("#000000");
+      doc.line(15, finalY, 75, finalY); // Line for Pembimbing Instansi
+      doc.line(135, finalY, 195, finalY); // Line for Mahasiswa
+      finalY += 5;
+
+      // Names under signature lines
+      if (finalY > pageHeight - 20) {
+        // Check space for names
+        doc.addPage();
+        finalY = 20;
+      }
+      doc.setFont("GeistSans", "normal");
+      doc.setFontSize(10);
+      doc.text(
+        dailyReportSaya.data.pembimbing_instansi?.nama || "-",
+        15,
+        finalY
+      );
+      doc.text(dailyReportSaya.data.mahasiswa?.nama || "-", 135, finalY);
+      finalY += 5;
+
+      // NIK/NIM under names
+      if (finalY > pageHeight - 20) {
+        // Check space for NIK/NIM
+        doc.addPage();
+        finalY = 20;
+      }
+      doc.setFontSize(10);
+      doc.text(
+        "NIP/NIK. " + (dailyReportSaya.data.pembimbing_instansi?.id || "-"),
+        15,
+        finalY
+      );
+      doc.text(
+        "NIM. " + (dailyReportSaya.data.mahasiswa?.nim || "-"),
+        135,
+        finalY
+      );
+
+      // Second Row: Dosen Pembimbing
+      finalY += 25;
+      if (finalY > pageHeight - 80) {
+        // Check space for the next block
+        doc.addPage();
+        finalY = 20;
+      }
+      doc.setFont("GeistSans", "normal");
+      doc.setFontSize(10);
+      doc.text("Menyetujui,", 75, finalY);
+      finalY += 5;
+      doc.text("Dosen Pembimbing KP", 75, finalY);
+      finalY += 30;
+
+      // Signature placeholder for Dosen Pembimbing
+      if (finalY > pageHeight - 40) {
+        // Check space for signature line
+        doc.addPage();
+        finalY = 20;
+      }
+      doc.setLineWidth(0.5);
+      doc.setDrawColor("#000000");
+      doc.line(75, finalY, 135, finalY); // Line for Dosen Pembimbing
+      finalY += 5;
+
+      // Name under signature line
+      if (finalY > pageHeight - 20) {
+        // Check space for name
+        doc.addPage();
+        finalY = 20;
+      }
+      doc.setFont("GeistSans", "normal");
+      doc.setFontSize(10);
+      doc.text(dailyReportSaya.data.dosen_pembimbing?.nama || "-", 75, finalY);
+      finalY += 5;
+
+      // NIP under name
+      if (finalY > pageHeight - 20) {
+        // Check space for NIP
+        doc.addPage();
+        finalY = 20;
+      }
+      doc.setFontSize(10);
+      doc.text(
+        "NIP. " + (dailyReportSaya.data.dosen_pembimbing?.nip || "-"),
+        75,
+        finalY
+      );
+      finalY += 10;
 
       // Footer
       const pageCount = doc.getNumberOfPages();
@@ -719,16 +852,16 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
           { align: "right" }
         );
         doc.text(
-          `Generated on ${formatDate(new Date().toISOString())}`,
+          `${formatDate(new Date().toISOString())}`,
           15,
           doc.internal.pageSize.height - 10
         );
       }
 
       // Save PDF
-      const nim = dailyReportSaya.data.mahasiswa?.nim || "Unknown";
+      const nim = dailyReportSaya.data.mahasiswa?.nim || "-";
       const nama =
-        dailyReportSaya.data.mahasiswa?.nama.replace(/\s+/g, "_") || "Unknown";
+        dailyReportSaya.data.mahasiswa?.nama.replace(/\s+/g, "_") || "-";
       doc.save(`[Daily Report Kerja Praktik] - ${nim} - ${nama}.pdf`);
       toast.success("PDF berhasil diunduh!", {
         style: {
@@ -739,6 +872,7 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
         },
       });
     } catch (err) {
+      console.error("PDF creation error:", err);
       toast.error("Gagal membuat PDF!", {
         style: {
           background: "#EF4444",
@@ -761,6 +895,28 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
     popupAnchor: [1, -34],
     shadowSize: [41, 41],
   });
+
+  const calculateGrade = (score: number) => {
+    if (score >= 85) return { grade: "A", color: "text-green-600" };
+    if (score >= 80) return { grade: "A-", color: "text-green-600" };
+    if (score >= 75) return { grade: "B+", color: "text-blue-600" };
+    if (score >= 70) return { grade: "B", color: "text-blue-600" };
+    if (score >= 65) return { grade: "B-", color: "text-blue-600" };
+    if (score >= 60) return { grade: "C+", color: "text-yellow-600" };
+    if (score >= 55) return { grade: "C", color: "text-yellow-600" };
+    if (score >= 50) return { grade: "C-", color: "text-yellow-600" };
+    if (score >= 40) return { grade: "D", color: "text-orange-600" };
+    return { grade: "E", color: "text-red-600" };
+  };
+
+  const nilaiSaya = dailyReportSaya?.data?.nilai?.[0];
+  const nilai_instansi = nilaiSaya?.nilai_instansi;
+  const nilai_pembimbing = nilaiSaya?.nilai_pembimbing;
+  const komponen_penilaian_instansi = nilaiSaya?.komponen_penilaian_instansi;
+  const komponen_penilaian_pembimbing =
+    nilaiSaya?.komponen_penilaian_pembimbing;
+  const instansiGrade = calculateGrade(nilai_instansi ?? 0);
+  const pembimbingGrade = calculateGrade(nilai_pembimbing ?? 0);
 
   return (
     <DashboardLayout>
@@ -944,14 +1100,14 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
                       <TooltipTrigger asChild>
                         <Button
                           className={`flex items-center w-full gap-2 text-white sm:w-auto ${
-                            hasAttendedToday
+                            isPresensiDisabled
                               ? "bg-gray-400 cursor-not-allowed"
                               : "bg-emerald-500 hover:bg-emerald-600 cursor-pointer"
                           }`}
                           onClick={handlePresensiClick}
-                          disabled={hasAttendedToday}
+                          disabled={isPresensiDisabled}
                         >
-                          {hasAttendedToday ? (
+                          {isPresensiDisabled ? (
                             <>
                               <Lock className="w-4 h-4" />
                               Presensi
@@ -967,6 +1123,8 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
                       <TooltipContent>
                         {hasAttendedToday
                           ? "Kamu sudah presensi hari ini..."
+                          : !isWithinPeriod
+                          ? "Presensi hanya bisa dilakukan selama periode kerja praktik..."
                           : "Presensi harian kerja praktik..."}
                       </TooltipContent>
                     </Tooltip>
@@ -976,9 +1134,7 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          variant={
-                            approvedCount >= 22 ? "secondary" : "outline"
-                          }
+                          variant="outline"
                           className={`flex items-center w-full gap-2 sm:w-auto ${
                             approvedCount < 22
                               ? "cursor-not-allowed"
@@ -1096,14 +1252,22 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
               <div className="grid grid-cols-7 bg-white dark:bg-gray-800/20">
                 {calendarDays.map((day, index) => {
                   const isWeekend =
-                    day.date.getDay() === 0 || day.date.getDay() === 6;
+                    day.date.getUTCDay() === 0 || day.date.getUTCDay() === 6;
                   const isToday =
-                    day.date.toDateString() === new Date().toDateString();
+                    day.date.toISOString().split("T")[0] ===
+                    new Date().toISOString().split("T")[0];
                   const isMissingAttendance =
                     day.isWithinPeriod &&
                     !day.hasEntry &&
                     !isWeekend &&
-                    day.date <= new Date(new Date().setHours(23, 59, 59, 999));
+                    day.date <=
+                      new Date(
+                        Date.UTC(
+                          new Date().getUTCFullYear(),
+                          new Date().getUTCMonth(),
+                          new Date().getUTCDate()
+                        )
+                      );
 
                   return (
                     <div
@@ -1161,7 +1325,7 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
                           }
                         `}
                       >
-                        {day.date.getDate()}
+                        {day.date.getUTCDate()}
                       </div>
                       {day.hasEntry && day.entry && (
                         <div className="p-2 mt-8">
@@ -1237,22 +1401,10 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
                   <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                   <span>Tidak Ada Agenda</span>
                 </div>
-                {/* <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                  <span>Menunggu</span>
-                </div>
-                <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-                  <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                  <span>Revisi</span>
-                </div>
-                <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-                  <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-                  <span>Hari Libur</span>
-                </div> */}
                 {agendaEntries.length === 0 && (
                   <div className="ml-auto text-sm text-gray-500">
                     <Calendar className="inline-block w-4 h-4 mr-1 opacity-50" />
-                    <span>Klik tombol "Presensi" untuk menambahkan.</span>
+                    <span>Klik tombol "Presensi" untuk menambahkan...</span>
                   </div>
                 )}
               </div>
@@ -1362,70 +1514,152 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
       </Dialog>
       {/* Modal Lihat Nilai */}
       <Dialog open={isModalNilaiOpen} onOpenChange={setIsModalNilaiOpen}>
-        <DialogContent className="sm:max-w-[600px] bg-gradient-to-br from-gray-50 to-gray-200 shadow-xl rounded-lg p-6 animate-in fade-in">
+        <DialogContent className="sm:max-w-[700px] bg-gradient-to-br from-white to-gray-100 shadow-2xl rounded-2xl p-8 animate-in zoom-in-90">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-gray-800">
-              Detail Nilai
+            <DialogTitle className="text-3xl font-extrabold tracking-tight text-gray-800">
+              Detail Penilaian
             </DialogTitle>
           </DialogHeader>
-          <div className="mt-4 space-y-6">
-            {dailyReportSaya?.data?.nilai ? (
-              <>
-                {/* Nilai dari Pembimbing Instansi */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">
-                      Nilai dari Pembimbing Instansi:
-                    </span>
-                    {dailyReportSaya.data.nilai.some(
-                      (nilai) => nilai.nilai_instansi
-                    ) ? (
-                      <CheckCircle className="w-5 h-5 text-green-500" />
-                    ) : (
-                      <XCircle className="w-5 h-5 text-red-500" />
-                    )}
+          <Tabs defaultValue="instansi" className="mt-6">
+            <TabsList className="grid w-full grid-cols-2 p-1 bg-gray-200 rounded-lg">
+              <TabsTrigger
+                value="instansi"
+                className="py-2 text-sm font-medium rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm"
+              >
+                Pembimbing Instansi
+              </TabsTrigger>
+              <TabsTrigger
+                value="pembimbing"
+                className="py-2 text-sm font-medium rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm"
+              >
+                Dosen Pembimbing
+              </TabsTrigger>
+            </TabsList>
+            {/* Tab Instansi */}
+            <TabsContent value="instansi" className="mt-6 space-y-6">
+              {nilai_instansi ? (
+                <>
+                  <div className="flex items-center justify-center gap-4 p-4 bg-white rounded-lg shadow-md">
+                    <div>
+                      <span className="text-3xl font-bold text-gray-800">
+                        {nilai_instansi.toFixed(2)}
+                      </span>
+                      <span
+                        className={`ml-2 text-lg font-semibold ${instansiGrade?.color}`}
+                      >
+                        ({instansiGrade?.grade})
+                      </span>
+                    </div>
                   </div>
-                </div>
-                {/* Komponen Penilaian Pembimbing Instansi */}
-                <div>
-                  <h3 className="mb-3 text-lg font-semibold text-gray-700">
-                    Komponen Penilaian Pembimbing Instansi
-                  </h3>
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    {dailyReportSaya.data.nilai.map((nilai, index) =>
-                      nilai.komponen_penilaian_instansi
-                        ? Object.entries(nilai.komponen_penilaian_instansi).map(
-                            ([key, value]) => (
-                              <div
-                                key={`${index}-${key}`}
-                                className="flex items-center gap-2 p-2 bg-white rounded-md shadow-sm"
-                              >
-                                <span className="font-medium capitalize">
-                                  {key.replace(/_/g, " ")}:
+                  <div>
+                    <h3 className="mb-4 text-lg font-semibold text-gray-700">
+                      Komponen Penilaian:
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      {komponen_penilaian_instansi?.map((komponen, index) =>
+                        Object.entries(komponen)
+                          .filter(([key]) => key !== "id" && key !== "masukan")
+                          .map(([key, value]) => (
+                            <div
+                              key={`${index}-${key}`}
+                              className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
+                            >
+                              <span className="font-medium text-gray-600 capitalize">
+                                {key.replace(/_/g, " ")}
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold text-gray-800">
+                                  {value}
                                 </span>
-                                {value ? (
-                                  <CheckCircle className="w-5 h-5 text-green-500" />
-                                ) : (
-                                  <XCircle className="w-5 h-5 text-red-500" />
-                                )}
+                                <CheckCircle className="w-5 h-5 text-green-500" />
                               </div>
-                            )
-                          )
-                        : null
+                            </div>
+                          ))
+                      )}
+                    </div>
+                    {komponen_penilaian_instansi?.[0]?.masukan && (
+                      <div className="mt-4">
+                        <h4 className="font-semibold text-gray-700 text-md">
+                          Masukan:
+                        </h4>
+                        <p className="p-3 mt-2 text-gray-600 rounded-lg bg-gray-50">
+                          {komponen_penilaian_instansi[0].masukan}
+                        </p>
+                      </div>
                     )}
                   </div>
-                </div>
-              </>
-            ) : (
-              <p className="text-gray-500">
-                Nilai belum diberikan oleh Pembimbing Instansi!
-              </p>
-            )}
-          </div>
+                </>
+              ) : (
+                <p className="py-6 text-center text-gray-500">
+                  Nilai belum diberikan oleh Pembimbing Instansi...
+                </p>
+              )}
+            </TabsContent>
+            {/* Tab Pembimbing */}
+            <TabsContent value="pembimbing" className="mt-6 space-y-6">
+              {nilai_pembimbing ? (
+                <>
+                  <div className="flex items-center justify-center gap-4 p-4 bg-white rounded-lg shadow-md">
+                    <div>
+                      <span className="text-3xl font-bold text-gray-800">
+                        {nilai_pembimbing.toFixed(2)}
+                      </span>
+                      <span
+                        className={`ml-2 text-lg font-semibold ${pembimbingGrade?.color}`}
+                      >
+                        ({pembimbingGrade?.grade})
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="mb-4 text-lg font-semibold text-gray-700">
+                      Komponen Penilaian:
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      {komponen_penilaian_pembimbing?.map((komponen, index) =>
+                        Object.entries(komponen)
+                          .filter(([key]) => key !== "id" && key !== "catatan")
+                          .map(([key, value]) => (
+                            <div
+                              key={`${index}-${key}`}
+                              className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
+                            >
+                              <span className="font-medium text-gray-600 capitalize">
+                                {key.replace(/_/g, " ")}
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold text-gray-800">
+                                  {value}
+                                </span>
+                                <CheckCircle className="w-5 h-5 text-green-500" />
+                              </div>
+                            </div>
+                          ))
+                      )}
+                    </div>
+                    {komponen_penilaian_pembimbing?.[0]?.catatan && (
+                      <div className="mt-4">
+                        <h4 className="font-semibold text-gray-700 text-md">
+                          Catatan:
+                        </h4>
+                        <p className="p-3 mt-2 text-gray-600 rounded-lg bg-gray-50">
+                          {komponen_penilaian_pembimbing[0].catatan}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <p className="py-6 text-center text-gray-500">
+                  Nilai belum diberikan oleh Dosen Pembimbing...
+                </p>
+              )}
+            </TabsContent>
+          </Tabs>
           <div className="flex justify-end mt-6">
             <Button
               variant="outline"
-              className="text-white bg-emerald-500 hover:bg-emerald-600"
+              className="px-6 py-2 font-semibold text-white transition-all rounded-lg bg-emerald-600 hover:bg-emerald-700"
               onClick={() => setIsModalNilaiOpen(false)}
             >
               Tutup

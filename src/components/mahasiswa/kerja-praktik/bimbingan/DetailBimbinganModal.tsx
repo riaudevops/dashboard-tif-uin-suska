@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Calendar, User, BookOpen, Award } from "lucide-react";
 
@@ -21,24 +21,6 @@ const DetailBimbinganModal = ({
   bimbinganSaya,
 }: DetailBimbinganModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setTimeout(onClose, 300);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscKey);
-      document.body.style.overflow = "hidden";
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleEscKey);
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

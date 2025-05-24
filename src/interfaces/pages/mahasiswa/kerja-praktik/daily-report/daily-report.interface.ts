@@ -82,7 +82,7 @@ export interface Nilai {
   komponen_penilaian_pembimbing?: KomponenPenilaianPembimbing[];
 }
 
-interface KomponenPenilaianInstansi {
+export interface KomponenPenilaianInstansi {
   id: string;
   deliverables: number;
   ketepatan_waktu: number;

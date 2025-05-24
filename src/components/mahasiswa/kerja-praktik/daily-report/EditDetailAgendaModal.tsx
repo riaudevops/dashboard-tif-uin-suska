@@ -54,24 +54,6 @@ const EditDetailAgendaModal = ({
     }
   }, [agenda, isOpen]);
 
-  useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setTimeout(onClose, 200);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscKey);
-      document.body.style.overflow = "hidden";
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleEscKey);
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen, onClose]);
-
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {

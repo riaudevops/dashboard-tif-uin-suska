@@ -24,6 +24,7 @@ import {
   EyeClosed,
   AlertTriangle,
   Calendar,
+  GraduationCapIcon,
 } from "lucide-react";
 
 interface Bimbingan {
@@ -173,11 +174,15 @@ const MahasiswaKerjaPraktikBimbinganPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold tracking-tight bg-clip-text">
-            Bimbingan Kerja Praktik
-          </h1>
+      <div className="p-0">
+        <div className="flex mb-3">
+          <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+            <span
+              className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+            />
+            <GraduationCapIcon className="w-4 h-4 mr-1.5" />
+            Bimbingan Kerja Praktik Mahasiswa            
+          </span>
         </div>
         {/* Prasyarat Bimbingan*/}
         {isError && (
@@ -205,11 +210,11 @@ const MahasiswaKerjaPraktikBimbinganPage = () => {
         {/* Main Content*/}
         {!isLoading && !isError && bimbinganSaya && (
           <>
-            <div className="grid grid-cols-1 gap-6 mb-8 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 mb-6 lg:grid-cols-3">
               {/* Progress Card*/}
               <Card className="col-span-2 overflow-hidden text-white border-0 shadow-lg bg-gradient-to-br from-purple-600 to-indigo-700">
                 <CardContent className="p-0">
-                  <div className="flex flex-col items-center gap-8 p-6 mt-8 md:flex-row">
+                  <div className="flex flex-col items-center gap-8 p-6 px-8 mt-8 md:flex-row">
                     {/* Left side - Progress Circle */}
                     <div className="relative flex-shrink-0 w-48 h-48">
                       {/* Main circle */}
@@ -281,12 +286,12 @@ const MahasiswaKerjaPraktikBimbinganPage = () => {
                       {!isComplete && (
                         <div className="px-4 py-3 mt-4 border rounded-lg bg-white/10 backdrop-blur-sm border-white/10">
                           <p className="flex items-center gap-3 font-semibold">
-                            <span className="flex items-center justify-center w-8 text-sm font-bold text-purple-600 bg-white rounded-full h-7">
+                            <span className="flex items-center justify-center w-10 text-sm font-bold text-purple-600 bg-white rounded-full h-7">
                               {remainingSessions}
                             </span>
                             <span>
-                              Bimbingan lagi diperlukan nih, untuk memenuhi
-                              persyaratan ini!
+                              Bimbingan lagi yang masih diperlukan nih, untuk memenuhi
+                              persyaratan seminar kerja praktik!
                             </span>
                           </p>
                         </div>

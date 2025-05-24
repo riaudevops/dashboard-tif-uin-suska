@@ -15,6 +15,7 @@ import {
   CheckCircle,
   Eye,
   XCircle,
+  LayoutGridIcon,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -379,7 +380,16 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-6 space-y-6">
+      <div className="space-y-4">
+        <div className="flex">
+          <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+            <span
+              className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+            />
+            <LayoutGridIcon className="w-4 h-4 mr-1.5" />
+            Detail Progres Kerja Praktik Mahasiswa
+          </span>
+        </div>
         {/* Biodata Section */}
         <Card className="overflow-hidden border-none shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md">
           <div className="flex items-center justify-between p-6 text-white bg-gradient-to-br from-indigo-600 to-purple-700">

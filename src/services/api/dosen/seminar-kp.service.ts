@@ -10,17 +10,8 @@ export default class APISeminarKP {
     return data;
   }
 
-  public static async getNilai() {
-    const axios = api();
-    const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK}/seminar-kp/nilai`
-    );
-    const data = response.data;
-    return data;
-  }
-
-  public static async postNilaiPenguji({
-    id,
+  public static async createUpdateNilaiPenguji({
+    nilaiId,
     penguasaanKeilmuan,
     kemampuanPresentasi,
     kesesuaianUrgensi,
@@ -28,7 +19,7 @@ export default class APISeminarKP {
     nim,
     idJadwalSeminar,
   }: {
-    id: string;
+    nilaiId: string;
     penguasaanKeilmuan: number;
     kemampuanPresentasi: number;
     kesesuaianUrgensi: number;
@@ -40,7 +31,7 @@ export default class APISeminarKP {
     const request = await axios.post(
       `${import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK}/seminar-kp/nilai/penguji`,
       {
-        id,
+        nilaiId,
         penguasaanKeilmuan,
         kemampuanPresentasi,
         kesesuaianUrgensi,

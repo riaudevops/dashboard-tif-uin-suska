@@ -1,7 +1,7 @@
 import { useState, type FC, useMemo } from "react"; // Added useEffect
 import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { Search, Eye, Users, CheckCircle, AlertCircle } from "lucide-react";
+import { Search, Eye, Users, CheckCircle, AlertCircle, CalendarCheck2Icon, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -222,6 +222,12 @@ const emptyDokumenStep: DokumenStep = {
 };
 
 const KoordinatorValidasiBerkasPage: FC = () => {
+
+  const [academicYear, setAcademicYear] = useState<string>("2024/2025 - Genap");
+  const [availableAcademicYears, setAvailableAcademicYears] = useState<
+    string[]
+  >([]);
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<Stage>("pendaftaran");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -424,22 +430,41 @@ const KoordinatorValidasiBerkasPage: FC = () => {
   return (
     <DashboardLayout>
       <div className="transition-colors duration-300">
-        <div className="space-y-6">
+        <div className="space-y-5">
           <div>
-            <h1 className="text-2xl font-bold mb-4 dark:text-white">
+            <div className="flex justify-between">
+            <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+              <span
+                className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+              />
+              <CalendarCheck2Icon className="w-4 h-4 mr-1.5" />
               Validasi Permohonan Seminar KP Mahasiswa
-            </h1>
-            <div>
-              <span className="mr-2 text-gray-600 dark:text-gray-300">
-                Tahun Ajaran
-              </span>
-              <Badge
-                variant="outline"
-                className="bg-gray-100 dark:bg-gray-900 dark:text-gray-300"
-              >
-                2023-2024 Ganjil
-              </Badge>
+            </span>
+            {/* Academic Year Selector */}
+            <div className="flex items-center gap-2 dark:text-gray-200">
+              <div className="relative">
+                <select
+                  className="px-3 py-1 pr-8 text-sm border rounded-md shadow-sm appearance-none dark:bg-gray-800"
+                  value={academicYear}
+                  onChange={(e) => setAcademicYear(e.target.value)}
+                  disabled={isLoading || availableAcademicYears.length === 0}
+                >
+                  {availableAcademicYears.length > 0 ? (
+                    availableAcademicYears.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">2024/2025 - Genap</option>
+                  )}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                  <ChevronRight className="w-4 h-4 text-gray-500 rotate-90" />
+                </div>
+              </div>
             </div>
+          </div>
           </div>
 
           {isLoading ? (
@@ -592,7 +617,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
                     value="idSurat"
                     className="dark:data-[state=active]:bg-gray-800"
                   >
-                    Id Surat Undangan
+                    ID Surat Undangan
                   </TabsTrigger>
                   <TabsTrigger
                     value="suratUndangan"

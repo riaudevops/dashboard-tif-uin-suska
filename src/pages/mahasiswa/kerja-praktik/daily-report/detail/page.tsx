@@ -3,10 +3,9 @@ import { useSearchParams } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FileText, FilePenLine } from "lucide-react";
-import { ShinyButton } from "@/components/magicui/shiny-button";
+import { FileText, FilePenLine, BookOpen, Calendar1Icon, EyeIcon, FilePlus2Icon } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader } from "@/components/ui/card";
 import APIKerjaPraktik from "@/services/api/mahasiswa/daily-report.service";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import TambahAgendaModal from "@/components/mahasiswa/kerja-praktik/daily-report/TambahAgendaModal";
@@ -40,12 +39,11 @@ const MahasiswaKerjaPraktikDailyReportDetailPage = () => {
       APIKerjaPraktik.getDetailDailyReportSaya(id!).then((data) => data.data),
     staleTime: Infinity,
     enabled: !!id,
-  });
+  })
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedRows] = useState<number[]>([]);
   const [selectedAgenda, setSelectedAgenda] = useState<Agenda | null>(null);
 
   const formatTime = (start: string, end: string) => {
@@ -61,39 +59,39 @@ const MahasiswaKerjaPraktikDailyReportDetailPage = () => {
     });
   };
 
-  const institutionComment = detailDailyReportSaya?.catatan_evaluasi || "-";
+  const institutionComment = detailDailyReportSaya?.catatan_evaluasi || "Belum ada catatan evaluasi.";
 
   const agendaEntries: Agenda[] =
     detailDailyReportSaya?.detail_daily_report || [];
 
   return (
     <DashboardLayout>
-      <div className="space-y-4 sm:space-y-6">
-        <CardHeader className="flex flex-col items-start justify-between pb-2 space-y-2 sm:flex-row sm:items-center sm:space-y-0">
-          {isLoading ? (
-            <>
-              <Skeleton className="w-64 h-8" />
-              <div className="flex flex-col items-start space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
-                <Skeleton className="w-40 h-5" />
-                <Skeleton className="w-24 h-5" />
-              </div>
-            </>
-          ) : (
-            <CardTitle className="mb-2 text-2xl font-bold sm:text-3xl sm:mb-0">
-              {detailDailyReportSaya?.tanggal_presensi
-                ? formatDate(detailDailyReportSaya.tanggal_presensi)
-                : "Detail Daily Report"}
-            </CardTitle>
-          )}
+      <div className="space-y-4 sm:space-y-4">
+        <CardHeader className="p-0 flex flex-row w-full justify-between">
+          <div className="flex">
+            <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+              <span
+                className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+              />
+              <BookOpen className="w-4 h-4 mr-1.5" />
+              Detail Agenda Daily Report KP Mahasiswa
+            </span>
+          </div>
+          <div className="flex ml-3 underline underline-offset-2 text-md">
+            <Calendar1Icon className="w-5 h-5 mr-1.5" />           
+            {formatDate(detailDailyReportSaya?.tanggal_presensi)}              
+          </div>
+          {/* Tanggal Realtime Dalam Format Humanize */}
         </CardHeader>
-        <CardContent>
-          <ShinyButton
-            className="w-auto mb-6"
+        <CardContent className="px-4 pt-1 pb-4 rounded-md bg-background border shadow-sm">
+          <Button
+            variant={"outline"}
+            className="w-auto mt-2 mb-3"
             onClick={() => setIsModalOpen(true)}
           >
-            <FileText className="w-[1.15rem] h-[1.15rem] mr-3" />
+            <FilePlus2Icon className="w-[1.15rem] h-[1.15rem]" />
             Tambah Agenda
-          </ShinyButton>
+          </Button>
           <TambahAgendaModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
@@ -109,7 +107,7 @@ const MahasiswaKerjaPraktikDailyReportDetailPage = () => {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted">
-                  <TableHead className="text-center">
+                  <TableHead className="max-w-12 text-center">
                     {isLoading ? (
                       <Skeleton className="w-16 h-4 text-center" />
                     ) : (
@@ -120,14 +118,14 @@ const MahasiswaKerjaPraktikDailyReportDetailPage = () => {
                     {isLoading ? (
                       <Skeleton className="w-24 h-4 text-center" />
                     ) : (
-                      "Waktu"
+                      "Waktu Agenda"
                     )}
                   </TableHead>
                   <TableHead className="text-center">
                     {isLoading ? (
                       <Skeleton className="w-16 h-4 text-center" />
                     ) : (
-                      "Agenda"
+                      "Judul Agenda"
                     )}
                   </TableHead>
                   <TableHead className="text-center">
@@ -173,8 +171,8 @@ const MahasiswaKerjaPraktikDailyReportDetailPage = () => {
                   </TableRow>
                 ) : (
                   agendaEntries.map((entry: Agenda, index: number) => (
-                    <TableRow key={entry.id} className="hover:bg-transparent">
-                      <TableCell className="text-center">{index + 1}</TableCell>
+                    <TableRow key={entry.id} className={`hover:bg-transparent ${index % 2 === 0 ? "bg-background/70" : ""}`}>
+                      <TableCell className="text-center">{index + 1}.</TableCell>
                       <TableCell className="text-center">
                         {formatTime(entry.waktu_mulai, entry.waktu_selesai)}
                       </TableCell>
@@ -195,7 +193,7 @@ const MahasiswaKerjaPraktikDailyReportDetailPage = () => {
                               setIsDetailModalOpen(true);
                             }}
                           >
-                            <FileText className="w-4 h-4" />
+                            <EyeIcon className="w-4 h-4" />
                           </Button>
                           <Button
                             size="sm"
@@ -215,12 +213,8 @@ const MahasiswaKerjaPraktikDailyReportDetailPage = () => {
               </TableBody>
             </Table>
           </div>
-          {/* Row Selection Indicator */}
-          <div className="mt-3 text-sm text-gray-500">
-            {selectedRows.length} of {agendaEntries.length} row(s) selected.
-          </div>
           {/* Institution Comment Display Box - Enlarged */}
-          <div className="p-6 mt-8 border border-gray-100 rounded-lg shadow-sm bg-gray-50 dark:bg-gray-800/30 dark:border-gray-700">
+          <div className="p-6 mt-6 border border-gray-100 rounded-lg shadow-sm bg-gray-50 dark:bg-gray-800/30 dark:border-gray-700">
             <div className="space-y-4">
               <div>
                 <Label className="flex items-center gap-2 mb-4 text-lg font-medium">

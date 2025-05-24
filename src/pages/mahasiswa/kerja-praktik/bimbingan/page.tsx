@@ -290,7 +290,7 @@ const MahasiswaKerjaPraktikBimbinganPage = () => {
                               {remainingSessions}
                             </span>
                             <span>
-                              Bimbingan lagi yang masih diperlukan nih, untuk memenuhi
+                              Bimbingan lagi yang masih diperlukan nih untuk memenuhi
                               persyaratan seminar kerja praktik!
                             </span>
                           </p>

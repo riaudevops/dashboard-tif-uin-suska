@@ -531,7 +531,7 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
         {/* Tabs and Table */}
         <Tabs
           defaultValue="daily-report"
-          className="w-full space-y-6"
+          className="w-full space-y-4"
           onValueChange={setActiveTab}
           value={activeTab}
         >
@@ -551,7 +551,7 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
               Riwayat Bimbingan
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="daily-report">
+          <TabsContent value="daily-report" className="rounded-md">
             <div className="overflow-hidden border border-gray-100 rounded-lg shadow-md bg-gray-50 dark:bg-gray-800/30 dark:border-gray-700">
               <div className="flex items-center justify-between p-4 bg-white border-b border-gray-100 dark:border-gray-700 dark:bg-gray-800/50">
                 <Button
@@ -769,21 +769,13 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
             </div>
           </TabsContent>
           <TabsContent value="riwayat-bimbingan">
-            <Card className="border-none shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md">
-              {/* <CardHeader className="pb-2">
-                <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
-                  Riwayat Bimbingan
-                </CardTitle>/
-                <CardDescription className="text-gray-600 dark:text-gray-400">
-                  Daftar Riwayat Bimbingan Kerja Praktik
-                </CardDescription>
-              </CardHeader> */}
-              <CardContent>
+            <Card className="p-0 border-none shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md">
+              <CardContent className="p-4 border rounded-md">
                 <Card className="overflow-hidden border-none shadow-sm rounded-xl">
                   <Table className="border dark:border-gray-700">
                     <TableHeader className="bg-indigo-50 dark:bg-indigo-900/20">
                       <TableRow>
-                        <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-200">
+                        <TableHead className="max-w-16 font-semibold text-center text-gray-700 dark:text-gray-200">
                           Bimbingan Ke-
                         </TableHead>
                         <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-200">
@@ -802,7 +794,7 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
                         detailMahasiswa.bimbingan?.map((bimbingan, index) => (
                           <TableRow
                             key={bimbingan.id}
-                            className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/20"
+                            className={`transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/20 ${index % 2 === 0 ? "bg-muted/30" : ""}`}
                           >
                             <TableCell className="font-medium text-center text-gray-900 dark:text-white">
                               {index + 1}

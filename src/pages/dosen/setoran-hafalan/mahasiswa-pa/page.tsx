@@ -18,15 +18,12 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {  useNavigate } from "react-router-dom";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useEffect, useState } from "react";
-import { SquareArrowOutUpRightIcon } from "lucide-react";
+import { BackpackIcon, SquareArrowOutUpRightIcon } from "lucide-react";
 import { tabListStateProps } from "@/interfaces/pages/dosen/setoran-hafalan/mahasiswa-pa/mahasiswa-pa.interface";
 import TableLoadingSkeleton from "@/components/globals/table-loading-skeleton";
 
 export default function DosenSetoranHafalanMahasiswaPAPage() {
   const navigate = useNavigate();
-
-  const [date, setDate] = useState(new Date());
   
   const { data: dataMahasiswa, isLoading } = useQuery({
     queryKey: ["mahasiswa-pa-saya"],
@@ -38,40 +35,20 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
     "semua"
   );
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setDate(new Date());
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-  const formatNumber = (num: number) => {
-    return num.toString().padStart(2, "0");
-  };
   return (
     <>
       <DashboardLayout>
         <div className="flex flex-col w-full">
           <div className="flex flex-col gap-3">
-            <div className="flex justify-start gap-2">
-              <div className="">
-                <span className="text-2xl">
-                  {date.toLocaleDateString("id-ID", {
-                    weekday: "long",
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </span>
-              </div>
-              <div className="">
-                <span className="text-2xl font-bold italic">
-                  ({formatNumber(date.getHours())}:
-                  {formatNumber(date.getMinutes())}:
-                  {formatNumber(date.getSeconds())} WIB)
-                </span>
-              </div>
-            </div>
+            <div className="flex">
+            <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+              <span
+                className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+              />
+              <BackpackIcon className="w-4 h-4 mr-1.5" />
+              Mahasiswa PA Muroja'ah
+            </span>
+          </div>
             <div className="flex bg-[#86A7FC] px-4 py-2 relative rounded-lg">
               <div className="flex flex-col text-black gap-1 py-10 w-[70%]">
                 <div className="font-bold text-3xl">Halo, Dosen PA!</div>

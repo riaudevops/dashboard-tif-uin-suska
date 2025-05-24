@@ -1167,10 +1167,10 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
                 <Card>
                   <CardHeader className="flex items-end">
                     <Button
-                      className="w-1/5 bg-blue-500 border text-gray-50 hover:bg-blue-600 dark:bg-blue-500 dark:border-gray-700 dark:hover:bg-blue-600"
+                      className="bg-blue-500 border text-gray-50 hover:bg-blue-600 dark:bg-blue-500 dark:border-gray-700 dark:hover:bg-blue-600"
                       onClick={() => setOpenModalBimbingan(true)}
                     >
-                      <FilePlus2 className="w-4 h-4 mr-2" />
+                      <FilePlus2 className="w-4 h-4" />
                       Tambah Bimbingan
                     </Button>
                   </CardHeader>
@@ -1519,7 +1519,7 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
                   ) : (
                     <CardHeader className="p-6">
                       <CardDescription className="text-base font-normal text-center text-gray-700">
-                        Penilaian belum bisa dilakukan untuk mahasiswa ini...
+                        ❌ Penilaian belum bisa dilakukan untuk mahasiswa ini.
                       </CardDescription>
                     </CardHeader>
                   )}

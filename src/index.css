@@ -217,6 +217,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   position: absolute;
   width: 100%;
 }
+input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: 0; /* Menyembunyikan ikon */
+  position: absolute;
+  width: 100%;
+}
 
 /* Menambahkan ikon kustom */
 .date-input {

@@ -4,6 +4,7 @@ import PendaftaranCard from "@/components/mahasiswa/seminar/pendaftaran-card";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
+import { LayoutGridIcon } from "lucide-react";
 
 export default function MahasiswaSeminarDaftarPage() {
   const navigate = useNavigate();
@@ -29,14 +30,14 @@ export default function MahasiswaSeminarDaftarPage() {
 
   return (
     <DashboardLayout>
-      <div>
-        <h1 className="text-2xl font-bold">
-          Pendaftaran Seminar Kerja Praktik
-        </h1>
-        <p className="text-xs">
-          Berikut Detail Progress Seminar Pendaftaran Kerja Praktik Anda,
-          Semangat terus ya....
-        </p>
+      <div className="flex mb-3">
+        <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+          <span
+            className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+          />
+          <LayoutGridIcon className="w-4 h-4 mr-1.5" />
+          Pengajuan Seminar Kerja Praktik Mahasiswa            
+        </span>
       </div>
 
       <PendaftaranCard

@@ -286,7 +286,7 @@ const MahasiswaKerjaPraktikBimbinganPage = () => {
                       {!isComplete && (
                         <div className="px-4 py-3 mt-4 border rounded-lg bg-white/10 backdrop-blur-sm border-white/10">
                           <p className="flex items-center gap-3 font-semibold">
-                            <span className="flex items-center justify-center w-10 text-sm font-bold text-purple-600 bg-white rounded-full h-7">
+                            <span className="flex items-center justify-center w-11 text-sm font-bold text-purple-600 bg-white rounded-full h-7">
                               {remainingSessions}
                             </span>
                             <span>

@@ -32,6 +32,7 @@ import {
   ChevronRight,
   XCircle,
   Eye,
+  UserRoundPenIcon,
 } from "lucide-react";
 import {
   Table,
@@ -731,18 +732,19 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen p-4 ">
+      <div className="min-h-screen">
         <Toaster />
         {/* Page Title */}
-        <div className="flex items-center gap-4 mb-6">
-          {/* <Button
-            variant="outline"
-            onClick={() => navigate(-1)}
-            className="text-gray-600 dark:text-gray-300"
-          >
-            Kembali
-          </Button> */}
-          <h1 className="text-2xl font-bold">Detail Mahasiswa Bimbingan</h1>
+        <div className="flex items-center gap-4 mb-3">
+          <div className="flex">
+            <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+              <span
+                className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+              />
+              <UserRoundPenIcon className="w-4 h-4 mr-1.5" />
+              Detail Mahasiswa Bimbingan Kerja Praktik
+            </span>
+          </div>
         </div>
         {/* Error State */}
         {isError && (
@@ -890,14 +892,14 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
         )}
         {/* Tabs and Table */}
         {!isLoading && !isError && detailMahasiswaSaya && (
-          <div className="mt-4">
+          <div className="-mt-4">
             <Tabs
               defaultValue="daily-report"
               className="w-full"
               onValueChange={setActiveTab}
               value={activeTab}
             >
-              <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-2 bg-gray-100 dark:bg-gray-800">
+              <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-4 bg-gray-100 dark:bg-gray-800">
                 <TabsTrigger
                   value="daily-report"
                   className="data-[state=active]:bg-blue-500 data-[state=active]:text-white dark:data-[state=active]:bg-blue-500"

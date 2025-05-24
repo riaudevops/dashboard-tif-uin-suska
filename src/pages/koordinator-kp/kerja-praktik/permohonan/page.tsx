@@ -108,7 +108,7 @@ export default function KoordinatorKerjaPraktikPermohonanPage() {
             <span className="text-sm font-medium">Tahun Ajaran</span>
             <div className="relative">
               <select
-                className="border rounded-md px-3 py-1 pr-8 text-sm appearance-none dark:bg-gray-800 shadow-sm"
+                className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0"
                 value={academicYear}
                 onChange={(e) => setAcademicYear(parseInt(e.target.value))}
               >

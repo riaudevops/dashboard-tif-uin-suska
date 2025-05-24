@@ -243,7 +243,7 @@ const DosenPengujiNilaiPage: FC = () => {
             <div className="flex items-center gap-2 dark:text-gray-200">
               <div className="relative">
                 <select
-                  className="px-3 py-1 pr-8 text-sm border rounded-md shadow-sm appearance-none dark:bg-gray-800"
+                  className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0"
                   value={academicYear}
                   onChange={(e) => setAcademicYear(e.target.value)}
                   disabled={isLoading || availableAcademicYears.length === 0}

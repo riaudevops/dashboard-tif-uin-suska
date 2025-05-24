@@ -320,9 +320,9 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.5 }}
-          className="mb-6"
+          className="mb-5 flex justify-between"
         >
-          <div className="flex mb-5">
+          <div className="flex">
             <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
               <span
                 className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
@@ -333,7 +333,6 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
           </div>
           {/* Academic Year Selector */}
           <div className="flex items-center gap-2 dark:text-gray-200">
-            <span className="text-sm font-medium">Tahun Ajaran</span>
             <div className="relative">
               <select
                 className="px-3 py-1 pr-8 text-sm border rounded-md shadow-sm appearance-none dark:bg-gray-800"

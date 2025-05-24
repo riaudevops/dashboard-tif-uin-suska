@@ -1,7 +1,7 @@
 import { useState, type FC } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { Search, Edit, History } from "lucide-react";
+import { Search, Edit, History, CalendarCheck2Icon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -260,19 +260,27 @@ const KoordinatorJadwalSeminarPage: FC = () => {
     <DashboardLayout>
       <Toaster position="top-right" />
       <div>
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-2xl font-bold dark:text-white">
-              Jadwal Seminar
-            </h1>
-            <div className="mt-2">
-              <span className="mr-2 text-gray-600 dark:text-gray-300">
-                Tahun Ajaran
+        <div className="space-y-5">
+          <div className="flex justify-between items-center">
+            <div className="flex">
+              <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+                <span
+                  className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+                />
+                <CalendarCheck2Icon className="w-4 h-4 mr-1.5" />
+                Jadwal Seminar Kerja Praktik Mahasiswa
               </span>
-              <span className="inline-flex items-center rounded-md bg-gray-100 dark:bg-gray-900 dark:text-gray-300 px-2 py-1 text-sm font-medium">
+            </div>
+              
+            {/* Academic Year */}
+            <div>
+              <span
+                className="bg-gray-100 text-sm font-medium dark:bg-gray-900 py-2 px-3 rounded-lg dark:text-gray-300"
+              >
                 {data?.tahun_ajaran?.nama || "Tidak tersedia"}
               </span>
             </div>
+
           </div>
 
           <DashboardJadwalCard />

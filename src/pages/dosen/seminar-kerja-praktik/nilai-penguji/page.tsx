@@ -13,6 +13,8 @@ import {
   Clock,
   File,
   CheckCircle,
+  GraduationCapIcon,
+  ChevronRight,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import APISeminarKP from "@/services/api/dosen/seminar-kp.service";
@@ -91,6 +93,11 @@ interface ApiResponse {
 }
 
 const DosenPengujiNilaiPage: FC = () => {
+  const [academicYear, setAcademicYear] = useState<string>("2024/2025 - Genap");
+  const [availableAcademicYears, setAvailableAcademicYears] = useState<
+    string[]
+  >([]);
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"belum_dinilai" | "dinilai">(
     "belum_dinilai"
@@ -221,21 +228,40 @@ const DosenPengujiNilaiPage: FC = () => {
   return (
     <DashboardLayout>
       <div className="transition-colors duration-300">
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-2xl font-bold mb-4 dark:text-white">
-              Seminar Kerja Praktik Mahasiswa
-            </h1>
-            <div>
-              <span className="mr-2 text-gray-600 dark:text-gray-300">
-                Tahun Ajaran
+        <div className="space-y-4">
+          <div className="flex justify-between mb-4">
+            <div className="flex">
+              <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+                <span
+                  className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+                />
+                <GraduationCapIcon className="w-4 h-4 mr-1.5" />
+                Mahasiswa Uji Kerja Praktik
               </span>
-              <Badge
-                variant="outline"
-                className="bg-gray-100 dark:bg-gray-900 dark:text-gray-300"
-              >
-                2024-2025 Ganjil
-              </Badge>
+            </div>
+            {/* Academic Year Selector */}
+            <div className="flex items-center gap-2 dark:text-gray-200">
+              <div className="relative">
+                <select
+                  className="px-3 py-1 pr-8 text-sm border rounded-md shadow-sm appearance-none dark:bg-gray-800"
+                  value={academicYear}
+                  onChange={(e) => setAcademicYear(e.target.value)}
+                  disabled={isLoading || availableAcademicYears.length === 0}
+                >
+                  {availableAcademicYears.length > 0 ? (
+                    availableAcademicYears.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">2024/2025 - Genap</option>
+                  )}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                  <ChevronRight className="w-4 h-4 text-gray-500 rotate-90" />
+                </div>
+              </div>
             </div>
           </div>
 

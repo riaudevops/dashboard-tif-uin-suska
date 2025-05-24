@@ -3,13 +3,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import toast, { Toaster } from "react-hot-toast";
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm, Controller } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import APIKerjaPraktik from "@/services/api/pembimbing-instansi/daily-report.service";
 import {
@@ -51,6 +51,7 @@ import {
   Nilai,
   PutDailyReportData,
 } from "@/interfaces/pages/mahasiswa/kerja-praktik/daily-report/daily-report.interface";
+import { Input } from "@/components/ui/input";
 
 const debounce = (func: (...args: any[]) => void, wait: number) => {
   let timeout: NodeJS.Timeout;
@@ -188,21 +189,54 @@ const AssessmentModal = ({
                     },
                   }}
                   render={({ field: { value, onChange } }) => (
-                    <div className="mt-2">
-                      <Slider
-                        value={[
-                          typeof value === "number" ? value : Number(value),
-                        ]}
-                        onValueChange={(vals) => onChange(vals[0])}
-                        min={0}
-                        max={100}
-                        step={1}
-                        className="w-full"
-                        disabled={isSubmitting}
-                      />
-                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Nilai: {value}
-                      </p>
+                    <div className="flex items-center gap-4 mt-2">
+                      {/* Slider */}
+                      <div className="flex-1">
+                        <Slider
+                          value={[
+                            typeof value === "number" ? value : Number(value),
+                          ]}
+                          onValueChange={(vals) => onChange(vals[0])}
+                          min={0}
+                          max={100}
+                          step={1}
+                          className="w-full h-5"
+                          disabled={isSubmitting}
+                          aria-label={field.label}
+                        >
+                          <div className="relative w-full h-2 bg-gray-200 rounded-full dark:bg-gray-700">
+                            <div
+                              className="absolute h-2 transition-all duration-200 bg-indigo-600 rounded-full dark:bg-indigo-400"
+                              style={{ width: `${value}%` }}
+                            />
+                            <div
+                              className="absolute w-5 h-5 transition-all duration-200 transform -translate-y-1/2 bg-indigo-600 rounded-full shadow-md cursor-pointer dark:bg-indigo-400"
+                              style={{
+                                left: `${value}%`,
+                                transform: "translate(-50%, -50%)",
+                              }}
+                            />
+                          </div>
+                        </Slider>
+                      </div>
+                      {/* Value Display and Counter Input */}
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center border border-gray-300 rounded-md dark:border-gray-600">
+                          <Input
+                            type="number"
+                            value={value}
+                            onChange={(e) => {
+                              const newValue = Math.min(
+                                100,
+                                Math.max(0, Number(e.target.value))
+                              );
+                              onChange(newValue);
+                            }}
+                            className="w-16 h-8 text-sm text-center border-none focus:ring-0"
+                            disabled={isSubmitting}
+                          />
+                        </div>
+                      </div>
                     </div>
                   )}
                 />
@@ -223,7 +257,7 @@ const AssessmentModal = ({
                 required: "Masukan wajib diisi",
               })}
               className="mt-2"
-              placeholder="Masukan untuk mahasiswa"
+              placeholder="Masukan untuk mahasiswa..."
               disabled={isSubmitting}
             />
             {errors.masukan && (
@@ -338,7 +372,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
       queryClient.invalidateQueries({
         queryKey: ["detail-mahasiswa-instansi-saya", id],
       });
-      toast.success("Nilai berhasil disimpan");
+      toast.success("Nilai berhasil disimpan!");
       setIsAssessmentModalOpen(false);
       setIsModalOpening(false);
       assessmentForm.reset();
@@ -347,20 +381,23 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
       const errorMessage =
         error.response?.data?.message ||
         error.message ||
-        "Terjadi kesalahan saat menyimpan nilai";
+        "Terjadi kesalahan saat menyimpan nilai!";
       toast.error(`Gagal menyimpan nilai: ${errorMessage}`);
       setIsModalOpening(false);
     },
   });
 
   const putNilaiMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: AssessmentFormData }) =>
-      APIKerjaPraktik.putNilai(id, data),
+    mutationFn: ({ data }: { data: AssessmentFormData }) => {
+      const nilaiId = detailMahasiswaInstansiSaya?.nilai?.[0]?.id;
+      if (!nilaiId) throw new Error("Id nilai is missing...");
+      return APIKerjaPraktik.putNilai(nilaiId, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["detail-mahasiswa-instansi-saya", id],
       });
-      toast.success("Nilai berhasil diperbarui");
+      toast.success("Nilai berhasil diperbarui!");
       setIsAssessmentModalOpen(false);
       setIsModalOpening(false);
       assessmentForm.reset();
@@ -369,7 +406,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
       const errorMessage =
         error.response?.data?.message ||
         error.message ||
-        "Terjadi kesalahan saat memperbarui nilai";
+        "Terjadi kesalahan saat memperbarui nilai!";
       toast.error(`Gagal memperbarui nilai: ${errorMessage}`);
       setIsModalOpening(false);
     },
@@ -474,7 +511,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
     }
     try {
       if (detailMahasiswaInstansiSaya?.nilai?.length) {
-        await putNilaiMutation.mutateAsync({ id, data });
+        await putNilaiMutation.mutateAsync({ data });
       } else {
         await postNilaiMutation.mutateAsync({ id, data });
       }
@@ -575,15 +612,15 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
             </div>
             <div>
               <h3 className="text-xl font-bold">
-                {loading ? "Loading..." : student?.mahasiswa.nama || "Unknown"}
+                {loading ? "Loading..." : student?.mahasiswa.nama || "-"}
               </h3>
               <p className="text-sm text-white/80">
-                {loading ? "..." : student?.mahasiswa.nim || "Unknown"}
+                {loading ? "..." : student?.mahasiswa.nim || "-"}
               </p>
             </div>
           </div>
           <Badge className="text-white bg-white/20 border-white/30">
-            {loading ? "..." : student?.status || "Unknown"}
+            {loading ? "..." : student?.status || "-"}
           </Badge>
         </div>
         <div className="grid grid-cols-1 gap-6 p-6 bg-gray-50 dark:bg-gray-800/50 sm:grid-cols-2">
@@ -600,25 +637,25 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
             </>
           ) : (
             <>
-              <div className="flex items-center gap-3">
+              <div className="flex gap-3">
                 <Calendar className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 <div>
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                     Tanggal Mulai
                   </p>
                   <p className="text-base text-gray-900 dark:text-white">
-                    {student ? formatDate(student.tanggal_mulai) : "Unknown"}
+                    {student ? formatDate(student.tanggal_mulai) : "-"}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex gap-3">
                 <Calendar className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 <div>
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                     Tanggal Selesai
                   </p>
                   <p className="text-base text-gray-900 dark:text-white">
-                    {student ? formatDate(student.tanggal_selesai) : "Unknown"}
+                    {student ? formatDate(student.tanggal_selesai) : "-"}
                   </p>
                 </div>
               </div>
@@ -780,13 +817,16 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
 
   const existingNilai = useMemo(() => {
     if (
-      detailMahasiswaInstansiSaya?.nilai?.length &&
-      detailMahasiswaInstansiSaya.nilai.length > 0
+      detailMahasiswaInstansiSaya?.nilai &&
+      detailMahasiswaInstansiSaya.nilai.length > 0 &&
+      detailMahasiswaInstansiSaya.nilai[0]?.komponen_penilaian_instansi &&
+      detailMahasiswaInstansiSaya.nilai[0].komponen_penilaian_instansi.length >
+        0
     ) {
       return [detailMahasiswaInstansiSaya.nilai[0]];
     }
     return undefined;
-  }, [JSON.stringify(detailMahasiswaInstansiSaya?.nilai)]);
+  }, [detailMahasiswaInstansiSaya]);
 
   const handleOpenAssessmentModal = useCallback(
     debounce(() => {
@@ -868,10 +908,16 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
                         size="sm"
                         className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400"
                         onClick={handleOpenAssessmentModal}
-                        // disabled={!canAssess || postNilaiMutation.isPending || putNilaiMutation.isPending || isModalOpening}
+                        disabled={
+                          !canAssess ||
+                          postNilaiMutation.isPending ||
+                          putNilaiMutation.isPending ||
+                          isModalOpening
+                        }
                       >
                         <Star className="w-4 h-4 mr-1" />
-                        {(detailMahasiswaInstansiSaya.nilai?.length ?? 0) > 0
+                        {(detailMahasiswaInstansiSaya.nilai?.[0]
+                          ?.komponen_penilaian_instansi?.length ?? 0) > 0
                           ? "Edit Nilai"
                           : "Berikan Nilai"}
                       </Button>

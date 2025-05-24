@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Clock, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,33 +21,6 @@ const ModalAgendaMahasiswa = ({
   reportData,
 }: ReviewDailyReportProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  // const [isCopied, setIsCopied] = useState(false);
-
-  useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setTimeout(onClose, 300);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscKey);
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleEscKey);
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen, onClose]);
-
-  // const handleCopy = () => {
-  //   if (reportData?.deskripsi_agenda) {
-  //     navigator.clipboard.writeText(reportData.deskripsi_agenda);
-  //     setIsCopied(true);
-  //     toast.success("Deskripsi disalin ke clipboard");
-  //     setTimeout(() => setIsCopied(false), 2000);
-  //   }
-  // };
 
   const backdropVariants = {
     hidden: { opacity: 0 },

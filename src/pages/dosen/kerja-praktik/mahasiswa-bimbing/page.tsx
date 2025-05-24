@@ -531,7 +531,7 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
-            className="flex items-center justify-between mb-6 text-sm"
+            className="flex items-center justify-between mb-4 text-sm"
           >
             <div className="flex flex-wrap gap-2">
               <AnimatePresence>
@@ -619,7 +619,7 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
                           {student.lastSupervision}
                         </span>
                       </div>
-                      <div className="p-5">
+                      <div className="px-5 pb-5">
                         <div className="flex items-center gap-5">
                           <div className="relative">
                             <motion.div
@@ -682,10 +682,10 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
                           </div>
                         </div>
                         <div className="mt-4">
-                          <div className="flex justify-between mb-1 text-xs">
-                            <span className="text-gray-600 dark:text-gray-400">
-                              Progress Bimbingan
-                            </span>
+                          <div className="flex justify-end mb-1 text-xs">
+                            {/* <span className="text-gray-600 dark:text-gray-400">
+                              Bimbingan
+                            </span> */}
                             <span
                               className={`font-medium ${
                                 student.status === "Selesai"

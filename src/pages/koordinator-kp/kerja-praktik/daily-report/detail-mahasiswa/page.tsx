@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import {
   User,
   BookOpen,
@@ -99,15 +99,25 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
 
   useEffect(() => {
     if (detailMahasiswa?.tanggal_mulai && detailMahasiswa?.tanggal_selesai) {
-      const today = new Date();
+      const today = new Date(
+        Date.UTC(
+          new Date().getUTCFullYear(),
+          new Date().getUTCMonth(),
+          new Date().getUTCDate()
+        )
+      );
       const startDate = new Date(detailMahasiswa.tanggal_mulai);
       const endDate = new Date(detailMahasiswa.tanggal_selesai);
 
       if (today >= startDate && today <= endDate) {
-        setCurrentMonth(new Date(today.getFullYear(), today.getMonth(), 1));
+        setCurrentMonth(
+          new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1))
+        );
       } else {
         setCurrentMonth(
-          new Date(startDate.getFullYear(), startDate.getMonth(), 1)
+          new Date(
+            Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), 1)
+          )
         );
       }
     }
@@ -118,8 +128,8 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
       setCalendarDays(
         generateCalendarDays(
           currentMonth,
-          new Date(detailMahasiswa.tanggal_mulai),
-          new Date(detailMahasiswa.tanggal_selesai)
+          detailMahasiswa.tanggal_mulai,
+          detailMahasiswa.tanggal_selesai
         )
       );
     }
@@ -127,28 +137,44 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
 
   const generateCalendarDays = (
     monthDate: Date,
-    startDate: Date,
-    endDate: Date
+    startDate: string,
+    endDate: string
   ): CalendarDay[] => {
-    const year = monthDate.getFullYear();
-    const month = monthDate.getMonth();
+    const year = monthDate.getUTCFullYear();
+    const month = monthDate.getUTCMonth();
 
-    const firstDayOfMonth = new Date(year, month, 1);
-    const lastDayOfMonth = new Date(year, month + 1, 0);
-    const firstDayWeekday = firstDayOfMonth.getDay();
+    // Extract YYYY-MM-DD from API dates
+    const startDateStr = startDate.split("T")[0];
+    const endDateStr = endDate.split("T")[0];
+
+    // Create start and end dates at midnight UTC
+    const start = new Date(
+      Date.UTC(
+        parseInt(startDateStr.split("-")[0]),
+        parseInt(startDateStr.split("-")[1]) - 1,
+        parseInt(startDateStr.split("-")[2])
+      )
+    );
+    const end = new Date(
+      Date.UTC(
+        parseInt(endDateStr.split("-")[0]),
+        parseInt(endDateStr.split("-")[1]) - 1,
+        parseInt(endDateStr.split("-")[2])
+      )
+    );
+
+    const firstDayOfMonth = new Date(Date.UTC(year, month, 1));
+    const lastDayOfMonth = new Date(Date.UTC(year, month + 1, 0));
+    const firstDayWeekday = firstDayOfMonth.getUTCDay();
     const daysFromPrevMonth = firstDayWeekday;
 
-    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    const prevMonthLastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
     const prevMonthDays = Array.from({ length: daysFromPrevMonth }, (_, i) => {
       const date = new Date(
-        year,
-        month - 1,
-        prevMonthLastDay - daysFromPrevMonth + i + 1
+        Date.UTC(year, month - 1, prevMonthLastDay - daysFromPrevMonth + i + 1)
       );
       const dateStr = date.toISOString().split("T")[0];
-      const isWithinPeriod =
-        date >= new Date(startDate.setHours(0, 0, 0, 0)) &&
-        date <= new Date(endDate.setHours(23, 59, 59, 999));
+      const isWithinPeriod = date >= start && date <= end;
       const entry = agendaEntries.find(
         (entry) => entry.tanggal_presensi === dateStr
       );
@@ -159,19 +185,17 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
         isWithinPeriod,
         hasEntry: !!entry,
         entry: entry || null,
-        isStartDate: dateStr === startDate.toISOString().split("T")[0],
-        isEndDate: dateStr === endDate.toISOString().split("T")[0],
+        isStartDate: dateStr === startDateStr,
+        isEndDate: dateStr === endDateStr,
       };
     });
 
     const currentMonthDays = Array.from(
-      { length: lastDayOfMonth.getDate() },
+      { length: lastDayOfMonth.getUTCDate() },
       (_, i) => {
-        const date = new Date(year, month, i + 1);
+        const date = new Date(Date.UTC(year, month, i + 1));
         const dateStr = date.toISOString().split("T")[0];
-        const isWithinPeriod =
-          date >= new Date(startDate.setHours(0, 0, 0, 0)) &&
-          date <= new Date(endDate.setHours(23, 59, 59, 999));
+        const isWithinPeriod = date >= start && date <= end;
         const entry = agendaEntries.find(
           (entry) => entry.tanggal_presensi === dateStr
         );
@@ -182,8 +206,8 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
           isWithinPeriod,
           hasEntry: !!entry,
           entry: entry || null,
-          isStartDate: dateStr === startDate.toISOString().split("T")[0],
-          isEndDate: dateStr === endDate.toISOString().split("T")[0],
+          isStartDate: dateStr === startDateStr,
+          isEndDate: dateStr === endDateStr,
         };
       }
     );
@@ -193,11 +217,9 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
       totalDaysShown - prevMonthDays.length - currentMonthDays.length;
 
     const nextMonthDays = Array.from({ length: daysFromNextMonth }, (_, i) => {
-      const date = new Date(year, month + 1, i + 1);
+      const date = new Date(Date.UTC(year, month + 1, i + 1));
       const dateStr = date.toISOString().split("T")[0];
-      const isWithinPeriod =
-        date >= new Date(startDate.setHours(0, 0, 0, 0)) &&
-        date <= new Date(endDate.setHours(23, 59, 59, 999));
+      const isWithinPeriod = date >= start && date <= end;
       const entry = agendaEntries.find(
         (entry) => entry.tanggal_presensi === dateStr
       );
@@ -208,8 +230,8 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
         isWithinPeriod,
         hasEntry: !!entry,
         entry: entry || null,
-        isStartDate: dateStr === startDate.toISOString().split("T")[0],
-        isEndDate: dateStr === endDate.toISOString().split("T")[0],
+        isStartDate: dateStr === startDateStr,
+        isEndDate: dateStr === endDateStr,
       };
     });
 
@@ -223,60 +245,52 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
     });
   };
 
-  const handlePrevMonth = (): void => {
-    const prevMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() - 1,
-      1
+  const handlePrevMonth = () => {
+    setCurrentMonth(
+      new Date(
+        Date.UTC(
+          currentMonth.getUTCFullYear(),
+          currentMonth.getUTCMonth() - 1,
+          1
+        )
+      )
     );
-    const startMonth =
-      new Date(detailMahasiswa!.tanggal_mulai).getFullYear() * 12 +
-      new Date(detailMahasiswa!.tanggal_mulai).getMonth();
-    const prevMonthIndex = prevMonth.getFullYear() * 12 + prevMonth.getMonth();
-    if (prevMonthIndex >= startMonth) {
-      setCurrentMonth(prevMonth);
-    }
   };
 
-  const handleNextMonth = (): void => {
-    const nextMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() + 1,
-      1
+  const handleNextMonth = () => {
+    setCurrentMonth(
+      new Date(
+        Date.UTC(
+          currentMonth.getUTCFullYear(),
+          currentMonth.getUTCMonth() + 1,
+          1
+        )
+      )
     );
-    const endMonth =
-      new Date(detailMahasiswa!.tanggal_selesai).getFullYear() * 12 +
-      new Date(detailMahasiswa!.tanggal_selesai).getMonth();
-    const nextMonthIndex = nextMonth.getFullYear() * 12 + nextMonth.getMonth();
-    if (nextMonthIndex <= endMonth) {
-      setCurrentMonth(nextMonth);
-    }
   };
 
   const isPrevDisabled = () => {
     if (!detailMahasiswa?.tanggal_mulai) return true;
+    const startDate = new Date(detailMahasiswa.tanggal_mulai.split("T")[0]);
     const prevMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() - 1,
-      1
+      Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() - 1, 1)
     );
-    const startMonth =
-      new Date(detailMahasiswa.tanggal_mulai).getFullYear() * 12 +
-      new Date(detailMahasiswa.tanggal_mulai).getMonth();
-    return prevMonth.getFullYear() * 12 + prevMonth.getMonth() < startMonth;
+    return (
+      prevMonth <
+      new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), 1))
+    );
   };
 
   const isNextDisabled = () => {
     if (!detailMahasiswa?.tanggal_selesai) return true;
+    const endDate = new Date(detailMahasiswa.tanggal_selesai.split("T")[0]);
     const nextMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() + 1,
-      1
+      Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() + 1, 1)
     );
-    const endMonth =
-      new Date(detailMahasiswa.tanggal_selesai).getFullYear() * 12 +
-      new Date(detailMahasiswa.tanggal_selesai).getMonth();
-    return nextMonth.getFullYear() * 12 + nextMonth.getMonth() > endMonth;
+    return (
+      nextMonth >
+      new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), 1))
+    );
   };
 
   const getStatusMahasiswa = (status: string): string => {
@@ -589,14 +603,22 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
               <div className="grid grid-cols-7 bg-white dark:bg-gray-800/20">
                 {calendarDays.map((day, index) => {
                   const isWeekend =
-                    day.date.getDay() === 0 || day.date.getDay() === 6;
+                    day.date.getUTCDay() === 0 || day.date.getUTCDay() === 6;
                   const isToday =
-                    day.date.toDateString() === new Date().toDateString();
+                    day.date.toISOString().split("T")[0] ===
+                    new Date().toISOString().split("T")[0];
                   const isMissingAttendance =
                     day.isWithinPeriod &&
                     !day.hasEntry &&
                     !isWeekend &&
-                    day.date <= new Date(new Date().setHours(23, 59, 59, 999));
+                    day.date <=
+                      new Date(
+                        Date.UTC(
+                          new Date().getUTCFullYear(),
+                          new Date().getUTCMonth(),
+                          new Date().getUTCDate()
+                        )
+                      );
 
                   return (
                     <div
@@ -625,10 +647,14 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
                         ${index < 7 ? "border-t-0" : ""}
                         relative
                       `}
-                      onClick={() => {
-                        setSelectedDailyReport(day.entry);
-                        setDailyReportModalOpen(true);
-                      }}
+                      onClick={
+                        day.hasEntry && day.entry
+                          ? () => {
+                              setSelectedDailyReport(day.entry);
+                              setDailyReportModalOpen(true);
+                            }
+                          : undefined
+                      }
                     >
                       <div
                         className={`
@@ -657,7 +683,7 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
                           }
                         `}
                       >
-                        {day.date.getDate()}
+                        {day.date.getUTCDate()}
                       </div>
                       {day.hasEntry && day.entry && (
                         <div className="p-2 mt-8">

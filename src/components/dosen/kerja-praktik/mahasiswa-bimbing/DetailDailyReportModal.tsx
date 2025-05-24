@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Clock, ChevronDown, ChevronUp } from "lucide-react";
 import { DailyReport } from "@/interfaces/pages/mahasiswa/kerja-praktik/daily-report/daily-report.interface";
@@ -17,27 +17,6 @@ const DetailDailyReportModal = ({
 }: DetailDailyReportModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [expandedDetails, setExpandedDetails] = useState<string[]>([]);
-
-  useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setTimeout(onClose, 300);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscKey);
-      document.body.style.overflow = "hidden";
-      if (modalRef.current) {
-        modalRef.current.focus();
-      }
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleEscKey);
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

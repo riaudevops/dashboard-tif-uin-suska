@@ -1518,7 +1518,7 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
                     </>
                   ) : (
                     <CardHeader className="p-6">
-                      <CardDescription className="text-base font-normal text-center text-gray-700">
+                      <CardDescription className="text-base font-normal text-center text-foreground/80">
                         ❌ Penilaian belum bisa dilakukan untuk mahasiswa ini.
                       </CardDescription>
                     </CardHeader>

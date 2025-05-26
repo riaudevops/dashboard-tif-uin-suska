@@ -12,4 +12,3 @@ export const api = () =>{
   });
   return axiosInstance;
 }
-

@@ -1564,10 +1564,10 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
 											Komponen Penilaian:
 										</h3>
 										<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-											{komponen_penilaian_instansi?.map((komponen, index) =>
-												Object.entries(komponen)
+											{komponen_penilaian_instansi &&
+												Object.entries(komponen_penilaian_instansi)
 													.filter(([key]) => key !== "id" && key !== "masukan")
-													.map(([key, value]) => (
+													.map(([key, value], index) => (
 														<div
 															key={`${index}-${key}`}
 															className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
@@ -1577,13 +1577,14 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
 															</span>
 															<div className="flex items-center gap-2">
 																<span className="font-semibold text-gray-800">
-																	{value}
+																	{typeof value === "object"
+																		? JSON.stringify(value)
+																		: value}
 																</span>
 																<CheckCircle className="w-5 h-5 text-green-500" />
 															</div>
 														</div>
-													))
-											)}
+													))}
 										</div>
 										{komponen_penilaian_instansi?.[0]?.masukan && (
 											<div className="mt-4">

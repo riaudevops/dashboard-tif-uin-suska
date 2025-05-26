@@ -1,10 +1,22 @@
 import { api } from "@/lib/axios-instance";
 
 export default class APISeminarKP {
-  public static async getDataMahasiswa() {
+  public static async getDataMahasiswa(tahun_ajaran_id?: number) {
+    const axios = api();
+    const url = tahun_ajaran_id
+      ? `${
+          import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
+        }/seminar-kp/dokumen?tahun_ajaran_id=${tahun_ajaran_id}`
+      : `${import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK}/seminar-kp/dokumen`;
+    const response = await axios.get(url);
+    const data = response.data;
+    return data;
+  }
+
+  public static async getTahunAjaran() {
     const axios = api();
     const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK}/seminar-kp/dokumen`
+      `${import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK}/seminar-kp/tahun-ajaran`
     );
     const data = response.data;
     return data;
@@ -52,20 +64,26 @@ export default class APISeminarKP {
     return request.data;
   }
 
-  public static async getJadwalSeminar() {
+  public static async getJadwalSeminar(tahun_ajaran_id?: number) {
     const axios = api();
-    const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK}/seminar-kp/jadwal`
-    );
+    const url = tahun_ajaran_id
+      ? `${
+          import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
+        }/seminar-kp/jadwal?tahun_ajaran_id=${tahun_ajaran_id}`
+      : `${import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK}/seminar-kp/jadwal`;
+    const response = await axios.get(url);
     const data = response.data;
     return data;
   }
 
-  public static async getNilai() {
+  public static async getNilai(tahun_ajaran_id?: number) {
     const axios = api();
-    const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK}/seminar-kp/nilai`
-    );
+    const url = tahun_ajaran_id
+      ? `${
+          import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
+        }/seminar-kp/nilai?tahun_ajaran_id=${tahun_ajaran_id}`
+      : `${import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK}/seminar-kp/nilai`;
+    const response = await axios.get(url);
     const data = response.data;
     return data;
   }
@@ -125,25 +143,36 @@ export default class APISeminarKP {
     id,
     tanggal,
     waktu_mulai,
+    waktu_selesai,
     nama_ruangan,
     nip_penguji,
   }: {
     id: string;
     tanggal?: string;
     waktu_mulai?: string;
+    waktu_selesai?: string;
     nama_ruangan?: string;
     nip_penguji?: string;
   }) {
     const axios = api();
+    const payload = {
+      id,
+      tanggal,
+      waktu_mulai,
+      waktu_selesai,
+      nama_ruangan,
+      nip_penguji,
+    };
+
+    // Jika tanggal diubah, pastikan waktu_mulai dan waktu_selesai juga dikirim
+    if (tanggal !== undefined) {
+      payload.waktu_mulai = waktu_mulai || undefined; // Hanya kirim jika ada
+      payload.waktu_selesai = waktu_selesai || undefined; // Hanya kirim jika ada
+    }
+
     const request = await axios.put(
       `${import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK}/seminar-kp/jadwal`,
-      {
-        id,
-        tanggal,
-        waktu_mulai,
-        nama_ruangan,
-        nip_penguji,
-      }
+      payload
     );
     return request.data;
   }

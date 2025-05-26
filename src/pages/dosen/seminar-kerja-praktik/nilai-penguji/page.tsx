@@ -1,4 +1,4 @@
-import { useState, type FC } from "react";
+import { useState, useEffect, type FC } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import {
@@ -35,6 +35,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import DashboardCards from "@/components/dosen/seminar-kp/DashboardCard";
 
+// Type definitions
 interface Student {
   id: string;
   nim: string;
@@ -77,11 +78,17 @@ interface Jadwal {
   penguasaan_keilmuan?: number;
   kemampuan_presentasi?: number;
   kesesuaian_urgensi?: number;
+  waktu_dinilai?: string;
   catatan_penguji?: string;
-  waktu_dinilai_penguji?: string;
+}
+
+interface TahunAjaran {
+  id: number;
+  nama: string;
 }
 
 interface ApiResponse {
+  tahun_ajaran: TahunAjaran;
   statistics: {
     totalMahasiswa: number;
     mahasiswaDinilai: number;
@@ -93,11 +100,9 @@ interface ApiResponse {
 }
 
 const DosenPengujiNilaiPage: FC = () => {
-  const [academicYear, setAcademicYear] = useState<string>("2024/2025 - Genap");
-  const [availableAcademicYears, setAvailableAcademicYears] = useState<
-    string[]
-  >([]);
-
+  const [selectedTahunAjaranId, setSelectedTahunAjaranId] = useState<
+    number | undefined
+  >(undefined);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"belum_dinilai" | "dinilai">(
     "belum_dinilai"
@@ -106,16 +111,72 @@ const DosenPengujiNilaiPage: FC = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const navigate = useNavigate();
 
+  // Fetch daftar tahun ajaran
+  const {
+    data: tahunAjaranData,
+    isLoading: isTahunAjaranLoading,
+    isError: isTahunAjaranError,
+    error: tahunAjaranError,
+  } = useQuery<TahunAjaran[]>({
+    queryKey: ["tahun-ajaran"],
+    queryFn: APISeminarKP.getTahunAjaran,
+  });
+
+  // Fetch data mahasiswa berdasarkan tahun ajaran yang dipilih
   const {
     data: apiData,
     isLoading,
+    isError,
     error,
+    refetch,
   } = useQuery<ApiResponse>({
-    queryKey: ["mahasiswaDiuji"],
-    queryFn: APISeminarKP.getDataMahasiswaDiuji,
+    queryKey: ["mahasiswaDiuji", selectedTahunAjaranId],
+    queryFn: () => {
+      console.log("Fetching data for tahunAjaranId:", selectedTahunAjaranId);
+      return APISeminarKP.getDataMahasiswaDiuji(selectedTahunAjaranId);
+    },
+    enabled: selectedTahunAjaranId !== undefined,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
-  if (isLoading) {
+  useEffect(() => {
+    if (apiData) {
+      console.log("Received apiData:", apiData);
+    }
+  }, [apiData]);
+
+  useEffect(() => {
+    if (selectedTahunAjaranId !== undefined) {
+      refetch();
+    }
+  }, [selectedTahunAjaranId, refetch]);
+
+  // Set tahun ajaran default ke yang pertama dari API saat data tersedia
+  useEffect(() => {
+    if (
+      tahunAjaranData &&
+      tahunAjaranData.length > 0 &&
+      selectedTahunAjaranId === undefined
+    ) {
+      setSelectedTahunAjaranId(tahunAjaranData[0].id);
+    }
+  }, [tahunAjaranData, selectedTahunAjaranId]);
+
+  // Early returns for error and loading states
+  if (isTahunAjaranError) {
+    return (
+      <DashboardLayout>
+        <div className="p-6 text-center dark:text-gray-300">
+          <p>
+            Error loading academic years: {(tahunAjaranError as Error).message}
+          </p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (isLoading || isTahunAjaranLoading) {
     return (
       <DashboardLayout>
         <div className="p-6 text-center dark:text-gray-300">
@@ -125,7 +186,7 @@ const DosenPengujiNilaiPage: FC = () => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <DashboardLayout>
         <div className="p-6 text-center dark:text-gray-300">
@@ -135,7 +196,19 @@ const DosenPengujiNilaiPage: FC = () => {
     );
   }
 
-  const students: Student[] = apiData!.semuaJadwal.map((jadwal) => ({
+  // If apiData is undefined (e.g., query hasn't run yet), return a loading state
+  if (!apiData) {
+    return (
+      <DashboardLayout>
+        <div className="p-6 text-center dark:text-gray-300">
+          <p>Loading data...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Now it's safe to map apiData.semuaJadwal and apiData.jadwalHariIni
+  const students: Student[] = (apiData.semuaJadwal || []).map((jadwal) => ({
     id: jadwal.id,
     nim: jadwal.nim,
     name: jadwal.nama,
@@ -150,9 +223,9 @@ const DosenPengujiNilaiPage: FC = () => {
     tanggalSeminar: jadwal.tanggal,
     status: jadwal.status,
     tanggalDinilai:
-      jadwal.status === "Belum Dinilai" || !jadwal.waktu_dinilai_penguji
+      jadwal.status === "Belum Dinilai" || !jadwal.waktu_dinilai
         ? undefined
-        : new Date(jadwal.waktu_dinilai_penguji).toLocaleDateString("id-ID", {
+        : new Date(jadwal.waktu_dinilai).toLocaleDateString("id-ID", {
             weekday: "long",
             day: "numeric",
             month: "long",
@@ -165,35 +238,37 @@ const DosenPengujiNilaiPage: FC = () => {
     catatanPenguji: jadwal.catatan_penguji,
   }));
 
-  const seminarHariIni: Student[] = apiData!.jadwalHariIni.map((jadwal) => ({
-    id: jadwal.id,
-    nim: jadwal.nim,
-    name: jadwal.nama,
-    semester: jadwal.semester,
-    judul: jadwal.judul_kp,
-    lokasi: jadwal.lokasi_kp,
-    dosenPembimbing: jadwal.dosen_pembimbing,
-    pembimbingInstansi: jadwal.pembimbing_instansi,
-    ruangan: jadwal.ruangan,
-    waktu_mulai: jadwal.waktu_mulai,
-    waktu_selesai: jadwal.waktu_selesai,
-    tanggalSeminar: jadwal.tanggal,
-    status: jadwal.status,
-    tanggalDinilai:
-      jadwal.status === "Belum Dinilai" || !jadwal.waktu_dinilai_penguji
-        ? undefined
-        : new Date(jadwal.waktu_dinilai_penguji).toLocaleDateString("id-ID", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          }),
-    idNilai: jadwal.id_nilai,
-    penguasaanKeilmuan: jadwal.penguasaan_keilmuan,
-    kemampuanPresentasi: jadwal.kemampuan_presentasi,
-    kesesuaianUrgensi: jadwal.kesesuaian_urgensi,
-    catatanPenguji: jadwal.catatan_penguji,
-  }));
+  const seminarHariIni: Student[] = (apiData.jadwalHariIni || []).map(
+    (jadwal) => ({
+      id: jadwal.id,
+      nim: jadwal.nim,
+      name: jadwal.nama,
+      semester: jadwal.semester,
+      judul: jadwal.judul_kp,
+      lokasi: jadwal.lokasi_kp,
+      dosenPembimbing: jadwal.dosen_pembimbing,
+      pembimbingInstansi: jadwal.pembimbing_instansi,
+      ruangan: jadwal.ruangan,
+      waktu_mulai: jadwal.waktu_mulai,
+      waktu_selesai: jadwal.waktu_selesai,
+      tanggalSeminar: jadwal.tanggal,
+      status: jadwal.status,
+      tanggalDinilai:
+        jadwal.status === "Belum Dinilai" || !jadwal.waktu_dinilai
+          ? undefined
+          : new Date(jadwal.waktu_dinilai).toLocaleDateString("id-ID", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            }),
+      idNilai: jadwal.id_nilai,
+      penguasaanKeilmuan: jadwal.penguasaan_keilmuan,
+      kemampuanPresentasi: jadwal.kemampuan_presentasi,
+      kesesuaianUrgensi: jadwal.kesesuaian_urgensi,
+      catatanPenguji: jadwal.catatan_penguji,
+    })
+  );
 
   const filteredStudents = students.filter((student) => {
     const matchesSearch = student.name
@@ -243,19 +318,25 @@ const DosenPengujiNilaiPage: FC = () => {
             <div className="flex items-center gap-2 dark:text-gray-200">
               <div className="relative">
                 <select
-                  className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0"
-                  value={academicYear}
-                  onChange={(e) => setAcademicYear(e.target.value)}
-                  disabled={isLoading || availableAcademicYears.length === 0}
+                  className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0 disabled:opacity-50"
+                  value={selectedTahunAjaranId ?? ""}
+                  onChange={(e) =>
+                    setSelectedTahunAjaranId(
+                      e.target.value ? Number(e.target.value) : undefined
+                    )
+                  }
+                  disabled={isTahunAjaranLoading || !tahunAjaranData}
                 >
-                  {availableAcademicYears.length > 0 ? (
-                    availableAcademicYears.map((year) => (
-                      <option key={year} value={year}>
-                        {year}
+                  {isTahunAjaranLoading ? (
+                    <option value="">Memuat tahun ajaran...</option>
+                  ) : tahunAjaranData && tahunAjaranData.length > 0 ? (
+                    tahunAjaranData.map((year) => (
+                      <option key={year.id} value={year.id}>
+                        {year.nama}
                       </option>
                     ))
                   ) : (
-                    <option value="">2024/2025 - Genap</option>
+                    <option value="">Tidak ada tahun ajaran tersedia</option>
                   )}
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
@@ -265,10 +346,7 @@ const DosenPengujiNilaiPage: FC = () => {
             </div>
           </div>
 
-          <DashboardCards
-            students={students}
-            statistics={apiData!.statistics}
-          />
+          <DashboardCards students={students} statistics={apiData.statistics} />
 
           {seminarHariIni.length > 0 && (
             <div className="mt-8 mb-6">
@@ -281,37 +359,76 @@ const DosenPengujiNilaiPage: FC = () => {
                 </h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {seminarHariIni.map((seminar) => (
                   <div
                     key={seminar.id}
-                    className="group rounded-2xl bg-gray-50 hover:bg-white dark:bg-gray-800/40 dark:hover:bg-gray-800/70 overflow-hidden border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10"
+                    className="group relative rounded-xl bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 dark:bg-gray-900/60 dark:hover:bg-gray-900/80 overflow-hidden border border-gray-200/60 dark:border-gray-700/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1 cursor-pointer backdrop-blur-sm"
+                    onClick={() => handleOpenInputNilaiPage(seminar)}
                   >
-                    <div className="p-5">
+                    {/* Subtle gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                    <div className="relative p-4">
+                      {/* Header with badges and time */}
                       <div className="flex justify-between items-start mb-3">
-                        <Badge className="px-2.5 py-0.5 bg-blue-100/80 text-blue-700 hover:bg-blue-100 dark:bg-blue-900/50 dark:text-blue-300 rounded-full text-xs font-medium">
-                          {seminar.ruangan}
-                        </Badge>
-                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center gap-2">
+                          <Badge className="px-2 py-1 bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/40 dark:text-blue-300 dark:hover:bg-blue-900/60 rounded-md text-xs font-medium border-0 shadow-sm">
+                            {seminar.ruangan}
+                          </Badge>
+                          <Badge className="px-2 py-1 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:hover:bg-emerald-900/60 rounded-md text-xs font-medium border-0 shadow-sm">
+                            {seminar.status}
+                          </Badge>
+                        </div>
+                        <div className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100/80 dark:bg-gray-800/60 px-2 py-1 rounded-md">
                           {seminar.waktu_mulai} - {seminar.waktu_selesai}
                         </div>
                       </div>
 
-                      <h3 className="font-bold text-base mb-1 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400 transition-colors">
-                        {seminar.name}
-                      </h3>
+                      {/* Main content */}
+                      <div className="space-y-2 mb-4">
+                        <h3 className="font-semibold text-sm leading-tight group-hover:text-blue-700 dark:text-white dark:group-hover:text-blue-400 transition-colors duration-200 line-clamp-2">
+                          {seminar.name}
+                        </h3>
 
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-                        {seminar.nim}
-                      </p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 font-mono bg-gray-50 dark:bg-gray-800/40 px-2 py-1 rounded inline-block">
+                          {seminar.nim}
+                        </p>
+                      </div>
 
-                      <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700/50">
+                      {/* Footer */}
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-200/60 dark:border-gray-700/40">
                         <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                          <Calendar className="h-3.5 w-3.5 mr-1.5" />
-                          {seminar.tanggalSeminar}
+                          <Calendar className="h-3 w-3 mr-1.5 text-blue-500" />
+                          <span className="font-medium">
+                            {seminar.tanggalSeminar}
+                          </span>
+                        </div>
+
+                        {/* Hover indicator */}
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="flex items-center text-xs text-blue-600 dark:text-blue-400 font-medium">
+                            <span>Lihat Detail</span>
+                            <svg
+                              className="w-3 h-3 ml-1 group-hover:translate-x-0.5 transition-transform"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 5l7 7-7 7"
+                              />
+                            </svg>
+                          </div>
                         </div>
                       </div>
                     </div>
+
+                    {/* Subtle left border accent */}
+                    <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                 ))}
               </div>

@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   Check,
   Save,
@@ -8,11 +8,10 @@ import {
   ArrowLeft,
   FileText,
 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-import { ToastAction } from "@/components/ui/toast";
 import { useNavigate, useLocation } from "react-router-dom";
 import APISeminarKP from "@/services/api/dosen/seminar-kp.service";
 import { useMutation } from "@tanstack/react-query";
+import toast, { Toaster } from "react-hot-toast";
 
 interface Student {
   id: string;
@@ -144,51 +143,28 @@ const NilaiSeminarPenguji: React.FC = () => {
   const { mutate, isPending: isLoading } = useMutation({
     mutationFn: APISeminarKP.createUpdateNilaiPenguji,
     onSuccess: () => {
-      toast({
-        title: "👌 Berhasil",
-        description: "Penilaian berhasil disimpan!",
-        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
+      toast.success("Penilaian berhasil disimpan! 👌", {
         duration: 3000,
+        position: "top-right",
       });
       navigate(-1);
     },
     onError: (error: any) => {
-      console.error("API Error:", {
-        message: error.message,
-        stack: error.stack,
-      });
       const errorMessage =
         error.response?.data?.message ||
         "Gagal menyimpan penilaian. Silakan coba lagi.";
-      toast({
-        title: "❌ Gagal",
-        description: errorMessage,
-        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
+      toast.error(`${errorMessage}`, {
         duration: 3000,
+        position: "top-right",
       });
     },
   });
 
-  // Kirim penilaian
   const handleSubmit = (): void => {
-    // Validasi input
     if (Object.values(scores).some((score) => score === 0)) {
-      toast({
-        title: "❌ Gagal",
-        description: "Mohon lengkapi semua kriteria penilaian.",
-        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
+      toast.error("❌ Gagal: Mohon lengkapi semua kriteria penilaian.", {
         duration: 3000,
-      });
-      return;
-    }
-
-    if (!student.nim || !student.id || !student.idNilai) {
-      toast({
-        title: "❌ Gagal",
-        description:
-          "Data mahasiswa tidak lengkap (NIM, ID jadwal, atau ID nilai).",
-        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
-        duration: 3000,
+        position: "top-right",
       });
       return;
     }
@@ -206,7 +182,6 @@ const NilaiSeminarPenguji: React.FC = () => {
     mutate(payload);
   };
 
-  // Komponen untuk indikator progres melingkar
   const CircularProgress = ({ value }: { value: number }) => {
     const radius = 45;
     const circumference = 2 * Math.PI * radius;
@@ -250,43 +225,55 @@ const NilaiSeminarPenguji: React.FC = () => {
     );
   };
 
-  // Komponen untuk kriteria dengan slider
   const CriteriaSection: React.FC<CriteriaSectionProps> = ({
     criteria,
     value,
     onChange,
   }) => {
-    const sliderValueRef = useRef(value);
     const [displayValue, setDisplayValue] = useState(value);
+    const inputRef = useRef<HTMLInputElement>(null);
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-    const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = parseInt(e.target.value);
-      sliderValueRef.current = newValue;
-      setDisplayValue(newValue);
+    useEffect(() => {
+      setDisplayValue(value); // Sinkronisasi dengan prop value saat berubah
+    }, [value]);
 
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
+    const handleSliderChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = parseInt(e.target.value);
+        setDisplayValue(newValue);
 
-      debounceTimerRef.current = setTimeout(() => {
-        onChange(criteria.id, newValue);
-      }, 50);
-    };
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
+        }
+
+        debounceTimerRef.current = setTimeout(() => {
+          onChange(criteria.id, newValue);
+        }, 50);
+      },
+      [criteria.id, onChange]
+    );
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = parseInt(e.target.value) || 0;
-      const clampedValue = Math.min(100, Math.max(0, newValue));
+      let newValue = e.target.value.replace(/\D/g, "").slice(0, 2); // Ambil hanya 2 digit pertama, hapus karakter non-digit
+      if (newValue === "") newValue = "0"; // Jika kosong, set ke 0
+      const parsedValue = parseInt(newValue) || 0;
+      const clampedValue = Math.min(100, Math.max(0, parsedValue)); // Batasi maksimum 100
       setDisplayValue(clampedValue);
-      sliderValueRef.current = clampedValue;
-
-      onChange(criteria.id, clampedValue);
+      // Jangan panggil onChange di sini, biarkan sinkronisasi pada blur
     };
 
-    useEffect(() => {
-      setDisplayValue(value);
-      sliderValueRef.current = value;
-    }, [value]);
+    const handleInputBlur = useCallback(() => {
+      const clampedValue = Math.min(100, Math.max(0, displayValue)); // Batasi maksimum 100
+      setDisplayValue(clampedValue);
+      onChange(criteria.id, clampedValue); // Sinkronisasi dengan scores saat blur
+    }, [displayValue, criteria.id, onChange]);
+
+    const handleInputFocus = () => {
+      if (inputRef.current) {
+        inputRef.current.select(); // Pilih teks saat input mendapatkan fokus
+      }
+    };
 
     return (
       <div className="mb-6 p-5 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors">
@@ -339,12 +326,16 @@ const NilaiSeminarPenguji: React.FC = () => {
               {displayValue > 0 ? getScoreLabel(displayValue) : "Belum Dinilai"}
             </span>
             <input
-              type="number"
+              ref={inputRef}
+              type="text"
               value={displayValue || ""}
               onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              onFocus={handleInputFocus}
               min="0"
               max="100"
               className="w-16 text-center border border-gray-300 dark:border-gray-600 rounded-md py-1 px-2 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200"
+              placeholder="0-100"
             />
           </div>
         </div>
@@ -376,6 +367,7 @@ const NilaiSeminarPenguji: React.FC = () => {
 
   return (
     <DashboardLayout>
+      <Toaster position="top-right" />
       <div className="p-5">
         <div className="mb-4">
           <button

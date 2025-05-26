@@ -1,7 +1,7 @@
 import { useState, type FC } from "react";
 import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { Search, Eye, Users, CheckCircle, AlertCircle } from "lucide-react";
+import { Search, Eye, Users, CheckCircle, AlertCircle, CalendarCheck2Icon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -197,60 +197,64 @@ const KoordinatorNilaiPage: FC = () => {
     <DashboardLayout>
       <div className="transition-colors duration-300">
         {/* Header */}
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-2xl font-bold mb-4 dark:text-white">
-              Nilai Kerja Praktik Mahasiswa
-            </h1>
-
+        <div className="space-y-5">
+          <div className="flex justify-between items-center">
+            <div className="flex">
+              <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+                <span
+                  className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+                />
+                <CalendarCheck2Icon className="w-4 h-4 mr-1.5" />
+                Nilai Kerja Praktik Mahasiswa
+              </span>
+            </div>
+              
             {/* Academic Year */}
             <div>
-              <span className="mr-2 text-gray-600 dark:text-gray-300">
-                Tahun Ajaran
-              </span>
               <Badge
                 variant="outline"
-                className="bg-gray-100 dark:bg-gray-900 dark:text-gray-300"
+                className="bg-gray-100 text-sm font-medium dark:bg-gray-900 dark:text-gray-300"
               >
                 {data?.tahunAjaran || "Tidak tersedia"}
               </Badge>
             </div>
+
           </div>
 
           {/* Cards Section */}
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-4"
+            className="grid grid-cols-1 md:grid-cols-3 gap-3"
             variants={container}
             initial="hidden"
             animate="show"
           >
             {/* Card 1 - Nilai Belum Valid */}
             <motion.div variants={item}>
-              <Card className="overflow-hidden border-none shadow-lg bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-950 dark:to-gray-900">
-                <div className="flex flex-row items-center justify-between p-4 pb-2">
-                  <h3 className="text-xl font-medium text-blue-800 dark:text-blue-300">
+              <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-950 dark:to-gray-900">
+                <div className="flex flex-row items-center justify-between pt-3 px-3 pb-1">
+                  <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">
                     Nilai Belum Valid
                   </h3>
                   <motion.div
                     whileHover={{ rotate: 15 }}
-                    className="bg-blue-200 p-2 rounded-full dark:bg-blue-800"
+                    className="bg-blue-200 p-1.5 rounded-full dark:bg-blue-800"
                   >
-                    <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+                    <AlertCircle className="h-3.5 w-3.5 text-blue-600 dark:text-blue-300" />
                   </motion.div>
                 </div>
-                <div className="p-4 pt-0">
+                <div className="px-3 pb-3">
                   <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: "spring", delay: 0.1 }}
-                    className="text-5xl font-bold text-blue-800 dark:text-white"
+                    className="text-2xl font-bold text-blue-800 dark:text-white"
                   >
                     {belumValidCount}
                   </motion.div>
-                  <p className="text-sm text-blue-600 dark:text-blue-300 mt-1">
+                  <p className="text-xs text-blue-600 dark:text-blue-300 mt-0.5">
                     Mahasiswa
                   </p>
-                  <div className="h-2 w-full bg-blue-100 dark:bg-blue-900 rounded-full mt-3">
+                  <div className="h-1.5 w-full bg-blue-100 dark:bg-blue-900 rounded-full mt-2">
                     <motion.div
                       initial={{ width: "0%" }}
                       animate={{
@@ -259,7 +263,7 @@ const KoordinatorNilaiPage: FC = () => {
                           : "0%",
                       }}
                       transition={{ duration: 1.5, ease: "easeOut" }}
-                      className="h-2 bg-blue-500 rounded-full"
+                      className="h-1.5 bg-blue-500 rounded-full"
                     />
                   </div>
                 </div>
@@ -268,31 +272,31 @@ const KoordinatorNilaiPage: FC = () => {
 
             {/* Card 2 - Nilai Valid */}
             <motion.div variants={item}>
-              <Card className="overflow-hidden border-none shadow-lg bg-gradient-to-br from-purple-100 to-purple-50 dark:from-purple-950 dark:to-gray-900">
-                <div className="flex flex-row items-center justify-between p-4 pb-2">
-                  <h3 className="text-xl font-medium text-purple-800 dark:text-purple-300">
+              <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-purple-100 to-purple-50 dark:from-purple-950 dark:to-gray-900">
+                <div className="flex flex-row items-center justify-between pt-3 px-3 pb-1">
+                  <h3 className="text-sm font-medium text-purple-800 dark:text-purple-300">
                     Nilai Valid
                   </h3>
                   <motion.div
                     whileHover={{ rotate: 15 }}
-                    className="bg-purple-200 p-2 rounded-full dark:bg-purple-800"
+                    className="bg-purple-200 p-1.5 rounded-full dark:bg-purple-800"
                   >
-                    <CheckCircle className="h-5 w-5 text-purple-600 dark:text-purple-300" />
+                    <CheckCircle className="h-3.5 w-3.5 text-purple-600 dark:text-purple-300" />
                   </motion.div>
                 </div>
-                <div className="p-4 pt-0">
+                <div className="px-3 pb-3">
                   <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: "spring", delay: 0.1 }}
-                    className="text-5xl font-bold text-purple-800 dark:text-white"
+                    className="text-2xl font-bold text-purple-800 dark:text-white"
                   >
                     {validCount}
                   </motion.div>
-                  <p className="text-sm text-purple-600 dark:text-purple-300 mt-1">
+                  <p className="text-xs text-purple-600 dark:text-purple-300 mt-0.5">
                     Mahasiswa
                   </p>
-                  <div className="h-2 w-full bg-purple-100 dark:bg-purple-900 rounded-full mt-3">
+                  <div className="h-1.5 w-full bg-purple-100 dark:bg-purple-900 rounded-full mt-2">
                     <motion.div
                       initial={{ width: "0%" }}
                       animate={{
@@ -301,7 +305,7 @@ const KoordinatorNilaiPage: FC = () => {
                           : "0%",
                       }}
                       transition={{ duration: 1.5, ease: "easeOut" }}
-                      className="h-2 bg-purple-500 rounded-full"
+                      className="h-1.5 bg-purple-500 rounded-full"
                     />
                   </div>
                 </div>
@@ -310,31 +314,31 @@ const KoordinatorNilaiPage: FC = () => {
 
             {/* Card 3 - Nilai Approve */}
             <motion.div variants={item}>
-              <Card className="overflow-hidden border-none shadow-lg bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-950 dark:to-gray-900">
-                <div className="flex flex-row items-center justify-between p-4 pb-2">
-                  <h3 className="text-xl font-medium text-emerald-800 dark:text-emerald-300">
+              <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-950 dark:to-gray-900">
+                <div className="flex flex-row items-center justify-between pt-3 px-3 pb-1">
+                  <h3 className="text-sm font-medium text-emerald-800 dark:text-emerald-300">
                     Nilai Approve
                   </h3>
                   <motion.div
                     whileHover={{ rotate: 15 }}
-                    className="bg-emerald-200 p-2 rounded-full dark:bg-emerald-800"
+                    className="bg-emerald-200 p-1.5 rounded-full dark:bg-emerald-800"
                   >
-                    <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-300" />
+                    <Users className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-300" />
                   </motion.div>
                 </div>
-                <div className="p-4 pt-0">
+                <div className="px-3 pb-3">
                   <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: "spring", delay: 0.1 }}
-                    className="text-5xl font-bold text-emerald-800 dark:text-white"
+                    className="text-2xl font-bold text-emerald-800 dark:text-white"
                   >
                     {approveCount}
                   </motion.div>
-                  <p className="text-sm text-emerald-600 dark:text-emerald-300 mt-1">
+                  <p className="text-xs text-emerald-600 dark:text-emerald-300 mt-0.5">
                     Mahasiswa
                   </p>
-                  <div className="h-2 w-full bg-emerald-100 dark:bg-emerald-900 rounded-full mt-3">
+                  <div className="h-1.5 w-full bg-emerald-100 dark:bg-emerald-900 rounded-full mt-2">
                     <motion.div
                       initial={{ width: "0%" }}
                       animate={{
@@ -343,7 +347,7 @@ const KoordinatorNilaiPage: FC = () => {
                           : "0%",
                       }}
                       transition={{ duration: 1.5, ease: "easeOut" }}
-                      className="h-2 bg-emerald-500 rounded-full"
+                      className="h-1.5 bg-emerald-500 rounded-full"
                     />
                   </div>
                 </div>
@@ -449,9 +453,6 @@ const StudentTable: FC<{
       <Table>
         <TableHeader className="bg-gray-200 dark:bg-gray-700">
           <TableRow className="hover:bg-gray-300 dark:hover:bg-gray-600">
-            <TableHead className="w-12 text-center font-semibold dark:text-gray-200">
-              No
-            </TableHead>
             <TableHead className="font-semibold dark:text-gray-200">
               Nama Mahasiswa
             </TableHead>
@@ -483,18 +484,15 @@ const StudentTable: FC<{
               </TableCell>
             </TableRow>
           ) : (
-            students.map((student, index) => (
+            students.map((student) => (
               <TableRow
                 key={student.nim}
                 className="dark:border-gray-700 dark:hover:bg-gray-700"
               >
-                <TableCell className="font-medium text-center dark:text-gray-300">
-                  {index + 1}
-                </TableCell>
-                <TableCell className="dark:text-gray-300">
+                <TableCell className="dark:text-gray-300 text-xs font-semibold">
                   {student.nama}
                 </TableCell>
-                <TableCell className="text-center dark:text-gray-300">
+                <TableCell className="text-center dark:text-gray-300 text-xs">
                   {student.nim}
                 </TableCell>
                 <TableCell className="text-center">
@@ -513,7 +511,7 @@ const StudentTable: FC<{
                     {student.status_daftar_kp}
                   </Badge>
                 </TableCell>
-                <TableCell className="dark:text-gray-300 text-center">
+                <TableCell className="dark:text-gray-300 text-center text-xs">
                   {student.kelas}
                 </TableCell>
                 <TableCell className="text-center">

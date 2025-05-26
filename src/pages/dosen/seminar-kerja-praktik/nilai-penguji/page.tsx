@@ -1,12 +1,26 @@
 import { useState, type FC } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { Search, Eye, Edit, FileText, Calendar } from "lucide-react";
+import {
+  Search,
+  Eye,
+  Edit,
+  FileText,
+  Calendar,
+  User,
+  Building,
+  MapPin,
+  Clock,
+  File,
+  CheckCircle,
+  GraduationCapIcon,
+  ChevronRight,
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import APISeminarKP from "@/services/api/dosen/seminar-kp.service";
 
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -18,14 +32,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-} from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import DashboardCards from "@/components/dosen/seminar-kp/DashboardCard";
 
 interface Student {
@@ -41,9 +48,13 @@ interface Student {
   waktu_mulai: string;
   waktu_selesai: string;
   tanggalSeminar: string;
-  status: "belum dinilai" | "selesai";
+  status: "Dinilai" | "Belum Dinilai";
   tanggalDinilai?: string;
   idNilai?: string;
+  penguasaanKeilmuan?: number;
+  kemampuanPresentasi?: number;
+  kesesuaianUrgensi?: number;
+  catatanPenguji?: string;
 }
 
 interface Jadwal {
@@ -54,7 +65,7 @@ interface Jadwal {
   tanggal: string;
   waktu_mulai: string;
   waktu_selesai: string;
-  status: string;
+  status: "Dinilai" | "Belum Dinilai";
   semester: number;
   dosen_pembimbing: string;
   pembimbing_instansi: string;
@@ -63,6 +74,11 @@ interface Jadwal {
   status_jadwal: string;
   id_nilai: string;
   id_pendaftaran_kp: string;
+  penguasaan_keilmuan?: number;
+  kemampuan_presentasi?: number;
+  kesesuaian_urgensi?: number;
+  catatan_penguji?: string;
+  waktu_dinilai_penguji?: string;
 }
 
 interface ApiResponse {
@@ -77,6 +93,11 @@ interface ApiResponse {
 }
 
 const DosenPengujiNilaiPage: FC = () => {
+  const [academicYear, setAcademicYear] = useState<string>("2024/2025 - Genap");
+  const [availableAcademicYears, setAvailableAcademicYears] = useState<
+    string[]
+  >([]);
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"belum_dinilai" | "dinilai">(
     "belum_dinilai"
@@ -114,18 +135,7 @@ const DosenPengujiNilaiPage: FC = () => {
     );
   }
 
-  console.log("API Data:", apiData);
-
-  const combinedJadwal = [
-    ...new Map(
-      [...apiData!.jadwalHariIni, ...apiData!.semuaJadwal].map((jadwal) => [
-        jadwal.id || "unknown-id",
-        jadwal,
-      ])
-    ).values(),
-  ];
-
-  const students: Student[] = combinedJadwal.map((jadwal) => ({
+  const students: Student[] = apiData!.semuaJadwal.map((jadwal) => ({
     id: jadwal.id,
     nim: jadwal.nim,
     name: jadwal.nama,
@@ -138,33 +148,52 @@ const DosenPengujiNilaiPage: FC = () => {
     waktu_mulai: jadwal.waktu_mulai,
     waktu_selesai: jadwal.waktu_selesai,
     tanggalSeminar: jadwal.tanggal,
-    status: jadwal.status === "Belum Dinilai" ? "belum dinilai" : "selesai",
+    status: jadwal.status,
     tanggalDinilai:
-      jadwal.status === "Belum Dinilai" ? undefined : jadwal.tanggal,
+      jadwal.status === "Belum Dinilai" || !jadwal.waktu_dinilai_penguji
+        ? undefined
+        : new Date(jadwal.waktu_dinilai_penguji).toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          }),
     idNilai: jadwal.id_nilai,
+    penguasaanKeilmuan: jadwal.penguasaan_keilmuan,
+    kemampuanPresentasi: jadwal.kemampuan_presentasi,
+    kesesuaianUrgensi: jadwal.kesesuaian_urgensi,
+    catatanPenguji: jadwal.catatan_penguji,
   }));
 
-  // Menggunakan jadwalHariIni sebagai sumber utama untuk Seminar Hari Ini
-  const todaySeminars: Student[] = apiData!.jadwalHariIni
-    .map((jadwal) => ({
-      id: jadwal.id,
-      nim: jadwal.nim,
-      name: jadwal.nama,
-      semester: jadwal.semester,
-      judul: jadwal.judul_kp,
-      lokasi: jadwal.lokasi_kp,
-      dosenPembimbing: jadwal.dosen_pembimbing,
-      pembimbingInstansi: jadwal.pembimbing_instansi,
-      ruangan: jadwal.ruangan,
-      waktu_mulai: jadwal.waktu_mulai,
-      waktu_selesai: jadwal.waktu_selesai,
-      tanggalSeminar: jadwal.tanggal,
-      status: jadwal.status === "Belum Dinilai" ? "belum dinilai" : "selesai",
-      tanggalDinilai:
-        jadwal.status === "Belum Dinilai" ? undefined : jadwal.tanggal,
-      idNilai: jadwal.id_nilai,
-    }))
-    .filter((student) => student.status === "belum dinilai");
+  const seminarHariIni: Student[] = apiData!.jadwalHariIni.map((jadwal) => ({
+    id: jadwal.id,
+    nim: jadwal.nim,
+    name: jadwal.nama,
+    semester: jadwal.semester,
+    judul: jadwal.judul_kp,
+    lokasi: jadwal.lokasi_kp,
+    dosenPembimbing: jadwal.dosen_pembimbing,
+    pembimbingInstansi: jadwal.pembimbing_instansi,
+    ruangan: jadwal.ruangan,
+    waktu_mulai: jadwal.waktu_mulai,
+    waktu_selesai: jadwal.waktu_selesai,
+    tanggalSeminar: jadwal.tanggal,
+    status: jadwal.status,
+    tanggalDinilai:
+      jadwal.status === "Belum Dinilai" || !jadwal.waktu_dinilai_penguji
+        ? undefined
+        : new Date(jadwal.waktu_dinilai_penguji).toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          }),
+    idNilai: jadwal.id_nilai,
+    penguasaanKeilmuan: jadwal.penguasaan_keilmuan,
+    kemampuanPresentasi: jadwal.kemampuan_presentasi,
+    kesesuaianUrgensi: jadwal.kesesuaian_urgensi,
+    catatanPenguji: jadwal.catatan_penguji,
+  }));
 
   const filteredStudents = students.filter((student) => {
     const matchesSearch = student.name
@@ -172,8 +201,8 @@ const DosenPengujiNilaiPage: FC = () => {
       .includes(searchQuery.toLowerCase());
     const matchesTab =
       activeTab === "belum_dinilai"
-        ? student.status === "belum dinilai"
-        : student.status === "selesai";
+        ? student.status === "Belum Dinilai"
+        : student.status === "Dinilai";
     return matchesSearch && matchesTab;
   });
 
@@ -186,7 +215,7 @@ const DosenPengujiNilaiPage: FC = () => {
 
   const handleOpenViewNilaiPage = (student: Student) => {
     setSelectedStudent(student);
-    navigate(`/dosen/seminar-kp/nilai-penguji/lihat-nilai`, {
+    navigate(`/dosen/seminar-kp/nilai-penguji/input-nilai`, {
       state: { student },
     });
   };
@@ -196,50 +225,43 @@ const DosenPengujiNilaiPage: FC = () => {
     setIsDetailModalOpen(true);
   };
 
-  const formatDate = (dateString: string) => {
-    const [day, month, year] = dateString.split(" ");
-    const monthMap: { [key: string]: string } = {
-      Januari: "January",
-      Februari: "February",
-      Maret: "March",
-      April: "April",
-      Mei: "May",
-      Juni: "June",
-      Juli: "July",
-      Agustus: "August",
-      September: "September",
-      Oktober: "October",
-      November: "November",
-      Desember: "December",
-    };
-    const formattedMonth = monthMap[month] || month;
-    const date = new Date(`${day} ${formattedMonth} ${year}`);
-    return date.toLocaleDateString("id-ID", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   return (
     <DashboardLayout>
-      <div className="transition-colors duration-300 p-6">
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-2xl font-bold mb-4 dark:text-white">
-              Seminar Kerja Praktik Mahasiswa
-            </h1>
-            <div>
-              <span className="mr-2 text-gray-600 dark:text-gray-300">
-                Tahun Ajaran
+      <div className="transition-colors duration-300">
+        <div className="space-y-4">
+          <div className="flex justify-between mb-4">
+            <div className="flex">
+              <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+                <span
+                  className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+                />
+                <GraduationCapIcon className="w-4 h-4 mr-1.5" />
+                Mahasiswa Uji Kerja Praktik
               </span>
-              <Badge
-                variant="outline"
-                className="bg-gray-100 dark:bg-gray-900 dark:text-gray-300"
-              >
-                2024-2025 Ganjil
-              </Badge>
+            </div>
+            {/* Academic Year Selector */}
+            <div className="flex items-center gap-2 dark:text-gray-200">
+              <div className="relative">
+                <select
+                  className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0"
+                  value={academicYear}
+                  onChange={(e) => setAcademicYear(e.target.value)}
+                  disabled={isLoading || availableAcademicYears.length === 0}
+                >
+                  {availableAcademicYears.length > 0 ? (
+                    availableAcademicYears.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">2024/2025 - Genap</option>
+                  )}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                  <ChevronRight className="w-4 h-4 text-gray-500 rotate-90" />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -248,26 +270,19 @@ const DosenPengujiNilaiPage: FC = () => {
             statistics={apiData!.statistics}
           />
 
-          <div className="mt-8 mb-6">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-xl font-extrabold flex items-center dark:text-white">
-                <span className="bg-gradient-to-br from-blue-600 to-violet-600 text-white p-1.5 rounded-lg mr-3">
-                  <Calendar className="h-4 w-4" />
-                </span>
-                Seminar Hari Ini
-              </h2>
-            </div>
+          {seminarHariIni.length > 0 && (
+            <div className="mt-8 mb-6">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-xl font-extrabold flex items-center dark:text-white">
+                  <span className="bg-gradient-to-br from-blue-600 to-violet-600 text-white p-1.5 rounded-lg mr-3">
+                    <Calendar className="h-4 w-4" />
+                  </span>
+                  Seminar Hari Ini
+                </h2>
+              </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {todaySeminars.length === 0 ? (
-                <div className="col-span-3 p-8 rounded-2xl bg-gray-50 dark:bg-gray-800/40 flex flex-col items-center justify-center border border-gray-100 dark:border-gray-800">
-                  <Calendar className="h-12 w-12 text-gray-300 dark:text-gray-600 mb-3" />
-                  <p className="text-gray-400 dark:text-gray-500 font-medium">
-                    Tidak ada seminar terjadwal
-                  </p>
-                </div>
-              ) : (
-                todaySeminars.map((seminar) => (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {seminarHariIni.map((seminar) => (
                   <div
                     key={seminar.id}
                     className="group rounded-2xl bg-gray-50 hover:bg-white dark:bg-gray-800/40 dark:hover:bg-gray-800/70 overflow-hidden border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10"
@@ -298,10 +313,10 @@ const DosenPengujiNilaiPage: FC = () => {
                       </div>
                     </div>
                   </div>
-                ))
-              )}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <Tabs
@@ -360,190 +375,177 @@ const DosenPengujiNilaiPage: FC = () => {
         </div>
 
         <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
-          <DialogContent className="sm:max-w-[750px] p-4 dark:bg-gray-900 dark:border-gray-700">
-            <DialogHeader className="pb-2">
-              <DialogTitle className="text-lg dark:text-white">
-                Detail Mahasiswa
-              </DialogTitle>
-              <DialogDescription className="text-sm dark:text-gray-300">
-                Informasi lengkap tentang mahasiswa dan seminar kerja praktik
-              </DialogDescription>
-            </DialogHeader>
+          <DialogContent className="sm:max-w-[750px] p-0 dark:bg-gray-900 dark:border-gray-700 rounded-xl overflow-hidden">
             {selectedStudent && (
-              <div className="py-2">
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div className="space-y-3">
-                    <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
-                      <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">
-                        Informasi Mahasiswa
-                      </h3>
-                      <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                        <div className="col-span-2">
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Nama
-                          </p>
-                          <p className="text-sm font-medium dark:text-gray-200">
-                            {selectedStudent.name}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            NIM
-                          </p>
-                          <p className="text-sm font-medium dark:text-gray-200">
+              <>
+                {/* Header with Gradient */}
+                <div className="bg-gradient-to-r from-blue-500 to-indigo-500 dark:from-blue-600 dark:to-indigo-600 p-5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-white/90 dark:bg-gray-800/90 rounded-full p-2 w-12 h-12 flex items-center justify-center shadow-sm">
+                        <User className="text-blue-600 dark:text-blue-400 w-6 h-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg text-white">
+                          {selectedStudent.name}
+                        </h3>
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="bg-white/90 dark:bg-gray-800/90 text-blue-700 dark:text-blue-400 px-2 py-0.5 rounded-full shadow-sm">
+                            Semester {selectedStudent.semester}
+                          </span>
+                          <span className="bg-blue-600/40 dark:bg-blue-700/40 text-white px-2 py-0.5 rounded-full">
                             {selectedStudent.nim}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Semester
-                          </p>
-                          <p className="text-sm font-medium dark:text-gray-200">
-                            {selectedStudent.semester}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
-                      <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">
-                        Jadwal Seminar
-                      </h3>
-                      <div className="grid grid-cols-3 gap-x-2">
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Ruangan
-                          </p>
-                          <p className="text-sm font-medium dark:text-gray-200">
-                            {selectedStudent.ruangan}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Jam
-                          </p>
-                          <p className="text-sm font-medium dark:text-gray-200">
-                            {selectedStudent.waktu_mulai} -{" "}
-                            {selectedStudent.waktu_selesai}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Tanggal
-                          </p>
-                          <p className="text-sm font-medium dark:text-gray-200">
-                            {selectedStudent.tanggalSeminar}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
-                      <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">
-                        Status Penilaian
-                      </h3>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Status
-                          </p>
-                          <Badge
-                            className={`mt-1 ${
-                              statusBadgeConfig[selectedStudent.status].bgColor
-                            } ${
-                              statusBadgeConfig[selectedStudent.status]
-                                .textColor
-                            } ${
-                              statusBadgeConfig[selectedStudent.status]
-                                .darkBgColor
-                            } ${
-                              statusBadgeConfig[selectedStudent.status]
-                                .darkTextColor
-                            }`}
-                          >
-                            {statusBadgeConfig[selectedStudent.status].label}
-                          </Badge>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Tanggal Dinilai
-                          </p>
-                          <p className="text-sm font-medium dark:text-gray-200">
-                            {selectedStudent.tanggalDinilai &&
-                            selectedStudent.tanggalDinilai !== ""
-                              ? formatDate(
-                                  selectedStudent.tanggalDinilai
-                                ).split(", ")[1]
-                              : "-"}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
-                      <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">
-                        Pembimbing
-                      </h3>
-                      <div className="grid grid-cols-1 gap-2">
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Dosen Pembimbing
-                          </p>
-                          <p className="text-sm font-medium dark:text-gray-200">
-                            {selectedStudent.dosenPembimbing}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Pembimbing Instansi
-                          </p>
-                          <p className="text-sm font-medium dark:text-gray-200">
-                            {selectedStudent.pembimbingInstansi}
-                          </p>
+                          </span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
-                  <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">
-                    Kerja Praktik
-                  </h3>
-                  <div className="grid grid-cols-1 gap-2">
-                    <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Judul
-                      </p>
-                      <p className="text-sm font-medium dark:text-gray-200">
-                        {selectedStudent.judul}
-                      </p>
+                {/* Scrollable Content */}
+                <div className="p-5 max-h-[50vh] overflow-y-auto space-y-5">
+                  {/* Kerja Praktik */}
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-4 transition-all duration-300">
+                    <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3 flex items-center gap-2">
+                      <File className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+                      Kerja Praktik
+                    </h3>
+                    <div className="flex flex-col gap-2">
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Judul
+                        </p>
+                        <p className="text-sm font-medium dark:text-gray-200">
+                          {selectedStudent.judul}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Lokasi
+                        </p>
+                        <p className="text-sm font-medium dark:text-gray-200 flex items-center gap-1">
+                          <Building className="w-4 h-4 text-gray-400" />
+                          {selectedStudent.lokasi}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Lokasi
-                      </p>
-                      <p className="text-sm font-medium dark:text-gray-200">
-                        {selectedStudent.lokasi}
-                      </p>
+                  </div>
+
+                  {/* Jadwal Seminar */}
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-4 transition-all duration-300">
+                    <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3 flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+                      Jadwal Seminar
+                    </h3>
+                    <div className="grid grid-cols-3 gap-x-4 gap-y-3">
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Tanggal
+                        </p>
+                        <p className="text-sm font-medium dark:text-gray-200">
+                          {selectedStudent.tanggalSeminar}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Jam
+                        </p>
+                        <p className="text-sm font-medium dark:text-gray-200 flex items-center gap-1">
+                          <Clock className="w-4 h-4 text-gray-400" />
+                          {selectedStudent.waktu_mulai} -{" "}
+                          {selectedStudent.waktu_selesai}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Ruangan
+                        </p>
+                        <p className="text-sm font-medium dark:text-gray-200 flex items-center gap-1">
+                          <MapPin className="w-4 h-4 text-gray-400" />
+                          {selectedStudent.ruangan}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Pembimbing */}
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-4 transition-all duration-300">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Dosen Pembimbing
+                        </p>
+                        <p className="text-sm font-medium dark:text-gray-200">
+                          {selectedStudent.dosenPembimbing}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Pembimbing Instansi
+                        </p>
+                        <p className="text-sm font-medium dark:text-gray-200">
+                          {selectedStudent.pembimbingInstansi}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Status Penilaian */}
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-4 transition-all duration-300">
+                    <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3 flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+                      Status Penilaian
+                    </h3>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Status
+                        </p>
+                        <Badge
+                          className={`mt-1 ${
+                            statusBadgeConfig[selectedStudent.status].bgColor
+                          } ${
+                            statusBadgeConfig[selectedStudent.status].textColor
+                          } ${
+                            statusBadgeConfig[selectedStudent.status]
+                              .darkBgColor
+                          } ${
+                            statusBadgeConfig[selectedStudent.status]
+                              .darkTextColor
+                          }`}
+                        >
+                          {statusBadgeConfig[selectedStudent.status].label}
+                        </Badge>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Tanggal Dinilai
+                        </p>
+                        <p className="text-sm font-medium dark:text-gray-200">
+                          {selectedStudent.tanggalDinilai &&
+                          selectedStudent.tanggalDinilai !== ""
+                            ? selectedStudent.tanggalDinilai
+                            : "-"}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+
+                {/* Footer with Close Button */}
+                <div className="bg-gray-50 dark:bg-gray-800 p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+                  <DialogClose asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-600 dark:hover:to-gray-700 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 transition-all duration-300"
+                    >
+                      Tutup
+                    </Button>
+                  </DialogClose>
+                </div>
+              </>
             )}
-            <div className="flex justify-end pt-2">
-              <DialogClose asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="dark:border-gray-700 dark:text-gray-200"
-                >
-                  Tutup
-                </Button>
-              </DialogClose>
-            </div>
           </DialogContent>
         </Dialog>
       </div>
@@ -552,7 +554,7 @@ const DosenPengujiNilaiPage: FC = () => {
 };
 
 const statusBadgeConfig = {
-  "belum dinilai": {
+  "Belum Dinilai": {
     label: "Belum Dinilai",
     bgColor: "bg-amber-100/70",
     textColor: "text-amber-700",
@@ -561,8 +563,8 @@ const statusBadgeConfig = {
     darkTextColor: "dark:text-amber-300",
     darkBorderColor: "dark:border-amber-800",
   },
-  selesai: {
-    label: "Selesai",
+  Dinilai: {
+    label: "Dinilai",
     bgColor: "bg-emerald-100/70",
     textColor: "text-emerald-700",
     borderColor: "border-emerald-200",
@@ -583,9 +585,6 @@ const StudentTable: FC<{
       <Table>
         <TableHeader className="bg-gray-200 dark:bg-gray-700">
           <TableRow className="hover:bg-gray-300 dark:hover:bg-gray-600">
-            <TableHead className="w-12 text-center font-semibold dark:text-gray-200">
-              No
-            </TableHead>
             <TableHead className="font-semibold dark:text-gray-200">
               Nama Mahasiswa
             </TableHead>
@@ -623,30 +622,26 @@ const StudentTable: FC<{
               </TableCell>
             </TableRow>
           ) : (
-            students.map((student, index) => (
+            students.map((student) => (
               <TableRow
                 key={student.id}
                 className="dark:border-gray-700 dark:hover:bg-gray-700"
               >
-                <TableCell className="font-medium text-center dark:text-gray-300">
-                  {index + 1}
-                </TableCell>
-                <TableCell className="dark:text-gray-300">
+                <TableCell className="dark:text-gray-300 font-medium text-xs">
                   {student.name}
                 </TableCell>
-                <TableCell className="text-center dark:text-gray-300">
+                <TableCell className="text-center dark:text-gray-300 text-xs">
                   {student.nim}
                 </TableCell>
-                <TableCell className="text-center dark:text-gray-300">
+                <TableCell className="text-center dark:text-gray-300 text-xs">
                   {student.tanggalSeminar}
                 </TableCell>
-                <TableCell className="text-center dark:text-gray-300">
+                <TableCell className="text-center dark:text-gray-300 text-xs">
                   {student.waktu_mulai} - {student.waktu_selesai}
                 </TableCell>
-                <TableCell className="text-center dark:text-gray-300">
+                <TableCell className="text-center dark:text-gray-300 text-xs">
                   {student.ruangan}
                 </TableCell>
-
                 <TableCell className="text-center">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -660,7 +655,7 @@ const StudentTable: FC<{
                     {statusBadgeConfig[student.status].label}
                   </span>
                 </TableCell>
-                <TableCell className="text-center dark:text-gray-300">
+                <TableCell className="text-center dark:text-gray-300 text-xs">
                   {student.tanggalDinilai && student.tanggalDinilai !== ""
                     ? student.tanggalDinilai
                     : "-"}
@@ -676,8 +671,7 @@ const StudentTable: FC<{
                       <Eye className="h-3.5 w-3.5" />
                       <span>Detail</span>
                     </Button>
-
-                    {student.status === "belum dinilai" ? (
+                    {student.status === "Belum Dinilai" ? (
                       <Button
                         variant="default"
                         size="sm"
@@ -695,7 +689,7 @@ const StudentTable: FC<{
                         onClick={() => onViewNilai(student)}
                       >
                         <FileText className="h-3.5 w-3.5" />
-                        <span>Lihat Nilai</span>
+                        <span>Edit Nilai</span>
                       </Button>
                     )}
                   </div>

@@ -1,4 +1,4 @@
-import { X, Save } from "lucide-react";
+import { X, Save, TimerOffIcon, TimerResetIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
@@ -54,24 +54,6 @@ const EditDetailAgendaModal = ({
     }
   }, [agenda, isOpen]);
 
-  useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setTimeout(onClose, 200);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscKey);
-      document.body.style.overflow = "hidden";
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleEscKey);
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen, onClose]);
-
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -102,7 +84,7 @@ const EditDetailAgendaModal = ({
         onSave(formData);
       }
       setError(null);
-      setTimeout(onClose, 1500);
+      setTimeout(onClose, 300);
     } catch (err) {
       setError("Gagal menyimpan perubahan nih, silakan coba lagi! 😮‍💨");
       console.error("Error:", err);
@@ -229,25 +211,33 @@ const EditDetailAgendaModal = ({
                         <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                           Waktu Mulai
                         </label>
-                        <Input
-                          type="time"
-                          name="waktu_mulai"
-                          value={formData.waktu_mulai}
-                          onChange={handleInputChange}
-                          className="w-full dark:bg-gray-700 dark:text-white"
-                        />
+                        <div className="relative w-full mt-1.5">
+                          <input
+                            type="time"
+                            name="waktu_mulai"
+                            value={formData.waktu_mulai}
+                            className="bg-secondary date-input w-full py-2 pl-10 pr-4 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-white"
+                            onChange={handleInputChange}
+                          />
+                          {/* Ikon di pojok kiri input */}
+                          <TimerResetIcon className="absolute left-3 top-[20px] transform -translate-y-1/2 text-foreground w-5 h-5" />
+                        </div>
                       </div>
                       <div>
                         <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                           Waktu Selesai
                         </label>
-                        <Input
-                          type="time"
-                          name="waktu_selesai"
-                          value={formData.waktu_selesai}
-                          onChange={handleInputChange}
-                          className="w-full dark:bg-gray-700 dark:text-white"
-                        />
+                        <div className="relative w-full mt-1.5">
+                          <input
+                            type="time"
+                            name="waktu_selesai"
+                            value={formData.waktu_selesai}
+                            className="bg-secondary date-input w-full py-2 pl-10 pr-4 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-white"
+                            onChange={handleInputChange}
+                          />
+                          {/* Ikon di pojok kiri input */}
+                          <TimerOffIcon className="absolute left-3 top-[20px] transform -translate-y-1/2 text-foreground w-5 h-5" />
+                        </div>
                       </div>
                     </motion.div>
 

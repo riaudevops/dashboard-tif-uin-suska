@@ -20,6 +20,7 @@ import {
   FileText,
   Award,
   AlertTriangle,
+  UserRoundPenIcon,
 } from "lucide-react";
 
 const DosenKerjaPraktikMahasiswaBimbingPage = () => {
@@ -314,22 +315,27 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen p-4 md:p-6">
+      <div className="min-h-screen">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.5 }}
-          className="mb-6"
+          className="mb-5 flex justify-between"
         >
-          <h1 className="mb-4 text-2xl font-bold">
-            Mahasiswa Bimbingan Kerja Praktik
-          </h1>
+          <div className="flex">
+            <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+              <span
+                className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+              />
+              <UserRoundPenIcon className="w-4 h-4 mr-1.5" />
+              Mahasiswa Bimbingan Kerja Praktik
+            </span>
+          </div>
           {/* Academic Year Selector */}
           <div className="flex items-center gap-2 dark:text-gray-200">
-            <span className="text-sm font-medium">Tahun Ajaran</span>
             <div className="relative">
               <select
-                className="px-3 py-1 pr-8 text-sm border rounded-md shadow-sm appearance-none dark:bg-gray-800"
+                className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0"
                 value={academicYear}
                 onChange={(e) => setAcademicYear(e.target.value)}
                 disabled={isLoading || availableAcademicYears.length === 0}
@@ -525,7 +531,7 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
-            className="flex items-center justify-between mb-6 text-sm"
+            className="flex items-center justify-between mb-4 text-sm"
           >
             <div className="flex flex-wrap gap-2">
               <AnimatePresence>
@@ -613,7 +619,7 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
                           {student.lastSupervision}
                         </span>
                       </div>
-                      <div className="p-5">
+                      <div className="px-5 pb-5">
                         <div className="flex items-center gap-5">
                           <div className="relative">
                             <motion.div
@@ -676,10 +682,10 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
                           </div>
                         </div>
                         <div className="mt-4">
-                          <div className="flex justify-between mb-1 text-xs">
-                            <span className="text-gray-600 dark:text-gray-400">
-                              Progress Bimbingan
-                            </span>
+                          <div className="flex justify-end mb-1 text-xs">
+                            {/* <span className="text-gray-600 dark:text-gray-400">
+                              Bimbingan
+                            </span> */}
                             <span
                               className={`font-medium ${
                                 student.status === "Selesai"

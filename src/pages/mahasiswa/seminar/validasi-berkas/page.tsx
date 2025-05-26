@@ -5,22 +5,15 @@ import Step3 from "@/components/mahasiswa/seminar/steps/step3";
 import Step4 from "@/components/mahasiswa/seminar/steps/step4";
 import Step5 from "@/components/mahasiswa/seminar/steps/step5";
 import Step6 from "@/components/mahasiswa/seminar/steps/step6";
-import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 
 const stepComponents = [Step1, Step2, Step3, Step4, Step5, Step6];
-const statuses: ("belum" | "validasi" | "ditolak")[] = [
-  "belum",
-  "validasi",
-  "ditolak",
-];
 
 export default function MahasiswaSeminarValidasiBerkasPage() {
   const [step, setStep] = useState(0);
-  const [statusIndex, setStatusIndex] = useState(0);
-  const { data, isLoading, isError } = useQuery({
+  const { data } = useQuery({
     queryKey: ["seminar-kp-data"],
     queryFn: APISeminarKP.getDataMydokumen,
   });

@@ -14,7 +14,6 @@ import {
   AnimatedSpan,
 } from "@/components/magic-ui/terminal";
 
-// Define interfaces clearly with proper documentation
 interface CheckItems {
   hapalan: boolean;
   kerja_praktik: boolean;
@@ -24,41 +23,31 @@ interface CheckItems {
 }
 
 interface PendaftaranCardProps {
-  /**
-   * Information about the seminar application status
-   */
   infoPengajuanSeminar: {
     step: number;
     checkItems?: CheckItems;
   };
-  /** Navigation function to call when button is clicked */
   navigateFunction?: () => void;
-  /** Indicates if step 1 is accessible */
   step1Accessible: boolean;
+  semuaSyaratTerpenuhi: boolean;
 }
 
-/**
- * Component to display Kerja Praktik seminar registration card with requirement verification
- */
 const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
   infoPengajuanSeminar,
   navigateFunction,
   step1Accessible,
+  semuaSyaratTerpenuhi,
 }) => {
-  // Default checkmark values
   const defaultCheckmarks: CheckItems = {
     hapalan: true,
-    kerja_praktik: true,
-    bimbingan: true,
+    kerja_praktik: false,
+    bimbingan: false,
     nilaiInstansi: false,
-    dailyReport: true,
+    dailyReport: false,
   };
 
-  // State to track requirement status
   const [checkmarks, setCheckmarks] = useState<CheckItems>(defaultCheckmarks);
-  const [allRequirementsMet, setAllRequirementsMet] = useState<boolean>(false);
 
-  // Update checkmarks when props change
   useEffect(() => {
     if (infoPengajuanSeminar.checkItems) {
       setCheckmarks((prevState) => ({
@@ -68,17 +57,6 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
     }
   }, [infoPengajuanSeminar.checkItems]);
 
-  // Update overall status when individual checkmarks change
-  useEffect(() => {
-    const areAllMet = Object.values(checkmarks).every(
-      (value) => value === true
-    );
-    setAllRequirementsMet(areAllMet);
-  }, [checkmarks]);
-
-  /**
-   * Get array of requirement names that are not yet met
-   */
   const getUnmetRequirements = (): string[] => {
     const requirementMapping = {
       hapalan: "Muroja'ah",
@@ -93,16 +71,12 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
       .map(([key]) => requirementMapping[key as keyof CheckItems]);
   };
 
-  /**
-   * Handle button click
-   */
   const handleButtonClick = (): void => {
-    if (allRequirementsMet && navigateFunction) {
+    if (semuaSyaratTerpenuhi && step1Accessible && navigateFunction) {
       navigateFunction();
     }
   };
 
-  // Common class for check indicators
   const renderCheckItem = (
     isComplete: boolean,
     text: string,
@@ -126,7 +100,7 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
 
       <CardContent>
         <Terminal className="shadow-none border-none dark:bg-slate-800 flex-1 h-full flex flex-col min-h-64">
-          <TypingAnimation> tif kerja-praktik@latest</TypingAnimation>
+          <TypingAnimation>tif kerja-praktik@latest</TypingAnimation>
 
           {renderCheckItem(checkmarks.hapalan, "Muroja'ah 1-16.", 500)}
           {renderCheckItem(
@@ -157,7 +131,7 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
             <span>- lib/seminar-kerja-praktik.ts</span>
           </AnimatedSpan>
 
-          {allRequirementsMet ? (
+          {semuaSyaratTerpenuhi ? (
             <>
               <AnimatedSpan delay={3500} className="text-green-500">
                 <span>✅ Success! Sistem siap digunakan.</span>
@@ -195,15 +169,15 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
       <CardFooter>
         <Button
           className={`w-full ${
-            allRequirementsMet && step1Accessible
+            semuaSyaratTerpenuhi && step1Accessible
               ? "bg-green-600 hover:bg-green-700 dark:bg-green-400 dark:hover:bg-green-500"
               : "bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-700 cursor-not-allowed"
           }`}
-          disabled={!allRequirementsMet || !step1Accessible}
+          disabled={!semuaSyaratTerpenuhi || !step1Accessible}
           onClick={handleButtonClick}
         >
           Buat Permohonan
-          {(!allRequirementsMet || !step1Accessible) && (
+          {(!semuaSyaratTerpenuhi || !step1Accessible) && (
             <Lock className="ml-2" />
           )}
         </Button>

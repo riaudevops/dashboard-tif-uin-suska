@@ -11,6 +11,7 @@ import {
   CheckCircle,
   AlertTriangle,
   X,
+  LayoutGridIcon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -298,21 +299,26 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-4 space-y-6">
+      <div className="space-y-4">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="flex items-center justify-between"
         >
-          <h1 className="text-2xl font-bold">Koordinator KP</h1>
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Tahun Ajaran:
+          <div className="flex">
+            <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+              <span
+                className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+              />
+              <LayoutGridIcon className="w-4 h-4 mr-1.5" />
+              Daily Report Kerja Praktik Mahasiswa
             </span>
+          </div>
+          <div className="flex items-center gap-2">
             <div className="relative">
               <select
-                className="px-3 py-1 pr-8 text-sm bg-white border rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700"
+                className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0"
                 value={academicYear}
                 onChange={(e) => setAcademicYear(e.target.value)}
                 disabled={academicYears.length === 0}
@@ -338,7 +344,7 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
           variants={containerVariants}
           initial="hidden"
           animate={statsVisible ? "visible" : "hidden"}
-          className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
+          className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
         >
           {cardData.map((card, index) => (
             <motion.div
@@ -398,7 +404,7 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9 }}
-          className="flex flex-col items-start justify-between gap-4 pt-4 md:flex-row md:items-center"
+          className="flex flex-col items-start justify-between gap-4 pt-2 md:flex-row md:items-center"
         >
           <div className="flex w-full gap-2 md:w-auto">
             <Tabs
@@ -529,25 +535,25 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
           <Table>
             <TableHeader className="bg-gray-100 dark:bg-gray-900/40">
               <TableRow>
-                <TableHead className="font-semibold text-center text-gray-700 uppercase dark:text-gray-300">
-                  No
+                <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-300">
+                  No.
                 </TableHead>
-                <TableHead className="font-semibold text-center text-gray-700 uppercase dark:text-gray-300">
+                <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-300">
                   Nama Mahasiswa
                 </TableHead>
-                <TableHead className="font-semibold text-center text-gray-700 uppercase dark:text-gray-300">
+                <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-300">
                   NIM
                 </TableHead>
-                <TableHead className="font-semibold text-center text-gray-700 uppercase dark:text-gray-300">
+                <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-300">
                   Angkatan
                 </TableHead>
-                <TableHead className="font-semibold text-center text-gray-700 uppercase dark:text-gray-300">
-                  Perusahaan
+                <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-300">
+                  Instansi
                 </TableHead>
-                <TableHead className="font-semibold text-center text-gray-700 uppercase dark:text-gray-300">
+                <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-300">
                   Status Pendaftaran
                 </TableHead>
-                <TableHead className="font-semibold text-center text-gray-700 uppercase dark:text-gray-300">
+                <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-300">
                   Aksi
                 </TableHead>
               </TableRow>
@@ -569,7 +575,7 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
                     }}
                   >
                     <TableCell className="font-medium text-center">
-                      {index + 1}
+                      {index + 1}.
                     </TableCell>
                     <TableCell className="font-medium text-center">
                       {item.name}

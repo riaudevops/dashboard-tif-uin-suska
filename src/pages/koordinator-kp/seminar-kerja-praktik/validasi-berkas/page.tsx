@@ -1,7 +1,7 @@
-import { useState, type FC, useMemo, useEffect } from "react"; // Added useEffect
+import { useState, type FC, useMemo } from "react"; // Added useEffect
 import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { Search, Eye, Users, CheckCircle, AlertCircle } from "lucide-react";
+import { Search, Eye, Users, CheckCircle, AlertCircle, CalendarCheck2Icon, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +15,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ValidasiPendaftaranModal from "@/components/koordinator-kp/seminar/validasi-pendaftaran-modal";
 import ValidasiIdModal from "@/components/koordinator-kp/seminar/validasi-id-modal";
@@ -214,21 +213,6 @@ const mapStepToStage = (step: number): Stage => {
   }
 };
 
-const mapStageToStep = (stage: Stage): number => {
-  switch (stage) {
-    case "pendaftaran":
-      return 1;
-    case "idSurat":
-      return 2;
-    case "suratUndangan":
-      return 3;
-    case "pascaSeminar":
-      return 5;
-    default:
-      return 1;
-  }
-};
-
 const emptyDokumenStep: DokumenStep = {
   step1: [],
   step2: [],
@@ -237,6 +221,12 @@ const emptyDokumenStep: DokumenStep = {
 };
 
 const KoordinatorValidasiBerkasPage: FC = () => {
+
+  const [academicYear, setAcademicYear] = useState<string>("2024/2025 - Genap");
+  const [availableAcademicYears, setAvailableAcademicYears] = useState<
+    string[]
+  >([]);
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<Stage>("pendaftaran");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -250,22 +240,12 @@ const KoordinatorValidasiBerkasPage: FC = () => {
     queryFn: APISeminarKP.getDataMahasiswa,
   });
 
-  const {
-    data: detailData,
-    isLoading: isDetailLoading,
-    isSuccess,
-  } = useQuery<MahasiswaDetailResponse>({
-    queryKey: ["koordinator-seminar-kp-detail", selectedNim],
-    queryFn: () => APISeminarKP.getDataMahasiswaByEmail(selectedNim!),
-    enabled: !!selectedNim,
-  });
-
-  // Moved onSuccess logic to useEffect
-  useEffect(() => {
-    if (isSuccess && detailData) {
-      console.log("Detail Data:", detailData);
-    }
-  }, [isSuccess, detailData]);
+  const { data: detailData, isLoading: isDetailLoading } =
+    useQuery<MahasiswaDetailResponse>({
+      queryKey: ["koordinator-seminar-kp-detail", selectedNim],
+      queryFn: () => APISeminarKP.getDataMahasiswaByEmail(selectedNim!),
+      enabled: !!selectedNim,
+    });
 
   const { students, totalMahasiswa, validasiDitolak, validasiSelesai } =
     useMemo(() => {
@@ -449,22 +429,41 @@ const KoordinatorValidasiBerkasPage: FC = () => {
   return (
     <DashboardLayout>
       <div className="transition-colors duration-300">
-        <div className="space-y-6">
+        <div className="space-y-5">
           <div>
-            <h1 className="text-2xl font-bold mb-4 dark:text-white">
+            <div className="flex justify-between">
+            <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+              <span
+                className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+              />
+              <CalendarCheck2Icon className="w-4 h-4 mr-1.5" />
               Validasi Permohonan Seminar KP Mahasiswa
-            </h1>
-            <div>
-              <span className="mr-2 text-gray-600 dark:text-gray-300">
-                Tahun Ajaran
-              </span>
-              <Badge
-                variant="outline"
-                className="bg-gray-100 dark:bg-gray-900 dark:text-gray-300"
-              >
-                2023-2024 Ganjil
-              </Badge>
+            </span>
+            {/* Academic Year Selector */}
+            <div className="flex items-center gap-2 dark:text-gray-200">
+              <div className="relative">
+                <select
+                  className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0"
+                  value={academicYear}
+                  onChange={(e) => setAcademicYear(e.target.value)}
+                  disabled={isLoading || availableAcademicYears.length === 0}
+                >
+                  {availableAcademicYears.length > 0 ? (
+                    availableAcademicYears.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">2024/2025 - Genap</option>
+                  )}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                  <ChevronRight className="w-4 h-4 text-gray-500 rotate-90" />
+                </div>
+              </div>
             </div>
+          </div>
           </div>
 
           {isLoading ? (
@@ -473,42 +472,42 @@ const KoordinatorValidasiBerkasPage: FC = () => {
             </div>
           ) : (
             <motion.div
-              className="grid grid-cols-1 md:grid-cols-3 gap-4"
+              className="grid grid-cols-1 md:grid-cols-3 gap-3"
               variants={container}
               initial="hidden"
               animate="show"
             >
               <motion.div variants={item}>
-                <Card className="overflow-hidden border-none shadow-lg bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-950 dark:to-gray-900">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-xl font-medium text-blue-800 dark:text-blue-300">
+                <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-950 dark:to-gray-900">
+                  <CardHeader className="flex flex-row items-center justify-between pb-1 pt-3 px-3">
+                    <CardTitle className="text-sm font-medium text-blue-800 dark:text-blue-300">
                       Permohonan Validasi
                     </CardTitle>
                     <motion.div
                       whileHover={{ rotate: 15 }}
-                      className="bg-blue-200 p-2 rounded-full dark:bg-blue-800"
+                      className="bg-blue-200 p-1.5 rounded-full dark:bg-blue-800"
                     >
-                      <Users className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+                      <Users className="h-3.5 w-3.5 text-blue-600 dark:text-blue-300" />
                     </motion.div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="px-3 pb-3">
                     <motion.div
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ type: "spring", delay: 0.1 }}
-                      className="text-5xl font-bold text-blue-800 dark:text-white"
+                      className="text-2xl font-bold text-blue-800 dark:text-white"
                     >
                       {totalMahasiswa ?? 0}
                     </motion.div>
-                    <p className="text-sm text-blue-600 dark:text-blue-300 mt-1">
+                    <p className="text-xs text-blue-600 dark:text-blue-300 mt-0.5">
                       Mahasiswa
                     </p>
-                    <div className="h-2 w-full bg-blue-100 dark:bg-blue-900 rounded-full mt-3">
+                    <div className="h-1.5 w-full bg-blue-100 dark:bg-blue-900 rounded-full mt-2">
                       <motion.div
                         initial={{ width: "0%" }}
                         animate={{ width: "100%" }}
                         transition={{ duration: 1.5, ease: "easeOut" }}
-                        className="h-2 bg-blue-500 rounded-full"
+                        className="h-1.5 bg-blue-500 rounded-full"
                       />
                     </div>
                   </CardContent>
@@ -516,31 +515,31 @@ const KoordinatorValidasiBerkasPage: FC = () => {
               </motion.div>
 
               <motion.div variants={item}>
-                <Card className="overflow-hidden border-none shadow-lg bg-gradient-to-br from-red-100 to-red-50 dark:from-red-950 dark:to-gray-900">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-xl font-medium text-red-800 dark:text-red-300">
+                <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-red-100 to-red-50 dark:from-red-950 dark:to-gray-900">
+                  <CardHeader className="flex flex-row items-center justify-between pb-1 pt-3 px-3">
+                    <CardTitle className="text-sm font-medium text-red-800 dark:text-red-300">
                       Validasi Ditolak
                     </CardTitle>
                     <motion.div
                       whileHover={{ rotate: 15 }}
-                      className="bg-red-200 p-2 rounded-full dark:bg-red-800"
+                      className="bg-red-200 p-1.5 rounded-full dark:bg-red-800"
                     >
-                      <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-300" />
+                      <AlertCircle className="h-3.5 w-3.5 text-red-600 dark:text-red-300" />
                     </motion.div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="px-3 pb-3">
                     <motion.div
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ type: "spring", delay: 0.1 }}
-                      className="text-5xl font-bold text-red-800 dark:text-white"
+                      className="text-2xl font-bold text-red-800 dark:text-white"
                     >
                       {validasiDitolak ?? 0}
                     </motion.div>
-                    <p className="text-sm text-red-600 dark:text-red-300 mt-1">
+                    <p className="text-xs text-red-600 dark:text-red-300 mt-0.5">
                       Mahasiswa
                     </p>
-                    <div className="h-2 w-full bg-red-100 dark:bg-red-900 rounded-full mt-3">
+                    <div className="h-1.5 w-full bg-red-100 dark:bg-red-900 rounded-full mt-2">
                       <motion.div
                         initial={{ width: "0%" }}
                         animate={{
@@ -549,7 +548,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
                             : "0%",
                         }}
                         transition={{ duration: 1.5, ease: "easeOut" }}
-                        className="h-2 bg-red-500 rounded-full"
+                        className="h-1.5 bg-red-500 rounded-full"
                       />
                     </div>
                   </CardContent>
@@ -557,31 +556,31 @@ const KoordinatorValidasiBerkasPage: FC = () => {
               </motion.div>
 
               <motion.div variants={item}>
-                <Card className="overflow-hidden border-none shadow-lg bg-gradient-to-br from-green-100 to-green-50 dark:from-green-950 dark:to-gray-900">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-xl font-medium text-green-800 dark:text-green-300">
+                <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-green-100 to-green-50 dark:from-green-950 dark:to-gray-900">
+                  <CardHeader className="flex flex-row items-center justify-between pb-1 pt-3 px-3">
+                    <CardTitle className="text-sm font-medium text-green-800 dark:text-green-300">
                       Validasi Selesai
                     </CardTitle>
                     <motion.div
                       whileHover={{ rotate: 15 }}
-                      className="bg-green-200 p-2 rounded-full dark:bg-green-800"
+                      className="bg-green-200 p-1.5 rounded-full dark:bg-green-800"
                     >
-                      <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-300" />
+                      <CheckCircle className="h-3.5 w-3.5 text-green-600 dark:text-green-300" />
                     </motion.div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="px-3 pb-3">
                     <motion.div
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ type: "spring", delay: 0.1 }}
-                      className="text-5xl font-bold text-green-800 dark:text-white"
+                      className="text-2xl font-bold text-green-800 dark:text-white"
                     >
                       {validasiSelesai ?? 0}
                     </motion.div>
-                    <p className="text-sm text-green-600 dark:text-green-300 mt-1">
+                    <p className="text-xs text-green-600 dark:text-green-300 mt-0.5">
                       Mahasiswa
                     </p>
-                    <div className="h-2 w-full bg-green-100 dark:bg-green-900 rounded-full mt-3">
+                    <div className="h-1.5 w-full bg-green-100 dark:bg-green-900 rounded-full mt-2">
                       <motion.div
                         initial={{ width: "0%" }}
                         animate={{
@@ -590,7 +589,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
                             : "0%",
                         }}
                         transition={{ duration: 1.5, ease: "easeOut" }}
-                        className="h-2 bg-green-500 rounded-full"
+                        className="h-1.5 bg-green-500 rounded-full"
                       />
                     </div>
                   </CardContent>
@@ -617,7 +616,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
                     value="idSurat"
                     className="dark:data-[state=active]:bg-gray-800"
                   >
-                    Id Surat Undangan
+                    ID Surat Undangan
                   </TabsTrigger>
                   <TabsTrigger
                     value="suratUndangan"
@@ -688,9 +687,6 @@ const StudentTable: FC<{
         <Table>
           <TableHeader className="bg-gray-200 dark:bg-gray-700">
             <TableRow className="hover:bg-gray-300 dark:hover:bg-gray-600">
-              <TableHead className="w-12 text-center font-semibold dark:text-gray-200">
-                No
-              </TableHead>
               <TableHead className="font-semibold dark:text-gray-200">
                 Nama Mahasiswa
               </TableHead>
@@ -724,13 +720,10 @@ const StudentTable: FC<{
                   key={student.id}
                   className="dark:border-gray-700 dark:hover:bg-gray-700"
                 >
-                  <TableCell className="font-medium text-center dark:text-gray-300">
-                    {student.id}
-                  </TableCell>
-                  <TableCell className="dark:text-gray-300">
+                  <TableCell className="dark:text-gray-300 text-xs">
                     {student.name}
                   </TableCell>
-                  <TableCell className="font-medium text-center dark:text-gray-300">
+                  <TableCell className="font-medium text-center dark:text-gray-300 text-xs">
                     {student.nim}
                   </TableCell>
                   <TableCell className="text-center">
@@ -765,35 +758,23 @@ const StudentTable: FC<{
         </Table>
       </Card>
 
-      {/* Validated Table */}
-      <div className="shadow-none rounded-none dark:bg-gray-950 dark:border-gray-800">
-        <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">
-          Tervalidasi
-        </h2>
-        <Table>
-          <TableBody className="border">
-            {validatedStudents.length === 0 ? (
-              <TableRow className="dark:border-gray-700 dark:hover:bg-gray-700">
-                <TableCell
-                  colSpan={6}
-                  className="text-center py-6 text-muted-foreground dark:text-gray-400"
-                >
-                  Belum ada data tervalidasi
-                </TableCell>
-              </TableRow>
-            ) : (
-              validatedStudents.map((student) => (
+      {/* Validated Table - Conditionally Rendered */}
+      {validatedStudents.length > 0 && (
+        <div className="shadow-none rounded-none dark:bg-gray-950 dark:border-gray-800">
+          <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">
+            Tervalidasi
+          </h2>
+          <Table>
+            <TableBody className="border">
+              {validatedStudents.map((student) => (
                 <TableRow
                   key={student.id}
                   className="dark:border-gray-700 dark:hover:bg-gray-700"
                 >
-                  <TableCell className="font-medium text-center dark:text-gray-300">
-                    {student.id}
-                  </TableCell>
-                  <TableCell className="dark:text-gray-300">
+                  <TableCell className="dark:text-gray-300 text-xs">
                     {student.name}
                   </TableCell>
-                  <TableCell className="font-medium text-center dark:text-gray-300">
+                  <TableCell className="font-medium text-center dark:text-gray-300 text-xs">
                     {student.nim}
                   </TableCell>
                   <TableCell className="text-center">
@@ -818,11 +799,11 @@ const StudentTable: FC<{
                     </Button>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 };

@@ -16,7 +16,6 @@ import {
   Eye,
   EyeClosed,
 } from "lucide-react";
-// import icon_dosenpa_page from "@/assets/svgs/dosen/setoran-hafalan/mahasiswa/icon_dosenpa_page.svg";
 import {
   Table,
   TableBody,
@@ -266,7 +265,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaPage = () => {
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
         <AlertTriangle className="w-12 h-12 mb-4 text-red-500" />
         <p className="mb-4 text-lg font-medium text-gray-700 dark:text-gray-300">
-          {error?.message || "Data tidak ditemukan.."}
+          {error?.message || "Tidak ditemukan.."}
         </p>
         <Button
           className="bg-indigo-600 hover:bg-indigo-700"
@@ -311,11 +310,10 @@ const PembimbingInstansiKerjaPraktikMahasiswaPage = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold">
-                  {mahasiswaInstansiSaya.pembimbing_instansi.nama || "Unknown"}
+                  {mahasiswaInstansiSaya.pembimbing_instansi.nama || "-"}
                 </h3>
                 <p className="text-sm text-white/80">
-                  {mahasiswaInstansiSaya.pembimbing_instansi.jabatan ||
-                    "Unknown"}
+                  {mahasiswaInstansiSaya.pembimbing_instansi.jabatan || "-"}
                 </p>
               </div>
             </div>
@@ -329,7 +327,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaPage = () => {
               ) : (
                 <ChevronDown className="w-5 h-5" />
               )}
-              Detail Instansi
+              Detail
             </Button>
           </div>
           <AnimatePresence>
@@ -344,7 +342,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaPage = () => {
                       </p>
                       <p className="text-base text-gray-900 dark:text-white">
                         {mahasiswaInstansiSaya.pembimbing_instansi.instansi
-                          .nama || "Unknown"}
+                          .nama || "-"}
                       </p>
                     </div>
                   </div>
@@ -356,7 +354,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaPage = () => {
                       </p>
                       <p className="text-base text-gray-900 dark:text-white">
                         {mahasiswaInstansiSaya.pembimbing_instansi.instansi
-                          .alamat || "Unknown"}
+                          .alamat || "-"}
                       </p>
                     </div>
                   </div>
@@ -378,56 +376,6 @@ const PembimbingInstansiKerjaPraktikMahasiswaPage = () => {
           </AnimatePresence>
         </Card>
       </motion.div>
-      {/* Welcome Card */}
-      {/* <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.7 }}
-      >
-        <Card className="relative mb-8 overflow-hidden border-none bg-gradient-to-r from-indigo-500 to-purple-600">
-          <motion.div
-            className="absolute w-40 h-40 bg-white rounded-full -top-10 -right-10 opacity-10"
-            animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.15, 0.1] }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              repeatType: "reverse",
-            }}
-          />
-          <motion.div
-            className="absolute w-48 h-48 bg-white rounded-full -bottom-14 -left-14 opacity-5"
-            animate={{ scale: [1, 1.3, 1], opacity: [0.05, 0.1, 0.05] }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              repeatType: "reverse",
-            }}
-          />
-          <CardHeader className="pb-32">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-            >
-              <CardTitle className="text-3xl font-bold text-white">
-                Selamat Datang,{" "}
-                {mahasiswaInstansiSaya.pembimbing_instansi.nama || "Pembimbing"} !
-              </CardTitle>
-              <CardDescription className="text-lg text-white/80">
-                Pantau dan kelola progress mahasiswa kerja praktik...
-              </CardDescription>
-            </motion.div>
-          </CardHeader>
-          <motion.div
-            className="absolute bottom-0 right-0"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.7, duration: 0.8 }}
-          >
-            <img src={icon_dosenpa_page} alt="Decorative icon" />
-          </motion.div>
-        </Card>
-      </motion.div> */}
       {/* Student List Section */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -438,7 +386,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaPage = () => {
           <CardHeader className="flex flex-col items-start justify-between pb-4 border-b border-gray-200 sm:flex-row sm:items-center dark:border-gray-700">
             <div>
               <CardTitle className="text-xl text-gray-800 dark:text-white">
-                Daftar Mahasiswa
+                Mahasiswa Kerja Praktik
               </CardTitle>
               <CardDescription className="text-gray-500 dark:text-gray-400">
                 Teknik Informatika - Universitas Islam Negeri Sultan Syarif

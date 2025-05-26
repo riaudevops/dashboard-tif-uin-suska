@@ -32,6 +32,7 @@ import {
   ChevronRight,
   XCircle,
   Eye,
+  UserRoundPenIcon,
 } from "lucide-react";
 import {
   Table,
@@ -137,15 +138,25 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
       detailMahasiswaSaya?.tanggal_mulai &&
       detailMahasiswaSaya?.tanggal_selesai
     ) {
-      const today = new Date();
+      const today = new Date(
+        Date.UTC(
+          new Date().getUTCFullYear(),
+          new Date().getUTCMonth(),
+          new Date().getUTCDate()
+        )
+      );
       const startDate = new Date(detailMahasiswaSaya.tanggal_mulai);
       const endDate = new Date(detailMahasiswaSaya.tanggal_selesai);
 
       if (today >= startDate && today <= endDate) {
-        setCurrentMonth(new Date(today.getFullYear(), today.getMonth(), 1));
+        setCurrentMonth(
+          new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1))
+        );
       } else {
         setCurrentMonth(
-          new Date(startDate.getFullYear(), startDate.getMonth(), 1)
+          new Date(
+            Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), 1)
+          )
         );
       }
     }
@@ -159,8 +170,8 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
       setCalendarDays(
         generateCalendarDays(
           currentMonth,
-          new Date(detailMahasiswaSaya.tanggal_mulai),
-          new Date(detailMahasiswaSaya.tanggal_selesai)
+          detailMahasiswaSaya.tanggal_mulai,
+          detailMahasiswaSaya.tanggal_selesai
         )
       );
     }
@@ -168,28 +179,44 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
 
   const generateCalendarDays = (
     monthDate: Date,
-    startDate: Date,
-    endDate: Date
+    startDate: string,
+    endDate: string
   ): CalendarDay[] => {
-    const year = monthDate.getFullYear();
-    const month = monthDate.getMonth();
+    const year = monthDate.getUTCFullYear();
+    const month = monthDate.getUTCMonth();
 
-    const firstDayOfMonth = new Date(year, month, 1);
-    const lastDayOfMonth = new Date(year, month + 1, 0);
-    const firstDayWeekday = firstDayOfMonth.getDay();
+    // Extract YYYY-MM-DD from API dates
+    const startDateStr = startDate.split("T")[0];
+    const endDateStr = endDate.split("T")[0];
+
+    // Create start and end dates at midnight UTC
+    const start = new Date(
+      Date.UTC(
+        parseInt(startDateStr.split("-")[0]),
+        parseInt(startDateStr.split("-")[1]) - 1,
+        parseInt(startDateStr.split("-")[2])
+      )
+    );
+    const end = new Date(
+      Date.UTC(
+        parseInt(endDateStr.split("-")[0]),
+        parseInt(endDateStr.split("-")[1]) - 1,
+        parseInt(endDateStr.split("-")[2])
+      )
+    );
+
+    const firstDayOfMonth = new Date(Date.UTC(year, month, 1));
+    const lastDayOfMonth = new Date(Date.UTC(year, month + 1, 0));
+    const firstDayWeekday = firstDayOfMonth.getUTCDay();
     const daysFromPrevMonth = firstDayWeekday;
 
-    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    const prevMonthLastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
     const prevMonthDays = Array.from({ length: daysFromPrevMonth }, (_, i) => {
       const date = new Date(
-        year,
-        month - 1,
-        prevMonthLastDay - daysFromPrevMonth + i + 1
+        Date.UTC(year, month - 1, prevMonthLastDay - daysFromPrevMonth + i + 1)
       );
       const dateStr = date.toISOString().split("T")[0];
-      const isWithinPeriod =
-        date >= new Date(startDate.setHours(0, 0, 0, 0)) &&
-        date <= new Date(endDate.setHours(23, 59, 59, 999));
+      const isWithinPeriod = date >= start && date <= end;
       const entry = agendaEntries.find(
         (entry) => entry.tanggal_presensi === dateStr
       );
@@ -200,19 +227,17 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
         isWithinPeriod,
         hasEntry: !!entry,
         entry: entry || null,
-        isStartDate: dateStr === startDate.toISOString().split("T")[0],
-        isEndDate: dateStr === endDate.toISOString().split("T")[0],
+        isStartDate: dateStr === startDateStr,
+        isEndDate: dateStr === endDateStr,
       };
     });
 
     const currentMonthDays = Array.from(
-      { length: lastDayOfMonth.getDate() },
+      { length: lastDayOfMonth.getUTCDate() },
       (_, i) => {
-        const date = new Date(year, month, i + 1);
+        const date = new Date(Date.UTC(year, month, i + 1));
         const dateStr = date.toISOString().split("T")[0];
-        const isWithinPeriod =
-          date >= new Date(startDate.setHours(0, 0, 0, 0)) &&
-          date <= new Date(endDate.setHours(23, 59, 59, 999));
+        const isWithinPeriod = date >= start && date <= end;
         const entry = agendaEntries.find(
           (entry) => entry.tanggal_presensi === dateStr
         );
@@ -223,8 +248,8 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
           isWithinPeriod,
           hasEntry: !!entry,
           entry: entry || null,
-          isStartDate: dateStr === startDate.toISOString().split("T")[0],
-          isEndDate: dateStr === endDate.toISOString().split("T")[0],
+          isStartDate: dateStr === startDateStr,
+          isEndDate: dateStr === endDateStr,
         };
       }
     );
@@ -234,11 +259,9 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
       totalDaysShown - prevMonthDays.length - currentMonthDays.length;
 
     const nextMonthDays = Array.from({ length: daysFromNextMonth }, (_, i) => {
-      const date = new Date(year, month + 1, i + 1);
+      const date = new Date(Date.UTC(year, month + 1, i + 1));
       const dateStr = date.toISOString().split("T")[0];
-      const isWithinPeriod =
-        date >= new Date(startDate.setHours(0, 0, 0, 0)) &&
-        date <= new Date(endDate.setHours(23, 59, 59, 999));
+      const isWithinPeriod = date >= start && date <= end;
       const entry = agendaEntries.find(
         (entry) => entry.tanggal_presensi === dateStr
       );
@@ -249,8 +272,8 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
         isWithinPeriod,
         hasEntry: !!entry,
         entry: entry || null,
-        isStartDate: dateStr === startDate.toISOString().split("T")[0],
-        isEndDate: dateStr === endDate.toISOString().split("T")[0],
+        isStartDate: dateStr === startDateStr,
+        isEndDate: dateStr === endDateStr,
       };
     });
 
@@ -264,60 +287,52 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
     });
   };
 
-  const handlePrevMonth = (): void => {
-    const prevMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() - 1,
-      1
+  const handlePrevMonth = () => {
+    setCurrentMonth(
+      new Date(
+        Date.UTC(
+          currentMonth.getUTCFullYear(),
+          currentMonth.getUTCMonth() - 1,
+          1
+        )
+      )
     );
-    const startMonth =
-      new Date(detailMahasiswaSaya!.tanggal_mulai).getFullYear() * 12 +
-      new Date(detailMahasiswaSaya!.tanggal_mulai).getMonth();
-    const prevMonthIndex = prevMonth.getFullYear() * 12 + prevMonth.getMonth();
-    if (prevMonthIndex >= startMonth) {
-      setCurrentMonth(prevMonth);
-    }
   };
 
-  const handleNextMonth = (): void => {
-    const nextMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() + 1,
-      1
+  const handleNextMonth = () => {
+    setCurrentMonth(
+      new Date(
+        Date.UTC(
+          currentMonth.getUTCFullYear(),
+          currentMonth.getUTCMonth() + 1,
+          1
+        )
+      )
     );
-    const endMonth =
-      new Date(detailMahasiswaSaya!.tanggal_selesai).getFullYear() * 12 +
-      new Date(detailMahasiswaSaya!.tanggal_selesai).getMonth();
-    const nextMonthIndex = nextMonth.getFullYear() * 12 + nextMonth.getMonth();
-    if (nextMonthIndex <= endMonth) {
-      setCurrentMonth(nextMonth);
-    }
   };
 
   const isPrevDisabled = () => {
     if (!detailMahasiswaSaya?.tanggal_mulai) return true;
+    const startDate = new Date(detailMahasiswaSaya.tanggal_mulai.split("T")[0]);
     const prevMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() - 1,
-      1
+      Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() - 1, 1)
     );
-    const startMonth =
-      new Date(detailMahasiswaSaya.tanggal_mulai).getFullYear() * 12 +
-      new Date(detailMahasiswaSaya.tanggal_mulai).getMonth();
-    return prevMonth.getFullYear() * 12 + prevMonth.getMonth() < startMonth;
+    return (
+      prevMonth <
+      new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), 1))
+    );
   };
 
   const isNextDisabled = () => {
     if (!detailMahasiswaSaya?.tanggal_selesai) return true;
+    const endDate = new Date(detailMahasiswaSaya.tanggal_selesai.split("T")[0]);
     const nextMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() + 1,
-      1
+      Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() + 1, 1)
     );
-    const endMonth =
-      new Date(detailMahasiswaSaya.tanggal_selesai).getFullYear() * 12 +
-      new Date(detailMahasiswaSaya.tanggal_selesai).getMonth();
-    return nextMonth.getFullYear() * 12 + nextMonth.getMonth() > endMonth;
+    return (
+      nextMonth >
+      new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), 1))
+    );
   };
 
   useEffect(() => {
@@ -387,7 +402,11 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
       bimbingan_sikap: number;
       kualitas_laporan: number;
       catatan: string;
-    }) => APIKerjaPraktik.postNilai(id!, data),
+    }) => {
+      const nilaiId = detailMahasiswaSaya?.nilai?.[0]?.id;
+      if (!nilaiId) throw new Error("Id nilai is missing...");
+      return APIKerjaPraktik.postNilai(nilaiId, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["detail-mahasiswa-saya", id],
@@ -653,12 +672,14 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
       catatan: evaluationValues.catatan,
     };
 
-    if (!detailMahasiswaSaya?.nilai?.length) {
+    if (
+      !detailMahasiswaSaya?.nilai?.[0]?.komponen_penilaian_pembimbing?.length
+    ) {
       postNilaiMutation.mutate(data);
     } else if (isEditingNilai && detailMahasiswaSaya?.nilai?.[0]?.id) {
       putNilaiMutation.mutate(data);
     } else {
-      toast.error("Tidak dapat menyimpan nilai: ID nilai tidak valid.", {
+      toast.error("Tidak dapat menyimpan nilai.", {
         style: {
           background: "#ef4444",
           color: "#fff",
@@ -731,18 +752,19 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen p-4 ">
+      <div className="min-h-screen">
         <Toaster />
         {/* Page Title */}
-        <div className="flex items-center gap-4 mb-6">
-          {/* <Button
-            variant="outline"
-            onClick={() => navigate(-1)}
-            className="text-gray-600 dark:text-gray-300"
-          >
-            Kembali
-          </Button> */}
-          <h1 className="text-2xl font-bold">Detail Mahasiswa Bimbingan</h1>
+        <div className="flex items-center gap-4 mb-3">
+          <div className="flex">
+            <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+              <span
+                className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+              />
+              <UserRoundPenIcon className="w-4 h-4 mr-1.5" />
+              Detail Mahasiswa Bimbingan Kerja Praktik
+            </span>
+          </div>
         </div>
         {/* Error State */}
         {isError && (
@@ -890,14 +912,14 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
         )}
         {/* Tabs and Table */}
         {!isLoading && !isError && detailMahasiswaSaya && (
-          <div className="mt-4">
+          <div className="-mt-4">
             <Tabs
               defaultValue="daily-report"
               className="w-full"
               onValueChange={setActiveTab}
               value={activeTab}
             >
-              <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-2 bg-gray-100 dark:bg-gray-800">
+              <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-4 bg-gray-100 dark:bg-gray-800">
                 <TabsTrigger
                   value="daily-report"
                   className="data-[state=active]:bg-blue-500 data-[state=active]:text-white dark:data-[state=active]:bg-blue-500"
@@ -972,15 +994,23 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
                   <div className="grid grid-cols-7 bg-white dark:bg-gray-800/20">
                     {calendarDays.map((day, index) => {
                       const isWeekend =
-                        day.date.getDay() === 0 || day.date.getDay() === 6;
+                        day.date.getUTCDay() === 0 ||
+                        day.date.getUTCDay() === 6;
                       const isToday =
-                        day.date.toDateString() === new Date().toDateString();
+                        day.date.toISOString().split("T")[0] ===
+                        new Date().toISOString().split("T")[0];
                       const isMissingAttendance =
                         day.isWithinPeriod &&
                         !day.hasEntry &&
                         !isWeekend &&
                         day.date <=
-                          new Date(new Date().setHours(23, 59, 59, 999));
+                          new Date(
+                            Date.UTC(
+                              new Date().getUTCFullYear(),
+                              new Date().getUTCMonth(),
+                              new Date().getUTCDate()
+                            )
+                          );
 
                       return (
                         <div
@@ -1009,10 +1039,14 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
                           ${index < 7 ? "border-t-0" : ""}
                           relative
                         `}
-                          onClick={() => {
-                            setSelectedDailyReport(day.entry);
-                            setOpenModalDailyReportDetail(true);
-                          }}
+                          onClick={
+                            day.hasEntry && day.entry
+                              ? () => {
+                                  setSelectedDailyReport(day.entry);
+                                  setOpenModalDailyReportDetail(true);
+                                }
+                              : undefined
+                          }
                         >
                           <div
                             className={`
@@ -1041,7 +1075,7 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
                             }
                           `}
                           >
-                            {day.date.getDate()}
+                            {day.date.getUTCDate()}
                           </div>
                           {day.hasEntry && day.entry && (
                             <div className="p-2 mt-8">
@@ -1133,10 +1167,10 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
                 <Card>
                   <CardHeader className="flex items-end">
                     <Button
-                      className="w-1/5 bg-blue-500 border text-gray-50 hover:bg-blue-600 dark:bg-blue-500 dark:border-gray-700 dark:hover:bg-blue-600"
+                      className="bg-blue-500 border text-gray-50 hover:bg-blue-600 dark:bg-blue-500 dark:border-gray-700 dark:hover:bg-blue-600"
                       onClick={() => setOpenModalBimbingan(true)}
                     >
-                      <FilePlus2 className="w-4 h-4 mr-2" />
+                      <FilePlus2 className="w-4 h-4" />
                       Tambah Bimbingan
                     </Button>
                   </CardHeader>
@@ -1214,37 +1248,45 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
               </TabsContent>
               <TabsContent value="penilaian" className="space-y-4">
                 <Card>
-                  <CardHeader className="pb-2">
-                    <CardDescription>
-                      {detailMahasiswaSaya.nilai?.length && !isEditingNilai
-                        ? "Detail Penilaian KP Mahasiswa (Dosen Pembimbing - 40%)"
-                        : "Formulir Penilaian KP Mahasiswa (Dosen Pembimbing - 40%)"}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {detailMahasiswaSaya.nilai?.length && !isEditingNilai ? (
-                      <div className="p-4 space-y-6 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700/30 dark:border-gray-600">
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                          <div>
-                            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Nilai Akhir
-                            </h4>
-                            <p className="text-gray-900 dark:text-gray-100">
-                              {detailMahasiswaSaya.nilai[0]?.nilai_pembimbing ||
-                                "-"}
-                            </p>
-                          </div>
-                          <div>
-                            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Grade
-                            </h4>
-                            <p className="text-gray-900 dark:text-gray-100">
-                              {getGrade(
-                                detailMahasiswaSaya.nilai[0]?.nilai_pembimbing
-                              )}
-                            </p>
-                          </div>
-                          <div>
+                  {detailMahasiswaSaya.nilai?.length &&
+                  detailMahasiswaSaya.nilai.length > 0 ? (
+                    <>
+                      <CardHeader className="pb-2">
+                        <CardDescription>
+                          {detailMahasiswaSaya.nilai?.[0]
+                            ?.komponen_penilaian_pembimbing?.length &&
+                          !isEditingNilai
+                            ? "Detail Penilaian KP Mahasiswa (Dosen Pembimbing - 40%)"
+                            : "Formulir Penilaian KP Mahasiswa (Dosen Pembimbing - 40%)"}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        {detailMahasiswaSaya.nilai?.[0]
+                          ?.komponen_penilaian_pembimbing?.length &&
+                        !isEditingNilai ? (
+                          <div className="p-4 space-y-6 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700/30 dark:border-gray-600">
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                              <div>
+                                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Nilai Akhir
+                                </h4>
+                                <p className="text-gray-900 dark:text-gray-100">
+                                  {detailMahasiswaSaya.nilai[0]
+                                    ?.nilai_pembimbing || "Belum dinilai..."}
+                                </p>
+                              </div>
+                              <div>
+                                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Grade
+                                </h4>
+                                <p className="text-gray-900 dark:text-gray-100">
+                                  {getGrade(
+                                    detailMahasiswaSaya.nilai[0]
+                                      ?.nilai_pembimbing
+                                  ) || "-"}
+                                </p>
+                              </div>
+                              {/* <div>
                             <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
                               Status
                             </h4>
@@ -1261,155 +1303,153 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
                                 ? "Lulus"
                                 : "Tidak Lulus"}
                             </Badge>
+                          </div> */}
+                            </div>
+                            <div className="mt-4">
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Komponen Penilaian
+                              </h4>
+                              <div className="mt-2 space-y-2">
+                                {evaluationCriteria.map((criteria) => (
+                                  <div
+                                    key={criteria.id}
+                                    className="flex items-center justify-between"
+                                  >
+                                    <span className="text-gray-700 dark:text-gray-300">
+                                      {criteria.label}
+                                    </span>
+                                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                                      {detailMahasiswaSaya.nilai?.[0]
+                                        ?.komponen_penilaian_pembimbing?.[0]?.[
+                                        criteria.id as keyof KomponenPenilaianPembimbing
+                                      ] ?? "Belum dinilai..."}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="mt-4">
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Catatan
+                              </h4>
+                              <div className="p-3 bg-white border border-gray-300 border-dashed rounded-lg dark:bg-gray-800 dark:border-gray-600">
+                                <p className="leading-relaxed text-gray-700 dark:text-gray-300">
+                                  {detailMahasiswaSaya.nilai?.[0]
+                                    ?.komponen_penilaian_pembimbing?.[0]
+                                    ?.catatan ?? "Belum ada catatan..."}
+                                </p>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                        <div className="mt-4">
-                          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Komponen Penilaian
-                          </h4>
-                          <div className="mt-2 space-y-2">
+                        ) : (
+                          <div className="space-y-6">
                             {evaluationCriteria.map((criteria) => (
                               <div
                                 key={criteria.id}
-                                className="flex items-center justify-between"
+                                className="p-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800/30 dark:border-gray-700"
                               >
-                                <span className="text-gray-700 dark:text-gray-300">
-                                  {criteria.label}
-                                </span>
-                                <span className="font-medium text-gray-900 dark:text-gray-100">
-                                  {
-                                    detailMahasiswaSaya.nilai?.[0]
-                                      ?.komponen_penilaian_pembimbing?.[0]?.[
-                                      criteria.id as keyof KomponenPenilaianPembimbing
-                                    ]
-                                  }
-                                </span>
+                                <div className="flex items-center justify-between mb-3">
+                                  <div className="flex-1">
+                                    <Label
+                                      htmlFor={criteria.id}
+                                      className="text-sm font-bold text-gray-700 dark:text-gray-300"
+                                    >
+                                      {criteria.label}
+                                    </Label>
+                                    <span className="ml-2 px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium">
+                                      {Math.round(criteria.weight * 100)}%
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <Input
+                                      type="number"
+                                      min={0}
+                                      max={100}
+                                      name={criteria.id}
+                                      value={
+                                        evaluationValues[
+                                          criteria.id as keyof typeof evaluationValues
+                                        ] as number
+                                      }
+                                      onChange={handleInputChange}
+                                      className="w-16 text-sm text-center bg-white border border-gray-300 rounded-md h-9 dark:border-gray-600 dark:bg-gray-800"
+                                      aria-label={criteria.label}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="flex items-center">
+                                  {/* <span className="w-6 text-xs text-gray-500 dark:text-gray-400">
+                                0
+                              </span> */}
+                                  <Slider
+                                    id={criteria.id}
+                                    max={100}
+                                    step={1}
+                                    className="flex-grow"
+                                    value={[
+                                      evaluationValues[
+                                        criteria.id as keyof typeof evaluationValues
+                                      ] as number,
+                                    ]}
+                                    onValueChange={(value) =>
+                                      handleSliderChange(criteria.id, value)
+                                    }
+                                  />
+                                  {/* <span className="w-6 text-xs text-gray-500 dark:text-gray-400">
+                                100
+                              </span> */}
+                                </div>
+                                {formErrors[
+                                  criteria.id as keyof typeof formErrors
+                                ] && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {
+                                      formErrors[
+                                        criteria.id as keyof typeof formErrors
+                                      ]
+                                    }
+                                  </p>
+                                )}
                               </div>
                             ))}
-                          </div>
-                        </div>
-                        <div className="mt-4">
-                          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Catatan
-                          </h4>
-                          <div className="p-3 bg-white border border-gray-300 border-dashed rounded-lg dark:bg-gray-800 dark:border-gray-600">
-                            <p className="leading-relaxed text-gray-700 dark:text-gray-300">
-                              {detailMahasiswaSaya.nilai?.[0]
-                                ?.komponen_penilaian_pembimbing?.[0]?.catatan ??
-                                ""}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-6">
-                        {evaluationCriteria.map((criteria) => (
-                          <div
-                            key={criteria.id}
-                            className="p-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800/30 dark:border-gray-700"
-                          >
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="flex-1">
-                                <Label
-                                  htmlFor={criteria.id}
-                                  className="text-sm font-bold text-gray-700 dark:text-gray-300"
-                                >
-                                  {criteria.label}
-                                </Label>
-                                <span className="ml-2 px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium">
-                                  {Math.round(criteria.weight * 100)}%
-                                </span>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <Input
-                                  type="number"
-                                  min={0}
-                                  max={100}
-                                  name={criteria.id}
-                                  value={
-                                    evaluationValues[
-                                      criteria.id as keyof typeof evaluationValues
-                                    ] as number
-                                  }
-                                  onChange={handleInputChange}
-                                  className="w-16 text-sm text-center bg-white border border-gray-300 rounded-md h-9 dark:border-gray-600 dark:bg-gray-800"
-                                  aria-label={criteria.label}
-                                />
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-4">
-                              <span className="w-6 text-xs text-gray-500 dark:text-gray-400">
-                                0
-                              </span>
-                              <Slider
-                                id={criteria.id}
-                                max={100}
-                                step={1}
-                                className="flex-grow"
-                                value={[
-                                  evaluationValues[
-                                    criteria.id as keyof typeof evaluationValues
-                                  ] as number,
-                                ]}
-                                onValueChange={(value) =>
-                                  handleSliderChange(criteria.id, value)
-                                }
+                            <div>
+                              <Label
+                                htmlFor="catatan"
+                                className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                              >
+                                Catatan
+                              </Label>
+                              <Textarea
+                                id="catatan"
+                                placeholder="Masukkan catatan atau umpan balik untuk mahasiswa"
+                                className="h-24 mt-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                value={evaluationValues.catatan}
+                                onChange={handleTextAreaChange}
+                                aria-label="Catatan"
                               />
-                              <span className="w-6 text-xs text-gray-500 dark:text-gray-400">
-                                100
-                              </span>
                             </div>
-                            {formErrors[
-                              criteria.id as keyof typeof formErrors
-                            ] && (
-                              <p className="mt-1 text-sm text-red-600">
-                                {
-                                  formErrors[
-                                    criteria.id as keyof typeof formErrors
-                                  ]
-                                }
-                              </p>
-                            )}
-                          </div>
-                        ))}
-                        <div>
-                          <Label
-                            htmlFor="catatan"
-                            className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                          >
-                            Catatan Evaluasi
-                          </Label>
-                          <Textarea
-                            id="catatan"
-                            placeholder="Masukkan catatan atau umpan balik untuk mahasiswa"
-                            className="h-24 mt-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                            value={evaluationValues.catatan}
-                            onChange={handleTextAreaChange}
-                            aria-label="Catatan Evaluasi"
-                          />
-                        </div>
-                        <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800/30 dark:border-gray-700">
-                          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                            <div className="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700">
-                              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                Nilai Akhir
-                              </h3>
-                              <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                                {calculateFinalScore()}
-                              </p>
-                              <p className="mt-1 text-xs text-gray-500">
-                                (40% dari Total Nilai)
-                              </p>
-                            </div>
-                            <div className="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700">
-                              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                Grade
-                              </h3>
-                              <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                                {getGrade(calculateFinalScore())}
-                              </p>
-                            </div>
-                            <div className="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700">
+                            <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800/30 dark:border-gray-700">
+                              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div className="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700">
+                                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    Nilai Akhir
+                                  </h3>
+                                  <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                                    {calculateFinalScore()}
+                                  </p>
+                                  <p className="mt-1 text-xs text-gray-500">
+                                    (40% dari Total Nilai)
+                                  </p>
+                                </div>
+                                <div className="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700">
+                                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    Grade
+                                  </h3>
+                                  <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                                    {getGrade(calculateFinalScore())}
+                                  </p>
+                                </div>
+                                {/* <div className="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700">
                               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                                 Status
                               </h3>
@@ -1424,55 +1464,65 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
                                   ? "Lulus"
                                   : "Tidak Lulus"}
                               </Badge>
+                            </div> */}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                  <CardFooter className="flex justify-end gap-2">
-                    {detailMahasiswaSaya.nilai?.length && !isEditingNilai ? (
-                      <Button
-                        className="text-white bg-blue-500 hover:bg-blue-600"
-                        onClick={handleEditNilai}
-                        aria-label="Edit Penilaian"
-                      >
-                        <FileText className="w-4 h-4 mr-1" />
-                        Edit Penilaian
-                      </Button>
-                    ) : (
-                      <>
-                        <Button
-                          variant="outline"
-                          onClick={handleResetNilai}
-                          aria-label="Reset Form"
-                        >
-                          Reset
-                        </Button>
-                        <Button
-                          className="text-white bg-blue-500 hover:bg-blue-600"
-                          onClick={handleSaveNilai}
-                          disabled={
-                            postNilaiMutation.isPending ||
-                            putNilaiMutation.isPending
-                          }
-                          aria-label={
-                            isEditingNilai
-                              ? "Simpan Perubahan"
-                              : "Simpan Penilaian"
-                          }
-                        >
-                          <Save className="w-4 h-4 mr-1" />
-                          {postNilaiMutation.isPending ||
-                          putNilaiMutation.isPending
-                            ? "Menyimpan..."
-                            : isEditingNilai
-                            ? "Simpan Perubahan"
-                            : "Simpan Penilaian"}
-                        </Button>
-                      </>
-                    )}
-                  </CardFooter>
+                        )}
+                      </CardContent>
+                      <CardFooter className="flex justify-end gap-2">
+                        {detailMahasiswaSaya.nilai?.[0]
+                          ?.komponen_penilaian_pembimbing?.length &&
+                        !isEditingNilai ? (
+                          <Button
+                            className="text-white bg-blue-500 hover:bg-blue-600"
+                            onClick={handleEditNilai}
+                            aria-label="Edit Penilaian"
+                          >
+                            <FileText className="w-4 h-4 mr-1" />
+                            Edit Penilaian
+                          </Button>
+                        ) : (
+                          <>
+                            <Button
+                              variant="outline"
+                              onClick={handleResetNilai}
+                              aria-label="Reset Form"
+                            >
+                              Reset
+                            </Button>
+                            <Button
+                              className="text-white bg-blue-500 hover:bg-blue-600"
+                              onClick={handleSaveNilai}
+                              disabled={
+                                postNilaiMutation.isPending ||
+                                putNilaiMutation.isPending
+                              }
+                              aria-label={
+                                isEditingNilai
+                                  ? "Simpan Perubahan"
+                                  : "Simpan Penilaian"
+                              }
+                            >
+                              <Save className="w-4 h-4 mr-1" />
+                              {postNilaiMutation.isPending ||
+                              putNilaiMutation.isPending
+                                ? "Menyimpan..."
+                                : isEditingNilai
+                                ? "Simpan Perubahan"
+                                : "Simpan Penilaian"}
+                            </Button>
+                          </>
+                        )}
+                      </CardFooter>
+                    </>
+                  ) : (
+                    <CardHeader className="p-6">
+                      <CardDescription className="text-base font-normal text-center text-foreground/80">
+                        ❌ Penilaian belum bisa dilakukan untuk mahasiswa ini.
+                      </CardDescription>
+                    </CardHeader>
+                  )}
                 </Card>
               </TabsContent>
             </Tabs>

@@ -73,6 +73,7 @@ export default class APISeminarKP {
   public static async postJadwal({
     tanggal,
     waktu_mulai,
+    waktu_selesai,
     nim,
     nama_ruangan,
     id_pendaftaran_kp,
@@ -80,6 +81,7 @@ export default class APISeminarKP {
   }: {
     tanggal: string;
     waktu_mulai: string;
+    waktu_selesai: string;
     nim: string;
     nama_ruangan: string;
     id_pendaftaran_kp: string;
@@ -91,6 +93,7 @@ export default class APISeminarKP {
       {
         tanggal,
         waktu_mulai,
+        waktu_selesai,
         nim,
         nama_ruangan,
         id_pendaftaran_kp,
@@ -143,5 +146,16 @@ export default class APISeminarKP {
       }
     );
     return request.data;
+  }
+
+  public static async getLogJadwal() {
+    const axios = api();
+    const response = await axios.get(
+      `${
+        import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
+      }/seminar-kp/jadwal/log-jadwal`
+    );
+    const data = response.data;
+    return data;
   }
 }

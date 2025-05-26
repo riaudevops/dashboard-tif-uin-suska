@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import {
   User,
   BookOpen,
@@ -15,6 +15,7 @@ import {
   CheckCircle,
   Eye,
   XCircle,
+  LayoutGridIcon,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -98,15 +99,25 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
 
   useEffect(() => {
     if (detailMahasiswa?.tanggal_mulai && detailMahasiswa?.tanggal_selesai) {
-      const today = new Date();
+      const today = new Date(
+        Date.UTC(
+          new Date().getUTCFullYear(),
+          new Date().getUTCMonth(),
+          new Date().getUTCDate()
+        )
+      );
       const startDate = new Date(detailMahasiswa.tanggal_mulai);
       const endDate = new Date(detailMahasiswa.tanggal_selesai);
 
       if (today >= startDate && today <= endDate) {
-        setCurrentMonth(new Date(today.getFullYear(), today.getMonth(), 1));
+        setCurrentMonth(
+          new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1))
+        );
       } else {
         setCurrentMonth(
-          new Date(startDate.getFullYear(), startDate.getMonth(), 1)
+          new Date(
+            Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), 1)
+          )
         );
       }
     }
@@ -117,8 +128,8 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
       setCalendarDays(
         generateCalendarDays(
           currentMonth,
-          new Date(detailMahasiswa.tanggal_mulai),
-          new Date(detailMahasiswa.tanggal_selesai)
+          detailMahasiswa.tanggal_mulai,
+          detailMahasiswa.tanggal_selesai
         )
       );
     }
@@ -126,28 +137,44 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
 
   const generateCalendarDays = (
     monthDate: Date,
-    startDate: Date,
-    endDate: Date
+    startDate: string,
+    endDate: string
   ): CalendarDay[] => {
-    const year = monthDate.getFullYear();
-    const month = monthDate.getMonth();
+    const year = monthDate.getUTCFullYear();
+    const month = monthDate.getUTCMonth();
 
-    const firstDayOfMonth = new Date(year, month, 1);
-    const lastDayOfMonth = new Date(year, month + 1, 0);
-    const firstDayWeekday = firstDayOfMonth.getDay();
+    // Extract YYYY-MM-DD from API dates
+    const startDateStr = startDate.split("T")[0];
+    const endDateStr = endDate.split("T")[0];
+
+    // Create start and end dates at midnight UTC
+    const start = new Date(
+      Date.UTC(
+        parseInt(startDateStr.split("-")[0]),
+        parseInt(startDateStr.split("-")[1]) - 1,
+        parseInt(startDateStr.split("-")[2])
+      )
+    );
+    const end = new Date(
+      Date.UTC(
+        parseInt(endDateStr.split("-")[0]),
+        parseInt(endDateStr.split("-")[1]) - 1,
+        parseInt(endDateStr.split("-")[2])
+      )
+    );
+
+    const firstDayOfMonth = new Date(Date.UTC(year, month, 1));
+    const lastDayOfMonth = new Date(Date.UTC(year, month + 1, 0));
+    const firstDayWeekday = firstDayOfMonth.getUTCDay();
     const daysFromPrevMonth = firstDayWeekday;
 
-    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    const prevMonthLastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
     const prevMonthDays = Array.from({ length: daysFromPrevMonth }, (_, i) => {
       const date = new Date(
-        year,
-        month - 1,
-        prevMonthLastDay - daysFromPrevMonth + i + 1
+        Date.UTC(year, month - 1, prevMonthLastDay - daysFromPrevMonth + i + 1)
       );
       const dateStr = date.toISOString().split("T")[0];
-      const isWithinPeriod =
-        date >= new Date(startDate.setHours(0, 0, 0, 0)) &&
-        date <= new Date(endDate.setHours(23, 59, 59, 999));
+      const isWithinPeriod = date >= start && date <= end;
       const entry = agendaEntries.find(
         (entry) => entry.tanggal_presensi === dateStr
       );
@@ -158,19 +185,17 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
         isWithinPeriod,
         hasEntry: !!entry,
         entry: entry || null,
-        isStartDate: dateStr === startDate.toISOString().split("T")[0],
-        isEndDate: dateStr === endDate.toISOString().split("T")[0],
+        isStartDate: dateStr === startDateStr,
+        isEndDate: dateStr === endDateStr,
       };
     });
 
     const currentMonthDays = Array.from(
-      { length: lastDayOfMonth.getDate() },
+      { length: lastDayOfMonth.getUTCDate() },
       (_, i) => {
-        const date = new Date(year, month, i + 1);
+        const date = new Date(Date.UTC(year, month, i + 1));
         const dateStr = date.toISOString().split("T")[0];
-        const isWithinPeriod =
-          date >= new Date(startDate.setHours(0, 0, 0, 0)) &&
-          date <= new Date(endDate.setHours(23, 59, 59, 999));
+        const isWithinPeriod = date >= start && date <= end;
         const entry = agendaEntries.find(
           (entry) => entry.tanggal_presensi === dateStr
         );
@@ -181,8 +206,8 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
           isWithinPeriod,
           hasEntry: !!entry,
           entry: entry || null,
-          isStartDate: dateStr === startDate.toISOString().split("T")[0],
-          isEndDate: dateStr === endDate.toISOString().split("T")[0],
+          isStartDate: dateStr === startDateStr,
+          isEndDate: dateStr === endDateStr,
         };
       }
     );
@@ -192,11 +217,9 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
       totalDaysShown - prevMonthDays.length - currentMonthDays.length;
 
     const nextMonthDays = Array.from({ length: daysFromNextMonth }, (_, i) => {
-      const date = new Date(year, month + 1, i + 1);
+      const date = new Date(Date.UTC(year, month + 1, i + 1));
       const dateStr = date.toISOString().split("T")[0];
-      const isWithinPeriod =
-        date >= new Date(startDate.setHours(0, 0, 0, 0)) &&
-        date <= new Date(endDate.setHours(23, 59, 59, 999));
+      const isWithinPeriod = date >= start && date <= end;
       const entry = agendaEntries.find(
         (entry) => entry.tanggal_presensi === dateStr
       );
@@ -207,8 +230,8 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
         isWithinPeriod,
         hasEntry: !!entry,
         entry: entry || null,
-        isStartDate: dateStr === startDate.toISOString().split("T")[0],
-        isEndDate: dateStr === endDate.toISOString().split("T")[0],
+        isStartDate: dateStr === startDateStr,
+        isEndDate: dateStr === endDateStr,
       };
     });
 
@@ -222,60 +245,52 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
     });
   };
 
-  const handlePrevMonth = (): void => {
-    const prevMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() - 1,
-      1
+  const handlePrevMonth = () => {
+    setCurrentMonth(
+      new Date(
+        Date.UTC(
+          currentMonth.getUTCFullYear(),
+          currentMonth.getUTCMonth() - 1,
+          1
+        )
+      )
     );
-    const startMonth =
-      new Date(detailMahasiswa!.tanggal_mulai).getFullYear() * 12 +
-      new Date(detailMahasiswa!.tanggal_mulai).getMonth();
-    const prevMonthIndex = prevMonth.getFullYear() * 12 + prevMonth.getMonth();
-    if (prevMonthIndex >= startMonth) {
-      setCurrentMonth(prevMonth);
-    }
   };
 
-  const handleNextMonth = (): void => {
-    const nextMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() + 1,
-      1
+  const handleNextMonth = () => {
+    setCurrentMonth(
+      new Date(
+        Date.UTC(
+          currentMonth.getUTCFullYear(),
+          currentMonth.getUTCMonth() + 1,
+          1
+        )
+      )
     );
-    const endMonth =
-      new Date(detailMahasiswa!.tanggal_selesai).getFullYear() * 12 +
-      new Date(detailMahasiswa!.tanggal_selesai).getMonth();
-    const nextMonthIndex = nextMonth.getFullYear() * 12 + nextMonth.getMonth();
-    if (nextMonthIndex <= endMonth) {
-      setCurrentMonth(nextMonth);
-    }
   };
 
   const isPrevDisabled = () => {
     if (!detailMahasiswa?.tanggal_mulai) return true;
+    const startDate = new Date(detailMahasiswa.tanggal_mulai.split("T")[0]);
     const prevMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() - 1,
-      1
+      Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() - 1, 1)
     );
-    const startMonth =
-      new Date(detailMahasiswa.tanggal_mulai).getFullYear() * 12 +
-      new Date(detailMahasiswa.tanggal_mulai).getMonth();
-    return prevMonth.getFullYear() * 12 + prevMonth.getMonth() < startMonth;
+    return (
+      prevMonth <
+      new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), 1))
+    );
   };
 
   const isNextDisabled = () => {
     if (!detailMahasiswa?.tanggal_selesai) return true;
+    const endDate = new Date(detailMahasiswa.tanggal_selesai.split("T")[0]);
     const nextMonth = new Date(
-      currentMonth.getFullYear(),
-      currentMonth.getMonth() + 1,
-      1
+      Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() + 1, 1)
     );
-    const endMonth =
-      new Date(detailMahasiswa.tanggal_selesai).getFullYear() * 12 +
-      new Date(detailMahasiswa.tanggal_selesai).getMonth();
-    return nextMonth.getFullYear() * 12 + nextMonth.getMonth() > endMonth;
+    return (
+      nextMonth >
+      new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), 1))
+    );
   };
 
   const getStatusMahasiswa = (status: string): string => {
@@ -379,7 +394,16 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-6 space-y-6">
+      <div className="space-y-4">
+        <div className="flex">
+          <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+            <span
+              className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+            />
+            <LayoutGridIcon className="w-4 h-4 mr-1.5" />
+            Detail Progres Kerja Praktik Mahasiswa
+          </span>
+        </div>
         {/* Biodata Section */}
         <Card className="overflow-hidden border-none shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md">
           <div className="flex items-center justify-between p-6 text-white bg-gradient-to-br from-indigo-600 to-purple-700">
@@ -507,7 +531,7 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
         {/* Tabs and Table */}
         <Tabs
           defaultValue="daily-report"
-          className="w-full space-y-6"
+          className="w-full space-y-4"
           onValueChange={setActiveTab}
           value={activeTab}
         >
@@ -527,7 +551,7 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
               Riwayat Bimbingan
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="daily-report">
+          <TabsContent value="daily-report" className="rounded-md">
             <div className="overflow-hidden border border-gray-100 rounded-lg shadow-md bg-gray-50 dark:bg-gray-800/30 dark:border-gray-700">
               <div className="flex items-center justify-between p-4 bg-white border-b border-gray-100 dark:border-gray-700 dark:bg-gray-800/50">
                 <Button
@@ -579,14 +603,22 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
               <div className="grid grid-cols-7 bg-white dark:bg-gray-800/20">
                 {calendarDays.map((day, index) => {
                   const isWeekend =
-                    day.date.getDay() === 0 || day.date.getDay() === 6;
+                    day.date.getUTCDay() === 0 || day.date.getUTCDay() === 6;
                   const isToday =
-                    day.date.toDateString() === new Date().toDateString();
+                    day.date.toISOString().split("T")[0] ===
+                    new Date().toISOString().split("T")[0];
                   const isMissingAttendance =
                     day.isWithinPeriod &&
                     !day.hasEntry &&
                     !isWeekend &&
-                    day.date <= new Date(new Date().setHours(23, 59, 59, 999));
+                    day.date <=
+                      new Date(
+                        Date.UTC(
+                          new Date().getUTCFullYear(),
+                          new Date().getUTCMonth(),
+                          new Date().getUTCDate()
+                        )
+                      );
 
                   return (
                     <div
@@ -615,10 +647,14 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
                         ${index < 7 ? "border-t-0" : ""}
                         relative
                       `}
-                      onClick={() => {
-                        setSelectedDailyReport(day.entry);
-                        setDailyReportModalOpen(true);
-                      }}
+                      onClick={
+                        day.hasEntry && day.entry
+                          ? () => {
+                              setSelectedDailyReport(day.entry);
+                              setDailyReportModalOpen(true);
+                            }
+                          : undefined
+                      }
                     >
                       <div
                         className={`
@@ -647,7 +683,7 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
                           }
                         `}
                       >
-                        {day.date.getDate()}
+                        {day.date.getUTCDate()}
                       </div>
                       {day.hasEntry && day.entry && (
                         <div className="p-2 mt-8">
@@ -733,21 +769,13 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
             </div>
           </TabsContent>
           <TabsContent value="riwayat-bimbingan">
-            <Card className="border-none shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md">
-              {/* <CardHeader className="pb-2">
-                <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
-                  Riwayat Bimbingan
-                </CardTitle>/
-                <CardDescription className="text-gray-600 dark:text-gray-400">
-                  Daftar Riwayat Bimbingan Kerja Praktik
-                </CardDescription>
-              </CardHeader> */}
-              <CardContent>
+            <Card className="p-0 border-none shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md">
+              <CardContent className="p-4 border rounded-md">
                 <Card className="overflow-hidden border-none shadow-sm rounded-xl">
                   <Table className="border dark:border-gray-700">
                     <TableHeader className="bg-indigo-50 dark:bg-indigo-900/20">
                       <TableRow>
-                        <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-200">
+                        <TableHead className="max-w-16 font-semibold text-center text-gray-700 dark:text-gray-200">
                           Bimbingan Ke-
                         </TableHead>
                         <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-200">
@@ -766,7 +794,7 @@ const KoordinatorKerjaPraktikDailyReportDetailPage: React.FC = () => {
                         detailMahasiswa.bimbingan?.map((bimbingan, index) => (
                           <TableRow
                             key={bimbingan.id}
-                            className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/20"
+                            className={`transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/20 ${index % 2 === 0 ? "bg-muted/30" : ""}`}
                           >
                             <TableCell className="font-medium text-center text-gray-900 dark:text-white">
                               {index + 1}

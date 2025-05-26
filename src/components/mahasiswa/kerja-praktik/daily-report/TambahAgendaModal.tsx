@@ -1,10 +1,11 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import toast, { Toaster } from "react-hot-toast";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { motion, AnimatePresence } from "framer-motion";
 import APIKerjaPraktik from "@/services/api/mahasiswa/daily-report.service";
+import { TimerOffIcon, TimerResetIcon } from "lucide-react";
 
 interface TambahAgendaModalProps {
   isOpen: boolean;
@@ -33,24 +34,6 @@ const TambahAgendaModal = ({
     judul_agenda?: string;
     deskripsi_agenda?: string;
   }>({});
-
-  useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setTimeout(onClose, 200);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscKey);
-      document.body.style.overflow = "hidden";
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleEscKey);
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen, onClose]);
 
   const validateForm = () => {
     const newErrors: {
@@ -126,7 +109,7 @@ const TambahAgendaModal = ({
         deskripsi_agenda: "",
       });
       if (onSave) onSave();
-      setTimeout(onClose, 1500);
+      setTimeout(onClose, 300);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Gagal menambahkan Agenda!";
@@ -239,15 +222,17 @@ const TambahAgendaModal = ({
                       <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                         Waktu Mulai <span className="text-red-500">*</span>
                       </label>
-                      <Input
-                        type="time"
-                        name="waktu_mulai"
-                        value={formData.waktu_mulai}
-                        onChange={handleChange}
-                        className={`w-full dark:bg-gray-700 dark:text-white ${
-                          errors.waktu_mulai ? "border-red-500" : ""
-                        }`}
-                      />
+                      <div className="relative w-full mt-1.5">
+                        <input
+                          type="time"
+                          name="waktu_mulai"
+                          value={formData.waktu_mulai}
+                          className={`bg-secondary date-input w-full py-2 pl-10 pr-4 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-white ${errors.waktu_mulai ? "border-red-500" : ""}`}
+                          onChange={handleChange}
+                        />
+                        {/* Ikon di pojok kiri input */}
+                        <TimerResetIcon className="absolute left-3 top-[20px] transform -translate-y-1/2 text-foreground w-5 h-5" />
+                      </div>
                       {errors.waktu_mulai && (
                         <p className="mt-1 text-xs text-red-500">
                           {errors.waktu_mulai}
@@ -258,15 +243,17 @@ const TambahAgendaModal = ({
                       <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                         Waktu Selesai <span className="text-red-500">*</span>
                       </label>
-                      <Input
-                        type="time"
-                        name="waktu_selesai"
-                        value={formData.waktu_selesai}
-                        onChange={handleChange}
-                        className={`w-full dark:bg-gray-700 dark:text-white ${
-                          errors.waktu_selesai ? "border-red-500" : ""
-                        }`}
-                      />
+                      <div className="relative w-full mt-1.5">
+                        <input
+                          type="time"
+                          name="waktu_selesai"
+                          value={formData.waktu_selesai}
+                          className={`bg-secondary date-input w-full py-2 pl-10 pr-4 rounded-md border border-gray-300 dark:bg-gray-700 dark:text-white ${errors.waktu_mulai ? "border-red-500" : ""}`}
+                          onChange={handleChange}
+                        />
+                        {/* Ikon di pojok kiri input */}
+                        <TimerOffIcon className="absolute left-3 top-[20px] transform -translate-y-1/2 text-foreground w-5 h-5" />
+                      </div>
                       {errors.waktu_selesai && (
                         <p className="mt-1 text-xs text-red-500">
                           {errors.waktu_selesai}

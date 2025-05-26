@@ -21,11 +21,19 @@ interface JadwalResponse {
   };
 }
 
-const DashboardJadwalCard: FC = () => {
+interface DashboardJadwalCardProps {
+  selectedTahunAjaranId: number | null;
+}
+
+const DashboardJadwalCard: FC<DashboardJadwalCardProps> = ({
+  selectedTahunAjaranId,
+}) => {
   // Fetch data menggunakan TanStack Query
   const { data, isLoading, isError } = useQuery<JadwalResponse>({
-    queryKey: ["koordinator-jadwal-seminar"],
-    queryFn: APISeminarKP.getJadwalSeminar,
+    queryKey: ["koordinator-jadwal-seminar", selectedTahunAjaranId],
+    queryFn: () =>
+      APISeminarKP.getJadwalSeminar(selectedTahunAjaranId ?? undefined),
+    enabled: selectedTahunAjaranId !== null,
   });
 
   const totalSeminars = data?.total_seminar || 0;

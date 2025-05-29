@@ -5,6 +5,7 @@ import {
   FileDigit,
   GraduationCap,
   History,
+  Loader2,
   Printer,
   Rocket,
   User,
@@ -71,8 +72,11 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
     URL.revokeObjectURL(link.href);   
   }
 
+  const [isLoadingCetakKartuMurojaah, setIsLoadingCetakKartuMurojaah] = useState(false);
   const handleCetakKartuMurojaah = async () => {
+    setIsLoadingCetakKartuMurojaah(true);
     const response = await APISetoran.getKartuMurojaahSaya();
+    setIsLoadingCetakKartuMurojaah(false);
     
     const pdfName = response.headers["content-disposition"].split("filename=")[1].replaceAll('"', '');
     const blob = new Blob([response.data], { type: "application/pdf" });
@@ -306,7 +310,9 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                   variant={"default"}
                   className="hidden md:flex bg-blue-500 text-white hover:bg-blue-700 active:scale-95"
                   onClick={handleCetakKartuMurojaah}
+                  disabled={isLoadingCetakKartuMurojaah}
                 >
+                  {isLoadingCetakKartuMurojaah && <Loader2 className="mr-1 animate-spin" />}
                   <Printer />
                   Cetak Kartu Muroja'ah
                 </Button>

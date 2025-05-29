@@ -213,7 +213,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailAgendaPage: React.FC =
                           <TableCell className="py-4 text-center">
                             <Button
                               size="sm"
-                              className="bg-indigo-600 hover:bg-indigo-700"
+                              className="text-white bg-indigo-500 hover:bg-indigo-700"
                               onClick={() => {
                                 setSelectedAgenda(entry);
                                 setIsModalOpen(true);

@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import toast, { Toaster } from "react-hot-toast";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm, Controller } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
@@ -285,7 +284,7 @@ const AssessmentModal = ({
             </Button>
             <Button
               type="submit"
-              className="bg-indigo-600 hover:bg-indigo-700"
+              className="text-white bg-indigo-600 hover:bg-indigo-700"
               disabled={isSubmitting}
             >
               {isSubmitting
@@ -605,7 +604,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
   }) => {
     return (
       <Card className="overflow-hidden border-none shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md">
-        <div className="flex items-center justify-between p-6 text-white bg-gradient-to-br from-indigo-600 to-purple-700 rounded-t-xl">
+        <div className="flex items-center justify-between p-6 text-white bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl">
           <div className="flex items-center gap-4">
             <div className="flex items-center justify-center border rounded-full shadow-inner w-14 h-14 bg-white/10 border-white/20">
               <User className="w-8 h-8 text-white" />
@@ -619,25 +618,25 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
               </p>
             </div>
           </div>
-          <Badge className="text-white bg-white/20 border-white/30">
+          <Badge className="px-3 py-1 text-white bg-white/20 border-white/30 hover:bg-white/20">
             {loading ? "..." : student?.status || "-"}
           </Badge>
         </div>
-        <div className="grid grid-cols-1 gap-6 p-6 bg-gray-50 dark:bg-gray-800/50 sm:grid-cols-2">
+        {/* <div className="grid grid-cols-1 gap-6 p-6 bg-gray-50 dark:bg-gray-800/50 sm:grid-cols-2">
           {loading ? (
             <>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center gap-3">
                 <Skeleton className="w-5 h-5" />
                 <Skeleton className="w-32 h-4" />
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center gap-3">
                 <Skeleton className="w-5 h-5" />
                 <Skeleton className="w-32 h-4" />
               </div>
             </>
           ) : (
             <>
-              <div className="flex gap-3">
+              <div className="flex items-center justify-center gap-3">
                 <Calendar className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 <div>
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -648,7 +647,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex gap-3">
+              <div className="flex items-center justify-center gap-3">
                 <Calendar className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 <div>
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -661,7 +660,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
               </div>
             </>
           )}
-        </div>
+        </div> */}
       </Card>
     );
   };
@@ -801,7 +800,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
                   </Button>
                   <Button
                     type="submit"
-                    className="bg-indigo-600 hover:bg-indigo-700"
+                    className="text-white bg-indigo-600 hover:bg-indigo-700"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Menyimpan..." : "Simpan"}
@@ -888,11 +887,23 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
           loading={isLoading}
         />
         <Card className="mt-6 border-none shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md">
-          <div className="flex flex-col items-start justify-end gap-4 p-6 border-b border-gray-200 sm:flex-row sm:items-center dark:border-gray-700">
+          <div className="flex flex-col items-start justify-between gap-4 p-6 border-b border-gray-200 sm:flex-row sm:items-center dark:border-gray-700">
+            <div className="flex items-center justify-center gap-3">
+              <Calendar className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              <div>
+                <p className="text-base text-gray-900 dark:text-white">
+                  {formatDate(detailMahasiswaInstansiSaya?.tanggal_mulai) ||
+                    "-"}{" "}
+                  -{" "}
+                  {formatDate(detailMahasiswaInstansiSaya?.tanggal_selesai) ||
+                    "-"}
+                </p>
+              </div>
+            </div>
             <div className="flex items-center w-full gap-3 sm:w-auto">
               <Button
                 size="sm"
-                className="bg-indigo-600 hover:bg-indigo-700"
+                className="text-white bg-indigo-600 hover:bg-indigo-700"
                 onClick={() => setIsBulkEvalModalOpen(true)}
                 disabled={
                   selectedRows.length === 0 || putDailyReportMutation.isPending
@@ -906,7 +917,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
                     <span>
                       <Button
                         size="sm"
-                        className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400"
+                        className="text-white bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400"
                         onClick={handleOpenAssessmentModal}
                         disabled={
                           !canAssess ||
@@ -915,7 +926,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
                           isModalOpening
                         }
                       >
-                        <Star className="w-4 h-4 mr-1" />
+                        <Star className="w-4 h-4" />
                         {(detailMahasiswaInstansiSaya.nilai?.[0]
                           ?.komponen_penilaian_instansi?.length ?? 0) > 0
                           ? "Edit Nilai"
@@ -957,7 +968,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
                         <Checkbox
                           checked={selectAll}
                           onCheckedChange={handleSelectAll}
-                          className="border-gray-500 text-indigo-600 data-[state=checked]:bg-indigo-600"
+                          className="border-gray-500 text-white dark:text-white data-[state=checked]:bg-indigo-600"
                         />
                       </TableHead>
                     </TableRow>
@@ -984,7 +995,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="text-indigo-600 border-indigo-300 hover:bg-indigo-50"
+                              className="text-indigo-600 border-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-500 dark:text-white"
                               onClick={() =>
                                 navigate(
                                   `/pembimbing-instansi/kerja-praktik/detail-mahasiswa/daily-report/${row.id}`
@@ -1000,7 +1011,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
                           <Checkbox
                             checked={selectedRows.includes(row.id)}
                             onCheckedChange={() => handleCheckboxChange(row.id)}
-                            className="border-gray-500 text-indigo-600 data-[state=checked]:bg-indigo-600"
+                            className="border-gray-500 text-white dark:text-white data-[state=checked]:bg-indigo-600"
                           />
                         </TableCell>
                       </TableRow>
@@ -1023,8 +1034,8 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
                       onClick={handlePrevPage}
                       disabled={currentPage === 1}
                     >
-                      <ChevronLeft size={16} className="mr-1" />
-                      Previous
+                      <ChevronLeft size={16} />
+                      Prev
                     </Button>
                     <div className="flex gap-1">
                       {Array.from({ length: totalPages }, (_, i) => i + 1).map(
@@ -1038,8 +1049,8 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
                             onClick={() => handlePageChange(pageNum)}
                             className={
                               pageNum === currentPage
-                                ? "bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
-                                : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                                ? "bg-indigo-100 text-indigo-700 hover:bg-indigo-100"
+                                : "border-gray-300 text-indigo-700 dark:text-white dark:hover:text-indigo-700 hover:bg-indigo-100"
                             }
                           >
                             {pageNum}
@@ -1054,7 +1065,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
                       disabled={currentPage === totalPages}
                     >
                       Next
-                      <ChevronRight size={16} className="ml-1" />
+                      <ChevronRight size={16} />
                     </Button>
                   </div>
                 </div>

@@ -303,7 +303,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaPage = () => {
         transition={{ delay: 0.2, duration: 0.7 }}
       >
         <Card className="mb-8 border-none shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md">
-          <div className="flex items-center justify-between p-6 text-white bg-gradient-to-br from-indigo-600 to-purple-700 rounded-t-xl">
+          <div className="flex items-center justify-between p-6 text-white bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl">
             <div className="flex items-center gap-4">
               <div className="flex items-center justify-center border rounded-full shadow-inner w-14 h-14 bg-white/10 border-white/20">
                 <User className="w-8 h-8 text-white" />
@@ -319,7 +319,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaPage = () => {
             </div>
             <Button
               variant="ghost"
-              className="text-white hover:bg-white/20"
+              className="text-white bg-white/20 hover:bg-white/30"
               onClick={() => setIsProfileExpanded(!isProfileExpanded)}
             >
               {isProfileExpanded ? (

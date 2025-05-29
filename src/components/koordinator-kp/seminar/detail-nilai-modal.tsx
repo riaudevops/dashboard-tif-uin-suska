@@ -116,9 +116,9 @@ const DetailNilaiModal: FC<DetailNilaiModalProps> = ({
   };
 
   const pengujiLabels = {
-    penguasaan_keilmuan: "Penguasaan Materi (40%)",
-    kemampuan_presentasi: "Teknik Presentasi (25%)",
-    kesesuaian_urgensi: "Kesesuaian Laporan dan Presentasi (35%)",
+    penguasaan_keilmuan: "Penguasaan Materi",
+    kemampuan_presentasi: "Teknik Presentasi",
+    kesesuaian_urgensi: "Kesesuaian Laporan dan Presentasi",
     catatan: "Catatan",
   };
 

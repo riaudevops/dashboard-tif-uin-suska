@@ -30,8 +30,6 @@ interface JadwalSeminar {
   pembimbing_instansi: string;
   status: "Menunggu" | "Selesai" | "Jadwal_Ulang";
   durasi?: number;
-  jam?: string;
-  jam_selesai?: string;
 }
 
 interface TahunAjaran {

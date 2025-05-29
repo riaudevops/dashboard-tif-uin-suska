@@ -34,6 +34,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import DashboardCards from "@/components/dosen/seminar-kp/DashboardCard";
+import { Toaster } from "react-hot-toast";
 
 // Type definitions
 interface Student {
@@ -302,6 +303,7 @@ const DosenPengujiNilaiPage: FC = () => {
 
   return (
     <DashboardLayout>
+      <Toaster position="top-right" />
       <div className="transition-colors duration-300">
         <div className="space-y-4">
           <div className="flex justify-between mb-4">

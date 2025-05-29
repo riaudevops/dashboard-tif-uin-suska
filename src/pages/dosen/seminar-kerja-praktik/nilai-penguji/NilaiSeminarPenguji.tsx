@@ -170,7 +170,7 @@ const NilaiSeminarPenguji: React.FC = () => {
     }
 
     const payload = {
-      nilaiId: student.idNilai,
+      nilaiId: student.idNilai || "", // Fallback to empty string if idNilai is undefined
       penguasaanKeilmuan: scores.penguasaan,
       kemampuanPresentasi: scores.presentasi,
       kesesuaianUrgensi: scores.kesesuaian,
@@ -255,18 +255,39 @@ const NilaiSeminarPenguji: React.FC = () => {
     );
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      let newValue = e.target.value.replace(/\D/g, "").slice(0, 2); // Ambil hanya 2 digit pertama, hapus karakter non-digit
+      let newValue = e.target.value.replace(/\D/g, ""); // Hapus karakter non-digit
       if (newValue === "") newValue = "0"; // Jika kosong, set ke 0
+
+      // Jika input dimulai dengan "100" dan panjangnya 3 atau lebih, set ke 100
+      if (newValue.startsWith("100") && newValue.length >= 3) {
+        setDisplayValue(100);
+        return;
+      }
+
+      // Jika panjang lebih dari 2 digit dan bukan "100", ambil 2 digit pertama
+      if (newValue.length > 2) {
+        newValue = newValue.slice(0, 2);
+      }
+
       const parsedValue = parseInt(newValue) || 0;
-      const clampedValue = Math.min(100, Math.max(0, parsedValue)); // Batasi maksimum 100
-      setDisplayValue(clampedValue);
-      // Jangan panggil onChange di sini, biarkan sinkronisasi pada blur
+      setDisplayValue(parsedValue);
     };
 
     const handleInputBlur = useCallback(() => {
-      const clampedValue = Math.min(100, Math.max(0, displayValue)); // Batasi maksimum 100
-      setDisplayValue(clampedValue);
-      onChange(criteria.id, clampedValue); // Sinkronisasi dengan scores saat blur
+      let finalValue = displayValue;
+
+      // Jika input adalah "100", kita izinkan
+      if (displayValue.toString() === "100") {
+        finalValue = 100;
+      } else if (displayValue.toString().length > 2) {
+        // Jika panjang lebih dari 2 digit, ambil 2 digit pertama
+        finalValue = parseInt(displayValue.toString().slice(0, 2)) || 0;
+      }
+
+      // Batasi nilai antara 0 dan 100
+      finalValue = Math.min(100, Math.max(0, finalValue));
+      setDisplayValue(finalValue);
+      onChange(criteria.id, finalValue); // Sinkronisasi dengan scores saat blur
     }, [displayValue, criteria.id, onChange]);
 
     const handleInputFocus = () => {

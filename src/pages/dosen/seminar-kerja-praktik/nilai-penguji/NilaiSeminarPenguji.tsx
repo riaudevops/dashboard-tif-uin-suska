@@ -617,23 +617,6 @@ const NilaiSeminarPenguji: React.FC = () => {
             </div>
           </div>
         </div>
-
-        <div className="mt-6 flex justify-center md:hidden">
-          <button
-            onClick={handleSubmit}
-            disabled={
-              isLoading || Object.values(scores).some((score) => score === 0)
-            }
-            className={`flex items-center px-6 py-3 rounded-lg font-medium text-white transition-all ${
-              isLoading || Object.values(scores).some((score) => score === 0)
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-md hover:shadow-lg"
-            }`}
-          >
-            <Save size={20} className="mr-2" />
-            {isLoading ? "Menyimpan..." : "Simpan Penilaian"}
-          </button>
-        </div>
       </div>
     </DashboardLayout>
   );

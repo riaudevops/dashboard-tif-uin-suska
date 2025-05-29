@@ -2,12 +2,12 @@ import { useState, useEffect, type FC } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import ScheduleTable from "@/components/koordinator-kp/seminar/ScheduleTable";
-import DashboardJadwalCard from "@/components/dosen/seminar-kp/DashboardJadwalCard";
 import EditJadwalSeminarModal from "@/components/koordinator-kp/seminar/edit-jadwal-modal";
 import LogJadwalModal from "@/components/koordinator-kp/seminar/log-jadwal-modal";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 import { Toaster } from "react-hot-toast";
 import { toast } from "@/hooks/use-toast";
+import { CalendarCheck2Icon, ChevronRight } from "lucide-react";
 
 // Type Definitions
 interface Mahasiswa {
@@ -273,11 +273,6 @@ const KoordinatorJadwalSeminarPage: FC = () => {
       await queryClient.invalidateQueries({
         queryKey: ["koordinator-jadwal-seminar", selectedTahunAjaranId],
       });
-      toast({
-        title: "✅ Berhasil",
-        description: "Jadwal seminar berhasil diperbarui.",
-        duration: 3000,
-      });
     } catch (error) {
       toast({
         title: "❌ Gagal",
@@ -344,6 +339,44 @@ const KoordinatorJadwalSeminarPage: FC = () => {
   return (
     <DashboardLayout>
       <Toaster position="top-right" />
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex">
+          <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+            <span
+              className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+            />
+            <CalendarCheck2Icon className="w-4 h-4 mr-1.5" />
+            Jadwal Seminar Kerja Praktik Mahasiswa
+          </span>
+        </div>
+
+        {/* Academic Year Dropdown */}
+        <div className="flex items-center gap-2 dark:text-gray-200">
+          <div className="relative">
+            <select
+              className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0 disabled:opacity-50"
+              value={selectedTahunAjaranId ?? ""}
+              onChange={(e) => setSelectedTahunAjaranId(Number(e.target.value))}
+              disabled={isTahunAjaranLoading || !tahunAjaranData}
+            >
+              {isTahunAjaranLoading ? (
+                <option value="">Memuat tahun ajaran...</option>
+              ) : tahunAjaranData && tahunAjaranData.length > 0 ? (
+                tahunAjaranData.map((year) => (
+                  <option key={year.id} value={year.id}>
+                    {year.nama}
+                  </option>
+                ))
+              ) : (
+                <option value="">Tidak ada tahun ajaran tersedia</option>
+              )}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <ChevronRight className="w-4 h-4 text-gray-500 rotate-90" />
+            </div>
+          </div>
+        </div>
+      </div>
       <ScheduleTable
         data={filteredData}
         onEdit={handleOpenModal}

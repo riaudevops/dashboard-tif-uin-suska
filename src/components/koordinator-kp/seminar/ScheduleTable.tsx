@@ -2,7 +2,6 @@ import { type FC, useEffect, useState, useRef } from "react";
 import {
   Search,
   History,
-  ChevronRight,
   Calendar,
   Clock,
   Building,
@@ -79,8 +78,6 @@ const ScheduleTable: FC<{
   data,
   onEdit,
   selectedTahunAjaranId,
-  setSelectedTahunAjaranId,
-  tahunAjaranData,
   searchQuery,
   setSearchQuery,
   activeTab,
@@ -349,32 +346,6 @@ const ScheduleTable: FC<{
       <div>
         {/* Header */}
         <div className="mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-200">
-              Jadwal Sidang Kerja Praktek
-            </h1>
-            <div className="relative">
-              <select
-                className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
-                value={selectedTahunAjaranId ?? ""}
-                onChange={(e) =>
-                  setSelectedTahunAjaranId(Number(e.target.value))
-                }
-                disabled={tahunAjaranData?.length === 0}
-              >
-                {tahunAjaranData && tahunAjaranData.length > 0 ? (
-                  tahunAjaranData.map((year) => (
-                    <option key={year.id} value={year.id}>
-                      {year.nama}
-                    </option>
-                  ))
-                ) : (
-                  <option value="">Tidak ada tahun ajaran tersedia</option>
-                )}
-              </select>
-            </div>
-          </div>
-
           <DashboardJadwalCard selectedTahunAjaranId={selectedTahunAjaranId} />
 
           {/* Filter and Search */}

@@ -1,485 +1,4 @@
-import { useState, type FC } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { Search, Edit, History, CalendarCheck2Icon } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import DashboardJadwalCard from "@/components/dosen/seminar-kp/DashboardJadwalCard";
-import EditJadwalSeminarModal from "@/components/koordinator-kp/seminar/edit-jadwal-modal";
-import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
-import { Toaster } from "react-hot-toast";
-import LogJadwalModal from "@/components/koordinator-kp/seminar/log-jadwal-modal";
-
-// Tipe untuk data seminar
-interface Mahasiswa {
-  nama: string;
-  nim: string;
-  semester: number;
-}
-
-interface JadwalSeminar {
-  id: string;
-  mahasiswa: Mahasiswa;
-  status_kp: "Baru" | "Lanjut";
-  ruangan: string;
-  jam: string;
-  waktu_selesai: string;
-  tanggal: string;
-  dosen_penguji: string;
-  dosen_pembimbing: string;
-  instansi: string;
-  pembimbing_instansi: string;
-  status: "Menunggu" | "Selesai" | "Jadwal_Ulang";
-}
-
-interface JadwalResponse {
-  total_seminar: number;
-  total_seminar_minggu_ini: number;
-  total_jadwal_ulang: number;
-  jadwal: {
-    semua: JadwalSeminar[];
-    hari_ini: JadwalSeminar[];
-    minggu_ini: JadwalSeminar[];
-  };
-  tahun_ajaran: {
-    id: number;
-    nama: string;
-  };
-}
-
-interface LogEntry {
-  id: string;
-  action: "create" | "update";
-  timestamp: string;
-  changes: {
-    field: string;
-    oldValue?: string;
-    newValue?: string;
-  }[];
-  keterangan?: string;
-  id_jadwal?: string;
-}
-
-// Komponen Utama
-const KoordinatorJadwalSeminarPage: FC = () => {
-  const queryClient = useQueryClient();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLogModalOpen, setIsLogModalOpen] = useState(false);
-  const [selectedSeminar, setSelectedSeminar] = useState<JadwalSeminar | null>(
-    null
-  );
-  const [selectedSeminarId, setSelectedSeminarId] = useState<string | null>(
-    null
-  );
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<
-    "semua" | "hari_ini" | "minggu_ini"
-  >("semua");
-  console.log("Active Tab:", activeTab);
-
-  // Fetch jadwal seminar
-  const { data, isLoading, isError, error } = useQuery<JadwalResponse>({
-    queryKey: ["koordinator-jadwal-seminar"],
-    queryFn: APISeminarKP.getJadwalSeminar,
-  });
-
-  // Fetch log jadwal
-  const {
-    data: logData,
-    isLoading: isLogLoading,
-    isError: isLogError,
-    error: logError,
-  } = useQuery({
-    queryKey: ["log-jadwal"],
-    queryFn: APISeminarKP.getLogJadwal,
-  });
-
-  // Ambil data untuk masing-masing tab dari API
-  const semuaSeminars: JadwalSeminar[] = data?.jadwal?.semua || [];
-  const hariIniSeminars: JadwalSeminar[] = data?.jadwal?.hari_ini || [];
-  const mingguIniSeminars: JadwalSeminar[] = data?.jadwal?.minggu_ini || [];
-
-  // Map logJadwal ke LogEntry
-  const logs: LogEntry[] = (logData?.logJadwal || [])
-    .map((log: any) => {
-      const changes: LogEntry["changes"] = [];
-
-      // Tanggal
-      if (
-        log.tanggal_lama &&
-        log.tanggal_baru &&
-        log.tanggal_lama !== log.tanggal_baru
-      ) {
-        changes.push({
-          field: "tanggal",
-          oldValue: new Date(log.tanggal_lama).toLocaleDateString("id-ID", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          }),
-          newValue: new Date(log.tanggal_baru).toLocaleDateString("id-ID", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          }),
-        });
-      }
-
-      // Ruangan
-      if (
-        log.ruangan_lama &&
-        log.ruangan_baru &&
-        log.ruangan_lama !== log.ruangan_baru
-      ) {
-        changes.push({
-          field: "ruangan",
-          oldValue: log.ruangan_lama,
-          newValue: log.ruangan_baru,
-        });
-      }
-
-      // Dosen Penguji
-      if (
-        log.nama_penguji_lama &&
-        log.nama_penguji_baru &&
-        log.nama_penguji_lama !== log.nama_penguji_baru
-      ) {
-        changes.push({
-          field: "dosen_penguji",
-          oldValue: log.nama_penguji_lama,
-          newValue: log.nama_penguji_baru,
-        });
-      } else if (log.nama_penguji_baru) {
-        // For CREATE logs or updates with only new examiner
-        changes.push({
-          field: "dosen_penguji",
-          oldValue: undefined,
-          newValue: log.nama_penguji_baru,
-        });
-      }
-
-      return {
-        id: log.id,
-        action: log.log_type.toLowerCase() as "create" | "update",
-        timestamp: log.created_at,
-        changes,
-        keterangan: log.keterangan,
-        id_jadwal: log.id_jadwal,
-      };
-    })
-    .sort(
-      (a: LogEntry, b: LogEntry) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
-
-  const filteredLogs = selectedSeminarId
-    ? logs.filter((log) => log.id_jadwal === selectedSeminarId)
-    : logs;
-
-  // Filter berdasarkan pencarian nama mahasiswa untuk setiap tab
-  const filteredSemuaSeminars = semuaSeminars.filter((seminar) =>
-    seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const filteredHariIniSeminars = hariIniSeminars.filter((seminar) =>
-    seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const filteredMingguIniSeminars = mingguIniSeminars.filter((seminar) =>
-    seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleOpenModal = (seminar: JadwalSeminar) => {
-    setSelectedSeminar(seminar);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedSeminar(null);
-  };
-
-  const handleSaveSeminar = async (updatedSeminar: JadwalSeminar) => {
-    try {
-      // Invalidate queries to refetch logs and seminars
-      await queryClient.invalidateQueries({ queryKey: ["log-jadwal"] });
-      await queryClient.invalidateQueries({
-        queryKey: ["koordinator-jadwal-seminar"],
-      });
-    } catch (error) {
-      console.error("Failed to update seminar:", error);
-      // Optionally show error toast
-    } finally {
-      handleCloseModal();
-    }
-  };
-
-  const handleOpenLogModal = () => {
-    setSelectedSeminarId(null);
-    setIsLogModalOpen(true);
-  };
-
-  const handleCloseLogModal = () => {
-    setIsLogModalOpen(false);
-    setSelectedSeminarId(null);
-  };
-
-  if (isLoading) {
-    return (
-      <DashboardLayout>
-        <div className="text-center text-gray-600 dark:text-gray-300">
-          Memuat jadwal seminar...
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  if (isError) {
-    return (
-      <DashboardLayout>
-        <div className="text-center text-red-600 dark:text-red-300">
-          Gagal mengambil data: {(error as Error).message}
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  return (
-    <DashboardLayout>
-      <Toaster position="top-right" />
-      <div>
-        <div className="space-y-5">
-          <div className="flex justify-between items-center">
-            <div className="flex">
-              <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
-                <span
-                  className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
-                />
-                <CalendarCheck2Icon className="w-4 h-4 mr-1.5" />
-                Jadwal Seminar Kerja Praktik Mahasiswa
-              </span>
-            </div>
-              
-            {/* Academic Year */}
-            <div>
-              <span
-                className="bg-gray-100 text-sm font-medium dark:bg-gray-900 py-2 px-3 rounded-lg dark:text-gray-300"
-              >
-                {data?.tahun_ajaran?.nama || "Tidak tersedia"}
-              </span>
-            </div>
-
-          </div>
-
-          <DashboardJadwalCard />
-
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <Tabs
-              defaultValue="semua"
-              onValueChange={(value) =>
-                setActiveTab(value as "semua" | "hari_ini" | "minggu_ini")
-              }
-              className="w-full"
-            >
-              <div className="flex flex-col items-start justify-between w-full gap-4 md:flex-row md:items-center">
-                <TabsList className="dark:bg-gray-700">
-                  <TabsTrigger
-                    value="semua"
-                    className="dark:data-[state=active]:bg-gray-800"
-                  >
-                    Semua
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="hari_ini"
-                    className="dark:data-[state=active]:bg-gray-800"
-                  >
-                    Hari Ini
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="minggu_ini"
-                    className="dark:data-[state=active]:bg-gray-800"
-                  >
-                    Minggu Ini
-                  </TabsTrigger>
-                </TabsList>
-
-                <div className="relative flex items-center w-full">
-                  <Search className="absolute w-4 h-4 text-gray-400 left-3" />
-                  <Input
-                    type="text"
-                    placeholder="Cari nama mahasiswa..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200"
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="ml-2 bg-blue-500 hover:bg-blue-600 text-white transition-colors"
-                    onClick={handleOpenLogModal}
-                  >
-                    <History className="h-4 w-4 mr-1" />
-                    Log Jadwal
-                  </Button>
-                </div>
-              </div>
-
-              <TabsContent value="semua" className="mt-4">
-                <SeminarTable
-                  seminars={filteredSemuaSeminars}
-                  onEdit={handleOpenModal}
-                />
-              </TabsContent>
-              <TabsContent value="hari_ini" className="mt-4">
-                <SeminarTable
-                  seminars={filteredHariIniSeminars}
-                  onEdit={handleOpenModal}
-                />
-              </TabsContent>
-              <TabsContent value="minggu_ini" className="mt-4">
-                <SeminarTable
-                  seminars={filteredMingguIniSeminars}
-                  onEdit={handleOpenModal}
-                />
-              </TabsContent>
-            </Tabs>
-          </div>
-        </div>
-      </div>
-
-      <EditJadwalSeminarModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        seminar={selectedSeminar}
-        onSave={handleSaveSeminar}
-      />
-      <LogJadwalModal
-        isOpen={isLogModalOpen}
-        onClose={handleCloseLogModal}
-        seminarId={selectedSeminarId}
-        logs={filteredLogs}
-        isLoading={isLogLoading}
-        isError={isLogError}
-        error={logError}
-      />
-    </DashboardLayout>
-  );
-};
-
-// Komponen Tabel Seminar
-const SeminarTable: FC<{
-  seminars: JadwalSeminar[];
-  onEdit: (seminar: JadwalSeminar) => void;
-}> = ({ seminars, onEdit }) => {
-  return (
-    <Card className="rounded-none shadow-none dark:bg-gray-900 dark:border-gray-700">
-      <Table>
-        <TableHeader className="bg-gray-200 dark:bg-gray-700">
-          <TableRow className="hover:bg-gray-300 dark:hover:bg-gray-600">
-            <TableHead className="font-semibold dark:text-gray-200">
-              Nama Mahasiswa
-            </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
-              NIM
-            </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
-              Ruangan
-            </TableHead>
-            <TableHead className="font-semibold text-center dark:text-gray-200">
-              Jam
-            </TableHead>
-            <TableHead className="font-semibold text-center dark:text-gray-200">
-              Tanggal Seminar
-            </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
-              Dosen Pembimbing
-            </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
-              Dosen Penguji
-            </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
-              Status
-            </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
-              Aksi
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {seminars.length === 0 ? (
-            <TableRow className="dark:border-gray-700 dark:hover:bg-gray-700">
-              <TableCell
-                colSpan={9}
-                className="text-center py-6 text-muted-foreground dark:text-gray-400"
-              >
-                Tidak ada data yang ditemukan
-              </TableCell>
-            </TableRow>
-          ) : (
-            seminars.map((seminar) => (
-              <TableRow
-                key={seminar.id}
-                className="dark:border-gray-700 dark:hover:bg-gray-700"
-              >
-                <TableCell className="font-medium dark:text-gray-300 text-xs">
-                  {seminar.mahasiswa.nama}
-                </TableCell>
-                <TableCell className="text-center dark:text-gray-300 text-xs">
-                  {seminar.mahasiswa.nim}
-                </TableCell>
-                <TableCell className="text-center dark:text-gray-300 text-xs">
-                  {seminar.ruangan}
-                </TableCell>
-                <TableCell className="text-center dark:text-gray-300 text-xs">
-                  {seminar.jam}
-                </TableCell>
-                <TableCell className="text-center dark:text-gray-300 text-xs">
-                  {seminar.tanggal}
-                </TableCell>
-                <TableCell className="text-center dark:text-gray-300 text-xs">
-                  {seminar.dosen_pembimbing}
-                </TableCell>
-                <TableCell className="text-center dark:text-gray-300 text-xs">
-                  {seminar.dosen_penguji}
-                </TableCell>
-                <TableCell className="text-center dark:text-gray-300 text-xs">
-                  {seminar.status}
-                </TableCell>
-                <TableCell className="text-center">
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="text-white bg-blue-500 hover:bg-blue-600"
-                    onClick={() => onEdit(seminar)}
-                  >
-                    <Edit className="h-3.5 w-3.5 mr-1" />
-                    Edit
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </Card>
-  );
-};
-
-export default KoordinatorJadwalSeminarPage;
-
-// import { useState, type FC, useEffect, useRef } from "react";
+// import { useState, type FC, useEffect } from "react";
 // import { useQuery, useQueryClient } from "@tanstack/react-query";
 // import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 // import {
@@ -504,10 +23,10 @@ export default KoordinatorJadwalSeminarPage;
 //   HoverCardContent,
 //   HoverCardTrigger,
 // } from "@/components/ui/hover-card";
-// import EditJadwalSeminarModal from "@/components/koordinator/seminar/edit-jadwal-modal";
+// import EditJadwalSeminarModal from "@/components/koordinator-kp/seminar/edit-jadwal-modal";
 // import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 // import { Toaster } from "react-hot-toast";
-// import LogJadwalModal from "@/components/koordinator/seminar/log-jadwal-modal";
+// import LogJadwalModal from "@/components/koordinator-kp/seminar/log-jadwal-modal";
 // import DashboardJadwalCard from "@/components/dosen/seminar-kp/DashboardJadwalCard";
 
 // // Interfaces
@@ -523,6 +42,7 @@ export default KoordinatorJadwalSeminarPage;
 //   status_kp: "Baru" | "Lanjut";
 //   ruangan: string;
 //   jam: string;
+
 //   waktu_selesai?: string;
 //   tanggal: string;
 //   dosen_penguji: string;
@@ -844,7 +364,7 @@ export default KoordinatorJadwalSeminarPage;
 //                             </HoverCardTrigger>
 //                             <HoverCardContent
 //                               side="top"
-//                               className="w-80  text-xs rounded-lg shadow-lg z-50 p-3 border-none"
+//                               className="w-80 text-xs rounded-lg shadow-lg z-50 p-3 border-none"
 //                             >
 //                               <div className="space-y-1">
 //                                 <div className="font-semibold">
@@ -942,7 +462,7 @@ export default KoordinatorJadwalSeminarPage;
 //   };
 
 //   return (
-//     <div className="bg-white dark:bg-gray-800 rounded-none shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+//     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
 //       {/* Week Navigation - only show for weekly views */}
 //       {activeTab !== "hari_ini" && (
 //         <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
@@ -1316,10 +836,13 @@ export default KoordinatorJadwalSeminarPage;
 //           </button>
 //         </div>
 
-//         <DashboardJadwalCard />
+//         {/* Dashboard Card (Static) */}
+//         <div className="w-full">
+//           <DashboardJadwalCard />
+//         </div>
 
-//         {/* Controls */}
-//         <div>
+//         {/* Controls (Static) */}
+//         <div className="w-full">
 //           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
 //             {/* Tabs */}
 //             <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
@@ -1331,7 +854,7 @@ export default KoordinatorJadwalSeminarPage;
 //                 <button
 //                   key={tab.key}
 //                   onClick={() => setActiveTab(tab.key as typeof activeTab)}
-//                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+//                   className={`px-4 py-2 rounded-md text-xs font-medium transition-colors ${
 //                     activeTab === tab.key
 //                       ? "bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm"
 //                       : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
@@ -1356,22 +879,24 @@ export default KoordinatorJadwalSeminarPage;
 //           </div>
 //         </div>
 
-//         {/* Content */}
-//         {activeTab === "semua" ? (
-//           <AllSeminarsGrid
-//             seminars={data?.jadwal.semua || []}
-//             searchQuery={searchQuery}
-//             onEditSeminar={handleOpenModal}
-//           />
-//         ) : (
-//           <CalendarGrid
-//             activeTab={activeTab}
-//             currentWeek={currentWeek}
-//             onNavigateWeek={navigateWeek}
-//             seminars={data?.jadwal.by_ruangan[activeTab] || {}}
-//             onEditSeminar={handleOpenModal}
-//           />
-//         )}
+//         {/* Scrollable Table */}
+//         <div className="w-full overflow-x-auto">
+//           {activeTab === "semua" ? (
+//             <AllSeminarsGrid
+//               seminars={data?.jadwal.semua || []}
+//               searchQuery={searchQuery}
+//               onEditSeminar={handleOpenModal}
+//             />
+//           ) : (
+//             <CalendarGrid
+//               activeTab={activeTab}
+//               currentWeek={currentWeek}
+//               onNavigateWeek={navigateWeek}
+//               seminars={data?.jadwal.by_ruangan[activeTab] || {}}
+//               onEditSeminar={handleOpenModal}
+//             />
+//           )}
+//         </div>
 //       </div>
 
 //       {/* Modals */}
@@ -1395,3 +920,567 @@ export default KoordinatorJadwalSeminarPage;
 // };
 
 // export default KoordinatorJadwalSeminarPage;
+
+import { useState, useEffect, type FC } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
+import {
+  Search,
+  Edit,
+  History,
+  CalendarCheck2Icon,
+  ChevronRight,
+} from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import DashboardJadwalCard from "@/components/dosen/seminar-kp/DashboardJadwalCard";
+import EditJadwalSeminarModal from "@/components/koordinator-kp/seminar/edit-jadwal-modal";
+import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
+import { Toaster } from "react-hot-toast";
+import LogJadwalModal from "@/components/koordinator-kp/seminar/log-jadwal-modal";
+import { toast } from "@/hooks/use-toast";
+
+// Type definitions
+interface Mahasiswa {
+  nama: string;
+  nim: string;
+  semester: number;
+}
+
+interface JadwalSeminar {
+  id: string;
+  mahasiswa: Mahasiswa;
+  status_kp: "Baru" | "Lanjut";
+  ruangan: string;
+  waktu_mulai: string;
+  waktu_selesai: string;
+  tanggal: string;
+  dosen_penguji: string;
+  dosen_pembimbing: string;
+  instansi: string;
+  pembimbing_instansi: string;
+  status: "Menunggu" | "Selesai" | "Jadwal_Ulang";
+}
+
+interface TahunAjaran {
+  id: number;
+  nama: string;
+}
+
+interface JadwalResponse {
+  total_seminar: number;
+  total_seminar_minggu_ini: number;
+  total_jadwal_ulang: number;
+  jadwal: {
+    semua: JadwalSeminar[];
+    hari_ini: JadwalSeminar[];
+    minggu_ini: JadwalSeminar[];
+  };
+  tahun_ajaran: TahunAjaran;
+}
+
+interface LogEntry {
+  id: string;
+  action: "create" | "update";
+  timestamp: string;
+  changes: {
+    field: string;
+    oldValue?: string;
+    newValue?: string;
+  }[];
+  keterangan?: string;
+  id_jadwal?: string;
+}
+
+// Main Component
+const KoordinatorJadwalSeminarPage: FC = () => {
+  const queryClient = useQueryClient();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLogModalOpen, setIsLogModalOpen] = useState(false);
+  const [selectedSeminar, setSelectedSeminar] = useState<JadwalSeminar | null>(
+    null
+  );
+  const [selectedSeminarId, setSelectedSeminarId] = useState<string | null>(
+    null
+  );
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<
+    "semua" | "hari_ini" | "minggu_ini"
+  >("semua");
+  const [selectedTahunAjaranId, setSelectedTahunAjaranId] = useState<
+    number | null
+  >(null);
+
+  // Fetch academic years
+  const {
+    data: tahunAjaranData,
+    isLoading: isTahunAjaranLoading,
+    isError: isTahunAjaranError,
+    error: tahunAjaranError,
+  } = useQuery<TahunAjaran[]>({
+    queryKey: ["tahun-ajaran"],
+    queryFn: APISeminarKP.getTahunAjaran,
+  });
+
+  // Fetch seminar schedule
+  const { data, isLoading, isError, error } = useQuery<JadwalResponse>({
+    queryKey: ["koordinator-jadwal-seminar", selectedTahunAjaranId],
+    queryFn: () =>
+      APISeminarKP.getJadwalSeminar(selectedTahunAjaranId ?? undefined),
+    enabled: selectedTahunAjaranId !== null,
+  });
+
+  // Fetch log jadwal
+  const {
+    data: logData,
+    isLoading: isLogLoading,
+    isError: isLogError,
+    error: logError,
+  } = useQuery({
+    queryKey: ["log-jadwal"],
+    queryFn: APISeminarKP.getLogJadwal,
+  });
+
+  // Set default tahun ajaran to the first available year
+  useEffect(() => {
+    if (
+      tahunAjaranData &&
+      tahunAjaranData.length > 0 &&
+      selectedTahunAjaranId === null
+    ) {
+      setSelectedTahunAjaranId(tahunAjaranData[0].id);
+    }
+  }, [tahunAjaranData, selectedTahunAjaranId]);
+
+  // Synchronize tahun ajaran with API response
+  useEffect(() => {
+    if (
+      data?.tahun_ajaran?.id &&
+      data.tahun_ajaran.id !== selectedTahunAjaranId &&
+      tahunAjaranData?.some((tahun) => tahun.id === data.tahun_ajaran.id)
+    ) {
+      setSelectedTahunAjaranId(data.tahun_ajaran.id);
+    }
+  }, [data, tahunAjaranData, selectedTahunAjaranId]);
+
+  // Map logJadwal to LogEntry
+  const logs: LogEntry[] = (logData?.logJadwal || [])
+    .map((log: any) => {
+      const changes: LogEntry["changes"] = [];
+
+      // Tanggal
+      if (
+        log.tanggal_lama &&
+        log.tanggal_baru &&
+        log.tanggal_lama !== log.tanggal_baru
+      ) {
+        changes.push({
+          field: "tanggal",
+          oldValue: new Date(log.tanggal_lama).toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          }),
+          newValue: new Date(log.tanggal_baru).toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          }),
+        });
+      }
+
+      // Ruangan
+      if (
+        log.ruangan_lama &&
+        log.ruangan_baru &&
+        log.ruangan_lama !== log.ruangan_baru
+      ) {
+        changes.push({
+          field: "ruangan",
+          oldValue: log.ruangan_lama,
+          newValue: log.ruangan_baru,
+        });
+      }
+
+      // Dosen Penguji
+      if (
+        log.nama_penguji_lama &&
+        log.nama_penguji_baru &&
+        log.nama_penguji_lama !== log.nama_penguji_baru
+      ) {
+        changes.push({
+          field: "dosen_penguji",
+          oldValue: log.nama_penguji_lama,
+          newValue: log.nama_penguji_baru,
+        });
+      } else if (log.nama_penguji_baru) {
+        changes.push({
+          field: "dosen_penguji",
+          oldValue: undefined,
+          newValue: log.nama_penguji_baru,
+        });
+      }
+
+      return {
+        id: log.id,
+        action: log.log_type.toLowerCase() as "create" | "update",
+        timestamp: log.created_at,
+        changes,
+        keterangan: log.keterangan,
+        id_jadwal: log.id_jadwal,
+      };
+    })
+    .sort(
+      (a: LogEntry, b: LogEntry) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
+
+  const filteredLogs = selectedSeminarId
+    ? logs.filter((log) => log.id_jadwal === selectedSeminarId)
+    : logs;
+
+  // Filter seminars based on search query
+  const filteredSemuaSeminars = (data?.jadwal?.semua || []).filter((seminar) =>
+    seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredHariIniSeminars = (data?.jadwal?.hari_ini || []).filter(
+    (seminar) =>
+      seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredMingguIniSeminars = (data?.jadwal?.minggu_ini || []).filter(
+    (seminar) =>
+      seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleOpenModal = (seminar: JadwalSeminar) => {
+    setSelectedSeminar(seminar);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedSeminar(null);
+  };
+
+  const handleSaveSeminar = async (updatedSeminar: JadwalSeminar) => {
+    try {
+      await queryClient.invalidateQueries({ queryKey: ["log-jadwal"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["koordinator-jadwal-seminar", selectedTahunAjaranId],
+      });
+    } catch (error) {
+      toast({
+        title: "❌ Gagal",
+        description: "Gagal memperbarui jadwal seminar.",
+        duration: 3000,
+      });
+    } finally {
+      handleCloseModal();
+    }
+  };
+
+  const handleOpenLogModal = () => {
+    setSelectedSeminarId(null);
+    setIsLogModalOpen(true);
+  };
+
+  const handleCloseLogModal = () => {
+    setIsLogModalOpen(false);
+    setSelectedSeminarId(null);
+  };
+
+  if (isTahunAjaranError) {
+    toast({
+      title: "❌ Gagal",
+      description: `Gagal mengambil daftar tahun ajaran: ${
+        (tahunAjaranError as Error).message
+      }`,
+      duration: 3000,
+    });
+    return (
+      <DashboardLayout>
+        <div className="text-center text-gray-600 dark:text-gray-300 py-10">
+          Gagal memuat daftar tahun ajaran. Silakan coba lagi nanti.
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (isLoading || isTahunAjaranLoading) {
+    return (
+      <DashboardLayout>
+        <div className="text-center text-gray-600 dark:text-gray-300">
+          Memuat jadwal seminar...
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (isError) {
+    toast({
+      title: "❌ Gagal",
+      description: `Gagal mengambil data jadwal: ${(error as Error).message}`,
+      duration: 3000,
+    });
+    return (
+      <DashboardLayout>
+        <div className="text-center text-red-600 dark:text-red-300">
+          Gagal mengambil data jadwal. Silakan coba lagi nanti.
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  return (
+    <DashboardLayout>
+      <Toaster position="top-right" />
+      <div>
+        <div className="space-y-5">
+          <div className="flex justify-between items-center">
+            <div className="flex">
+              <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+                <span className="inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400" />
+                <CalendarCheck2Icon className="w-4 h-4 mr-1.5" />
+                Jadwal Seminar Kerja Praktik Mahasiswa
+              </span>
+            </div>
+
+            {/* Academic Year Dropdown */}
+            <div className="flex items-center gap-2 dark:text-gray-200">
+              <div className="relative">
+                <select
+                  className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0 disabled:opacity-50"
+                  value={selectedTahunAjaranId ?? ""}
+                  onChange={(e) =>
+                    setSelectedTahunAjaranId(Number(e.target.value))
+                  }
+                  disabled={isTahunAjaranLoading || !tahunAjaranData}
+                >
+                  {isTahunAjaranLoading ? (
+                    <option value="">Memuat tahun ajaran...</option>
+                  ) : tahunAjaranData && tahunAjaranData.length > 0 ? (
+                    tahunAjaranData.map((year) => (
+                      <option key={year.id} value={year.id}>
+                        {year.nama}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">Tidak ada tahun ajaran tersedia</option>
+                  )}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                  <ChevronRight className="w-4 h-4 text-gray-500 rotate-90" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <DashboardJadwalCard selectedTahunAjaranId={selectedTahunAjaranId} />
+
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <Tabs
+              defaultValue="semua"
+              onValueChange={(value) =>
+                setActiveTab(value as "semua" | "hari_ini" | "minggu_ini")
+              }
+              className="w-full"
+            >
+              <div className="flex flex-col items-start justify-between w-full gap-4 md:flex-row md:items-center">
+                <TabsList className="dark:bg-gray-700">
+                  <TabsTrigger
+                    value="semua"
+                    className="dark:data-[state=active]:bg-gray-800"
+                  >
+                    Semua
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="hari_ini"
+                    className="dark:data-[state=active]:bg-gray-800"
+                  >
+                    Hari Ini
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="minggu_ini"
+                    className="dark:data-[state=active]:bg-gray-800"
+                  >
+                    Minggu Ini
+                  </TabsTrigger>
+                </TabsList>
+
+                <div className="relative flex items-center w-full">
+                  <Search className="absolute w-4 h-4 text-gray-400 left-3" />
+                  <Input
+                    type="text"
+                    placeholder="Cari nama mahasiswa..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="ml-2 bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+                    onClick={handleOpenLogModal}
+                  >
+                    <History className="h-4 w-4 mr-1" />
+                    Log Jadwal
+                  </Button>
+                </div>
+              </div>
+
+              <TabsContent value="semua" className="mt-4">
+                <SeminarTable
+                  seminars={filteredSemuaSeminars}
+                  onEdit={handleOpenModal}
+                />
+              </TabsContent>
+              <TabsContent value="hari_ini" className="mt-4">
+                <SeminarTable
+                  seminars={filteredHariIniSeminars}
+                  onEdit={handleOpenModal}
+                />
+              </TabsContent>
+              <TabsContent value="minggu_ini" className="mt-4">
+                <SeminarTable
+                  seminars={filteredMingguIniSeminars}
+                  onEdit={handleOpenModal}
+                />
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+      </div>
+
+      <EditJadwalSeminarModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        seminar={selectedSeminar}
+        onSave={handleSaveSeminar}
+      />
+      <LogJadwalModal
+        isOpen={isLogModalOpen}
+        onClose={handleCloseLogModal}
+        seminarId={selectedSeminarId}
+        logs={filteredLogs}
+        isLoading={isLogLoading}
+        isError={isLogError}
+        error={logError}
+      />
+    </DashboardLayout>
+  );
+};
+
+// Seminar Table Component
+const SeminarTable: FC<{
+  seminars: JadwalSeminar[];
+  onEdit: (seminar: JadwalSeminar) => void;
+}> = ({ seminars, onEdit }) => {
+  return (
+    <Card className="rounded-none shadow-none dark:bg-gray-900 dark:border-gray-700">
+      <Table>
+        <TableHeader className="bg-gray-200 dark:bg-gray-700">
+          <TableRow className="hover:bg-gray-300 dark:hover:bg-gray-600">
+            <TableHead className="font-semibold dark:text-gray-200">
+              Nama Mahasiswa
+            </TableHead>
+            <TableHead className="text-center font-semibold dark:text-gray-200">
+              NIM
+            </TableHead>
+            <TableHead className="text-center font-semibold dark:text-gray-200">
+              Ruangan
+            </TableHead>
+            <TableHead className="font-semibold text-center dark:text-gray-200">
+              Jam
+            </TableHead>
+            <TableHead className="font-semibold text-center dark:text-gray-200">
+              Tanggal Seminar
+            </TableHead>
+            <TableHead className="text-center font-semibold dark:text-gray-200">
+              Dosen Pembimbing
+            </TableHead>
+            <TableHead className="text-center font-semibold dark:text-gray-200">
+              Dosen Penguji
+            </TableHead>
+            <TableHead className="text-center font-semibold dark:text-gray-200">
+              Status
+            </TableHead>
+            <TableHead className="text-center font-semibold dark:text-gray-200">
+              Aksi
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {seminars.length === 0 ? (
+            <TableRow className="dark:border-gray-700 dark:hover:bg-gray-700">
+              <TableCell
+                colSpan={9}
+                className="text-center py-6 text-muted-foreground dark:text-gray-400"
+              >
+                Tidak ada data yang ditemukan
+              </TableCell>
+            </TableRow>
+          ) : (
+            seminars.map((seminar) => (
+              <TableRow
+                key={seminar.id}
+                className="dark:border-gray-700 dark:hover:bg-gray-700"
+              >
+                <TableCell className="font-medium dark:text-gray-300 text-xs">
+                  {seminar.mahasiswa.nama}
+                </TableCell>
+                <TableCell className="text-center dark:text-gray-300 text-xs">
+                  {seminar.mahasiswa.nim}
+                </TableCell>
+                <TableCell className="text-center dark:text-gray-300 text-xs">
+                  {seminar.ruangan}
+                </TableCell>
+                <TableCell className="text-center dark:text-gray-300 text-xs">
+                  {seminar.waktu_mulai}
+                </TableCell>
+                <TableCell className="text-center dark:text-gray-300 text-xs">
+                  {seminar.tanggal}
+                </TableCell>
+                <TableCell className="text-center dark:text-gray-300 text-xs">
+                  {seminar.dosen_pembimbing}
+                </TableCell>
+                <TableCell className="text-center dark:text-gray-300 text-xs">
+                  {seminar.dosen_penguji}
+                </TableCell>
+                <TableCell className="text-center dark:text-gray-300 text-xs">
+                  {seminar.status}
+                </TableCell>
+                <TableCell className="text-center">
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="text-white bg-blue-500 hover:bg-blue-600"
+                    onClick={() => onEdit(seminar)}
+                  >
+                    <Edit className="h-3.5 w-3.5 mr-1" />
+                    Edit
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </Card>
+  );
+};
+
+export default KoordinatorJadwalSeminarPage;

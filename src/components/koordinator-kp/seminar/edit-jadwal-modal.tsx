@@ -1,4 +1,4 @@
-import { type FC, useState, useEffect } from "react";
+import { type FC, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Calendar,
@@ -23,7 +23,6 @@ import {
 import toast from "react-hot-toast";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 
-// Tipe untuk data seminar (sesuai dengan KoordinatorJadwalSeminarPage)
 interface Mahasiswa {
   nama: string;
   nim: string;
@@ -35,7 +34,7 @@ interface JadwalSeminar {
   mahasiswa: Mahasiswa;
   status_kp: "Baru" | "Lanjut";
   ruangan: string;
-  jam: string;
+  waktu_mulai: string;
   waktu_selesai: string;
   tanggal: string;
   dosen_penguji: string;
@@ -45,7 +44,6 @@ interface JadwalSeminar {
   status: "Menunggu" | "Selesai" | "Jadwal_Ulang";
 }
 
-// Tipe untuk data dosen dan ruangan dari API
 interface Dosen {
   nip: string;
   nama: string;
@@ -62,7 +60,6 @@ interface EditJadwalSeminarModalProps {
   onSave: (updatedSeminar: JadwalSeminar) => void;
 }
 
-// Definisikan tipe payload yang sesuai dengan API
 interface UpdateJadwalPayload {
   id: string;
   tanggal?: string;
@@ -82,27 +79,11 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
 
   const queryClient = useQueryClient();
 
-  // Helper function to calculate waktu_selesai (1 hour after waktu_mulai)
-  const calculateWaktuSelesai = (waktuMulai: string): string => {
-    if (!waktuMulai) return "";
-    const [hours, minutes] = waktuMulai.split(":").map(Number);
-    const date = new Date();
-    date.setHours(hours + 1, minutes);
-    return `${date.getHours().toString().padStart(2, "0")}:${date
-      .getMinutes()
-      .toString()
-      .padStart(2, "0")}`;
-  };
-
-  // Helper function to convert display date to ISO format
   const convertToISODate = (displayDate: string): string => {
     try {
-      // Jika sudah dalam format YYYY-MM-DD, return as is
       if (displayDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
         return displayDate;
       }
-
-      // Jika dalam format "Minggu, 18 Mei 2025"
       if (displayDate.includes(",")) {
         const dateParts = displayDate.split(", ")[1].split(" ");
         const day = dateParts[0].padStart(2, "0");
@@ -124,7 +105,6 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
         const year = dateParts[2];
         return `${year}-${month}-${day}`;
       }
-
       return displayDate;
     } catch (error) {
       console.error("Error converting date:", error);
@@ -132,16 +112,12 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
     }
   };
 
-  // Helper function to format date for display
   const formatDateForDisplay = (isoDate: string): string => {
     try {
       if (!isoDate) return "";
-
-      // Jika sudah dalam format display, return as is
       if (isoDate.includes(",")) {
         return isoDate;
       }
-
       const date = new Date(isoDate);
       const days = [
         "Minggu",
@@ -166,12 +142,10 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
         "November",
         "Desember",
       ];
-
       const dayName = days[date.getDay()];
       const day = date.getDate();
       const month = months[date.getMonth()];
       const year = date.getFullYear();
-
       return `${dayName}, ${day} ${month} ${year}`;
     } catch (error) {
       console.error("Error formatting date:", error);
@@ -179,26 +153,12 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
     }
   };
 
-  // Initialize editSeminar with waktu_selesai set to 1 hour after jam
-  const [editSeminar, setEditSeminar] = useState<JadwalSeminar>({
-    ...seminar,
-    waktu_selesai: seminar.waktu_selesai || calculateWaktuSelesai(seminar.jam),
-  });
+  const [editSeminar, setEditSeminar] = useState<JadwalSeminar>({ ...seminar });
 
-  // State untuk menyimpan tanggal dalam format ISO untuk input date
   const [isoDate, setIsoDate] = useState<string>(() => {
     return convertToISODate(seminar.tanggal);
   });
 
-  // Update waktu_selesai when waktu_mulai (jam) changes
-  useEffect(() => {
-    setEditSeminar((prev) => ({
-      ...prev,
-      waktu_selesai: calculateWaktuSelesai(prev.jam),
-    }));
-  }, [editSeminar.jam]);
-
-  // Ambil data dosen dan ruangan menggunakan useQuery
   const { data: dosenData, isLoading: isLoadingDosen } = useQuery<Dosen[]>({
     queryKey: ["dosen-list"],
     queryFn: APISeminarKP.getAllDosen,
@@ -211,18 +171,16 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
     queryFn: APISeminarKP.getAllRuangan,
   });
 
-  // Gunakan useMutation untuk operasi PUT
   const mutation = useMutation({
     mutationFn: (payload: UpdateJadwalPayload) =>
       APISeminarKP.putJadwal(payload),
     onSuccess: (data) => {
-      // Perbarui state lokal dengan data yang dikembalikan dari API
       const updatedSeminar = {
         ...editSeminar,
         tanggal: data.tanggal
           ? formatDateForDisplay(data.tanggal)
           : editSeminar.tanggal,
-        jam: data.waktu_mulai || editSeminar.jam,
+        waktu_mulai: data.waktu_mulai || editSeminar.waktu_mulai,
         waktu_selesai: data.waktu_selesai || editSeminar.waktu_selesai,
         ruangan: data.nama_ruangan || editSeminar.ruangan,
         dosen_penguji: data.nip_penguji
@@ -234,12 +192,10 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
       setEditSeminar(updatedSeminar);
       onSave(updatedSeminar);
 
-      // Invalidasi query untuk memperbarui tabel di halaman utama
       queryClient.invalidateQueries({
         queryKey: ["koordinator-jadwal-seminar"],
       });
 
-      // Tampilkan toast sukses
       toast.success("Jadwal berhasil diperbarui!", {
         duration: 3000,
       });
@@ -247,7 +203,6 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
     },
     onError: (error: any) => {
       console.error("Gagal memperbarui jadwal:", error);
-      // Hanya tampilkan pesan error dari error.response.data.message
       if (
         error.response &&
         error.response.data &&
@@ -277,19 +232,20 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
   };
 
   const handleSave = () => {
-    // Siapkan payload untuk API, hanya sertakan field yang diubah
     const payload: UpdateJadwalPayload = {
       id: editSeminar.id,
     };
 
-    // Bandingkan dengan data awal untuk menentukan field yang diubah
     const originalIsoDate = convertToISODate(seminar.tanggal);
     if (isoDate !== originalIsoDate) {
       payload.tanggal = isoDate;
+      // Sertakan waktu_mulai dan waktu_selesai saat tanggal diubah
+      payload.waktu_mulai = editSeminar.waktu_mulai;
+      payload.waktu_selesai = editSeminar.waktu_selesai;
     }
 
-    if (editSeminar.jam !== seminar.jam) {
-      payload.waktu_mulai = editSeminar.jam;
+    if (editSeminar.waktu_mulai !== seminar.waktu_mulai) {
+      payload.waktu_mulai = editSeminar.waktu_mulai;
     }
 
     if (editSeminar.waktu_selesai !== seminar.waktu_selesai) {
@@ -309,7 +265,6 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
       }
     }
 
-    // Panggil API untuk memperbarui jadwal
     mutation.mutate(payload);
   };
 
@@ -317,10 +272,8 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col p-0 rounded-xl bg-white dark:bg-gray-900">
-          {/* Header with gradient */}
           <div className="px-4 pt-8">
             <DialogHeader>
-              {/* Student Profile Card */}
               <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800">
                 <div className="bg-gradient-to-r from-emerald-500 to-teal-400 dark:from-emerald-600 dark:to-teal-500 p-4 text-white">
                   <div className="flex items-center justify-between">
@@ -349,7 +302,6 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                   </div>
                 </div>
 
-                {/* Profile Details - horizontal layout */}
                 <div className="grid grid-cols-4 gap-0 border-t border-gray-100 dark:border-gray-700">
                   <div className="p-3 flex items-center gap-2 border-r border-gray-100 dark:border-gray-700">
                     <Building className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
@@ -400,9 +352,7 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
             </DialogHeader>
           </div>
 
-          {/* Main content - scrollable */}
           <div className="overflow-y-auto flex-1 px-5 py-4 bg-gray-50 dark:bg-gray-900">
-            {/* Form Section */}
             <div className="my-4">
               <h3 className="text-base font-semibold mb-4 text-gray-700 dark:text-gray-200 flex items-center">
                 <FileText className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
@@ -410,7 +360,6 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
               </h3>
 
               <div className="space-y-6">
-                {/* Edit Jadwal Section */}
                 <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
                   <div className="p-4">
                     <div className="space-y-4">
@@ -475,7 +424,7 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <Label
-                              htmlFor="jamSeminar"
+                              htmlFor="waktuMulai"
                               className="text-xs text-gray-500 dark:text-gray-400 mb-1 block"
                             >
                               Waktu Mulai
@@ -483,11 +432,14 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                             <div className="relative">
                               <Clock className="h-4 w-4 absolute left-3 top-2.5 text-gray-400" />
                               <Input
-                                id="jamSeminar"
+                                id="waktuMulai"
                                 type="time"
-                                value={editSeminar.jam}
+                                value={editSeminar.waktu_mulai}
                                 onChange={(e) =>
-                                  handleInputChange("jam", e.target.value)
+                                  handleInputChange(
+                                    "waktu_mulai",
+                                    e.target.value
+                                  )
                                 }
                                 className="pl-9 bg-white dark:bg-gray-800"
                               />
@@ -522,7 +474,6 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                   </div>
                 </div>
 
-                {/* Edit Dosen Penguji Section */}
                 <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
                   <div className="p-4">
                     <div>
@@ -571,7 +522,6 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
             </div>
           </div>
 
-          {/* Action Buttons - fixed at bottom */}
           <div className="bg-gray-50 dark:bg-gray-800 p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 rounded-b-xl">
             <Button
               variant="outline"

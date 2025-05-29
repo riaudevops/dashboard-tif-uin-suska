@@ -342,7 +342,7 @@ const ScheduleTable: FC<{
   };
 
   return (
-    <div className="min-h-screen">
+    <div>
       <div>
         {/* Header */}
         <div className="mb-6">

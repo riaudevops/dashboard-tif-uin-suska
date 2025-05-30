@@ -90,22 +90,31 @@ const AssessmentModal = ({
       document.body.style.overflow = "hidden";
       modalRef.current?.focus();
       if (existingNilai && existingNilai[0]?.komponen_penilaian_instansi) {
+        const komponen = existingNilai[0].komponen_penilaian_instansi;
+        const getValue = (key: string) => {
+          if (Array.isArray(komponen)) {
+            return typeof komponen[0] === "number" ? komponen[0] : 0;
+          } else if (typeof komponen === "object" && komponen !== null) {
+            return typeof komponen[key] === "number" ? komponen[key] : 0;
+          }
+          return 0;
+        };
         reset({
-          deliverables:
-            existingNilai[0].komponen_penilaian_instansi[0]?.deliverables ?? 0,
-          ketepatan_waktu:
-            existingNilai[0].komponen_penilaian_instansi[0]?.ketepatan_waktu ??
-            0,
-          kedisiplinan:
-            existingNilai[0].komponen_penilaian_instansi[0]?.kedisiplinan ?? 0,
-          attitude:
-            existingNilai[0].komponen_penilaian_instansi[0]?.attitude ?? 0,
-          kerjasama_tim:
-            existingNilai[0].komponen_penilaian_instansi[0]?.kerjasama_tim ?? 0,
-          inisiatif:
-            existingNilai[0].komponen_penilaian_instansi[0]?.inisiatif ?? 0,
-          masukan:
-            existingNilai[0].komponen_penilaian_instansi[0]?.masukan ?? "",
+          deliverables: getValue("deliverables"),
+          ketepatan_waktu: getValue("ketepatan_waktu"),
+          kedisiplinan: getValue("kedisiplinan"),
+          attitude: getValue("attitude"),
+          kerjasama_tim: getValue("kerjasama_tim"),
+          inisiatif: getValue("inisiatif"),
+          masukan: Array.isArray(komponen)
+            ? komponen[0] &&
+              typeof komponen[0] === "object" &&
+              "masukan" in komponen[0]
+              ? (komponen[0] as { masukan?: string }).masukan ?? ""
+              : ""
+            : komponen && typeof komponen === "object" && "masukan" in komponen
+            ? (komponen as { masukan?: string }).masukan ?? ""
+            : "",
         });
       } else {
         reset({
@@ -145,7 +154,7 @@ const AssessmentModal = ({
     >
       <div
         ref={modalRef}
-        className="bg-white dark:bg-gray-900 rounded-2xl py-6 px-8 w-[95%] md:max-w-[700px] max-h-[95vh] overflow-y-auto shadow-2xl border border-gray-200/50 dark:border-gray-700/50"
+        className="bg-white dark:bg-gray-900 rounded-2xl py-6 px-8 w-[95%] md:max-w-[900px] max-h-[95vh] overflow-y-auto shadow-2xl border border-gray-200/50 dark:border-gray-700/50"
         onClick={(e) => e.stopPropagation()}
         tabIndex={-1}
       >
@@ -160,120 +169,124 @@ const AssessmentModal = ({
           {existingNilai ? "Edit Nilai Mahasiswa" : "Penilaian Mahasiswa"}
         </h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 gap-6">
-            {[
-              { name: "deliverables", label: "Deliverables (15%)" },
-              { name: "ketepatan_waktu", label: "Ketepatan Waktu (10%)" },
-              { name: "kedisiplinan", label: "Kedisiplinan (15%)" },
-              { name: "attitude", label: "Attitude (15%)" },
-              { name: "kerjasama_tim", label: "Kerjasama Tim (25%)" },
-              { name: "inisiatif", label: "Inisiatif (20%)" },
-            ].map((field) => (
-              <div key={field.name}>
-                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  {field.label}
-                </label>
-                <Controller
-                  name={field.name as keyof AssessmentFormData}
-                  control={control}
-                  rules={{
-                    required: `${field.label} wajib diisi`,
-                    min: {
-                      value: 0,
-                      message: "Nilai tidak boleh kurang dari 0",
-                    },
-                    max: {
-                      value: 100,
-                      message: "Nilai tidak boleh lebih dari 100",
-                    },
-                  }}
-                  render={({ field: { value, onChange } }) => (
-                    <div className="flex items-center gap-4 mt-2">
-                      {/* Slider */}
-                      <div className="flex-1">
-                        <Slider
-                          value={[
-                            typeof value === "number" ? value : Number(value),
-                          ]}
-                          onValueChange={(vals) => onChange(vals[0])}
-                          min={0}
-                          max={100}
-                          step={1}
-                          className="w-full h-5"
-                          disabled={isSubmitting}
-                          aria-label={field.label}
-                        >
-                          <div className="relative w-full h-2 bg-gray-200 rounded-full dark:bg-gray-700">
-                            <div
-                              className="absolute h-2 transition-all duration-200 bg-indigo-600 rounded-full dark:bg-indigo-400"
-                              style={{ width: `${value}%` }}
-                            />
-                            <div
-                              className="absolute w-5 h-5 transition-all duration-200 transform -translate-y-1/2 bg-indigo-600 rounded-full shadow-md cursor-pointer dark:bg-indigo-400"
-                              style={{
-                                left: `${value}%`,
-                                transform: "translate(-50%, -50%)",
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            {/* Kolom Kiri: Slider Penilaian */}
+            <div className="space-y-6">
+              {[
+                { name: "deliverables", label: "Deliverables (15%)" },
+                { name: "ketepatan_waktu", label: "Ketepatan Waktu (10%)" },
+                { name: "kedisiplinan", label: "Kedisiplinan (15%)" },
+                { name: "attitude", label: "Attitude (15%)" },
+                { name: "kerjasama_tim", label: "Kerjasama Tim (25%)" },
+                { name: "inisiatif", label: "Inisiatif (20%)" },
+              ].map((field) => (
+                <div key={field.name}>
+                  <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    {field.label}
+                  </label>
+                  <Controller
+                    name={field.name as keyof AssessmentFormData}
+                    control={control}
+                    rules={{
+                      required: `${field.label} wajib diisi`,
+                      min: {
+                        value: 0,
+                        message: "Nilai tidak boleh kurang dari 0",
+                      },
+                      max: {
+                        value: 100,
+                        message: "Nilai tidak boleh lebih dari 100",
+                      },
+                    }}
+                    render={({ field: { value, onChange } }) => (
+                      <div className="flex items-center gap-4 mt-2">
+                        {/* Slider */}
+                        <div className="flex-1">
+                          <Slider
+                            value={[
+                              typeof value === "number" ? value : Number(value),
+                            ]}
+                            onValueChange={(vals) => onChange(vals[0])}
+                            min={0}
+                            max={100}
+                            step={1}
+                            className="w-full h-5"
+                            disabled={isSubmitting}
+                            aria-label={field.label}
+                          >
+                            <div className="relative w-full h-2 bg-gray-200 rounded-full dark:bg-gray-700">
+                              <div
+                                className="absolute h-2 transition-all duration-200 bg-indigo-600 rounded-full dark:bg-indigo-400"
+                                style={{ width: `${value}%` }}
+                              />
+                              <div
+                                className="absolute w-5 h-5 transition-all duration-200 transform -translate-y-1/2 bg-indigo-600 rounded-full shadow-md cursor-pointer dark:bg-indigo-400"
+                                style={{
+                                  left: `${value}%`,
+                                  transform: "translate(-50%, -50%)",
+                                }}
+                              />
+                            </div>
+                          </Slider>
+                        </div>
+                        {/* Value Display and Counter Input */}
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center border border-gray-300 rounded-md dark:border-gray-600">
+                            <Input
+                              type="number"
+                              value={value}
+                              onChange={(e) => {
+                                const newValue = Math.min(
+                                  100,
+                                  Math.max(0, Number(e.target.value))
+                                );
+                                onChange(newValue);
                               }}
+                              className="w-16 h-8 text-sm text-center border-none focus:ring-0"
+                              disabled={isSubmitting}
                             />
                           </div>
-                        </Slider>
-                      </div>
-                      {/* Value Display and Counter Input */}
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center border border-gray-300 rounded-md dark:border-gray-600">
-                          <Input
-                            type="number"
-                            value={value}
-                            onChange={(e) => {
-                              const newValue = Math.min(
-                                100,
-                                Math.max(0, Number(e.target.value))
-                              );
-                              onChange(newValue);
-                            }}
-                            className="w-16 h-8 text-sm text-center border-none focus:ring-0"
-                            disabled={isSubmitting}
-                          />
                         </div>
                       </div>
-                    </div>
+                    )}
+                  />
+                  {errors[field.name as keyof AssessmentFormData] && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors[field.name as keyof AssessmentFormData]?.message}
+                    </p>
                   )}
+                </div>
+              ))}
+            </div>
+            {/* Kolom Kanan: Masukan & Nilai Akhir */}
+            <div className="flex flex-col h-full gap-6">
+              <div className="flex flex-col flex-1">
+                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Masukan
+                </label>
+                <Textarea
+                  {...register("masukan", { required: "Masukan wajib diisi" })}
+                  className="flex-1 mt-2"
+                  placeholder="Masukan untuk mahasiswa..."
+                  disabled={isSubmitting}
                 />
-                {errors[field.name as keyof AssessmentFormData] && (
+                {errors.masukan && (
                   <p className="mt-1 text-sm text-red-500">
-                    {errors[field.name as keyof AssessmentFormData]?.message}
+                    {errors.masukan.message}
                   </p>
                 )}
               </div>
-            ))}
+              <div className="flex flex-col items-center justify-center p-6 border border-indigo-200 shadow-md rounded-xl bg-gradient-to-br from-indigo-100 to-indigo-300 dark:from-indigo-900/40 dark:to-indigo-700/40 dark:border-indigo-700">
+                <span className="mb-1 text-base font-semibold text-gray-600 dark:text-gray-300">
+                  Total Nilai
+                </span>
+                <span className="text-4xl font-extrabold tracking-tight text-indigo-700 dark:text-indigo-300">
+                  {nilaiInstansi}
+                </span>
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-              Masukan
-            </label>
-            <Textarea
-              {...register("masukan", {
-                required: "Masukan wajib diisi",
-              })}
-              className="mt-2"
-              placeholder="Masukan untuk mahasiswa..."
-              disabled={isSubmitting}
-            />
-            {errors.masukan && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.masukan.message}
-              </p>
-            )}
-          </div>
-          <div className="flex items-center justify-between p-4 rounded-lg bg-indigo-50 dark:bg-indigo-900/20">
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-              Nilai Akhir:
-            </p>
-            <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-              {nilaiInstansi}
-            </p>
-          </div>
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-3 mt-8">
             <Button
               type="button"
               variant="outline"
@@ -622,45 +635,6 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
             {loading ? "..." : student?.status || "-"}
           </Badge>
         </div>
-        {/* <div className="grid grid-cols-1 gap-6 p-6 bg-gray-50 dark:bg-gray-800/50 sm:grid-cols-2">
-          {loading ? (
-            <>
-              <div className="flex items-center justify-center gap-3">
-                <Skeleton className="w-5 h-5" />
-                <Skeleton className="w-32 h-4" />
-              </div>
-              <div className="flex items-center justify-center gap-3">
-                <Skeleton className="w-5 h-5" />
-                <Skeleton className="w-32 h-4" />
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="flex items-center justify-center gap-3">
-                <Calendar className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    Tanggal Mulai
-                  </p>
-                  <p className="text-base text-gray-900 dark:text-white">
-                    {student ? formatDate(student.tanggal_mulai) : "-"}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center justify-center gap-3">
-                <Calendar className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    Tanggal Selesai
-                  </p>
-                  <p className="text-base text-gray-900 dark:text-white">
-                    {student ? formatDate(student.tanggal_selesai) : "-"}
-                  </p>
-                </div>
-              </div>
-            </>
-          )}
-        </div> */}
       </Card>
     );
   };
@@ -815,14 +789,14 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
   };
 
   const existingNilai = useMemo(() => {
+    const nilai = detailMahasiswaInstansiSaya?.nilai?.[0];
+    const komponen = nilai?.komponen_penilaian_instansi;
     if (
-      detailMahasiswaInstansiSaya?.nilai &&
-      detailMahasiswaInstansiSaya.nilai.length > 0 &&
-      detailMahasiswaInstansiSaya.nilai[0]?.komponen_penilaian_instansi &&
-      detailMahasiswaInstansiSaya.nilai[0].komponen_penilaian_instansi.length >
-        0
+      nilai &&
+      komponen &&
+      Object.entries(komponen).filter(([key]) => key !== "id").length > 0
     ) {
-      return [detailMahasiswaInstansiSaya.nilai[0]];
+      return [nilai];
     }
     return undefined;
   }, [detailMahasiswaInstansiSaya]);
@@ -923,14 +897,12 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
                           !canAssess ||
                           postNilaiMutation.isPending ||
                           putNilaiMutation.isPending ||
-                          isModalOpening
+                          isModalOpening ||
+                          selectedRows.length > 0
                         }
                       >
                         <Star className="w-4 h-4" />
-                        {(detailMahasiswaInstansiSaya.nilai?.[0]
-                          ?.komponen_penilaian_instansi?.length ?? 0) > 0
-                          ? "Edit Nilai"
-                          : "Berikan Nilai"}
+                        {existingNilai ? "Edit Nilai" : "Berikan Nilai"}
                       </Button>
                     </span>
                   </TooltipTrigger>

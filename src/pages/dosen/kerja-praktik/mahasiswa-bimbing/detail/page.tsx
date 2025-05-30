@@ -340,19 +340,29 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
       detailMahasiswaSaya?.nilai?.[0]?.komponen_penilaian_pembimbing &&
       !isEditingNilai
     ) {
+      const komponen =
+        detailMahasiswaSaya.nilai[0].komponen_penilaian_pembimbing;
+      const getValue = (key: string) => {
+        if (Array.isArray(komponen)) {
+          return typeof komponen[0] === "number" ? komponen[0] : 0;
+        } else if (typeof komponen === "object" && komponen !== null) {
+          return typeof komponen[key] === "number" ? komponen[key] : 0;
+        }
+        return 0;
+      };
       setEvaluationValues({
-        penyelesaian_masalah:
-          detailMahasiswaSaya.nilai[0].komponen_penilaian_pembimbing[0]
-            ?.penyelesaian_masalah || 0,
-        bimbingan_sikap:
-          detailMahasiswaSaya.nilai[0].komponen_penilaian_pembimbing[0]
-            ?.bimbingan_sikap || 0,
-        kualitas_laporan:
-          detailMahasiswaSaya.nilai[0].komponen_penilaian_pembimbing[0]
-            ?.kualitas_laporan || 0,
-        catatan:
-          detailMahasiswaSaya.nilai[0].komponen_penilaian_pembimbing[0]
-            ?.catatan || "",
+        penyelesaian_masalah: getValue("penyelesaian_masalah"),
+        bimbingan_sikap: getValue("bimbingan_sikap"),
+        kualitas_laporan: getValue("kualitas_laporan"),
+        catatan: Array.isArray(komponen)
+          ? komponen[0] &&
+            typeof komponen[0] === "object" &&
+            "catatan" in komponen[0]
+            ? (komponen[0] as { catatan?: string }).catatan ?? ""
+            : ""
+          : komponen && typeof komponen === "object" && "catatan" in komponen
+          ? (komponen as { catatan?: string }).catatan ?? ""
+          : "",
       });
     }
   }, [detailMahasiswaSaya, isEditingNilai]);
@@ -631,21 +641,21 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
       evaluationValues.bimbingan_sikap * evaluationCriteria[1].weight;
     weightedSum +=
       evaluationValues.kualitas_laporan * evaluationCriteria[2].weight;
-    return Math.round(weightedSum);
+    return weightedSum;
   };
 
-  const getGrade = (score: number) => {
-    if (score >= 85) return "A";
-    if (score >= 80) return "A-";
-    if (score >= 75) return "B+";
-    if (score >= 70) return "B";
-    if (score >= 65) return "B-";
-    if (score >= 60) return "C+";
-    if (score >= 55) return "C";
-    if (score >= 50) return "C-";
-    if (score >= 40) return "D";
-    return "E";
-  };
+  // const getGrade = (score: number) => {
+  //   if (score >= 85) return "A";
+  //   if (score >= 80) return "A-";
+  //   if (score >= 75) return "B+";
+  //   if (score >= 70) return "B";
+  //   if (score >= 65) return "B-";
+  //   if (score >= 60) return "C+";
+  //   if (score >= 55) return "C";
+  //   if (score >= 50) return "C-";
+  //   if (score >= 40) return "D";
+  //   return "E";
+  // };
 
   const handleSaveNilai = () => {
     if (!validateForm()) return;
@@ -695,22 +705,28 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
   };
 
   const handleResetNilai = () => {
+    const komponen =
+      detailMahasiswaSaya?.nilai?.[0]?.komponen_penilaian_pembimbing;
+    const getValue = (key: string) => {
+      if (Array.isArray(komponen)) {
+        return typeof komponen[0] === "number" ? komponen[0] : 0;
+      } else if (typeof komponen === "object" && komponen !== null) {
+        return typeof komponen[key] === "number" ? komponen[key] : 0;
+      }
+      return 0;
+    };
     setEvaluationValues({
-      penyelesaian_masalah: detailMahasiswaSaya?.nilai?.length
-        ? detailMahasiswaSaya.nilai?.[0]?.komponen_penilaian_pembimbing?.[0]
-            ?.penyelesaian_masalah ?? 0
-        : 0,
-      bimbingan_sikap: detailMahasiswaSaya?.nilai?.length
-        ? detailMahasiswaSaya.nilai?.[0]?.komponen_penilaian_pembimbing?.[0]
-            ?.bimbingan_sikap ?? 0
-        : 0,
-      kualitas_laporan: detailMahasiswaSaya?.nilai?.length
-        ? detailMahasiswaSaya.nilai?.[0]?.komponen_penilaian_pembimbing?.[0]
-            ?.kualitas_laporan ?? 0
-        : 0,
-      catatan: detailMahasiswaSaya?.nilai?.length
-        ? detailMahasiswaSaya.nilai?.[0]?.komponen_penilaian_pembimbing?.[0]
-            ?.catatan ?? ""
+      penyelesaian_masalah: getValue("penyelesaian_masalah"),
+      bimbingan_sikap: getValue("bimbingan_sikap"),
+      kualitas_laporan: getValue("kualitas_laporan"),
+      catatan: Array.isArray(komponen)
+        ? komponen[0] &&
+          typeof komponen[0] === "object" &&
+          "catatan" in komponen[0]
+          ? (komponen[0] as { catatan?: string }).catatan ?? ""
+          : ""
+        : komponen && typeof komponen === "object" && "catatan" in komponen
+        ? (komponen as { catatan?: string }).catatan ?? ""
         : "",
     });
     setFormErrors({
@@ -855,9 +871,6 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
                 {/* Right Column - KP Info */}
                 <div className="mt-8 space-y-4">
                   <div className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800/30 dark:border-gray-700">
-                    {/* <h3 className="mb-3 text-sm font-medium text-gray-500 uppercase dark:text-gray-400">
-                      Informasi Kerja Praktik
-                    </h3> */}
                     <div className="grid grid-cols-2 gap-4">
                       <div className="flex gap-2">
                         <Building className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
@@ -1253,273 +1266,337 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
                     <>
                       <CardHeader className="pb-2">
                         <CardDescription>
-                          {detailMahasiswaSaya.nilai?.[0]
-                            ?.komponen_penilaian_pembimbing?.length &&
-                          !isEditingNilai
-                            ? "Detail Penilaian KP Mahasiswa (Dosen Pembimbing - 40%)"
-                            : "Formulir Penilaian KP Mahasiswa (Dosen Pembimbing - 40%)"}
+                          {(() => {
+                            const komponen =
+                              detailMahasiswaSaya.nilai?.[0]
+                                ?.komponen_penilaian_pembimbing;
+                            const hasKomponen =
+                              komponen &&
+                              ((Array.isArray(komponen) &&
+                                komponen.length > 0) ||
+                                (typeof komponen === "object" &&
+                                  !Array.isArray(komponen) &&
+                                  Object.keys(komponen).length > 0));
+                            return hasKomponen && !isEditingNilai
+                              ? "Hasil Penilaian KP Mahasiswa"
+                              : "Formulir Penilaian KP Mahasiswa";
+                          })()}
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        {detailMahasiswaSaya.nilai?.[0]
-                          ?.komponen_penilaian_pembimbing?.length &&
-                        !isEditingNilai ? (
-                          <div className="p-4 space-y-6 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700/30 dark:border-gray-600">
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                              <div>
-                                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  Nilai Akhir
-                                </h4>
-                                <p className="text-gray-900 dark:text-gray-100">
-                                  {detailMahasiswaSaya.nilai[0]
-                                    ?.nilai_pembimbing || "Belum dinilai..."}
-                                </p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  Grade
-                                </h4>
-                                <p className="text-gray-900 dark:text-gray-100">
-                                  {getGrade(
-                                    detailMahasiswaSaya.nilai[0]
-                                      ?.nilai_pembimbing
-                                  ) || "-"}
-                                </p>
-                              </div>
-                              {/* <div>
-                            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Status
-                            </h4>
-                            <Badge
-                              className={
-                                detailMahasiswaSaya.nilai[0]
-                                  ?.nilai_pembimbing >= 55
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-red-100 text-red-800"
-                              }
-                            >
-                              {detailMahasiswaSaya.nilai[0]?.nilai_pembimbing >=
-                              55
-                                ? "Lulus"
-                                : "Tidak Lulus"}
-                            </Badge>
-                          </div> */}
-                            </div>
-                            <div className="mt-4">
-                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Komponen Penilaian
-                              </h4>
-                              <div className="mt-2 space-y-2">
-                                {evaluationCriteria.map((criteria) => (
-                                  <div
-                                    key={criteria.id}
-                                    className="flex items-center justify-between"
-                                  >
-                                    <span className="text-gray-700 dark:text-gray-300">
-                                      {criteria.label}
-                                    </span>
-                                    <span className="font-medium text-gray-900 dark:text-gray-100">
-                                      {detailMahasiswaSaya.nilai?.[0]
-                                        ?.komponen_penilaian_pembimbing?.[0]?.[
-                                        criteria.id as keyof KomponenPenilaianPembimbing
-                                      ] ?? "Belum dinilai..."}
-                                    </span>
+                        {(() => {
+                          const komponen =
+                            detailMahasiswaSaya.nilai?.[0]
+                              ?.komponen_penilaian_pembimbing;
+                          const hasKomponen =
+                            komponen &&
+                            ((Array.isArray(komponen) && komponen.length > 0) ||
+                              (typeof komponen === "object" &&
+                                !Array.isArray(komponen) &&
+                                Object.keys(komponen).length > 0));
+                          return hasKomponen && !isEditingNilai ? (
+                            <div className="p-0 md:p-2">
+                              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                {/* Left: Komponen Penilaian */}
+                                <div className="flex flex-col gap-4 p-6 border border-gray-200 shadow-lg rounded-2xl bg-white/80 dark:bg-gray-800/70 dark:border-gray-700">
+                                  <h4 className="flex items-center gap-2 mb-2 text-lg font-semibold text-blue-700 dark:text-blue-300">
+                                    <span className="inline-block w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                                    Komponen Penilaian
+                                  </h4>
+                                  <div className="flex flex-col gap-4">
+                                    {(() => {
+                                      const komponen =
+                                        detailMahasiswaSaya.nilai?.[0]
+                                          ?.komponen_penilaian_pembimbing;
+                                      return evaluationCriteria.map(
+                                        (criteria) => {
+                                          let value = "Belum dinilai...";
+                                          let percent = 0;
+                                          if (komponen) {
+                                            if (Array.isArray(komponen)) {
+                                              value =
+                                                komponen[0] &&
+                                                (criteria.id as keyof KomponenPenilaianPembimbing) in
+                                                  komponen[0]
+                                                  ? String(
+                                                      komponen[0][
+                                                        criteria.id as keyof KomponenPenilaianPembimbing
+                                                      ]
+                                                    )
+                                                  : "Belum dinilai...";
+                                              percent =
+                                                (komponen[0]?.[
+                                                  criteria.id as keyof KomponenPenilaianPembimbing
+                                                ] as number) || 0;
+                                            } else if (
+                                              typeof komponen === "object" &&
+                                              komponen !== null
+                                            ) {
+                                              value =
+                                                komponen[criteria.id] ??
+                                                "Belum dinilai...";
+                                              percent =
+                                                komponen[criteria.id] || 0;
+                                            }
+                                          }
+                                          return (
+                                            <div
+                                              key={criteria.id}
+                                              className="mb-2"
+                                            >
+                                              <div className="flex items-center justify-between mb-1">
+                                                <span className="font-medium text-gray-700 dark:text-gray-200">
+                                                  {criteria.label}
+                                                </span>
+                                                <span className="text-sm font-bold text-blue-700 dark:text-blue-300">
+                                                  {value !== undefined &&
+                                                  value !== null &&
+                                                  value !== "Belum dinilai..."
+                                                    ? `${value} / 100`
+                                                    : value}
+                                                </span>
+                                              </div>
+                                              <div className="w-full h-2 overflow-hidden bg-blue-100 rounded-full dark:bg-blue-900/30">
+                                                <div
+                                                  className={`h-2 rounded-full transition-all duration-500 ${
+                                                    percent >= 80
+                                                      ? "bg-green-400"
+                                                      : percent >= 60
+                                                      ? "bg-yellow-400"
+                                                      : percent > 0
+                                                      ? "bg-red-400"
+                                                      : "bg-gray-300 dark:bg-gray-700"
+                                                  }`}
+                                                  style={{
+                                                    width: `${percent}%`,
+                                                  }}
+                                                ></div>
+                                              </div>
+                                            </div>
+                                          );
+                                        }
+                                      );
+                                    })()}
                                   </div>
-                                ))}
+                                </div>
+                                {/* Right: Nilai Akhir & Catatan */}
+                                <div className="flex flex-col gap-6">
+                                  <div className="flex flex-col items-center justify-center p-6 border border-blue-200 shadow-lg rounded-2xl bg-gradient-to-br from-blue-100/80 to-blue-300/40 dark:from-blue-900/40 dark:to-blue-800/60 dark:border-blue-700">
+                                    <h4 className="flex items-center gap-2 mb-2 text-base font-semibold text-blue-700 dark:text-blue-200">
+                                      Total Nilai
+                                    </h4>
+                                    <div className="flex items-center gap-3">
+                                      <span className="text-4xl font-extrabold text-blue-700 dark:text-blue-200 drop-shadow-lg">
+                                        {detailMahasiswaSaya.nilai[0]
+                                          ?.nilai_pembimbing || "-"}
+                                      </span>
+                                      {/* {detailMahasiswaSaya.nilai[0]?.nilai_pembimbing && (
+                                            <span className="px-3 py-1 text-lg font-semibold text-blue-700 border border-blue-300 rounded-full bg-blue-500/10 dark:bg-blue-800/40 dark:text-blue-200 dark:border-blue-700">
+                                                {getGrade(detailMahasiswaSaya.nilai[0]?.nilai_pembimbing) || "-"}
+                                            </span>
+                                      )} */}
+                                    </div>
+                                  </div>
+                                  <div className="p-6 border border-gray-200 shadow-lg rounded-2xl bg-white/80 dark:bg-gray-800/70 dark:border-gray-700">
+                                    <h4 className="flex items-center gap-2 mb-2 text-base font-semibold text-blue-700 dark:text-blue-200">
+                                      <span className="inline-block w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                                      Catatan
+                                    </h4>
+                                    <div className="p-3 border border-blue-200 border-dashed rounded-lg bg-blue-50/60 dark:bg-blue-900/20 dark:border-blue-700">
+                                      <p className="leading-relaxed text-gray-700 dark:text-gray-200 text-base min-h-[48px]">
+                                        {(() => {
+                                          const komponen =
+                                            detailMahasiswaSaya.nilai?.[0]
+                                              ?.komponen_penilaian_pembimbing;
+                                          if (komponen) {
+                                            if (Array.isArray(komponen)) {
+                                              return (
+                                                komponen[0]?.catatan ??
+                                                "Belum ada catatan..."
+                                              );
+                                            } else if (
+                                              typeof komponen === "object" &&
+                                              komponen !== null
+                                            ) {
+                                              return (
+                                                (
+                                                  komponen as KomponenPenilaianPembimbing
+                                                ).catatan ??
+                                                "Belum ada catatan..."
+                                              );
+                                            }
+                                          }
+                                          return "Belum ada catatan...";
+                                        })()}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                            <div className="mt-4">
-                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Catatan
-                              </h4>
-                              <div className="p-3 bg-white border border-gray-300 border-dashed rounded-lg dark:bg-gray-800 dark:border-gray-600">
-                                <p className="leading-relaxed text-gray-700 dark:text-gray-300">
-                                  {detailMahasiswaSaya.nilai?.[0]
-                                    ?.komponen_penilaian_pembimbing?.[0]
-                                    ?.catatan ?? "Belum ada catatan..."}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="space-y-6">
-                            {evaluationCriteria.map((criteria) => (
-                              <div
-                                key={criteria.id}
-                                className="p-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800/30 dark:border-gray-700"
-                              >
-                                <div className="flex items-center justify-between mb-3">
-                                  <div className="flex-1">
-                                    <Label
-                                      htmlFor={criteria.id}
-                                      className="text-sm font-bold text-gray-700 dark:text-gray-300"
+                          ) : (
+                            <div className="p-0 md:p-2">
+                              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                {/* Left: Komponen Penilaian Form */}
+                                <div className="flex flex-col gap-6">
+                                  {evaluationCriteria.map((criteria) => (
+                                    <div
+                                      key={criteria.id}
+                                      className="p-6 transition-all border border-gray-200 shadow-lg group dark:border-gray-700 rounded-2xl bg-white/80 dark:bg-gray-800/70 hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-500"
                                     >
-                                      {criteria.label}
+                                      <div className="flex items-center justify-between mb-3">
+                                        <div className="flex-1">
+                                          <Label
+                                            htmlFor={criteria.id}
+                                            className="text-base font-semibold text-gray-800 dark:text-gray-100"
+                                          >
+                                            {criteria.label}
+                                          </Label>
+                                          <span className="ml-2 px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium">
+                                            {Math.round(criteria.weight * 100)}%
+                                          </span>
+                                        </div>
+                                        <div className="flex items-center">
+                                          <Input
+                                            type="number"
+                                            min={0}
+                                            max={100}
+                                            name={criteria.id}
+                                            value={
+                                              evaluationValues[
+                                                criteria.id as keyof typeof evaluationValues
+                                              ] as number
+                                            }
+                                            onChange={handleInputChange}
+                                            className="w-16 h-10 text-base text-center transition-all bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:border-gray-600 dark:bg-gray-900 dark:text-white"
+                                            aria-label={criteria.label}
+                                          />
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-4 mt-2">
+                                        <Slider
+                                          id={criteria.id}
+                                          max={100}
+                                          step={1}
+                                          className="flex-grow"
+                                          value={[
+                                            evaluationValues[
+                                              criteria.id as keyof typeof evaluationValues
+                                            ] as number,
+                                          ]}
+                                          onValueChange={(value) =>
+                                            handleSliderChange(
+                                              criteria.id,
+                                              value
+                                            )
+                                          }
+                                        />
+                                      </div>
+                                      {formErrors[
+                                        criteria.id as keyof typeof formErrors
+                                      ] && (
+                                        <p className="mt-2 text-sm text-red-600">
+                                          {
+                                            formErrors[
+                                              criteria.id as keyof typeof formErrors
+                                            ]
+                                          }
+                                        </p>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                                {/* Right: Catatan, Total Nilai */}
+                                <div className="flex flex-col justify-center gap-6">
+                                  <div className="p-6 border border-gray-200 shadow-lg dark:border-gray-700 rounded-2xl bg-white/80 dark:bg-gray-800/70">
+                                    <Label
+                                      htmlFor="catatan"
+                                      className="text-base font-semibold text-gray-800 dark:text-gray-100"
+                                    >
+                                      Catatan
                                     </Label>
-                                    <span className="ml-2 px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium">
-                                      {Math.round(criteria.weight * 100)}%
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <Input
-                                      type="number"
-                                      min={0}
-                                      max={100}
-                                      name={criteria.id}
-                                      value={
-                                        evaluationValues[
-                                          criteria.id as keyof typeof evaluationValues
-                                        ] as number
-                                      }
-                                      onChange={handleInputChange}
-                                      className="w-16 text-sm text-center bg-white border border-gray-300 rounded-md h-9 dark:border-gray-600 dark:bg-gray-800"
-                                      aria-label={criteria.label}
+                                    <Textarea
+                                      id="catatan"
+                                      placeholder="Masukkan catatan untuk mahasiswa..."
+                                      className="mt-3 transition-all border-gray-300 rounded-lg shadow-sm h-28 dark:border-gray-600 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-blue-400"
+                                      value={evaluationValues.catatan}
+                                      onChange={handleTextAreaChange}
+                                      aria-label="Catatan"
                                     />
                                   </div>
+                                  <div className="flex flex-col items-center justify-center p-6 border border-blue-200 shadow-lg bg-gradient-to-br from-blue-100/80 to-blue-300/40 dark:from-blue-900/40 dark:to-blue-800/60 dark:border-blue-700 rounded-2xl">
+                                    <h3 className="mb-2 text-base font-semibold text-blue-700 dark:text-blue-200">
+                                      Total Nilai
+                                    </h3>
+                                    <p className="text-4xl font-extrabold text-blue-700 dark:text-blue-200 drop-shadow-lg">
+                                      {calculateFinalScore()}
+                                    </p>
+                                  </div>
                                 </div>
-                                <div className="flex items-center">
-                                  {/* <span className="w-6 text-xs text-gray-500 dark:text-gray-400">
-                                0
-                              </span> */}
-                                  <Slider
-                                    id={criteria.id}
-                                    max={100}
-                                    step={1}
-                                    className="flex-grow"
-                                    value={[
-                                      evaluationValues[
-                                        criteria.id as keyof typeof evaluationValues
-                                      ] as number,
-                                    ]}
-                                    onValueChange={(value) =>
-                                      handleSliderChange(criteria.id, value)
-                                    }
-                                  />
-                                  {/* <span className="w-6 text-xs text-gray-500 dark:text-gray-400">
-                                100
-                              </span> */}
-                                </div>
-                                {formErrors[
-                                  criteria.id as keyof typeof formErrors
-                                ] && (
-                                  <p className="mt-1 text-sm text-red-600">
-                                    {
-                                      formErrors[
-                                        criteria.id as keyof typeof formErrors
-                                      ]
-                                    }
-                                  </p>
-                                )}
-                              </div>
-                            ))}
-                            <div>
-                              <Label
-                                htmlFor="catatan"
-                                className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                              >
-                                Catatan
-                              </Label>
-                              <Textarea
-                                id="catatan"
-                                placeholder="Masukkan catatan atau umpan balik untuk mahasiswa"
-                                className="h-24 mt-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                                value={evaluationValues.catatan}
-                                onChange={handleTextAreaChange}
-                                aria-label="Catatan"
-                              />
-                            </div>
-                            <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800/30 dark:border-gray-700">
-                              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <div className="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700">
-                                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                    Nilai Akhir
-                                  </h3>
-                                  <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                                    {calculateFinalScore()}
-                                  </p>
-                                  <p className="mt-1 text-xs text-gray-500">
-                                    (40% dari Total Nilai)
-                                  </p>
-                                </div>
-                                <div className="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700">
-                                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                    Grade
-                                  </h3>
-                                  <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                                    {getGrade(calculateFinalScore())}
-                                  </p>
-                                </div>
-                                {/* <div className="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700">
-                              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                Status
-                              </h3>
-                              <Badge
-                                className={
-                                  calculateFinalScore() >= 55
-                                    ? "bg-green-100 text-green-800 mt-2 text-sm"
-                                    : "bg-red-100 text-red-800 mt-2 text-sm"
-                                }
-                              >
-                                {calculateFinalScore() >= 55
-                                  ? "Lulus"
-                                  : "Tidak Lulus"}
-                              </Badge>
-                            </div> */}
                               </div>
                             </div>
-                          </div>
-                        )}
+                          );
+                        })()}
                       </CardContent>
                       <CardFooter className="flex justify-end gap-2">
-                        {detailMahasiswaSaya.nilai?.[0]
-                          ?.komponen_penilaian_pembimbing?.length &&
-                        !isEditingNilai ? (
-                          <Button
-                            className="text-white bg-blue-500 hover:bg-blue-600"
-                            onClick={handleEditNilai}
-                            aria-label="Edit Penilaian"
-                          >
-                            <FileText className="w-4 h-4 mr-1" />
-                            Edit Penilaian
-                          </Button>
-                        ) : (
-                          <>
-                            <Button
-                              variant="outline"
-                              onClick={handleResetNilai}
-                              aria-label="Reset Form"
-                            >
-                              Reset
-                            </Button>
+                        {(() => {
+                          const komponen =
+                            detailMahasiswaSaya.nilai?.[0]
+                              ?.komponen_penilaian_pembimbing;
+                          const hasKomponen =
+                            komponen &&
+                            ((Array.isArray(komponen) && komponen.length > 0) ||
+                              (typeof komponen === "object" &&
+                                !Array.isArray(komponen) &&
+                                Object.keys(komponen).length > 0));
+                          return hasKomponen && !isEditingNilai ? (
                             <Button
                               className="text-white bg-blue-500 hover:bg-blue-600"
-                              onClick={handleSaveNilai}
-                              disabled={
-                                postNilaiMutation.isPending ||
-                                putNilaiMutation.isPending
-                              }
-                              aria-label={
-                                isEditingNilai
-                                  ? "Simpan Perubahan"
-                                  : "Simpan Penilaian"
-                              }
+                              onClick={handleEditNilai}
+                              aria-label="Edit Nilai"
                             >
-                              <Save className="w-4 h-4 mr-1" />
-                              {postNilaiMutation.isPending ||
-                              putNilaiMutation.isPending
-                                ? "Menyimpan..."
-                                : isEditingNilai
-                                ? "Simpan Perubahan"
-                                : "Simpan Penilaian"}
+                              <FileText className="w-4 h-4 mr-1" />
+                              Edit Nilai
                             </Button>
-                          </>
-                        )}
+                          ) : (
+                            <>
+                              <Button
+                                variant="outline"
+                                onClick={handleResetNilai}
+                                aria-label="Reset Form"
+                              >
+                                Batal
+                              </Button>
+                              <Button
+                                className="text-white bg-blue-500 hover:bg-blue-600"
+                                onClick={handleSaveNilai}
+                                disabled={
+                                  postNilaiMutation.isPending ||
+                                  putNilaiMutation.isPending
+                                }
+                                aria-label={
+                                  isEditingNilai
+                                    ? "Simpan Perubahan"
+                                    : "Simpan Penilaian"
+                                }
+                              >
+                                <Save className="w-4 h-4 mr-1" />
+                                {postNilaiMutation.isPending ||
+                                putNilaiMutation.isPending
+                                  ? "Menyimpan..."
+                                  : isEditingNilai
+                                  ? "Simpan Perubahan"
+                                  : "Simpan Penilaian"}
+                              </Button>
+                            </>
+                          );
+                        })()}
                       </CardFooter>
                     </>
                   ) : (
                     <CardHeader className="p-6">
                       <CardDescription className="text-base font-normal text-center text-foreground/80">
-                        ❌ Penilaian belum bisa dilakukan untuk mahasiswa ini.
+                        ❌ Penilaian belum bisa dilakukan untuk mahasiswa ini...
                       </CardDescription>
                     </CardHeader>
                   )}

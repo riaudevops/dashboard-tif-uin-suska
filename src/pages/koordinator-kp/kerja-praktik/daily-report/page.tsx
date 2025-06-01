@@ -271,11 +271,7 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-screen">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 1 }}
-            className="w-8 h-8 border-t-2 border-blue-500 rounded-full"
-          ></motion.div>
+          <div className="w-8 h-8 border-t-2 border-blue-500 rounded-full"></div>
         </div>
       </DashboardLayout>
     );
@@ -318,7 +314,7 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <div className="relative">
               <select
-                className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0"
+                className="px-3 py-1 pr-8 text-sm bg-white border rounded-lg shadow-sm appearance-none focus:outline-none active:outline-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0"
                 value={academicYear}
                 onChange={(e) => setAcademicYear(e.target.value)}
                 disabled={academicYears.length === 0}
@@ -392,13 +388,6 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
             </motion.div>
           ))}
         </motion.div>
-
-        {/* <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="pb-2 border-b dark:border-gray-700"
-        /> */}
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -484,7 +473,7 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
               </motion.button>
             </motion.div>
           )}
-          {activeTab !== "Semua Riwayat" && (
+          {/* {activeTab !== "Semua Riwayat" && (
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -503,7 +492,7 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
                 <X className="w-3 h-3" />
               </motion.button>
             </motion.div>
-          )}
+          )} */}
           {searchTerm && (
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
@@ -539,7 +528,7 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
                   No.
                 </TableHead>
                 <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-300">
-                  Nama Mahasiswa
+                  Nama
                 </TableHead>
                 <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-300">
                   NIM
@@ -551,7 +540,7 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
                   Instansi
                 </TableHead>
                 <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-300">
-                  Status Pendaftaran
+                  Status
                 </TableHead>
                 <TableHead className="font-semibold text-center text-gray-700 dark:text-gray-300">
                   Aksi
@@ -570,9 +559,6 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
                     }
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      delay: 1 + (parseInt(item.id, 10) % 100) * 0.05,
-                    }}
                   >
                     <TableCell className="font-medium text-center">
                       {index + 1}.
@@ -607,8 +593,8 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
                           )
                         }
                       >
-                        <SquareArrowOutUpRight className="w-4 h-4" />
-                        Lihat Detail
+                        <SquareArrowOutUpRight className="w-4 h-4 mr-1" />
+                        Detail
                       </motion.button>
                     </TableCell>
                   </motion.tr>
@@ -624,7 +610,8 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
                     >
                       <AlertTriangle className="w-8 h-8 mb-2 text-gray-500" />
                       <p className="text-gray-500 dark:text-gray-400">
-                        Tidak ada data yang sesuai dengan filter atau pencarian.
+                        Tidak ada data yang sesuai dengan filter atau
+                        pencarian...
                       </p>
                       {(searchTerm ||
                         activeTab !== "Semua Riwayat" ||
@@ -653,7 +640,7 @@ const KoordinatorKerjaPraktikDailyReportPage: React.FC = () => {
             <div className="text-sm text-gray-500 dark:text-gray-400">
               {indexOfFirstItem + 1}-
               {Math.min(indexOfLastItem, filteredData.length)} of{" "}
-              {filteredData.length} row(s) selected.
+              {filteredData.length} Mahasiswa
             </div>
             <div className="flex items-center space-x-2">
               <Button

@@ -1,7 +1,15 @@
-import { useState, type FC } from "react";
+import { useState, useEffect, type FC } from "react";
 import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { Search, Eye, Users, CheckCircle, AlertCircle, CalendarCheck2Icon } from "lucide-react";
+import {
+  Search,
+  Eye,
+  Users,
+  CheckCircle,
+  AlertCircle,
+  CalendarCheck2Icon,
+  ChevronRight,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -19,7 +27,6 @@ import DetailNilaiModal from "@/components/koordinator-kp/seminar/detail-nilai-m
 import { motion } from "framer-motion";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 
-// Type definitions
 type NilaiStatus = "nilaiBelumValid" | "nilaiValid" | "nilaiApprove";
 type status_daftar_kp = "Baru" | "Lanjut" | "Selesai";
 
@@ -37,14 +44,21 @@ interface Mahasiswa {
 }
 
 interface NilaiResponse {
-  tahunAjaran: string;
+  tahunAjaran: {
+    id: number;
+    nama: string;
+  };
   jumlahNilaiBelumValid: number;
   jumlahNilaiValid: number;
   jumlahNilaiApprove: number;
   detailMahasiswa: Mahasiswa[];
 }
 
-// Badge variants and colors mapped to application stages with modern transparent design
+interface TahunAjaran {
+  id: number;
+  nama: string;
+}
+
 const nilaiStatusBadgeConfig: Record<
   NilaiStatus,
   {
@@ -86,7 +100,6 @@ const nilaiStatusBadgeConfig: Record<
   },
 };
 
-// Animation variants
 const container = {
   hidden: { opacity: 0 },
   show: {
@@ -105,20 +118,40 @@ const item = {
 const KoordinatorNilaiPage: FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"semua" | NilaiStatus>("semua");
+  const [selectedTahunAjaranId, setSelectedTahunAjaranId] = useState<
+    number | undefined
+  >(undefined);
 
-  // State untuk dialog
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [selectedStudent, setSelectedStudent] = useState<Mahasiswa | null>(
     null
   );
 
-  // Fetch data menggunakan TanStack Query
-  const { data, isLoading, isError, error } = useQuery<NilaiResponse>({
-    queryKey: ["koordinator-nilai"],
-    queryFn: APISeminarKP.getNilai,
+  const {
+    data: tahunAjaranData,
+    isLoading: isTahunAjaranLoading,
+    isError: isTahunAjaranError,
+  } = useQuery<TahunAjaran[]>({
+    queryKey: ["tahun-ajaran"],
+    queryFn: APISeminarKP.getTahunAjaran,
   });
 
-  // Transform data dari API ke format yang sesuai
+  const { data, isLoading, isError, error } = useQuery<NilaiResponse>({
+    queryKey: ["koordinator-nilai", selectedTahunAjaranId],
+    queryFn: () => APISeminarKP.getNilai(selectedTahunAjaranId),
+    enabled: selectedTahunAjaranId !== undefined,
+  });
+
+  useEffect(() => {
+    if (
+      tahunAjaranData &&
+      tahunAjaranData.length > 0 &&
+      selectedTahunAjaranId === undefined
+    ) {
+      setSelectedTahunAjaranId(tahunAjaranData[0].id);
+    }
+  }, [tahunAjaranData, selectedTahunAjaranId]);
+
   const students: Mahasiswa[] =
     data?.detailMahasiswa.map((student) => ({
       nim: student.nim,
@@ -146,15 +179,12 @@ const KoordinatorNilaiPage: FC = () => {
     return matchesSearch && matchesTab;
   });
 
-  // Calculate statistics from API data
   const totalStudents = students.length || 0;
   const belumValidCount = data?.jumlahNilaiBelumValid || 0;
   const validCount = data?.jumlahNilaiValid || 0;
   const approveCount = data?.jumlahNilaiApprove || 0;
 
-  // Function to open dialog with selected student
   const handleOpenDialog = (student: Mahasiswa) => {
-    // Cari data lengkap berdasarkan nim dari detailMahasiswa asli
     const fullStudentData = data?.detailMahasiswa.find(
       (s) => s.nim === student.nim
     );
@@ -162,7 +192,6 @@ const KoordinatorNilaiPage: FC = () => {
     setIsDialogOpen(true);
   };
 
-  // Render the modal
   const renderModal = () => {
     return (
       <DetailNilaiModal
@@ -173,7 +202,17 @@ const KoordinatorNilaiPage: FC = () => {
     );
   };
 
-  if (isLoading) {
+  if (isTahunAjaranError) {
+    return (
+      <DashboardLayout>
+        <div className="text-center text-gray-600 dark:text-gray-300 py-10">
+          Gagal memuat daftar tahun ajaran. Silakan coba lagi nanti.
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (isLoading || isTahunAjaranLoading) {
     return (
       <DashboardLayout>
         <div className="text-center text-gray-600 dark:text-gray-300">
@@ -197,7 +236,7 @@ const KoordinatorNilaiPage: FC = () => {
     <DashboardLayout>
       <div className="transition-colors duration-300">
         {/* Header */}
-        <div className="space-y-5">
+        <div className="space-y-4">
           <div className="flex justify-between items-center">
             <div className="flex">
               <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
@@ -208,17 +247,37 @@ const KoordinatorNilaiPage: FC = () => {
                 Nilai Kerja Praktik Mahasiswa
               </span>
             </div>
-              
-            {/* Academic Year */}
-            <div>
-              <Badge
-                variant="outline"
-                className="bg-gray-100 text-sm font-medium dark:bg-gray-900 dark:text-gray-300"
-              >
-                {data?.tahunAjaran || "Tidak tersedia"}
-              </Badge>
-            </div>
 
+            {/* Academic Year Dropdown */}
+            <div className="flex items-center gap-2 dark:text-gray-200">
+              <div className="relative">
+                <select
+                  className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0 disabled:opacity-50"
+                  value={selectedTahunAjaranId ?? ""}
+                  onChange={(e) =>
+                    setSelectedTahunAjaranId(
+                      e.target.value ? Number(e.target.value) : undefined
+                    )
+                  }
+                  disabled={isTahunAjaranLoading || !tahunAjaranData}
+                >
+                  {isTahunAjaranLoading ? (
+                    <option value="">Memuat tahun ajaran...</option>
+                  ) : tahunAjaranData && tahunAjaranData.length > 0 ? (
+                    tahunAjaranData.map((year) => (
+                      <option key={year.id} value={year.id}>
+                        {year.nama}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">Tidak ada tahun ajaran tersedia</option>
+                  )}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                  <ChevronRight className="w-4 h-4 text-gray-500 rotate-90" />
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Cards Section */}
@@ -443,7 +502,6 @@ const KoordinatorNilaiPage: FC = () => {
   );
 };
 
-// Separate component for the students table
 const StudentTable: FC<{
   students: Mahasiswa[];
   onViewDetail: (student: Mahasiswa) => void;
@@ -453,7 +511,10 @@ const StudentTable: FC<{
       <Table>
         <TableHeader className="bg-gray-200 dark:bg-gray-700">
           <TableRow className="hover:bg-gray-300 dark:hover:bg-gray-600">
-            <TableHead className="font-semibold dark:text-gray-200">
+            <TableHead className="text-center max-w-4 font-semibold dark:text-gray-200">
+              No.
+            </TableHead>
+            <TableHead className="text-center font-semibold dark:text-gray-200">
               Nama Mahasiswa
             </TableHead>
             <TableHead className="text-center font-semibold dark:text-gray-200">
@@ -484,12 +545,15 @@ const StudentTable: FC<{
               </TableCell>
             </TableRow>
           ) : (
-            students.map((student) => (
+            students.map((student, index) => (
               <TableRow
                 key={student.nim}
                 className="dark:border-gray-700 dark:hover:bg-gray-700"
               >
-                <TableCell className="dark:text-gray-300 text-xs font-semibold">
+                <TableCell className="text-center dark:text-gray-300 text-xs font-semibold">
+                  {index + 1}.
+                </TableCell>
+                <TableCell className="dark:text-gray-300 text-xs font-semibold text-center">
                   {student.nama}
                 </TableCell>
                 <TableCell className="text-center dark:text-gray-300 text-xs">

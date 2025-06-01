@@ -320,7 +320,7 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.5 }}
-          className="mb-5 flex justify-between"
+          className="flex justify-between mb-5"
         >
           <div className="flex">
             <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
@@ -335,7 +335,7 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
           <div className="flex items-center gap-2 dark:text-gray-200">
             <div className="relative">
               <select
-                className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0"
+                className="px-3 py-1 pr-8 text-sm bg-white border rounded-lg shadow-sm appearance-none focus:outline-none active:outline-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0"
                 value={academicYear}
                 onChange={(e) => setAcademicYear(e.target.value)}
                 disabled={isLoading || availableAcademicYears.length === 0}
@@ -581,7 +581,7 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
             </div>
             <div className="flex items-center gap-2 dark:text-gray-400">
               <Info className="w-4 h-4 dark:text-gray-400" />
-              <span>{filteredStudents.length} Mahasiswa Ditemukan</span>
+              <span>{filteredStudents.length} Mahasiswa</span>
             </div>
           </motion.div>
         )}
@@ -761,7 +761,7 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2 }}
                   >
-                    Tidak Ada Mahasiswa
+                    Tidak Ada Mahasiswa Bimbingan
                   </motion.h3>
                   <motion.p
                     className="max-w-md text-sm text-gray-500 dark:text-gray-400"
@@ -774,12 +774,12 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
                       : selectedFilter
                       ? `Tidak ada mahasiswa dengan status "${selectedFilter}"`
                       : availableAcademicYears.length === 0
-                      ? "-"
+                      ? ""
                       : `Tidak ada mahasiswa untuk tahun ajaran: ${academicYear}`}
                   </motion.p>
                   {(searchQuery ||
                     selectedFilter ||
-                    availableAcademicYears.length === 0) && (
+                    availableAcademicYears.length > 0) && (
                     <motion.button
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}

@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   Check,
   Save,
@@ -8,11 +8,10 @@ import {
   ArrowLeft,
   FileText,
 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-import { ToastAction } from "@/components/ui/toast";
 import { useNavigate, useLocation } from "react-router-dom";
 import APISeminarKP from "@/services/api/dosen/seminar-kp.service";
 import { useMutation } from "@tanstack/react-query";
+import toast, { Toaster } from "react-hot-toast";
 
 interface Student {
   id: string;
@@ -144,57 +143,34 @@ const NilaiSeminarPenguji: React.FC = () => {
   const { mutate, isPending: isLoading } = useMutation({
     mutationFn: APISeminarKP.createUpdateNilaiPenguji,
     onSuccess: () => {
-      toast({
-        title: "👌 Berhasil",
-        description: "Penilaian berhasil disimpan!",
-        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
+      toast.success("Penilaian berhasil disimpan! 👌", {
         duration: 3000,
+        position: "top-right",
       });
       navigate(-1);
     },
     onError: (error: any) => {
-      console.error("API Error:", {
-        message: error.message,
-        stack: error.stack,
-      });
       const errorMessage =
         error.response?.data?.message ||
         "Gagal menyimpan penilaian. Silakan coba lagi.";
-      toast({
-        title: "❌ Gagal",
-        description: errorMessage,
-        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
+      toast.error(`${errorMessage}`, {
         duration: 3000,
+        position: "top-right",
       });
     },
   });
 
-  // Kirim penilaian
   const handleSubmit = (): void => {
-    // Validasi input
     if (Object.values(scores).some((score) => score === 0)) {
-      toast({
-        title: "❌ Gagal",
-        description: "Mohon lengkapi semua kriteria penilaian.",
-        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
+      toast.error("❌ Gagal: Mohon lengkapi semua kriteria penilaian.", {
         duration: 3000,
-      });
-      return;
-    }
-
-    if (!student.nim || !student.id || !student.idNilai) {
-      toast({
-        title: "❌ Gagal",
-        description:
-          "Data mahasiswa tidak lengkap (NIM, ID jadwal, atau ID nilai).",
-        action: <ToastAction altText="Tutup">Tutup</ToastAction>,
-        duration: 3000,
+        position: "top-right",
       });
       return;
     }
 
     const payload = {
-      nilaiId: student.idNilai,
+      nilaiId: student.idNilai || "", // Fallback to empty string if idNilai is undefined
       penguasaanKeilmuan: scores.penguasaan,
       kemampuanPresentasi: scores.presentasi,
       kesesuaianUrgensi: scores.kesesuaian,
@@ -206,7 +182,6 @@ const NilaiSeminarPenguji: React.FC = () => {
     mutate(payload);
   };
 
-  // Komponen untuk indikator progres melingkar
   const CircularProgress = ({ value }: { value: number }) => {
     const radius = 45;
     const circumference = 2 * Math.PI * radius;
@@ -250,43 +225,76 @@ const NilaiSeminarPenguji: React.FC = () => {
     );
   };
 
-  // Komponen untuk kriteria dengan slider
   const CriteriaSection: React.FC<CriteriaSectionProps> = ({
     criteria,
     value,
     onChange,
   }) => {
-    const sliderValueRef = useRef(value);
     const [displayValue, setDisplayValue] = useState(value);
+    const inputRef = useRef<HTMLInputElement>(null);
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-    const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = parseInt(e.target.value);
-      sliderValueRef.current = newValue;
-      setDisplayValue(newValue);
+    useEffect(() => {
+      setDisplayValue(value); // Sinkronisasi dengan prop value saat berubah
+    }, [value]);
 
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
+    const handleSliderChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = parseInt(e.target.value);
+        setDisplayValue(newValue);
 
-      debounceTimerRef.current = setTimeout(() => {
-        onChange(criteria.id, newValue);
-      }, 50);
-    };
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
+        }
+
+        debounceTimerRef.current = setTimeout(() => {
+          onChange(criteria.id, newValue);
+        }, 50);
+      },
+      [criteria.id, onChange]
+    );
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = parseInt(e.target.value) || 0;
-      const clampedValue = Math.min(100, Math.max(0, newValue));
-      setDisplayValue(clampedValue);
-      sliderValueRef.current = clampedValue;
+      let newValue = e.target.value.replace(/\D/g, ""); // Hapus karakter non-digit
+      if (newValue === "") newValue = "0"; // Jika kosong, set ke 0
 
-      onChange(criteria.id, clampedValue);
+      // Jika input dimulai dengan "100" dan panjangnya 3 atau lebih, set ke 100
+      if (newValue.startsWith("100") && newValue.length >= 3) {
+        setDisplayValue(100);
+        return;
+      }
+
+      // Jika panjang lebih dari 2 digit dan bukan "100", ambil 2 digit pertama
+      if (newValue.length > 2) {
+        newValue = newValue.slice(0, 2);
+      }
+
+      const parsedValue = parseInt(newValue) || 0;
+      setDisplayValue(parsedValue);
     };
 
-    useEffect(() => {
-      setDisplayValue(value);
-      sliderValueRef.current = value;
-    }, [value]);
+    const handleInputBlur = useCallback(() => {
+      let finalValue = displayValue;
+
+      // Jika input adalah "100", kita izinkan
+      if (displayValue.toString() === "100") {
+        finalValue = 100;
+      } else if (displayValue.toString().length > 2) {
+        // Jika panjang lebih dari 2 digit, ambil 2 digit pertama
+        finalValue = parseInt(displayValue.toString().slice(0, 2)) || 0;
+      }
+
+      // Batasi nilai antara 0 dan 100
+      finalValue = Math.min(100, Math.max(0, finalValue));
+      setDisplayValue(finalValue);
+      onChange(criteria.id, finalValue); // Sinkronisasi dengan scores saat blur
+    }, [displayValue, criteria.id, onChange]);
+
+    const handleInputFocus = () => {
+      if (inputRef.current) {
+        inputRef.current.select(); // Pilih teks saat input mendapatkan fokus
+      }
+    };
 
     return (
       <div className="mb-6 p-5 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors">
@@ -339,12 +347,16 @@ const NilaiSeminarPenguji: React.FC = () => {
               {displayValue > 0 ? getScoreLabel(displayValue) : "Belum Dinilai"}
             </span>
             <input
-              type="number"
+              ref={inputRef}
+              type="text"
               value={displayValue || ""}
               onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              onFocus={handleInputFocus}
               min="0"
               max="100"
               className="w-16 text-center border border-gray-300 dark:border-gray-600 rounded-md py-1 px-2 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200"
+              placeholder="0-100"
             />
           </div>
         </div>
@@ -376,6 +388,7 @@ const NilaiSeminarPenguji: React.FC = () => {
 
   return (
     <DashboardLayout>
+      <Toaster position="top-right" />
       <div className="p-5">
         <div className="mb-4">
           <button
@@ -624,23 +637,6 @@ const NilaiSeminarPenguji: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="mt-6 flex justify-center md:hidden">
-          <button
-            onClick={handleSubmit}
-            disabled={
-              isLoading || Object.values(scores).some((score) => score === 0)
-            }
-            className={`flex items-center px-6 py-3 rounded-lg font-medium text-white transition-all ${
-              isLoading || Object.values(scores).some((score) => score === 0)
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-md hover:shadow-lg"
-            }`}
-          >
-            <Save size={20} className="mr-2" />
-            {isLoading ? "Menyimpan..." : "Simpan Penilaian"}
-          </button>
         </div>
       </div>
     </DashboardLayout>

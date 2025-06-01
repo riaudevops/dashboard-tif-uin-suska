@@ -1,7 +1,15 @@
-import { useState, type FC, useMemo } from "react"; // Added useEffect
+import { useState, useMemo, useEffect, type FC } from "react";
 import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { Search, Eye, Users, CheckCircle, AlertCircle, CalendarCheck2Icon, ChevronRight } from "lucide-react";
+import {
+  Search,
+  Eye,
+  Users,
+  CheckCircle,
+  AlertCircle,
+  CalendarCheck2Icon,
+  ChevronRight,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -116,12 +124,18 @@ interface StatisticsResponse {
   };
 }
 
+interface TahunAjaran {
+  id: number;
+  nama: string;
+}
+
 interface ApiResponse {
   response: boolean;
   message: string;
   data: {
     statistics: StatisticsResponse;
     mahasiswa: MahasiswaResponse[];
+    tahun_ajaran: TahunAjaran;
   };
 }
 
@@ -221,12 +235,9 @@ const emptyDokumenStep: DokumenStep = {
 };
 
 const KoordinatorValidasiBerkasPage: FC = () => {
-
-  const [academicYear, setAcademicYear] = useState<string>("2024/2025 - Genap");
-  const [availableAcademicYears, setAvailableAcademicYears] = useState<
-    string[]
-  >([]);
-
+  const [selectedTahunAjaranId, setSelectedTahunAjaranId] = useState<
+    number | null
+  >(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<Stage>("pendaftaran");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -235,9 +246,23 @@ const KoordinatorValidasiBerkasPage: FC = () => {
   const [isValidatedStudentModal, setIsValidatedStudentModal] =
     useState<boolean>(false);
 
+  // Fetch daftar tahun ajaran
+  const {
+    data: tahunAjaranData,
+    isLoading: isTahunAjaranLoading,
+    isError: isTahunAjaranError,
+    error: tahunAjaranError,
+  } = useQuery<TahunAjaran[]>({
+    queryKey: ["tahun-ajaran"],
+    queryFn: APISeminarKP.getTahunAjaran,
+  });
+
+  // Fetch data mahasiswa berdasarkan tahun ajaran yang dipilih
   const { data, isLoading, isError, error } = useQuery<ApiResponse>({
-    queryKey: ["koordinator-seminar-kp-dokumen"],
-    queryFn: APISeminarKP.getDataMahasiswa,
+    queryKey: ["koordinator-seminar-kp-dokumen", selectedTahunAjaranId],
+    queryFn: () =>
+      APISeminarKP.getDataMahasiswa(selectedTahunAjaranId ?? undefined),
+    enabled: selectedTahunAjaranId !== null,
   });
 
   const { data: detailData, isLoading: isDetailLoading } =
@@ -246,6 +271,28 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       queryFn: () => APISeminarKP.getDataMahasiswaByEmail(selectedNim!),
       enabled: !!selectedNim,
     });
+
+  // Set tahun ajaran default ke yang pertama dari API saat data tersedia
+  useEffect(() => {
+    if (
+      tahunAjaranData &&
+      tahunAjaranData.length > 0 &&
+      selectedTahunAjaranId === null
+    ) {
+      setSelectedTahunAjaranId(tahunAjaranData[0].id);
+    }
+  }, [tahunAjaranData, selectedTahunAjaranId]);
+
+  // Sinkronisasi tahun ajaran dengan respons API dari getDataMahasiswa
+  useEffect(() => {
+    if (
+      data?.data?.tahun_ajaran?.id &&
+      data.data.tahun_ajaran.id !== selectedTahunAjaranId &&
+      tahunAjaranData?.some((tahun) => tahun.id === data.data.tahun_ajaran.id)
+    ) {
+      setSelectedTahunAjaranId(data.data.tahun_ajaran.id);
+    }
+  }, [data, tahunAjaranData, selectedTahunAjaranId]);
 
   const { students, totalMahasiswa, validasiDitolak, validasiSelesai } =
     useMemo(() => {
@@ -411,16 +458,35 @@ const KoordinatorValidasiBerkasPage: FC = () => {
     }
   };
 
-  if (isError) {
+  if (isTahunAjaranError) {
     toast({
       title: "❌ Gagal",
-      description: `Gagal mengambil data: ${(error as Error).message}`,
+      description: `Gagal mengambil daftar tahun ajaran: ${
+        (tahunAjaranError as Error).message
+      }`,
       duration: 3000,
     });
     return (
       <DashboardLayout>
         <div className="text-center text-gray-600 dark:text-gray-300 py-10">
-          Gagal memuat data. Silakan coba lagi nanti.
+          Gagal memuat daftar tahun ajaran. Silakan coba lagi nanti.
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (isError) {
+    toast({
+      title: "❌ Gagal",
+      description: `Gagal mengambil data mahasiswa: ${
+        (error as Error).message
+      }`,
+      duration: 3000,
+    });
+    return (
+      <DashboardLayout>
+        <div className="text-center text-gray-600 dark:text-gray-300 py-10">
+          Gagal memuat data mahasiswa. Silakan coba lagi nanti.
         </div>
       </DashboardLayout>
     );
@@ -429,46 +495,48 @@ const KoordinatorValidasiBerkasPage: FC = () => {
   return (
     <DashboardLayout>
       <div className="transition-colors duration-300">
-        <div className="space-y-5">
+        <div className="space-y-4">
           <div>
             <div className="flex justify-between">
-            <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
-              <span
-                className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
-              />
-              <CalendarCheck2Icon className="w-4 h-4 mr-1.5" />
-              Validasi Permohonan Seminar KP Mahasiswa
-            </span>
-            {/* Academic Year Selector */}
-            <div className="flex items-center gap-2 dark:text-gray-200">
-              <div className="relative">
-                <select
-                  className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0"
-                  value={academicYear}
-                  onChange={(e) => setAcademicYear(e.target.value)}
-                  disabled={isLoading || availableAcademicYears.length === 0}
-                >
-                  {availableAcademicYears.length > 0 ? (
-                    availableAcademicYears.map((year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="">2024/2025 - Genap</option>
-                  )}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <ChevronRight className="w-4 h-4 text-gray-500 rotate-90" />
+              <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+                <span className="inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400" />
+                <CalendarCheck2Icon className="w-4 h-4 mr-1.5" />
+                Validasi Permohonan Seminar KP Mahasiswa
+              </span>
+              {/* Dropdown Tahun Ajaran */}
+              <div className="flex items-center gap-2 dark:text-gray-200">
+                <div className="relative">
+                  <select
+                    className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0 disabled:opacity-50"
+                    value={selectedTahunAjaranId ?? ""}
+                    onChange={(e) =>
+                      setSelectedTahunAjaranId(Number(e.target.value))
+                    }
+                    disabled={isTahunAjaranLoading || !tahunAjaranData}
+                  >
+                    {isTahunAjaranLoading ? (
+                      <option value="">Memuat tahun ajaran...</option>
+                    ) : tahunAjaranData && tahunAjaranData.length > 0 ? (
+                      tahunAjaranData.map((year) => (
+                        <option key={year.id} value={year.id}>
+                          {year.nama}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="">Tidak ada tahun ajaran tersedia</option>
+                    )}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                    <ChevronRight className="w-4 h-4 text-gray-500 rotate-90" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          </div>
 
-          {isLoading ? (
+          {isLoading || isTahunAjaranLoading ? (
             <div className="text-center text-gray-600 dark:text-gray-300">
-              Memuat statistik...
+              Memuat data...
             </div>
           ) : (
             <motion.div
@@ -687,7 +755,10 @@ const StudentTable: FC<{
         <Table>
           <TableHeader className="bg-gray-200 dark:bg-gray-700">
             <TableRow className="hover:bg-gray-300 dark:hover:bg-gray-600">
-              <TableHead className="font-semibold dark:text-gray-200">
+              <TableHead className="text-center max-w-4 font-semibold dark:text-gray-200">
+                No.
+              </TableHead>
+              <TableHead className="text-center font-semibold dark:text-gray-200">
                 Nama Mahasiswa
               </TableHead>
               <TableHead className="text-center font-semibold dark:text-gray-200">
@@ -715,12 +786,15 @@ const StudentTable: FC<{
                 </TableCell>
               </TableRow>
             ) : (
-              students.map((student) => (
+              students.map((student, index) => (
                 <TableRow
                   key={student.id}
                   className="dark:border-gray-700 dark:hover:bg-gray-700"
                 >
-                  <TableCell className="dark:text-gray-300 text-xs">
+                  <TableCell className="text-center dark:text-gray-300 text-xs font-semibold">
+                    {index + 1}.
+                  </TableCell>
+                  <TableCell className="dark:text-gray-300 text-xs text-center">
                     {student.name}
                   </TableCell>
                   <TableCell className="font-medium text-center dark:text-gray-300 text-xs">
@@ -766,12 +840,15 @@ const StudentTable: FC<{
           </h2>
           <Table>
             <TableBody className="border">
-              {validatedStudents.map((student) => (
+              {validatedStudents.map((student, index) => (
                 <TableRow
                   key={student.id}
                   className="dark:border-gray-700 dark:hover:bg-gray-700"
                 >
-                  <TableCell className="dark:text-gray-300 text-xs">
+                  <TableCell className="text-center dark:text-gray-300 text-xs font-semibold">
+                    {index + 1}.
+                  </TableCell>
+                  <TableCell className="dark:text-gray-300 text-xs text-center">
                     {student.name}
                   </TableCell>
                   <TableCell className="font-medium text-center dark:text-gray-300 text-xs">

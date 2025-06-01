@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate, Navigate } from "react-router-dom";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import PendaftaranCard from "@/components/mahasiswa/seminar/pendaftaran-card";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
@@ -27,6 +27,12 @@ interface SeminarData {
   };
 }
 
+interface ApiResponse {
+  response: boolean;
+  message: string;
+  data?: SeminarData;
+}
+
 export default function MahasiswaSeminarDaftarPage() {
   const navigate = useNavigate();
   const [seminarStarted, setSeminarStarted] = useState(
@@ -34,44 +40,47 @@ export default function MahasiswaSeminarDaftarPage() {
   );
 
   // Fetch data from API
-  const { data, isLoading, isError, error } = useQuery<{
-    data: SeminarData;
-  }>({
+  const {
+    data: apiResponse,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<ApiResponse>({
     queryKey: ["seminar-kp-data"],
-    queryFn: APISeminarKP.getDataMydokumen,
+    queryFn: async () => {
+      try {
+        const response = await APISeminarKP.getDataMydokumen();
+        return response;
+      } catch (err) {
+        return {
+          response: false,
+          message: (err as Error).message || "Gagal mengambil data",
+        };
+      }
+    },
   });
 
   // Check step accessibility and requirements
-  const step1Accessible = data?.data?.steps_info?.step1_accessible || false;
+  const step1Accessible =
+    apiResponse?.data?.steps_info?.step1_accessible || false;
   const semuaSyaratTerpenuhi =
-    data?.data?.persyaratan_seminar_kp?.semua_syarat_terpenuhi || false;
-  const hasSubmittedDocuments =
-    (data?.data?.dokumen_seminar_kp?.step1?.length || 0) > 0;
+    apiResponse?.data?.persyaratan_seminar_kp?.semua_syarat_terpenuhi || false;
 
-  // Redirect logic
-  useEffect(() => {
-    if (
-      (seminarStarted && semuaSyaratTerpenuhi) ||
-      (step1Accessible && semuaSyaratTerpenuhi && hasSubmittedDocuments)
-    ) {
-      navigate("/mahasiswa/kerja-praktik/seminar/validasi-berkas", {
-        replace: true,
-      });
-    }
-  }, [
-    seminarStarted,
-    step1Accessible,
-    semuaSyaratTerpenuhi,
-    hasSubmittedDocuments,
-    navigate,
-  ]);
+  // Redirect if seminar process has started and step1 is accessible
+  if (seminarStarted && !isLoading && step1Accessible) {
+    return (
+      <Navigate to="/mahasiswa/kerja-praktik/seminar/validasi-berkas" replace />
+    );
+  }
 
   const handleNavigation = () => {
     if (semuaSyaratTerpenuhi && step1Accessible) {
       // Mark seminar process as started
       localStorage.setItem("seminarProcessStarted", "true");
       setSeminarStarted(true);
-      navigate("/mahasiswa/kerja-praktik/seminar/validasi-berkas");
+      navigate("/mahasiswa/kerja-praktik/seminar/validasi-berkas", {
+        replace: true,
+      });
     }
   };
 
@@ -79,13 +88,14 @@ export default function MahasiswaSeminarDaftarPage() {
     return (
       <DashboardLayout>
         <div className="text-center text-gray-600 dark:text-gray-300">
-          Memuat data seminar...
+          Mengambil data...
         </div>
       </DashboardLayout>
     );
   }
 
-  if (isError) {
+  // Handle error state (e.g., network error, not 404)
+  if (isError && apiResponse?.response !== false) {
     return (
       <DashboardLayout>
         <div className="text-center text-red-600 dark:text-red-300">
@@ -95,16 +105,7 @@ export default function MahasiswaSeminarDaftarPage() {
     );
   }
 
-  // Redirect if conditions are met
-  if (
-    (seminarStarted && semuaSyaratTerpenuhi) ||
-    (step1Accessible && semuaSyaratTerpenuhi && hasSubmittedDocuments)
-  ) {
-    return (
-      <Navigate to="/mahasiswa/kerja-praktik/seminar/validasi-berkas" replace />
-    );
-  }
-
+  // Render PendaftaranCard
   return (
     <DashboardLayout>
       <div className="flex mb-3">
@@ -113,7 +114,7 @@ export default function MahasiswaSeminarDaftarPage() {
             className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
           />
           <LayoutGridIcon className="w-4 h-4 mr-1.5" />
-          Pengajuan Seminar Kerja Praktik Mahasiswa            
+          Pengajuan Seminar Kerja Praktik Mahasiswa
         </span>
       </div>
 
@@ -123,15 +124,16 @@ export default function MahasiswaSeminarDaftarPage() {
           checkItems: {
             hapalan: true, // Dummy for murojaah 1-16
             kerja_praktik:
-              data?.data?.persyaratan_seminar_kp?.masih_terdaftar_kp ?? false,
+              apiResponse?.data?.persyaratan_seminar_kp?.masih_terdaftar_kp ??
+              false,
             bimbingan:
-              data?.data?.persyaratan_seminar_kp?.minimal_lima_bimbingan ??
-              false,
+              apiResponse?.data?.persyaratan_seminar_kp
+                ?.minimal_lima_bimbingan ?? false,
             dailyReport:
-              data?.data?.persyaratan_seminar_kp?.daily_report_sudah_approve ??
-              false,
+              apiResponse?.data?.persyaratan_seminar_kp
+                ?.daily_report_sudah_approve ?? false,
             nilaiInstansi:
-              data?.data?.persyaratan_seminar_kp
+              apiResponse?.data?.persyaratan_seminar_kp
                 ?.sudah_mendapat_nilai_instansi ?? false,
           },
         }}

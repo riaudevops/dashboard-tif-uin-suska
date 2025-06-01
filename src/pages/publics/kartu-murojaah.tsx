@@ -105,7 +105,7 @@ const KartuMurojaahPage = () => {
 						<ModeToggle />
 					</div>
 
-					<div className="max-w-6xl mx-auto px-4">
+					<div className="max-w-6xl mx-auto px-4 mt-5">
 						{/* Informasi Mahasiswa */}
 						<div className="bg-card rounded-2xl shadow-md p-8 border border-foreground/20 mb-6">
 							<div className="flex items-center mb-8 group/header">

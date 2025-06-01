@@ -265,7 +265,7 @@ const KoordinatorJadwalSeminarPage: FC = () => {
     setSelectedSeminar(null);
   };
 
-  const handleSaveSeminar = async (updatedSeminar: JadwalSeminar) => {
+  const handleSaveSeminar = async () => {
     try {
       await queryClient.invalidateQueries({ queryKey: ["log-jadwal"] });
       await queryClient.invalidateQueries({

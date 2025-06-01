@@ -704,7 +704,10 @@ const StudentTable: FC<{
       <Table>
         <TableHeader className="bg-gray-200 dark:bg-gray-700">
           <TableRow className="hover:bg-gray-300 dark:hover:bg-gray-600">
-            <TableHead className="font-semibold dark:text-gray-200">
+            <TableHead className="text-center max-w-9 font-semibold dark:text-gray-200">
+              No.
+            </TableHead>
+            <TableHead className="text-center font-semibold dark:text-gray-200">
               Nama Mahasiswa
             </TableHead>
             <TableHead className="text-center font-semibold dark:text-gray-200">
@@ -741,12 +744,15 @@ const StudentTable: FC<{
               </TableCell>
             </TableRow>
           ) : (
-            students.map((student) => (
+            students.map((student, index) => (
               <TableRow
                 key={student.id}
                 className="dark:border-gray-700 dark:hover:bg-gray-700"
               >
-                <TableCell className="dark:text-gray-300 font-medium text-xs">
+                <TableCell className="text-center dark:text-gray-300 text-xs">
+                  {index + 1}.
+                </TableCell>
+                <TableCell className="text-center dark:text-gray-300 font-medium text-xs">
                   {student.name}
                 </TableCell>
                 <TableCell className="text-center dark:text-gray-300 text-xs">

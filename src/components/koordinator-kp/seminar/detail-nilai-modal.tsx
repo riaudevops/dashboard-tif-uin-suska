@@ -173,7 +173,7 @@ const DetailNilaiModal: FC<DetailNilaiModalProps> = ({
                   <Building className="w-4 h-4 text-emerald-500 flex-shrink-0" />
                   <div className="min-w-0">
                     <div className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-0.5">
-                      Pembimbing
+                      Pembimbing Instansi
                     </div>
                     <div className="font-semibold text-xs text-gray-800 dark:text-gray-200 truncate">
                       {student.pembimbing_instansi}

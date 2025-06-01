@@ -23,14 +23,12 @@ import { useTheme } from "@/components/themes/theme-provider";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import APISetoran from "@/services/api/public/setoran-hafalan.service";
-// import AnimatedPercentage from "./animate-angka";
 import ProgressChart from "../../components/mahasiswa/setoran-hafalan/kartu-murojaah/progress-bar";
 import { Skeleton } from "@/components/ui/skeleton";
 import TableLoadingSkeleton from "@/components/globals/table-loading-skeleton";
 import { ModeToggle } from "@/components/themes/mode-toggle";
 import NotFoundPage from "./not-found.page";
 import { AxiosError } from "axios";
-// import ProgressChart from "./progress-bar";
 interface ProgresSetoranProps {
   label: string;
   persentase_progres_setor: number;

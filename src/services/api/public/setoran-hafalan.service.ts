@@ -7,7 +7,6 @@ export default class APISetoran {
       `${import.meta.env.VITE_BASE_URL_PUBLIC}/mahasiswa/kartu-murojaah-digital/${id}`,
     );
     const data = response.data;
-    console.log("Response from APISetoran.getKartuMurojaahDigital:", data);
     return data;
   }
 }

@@ -403,7 +403,7 @@ function DetailMahasiswaSetoran() {
 
         <div className="flex flex-col gap-1.5 sticky top-[51.3px] bg-background pt-2.5 -mb-4 pb-3.5 z-50">
           <div className="flex justify-between gap-4">
-            <div>
+            <div className="overflow-x-auto max-w-28 md:max-w-full">
               <Tabs defaultValue="tab1" className="w-full">
                 <TabsList className="gap-1.5">
                   <TabsTrigger
@@ -533,125 +533,134 @@ function DetailMahasiswaSetoran() {
           </div>
         </div>
 
-        <div className="">
-          <Table>
-            <TableHeader className="sticky top-0">
-              <TableRow className="border border-solid border-secondary bg-muted">
-                <TableHead className="text-center">No</TableHead>
-                <TableHead className="text-center">Nama Surah</TableHead>
-                <TableHead className="text-center">Tanggal Muroja'ah</TableHead>
-                <TableHead className="text-center">
-                  Persyaratan Muroja'ah
-                </TableHead>
-                <TableHead className="text-center">
-                  Dosen Yang Mengesahkan
-                </TableHead>
-                <TableHead className="text-center">Status Muroja'ah</TableHead>
-                <TableHead className="w-24 text-center">
-                  <Checkbox
-                    className="data-[state=checked]:bg-green-500"
-                    checked={selectAll}
-                    onCheckedChange={handleSelectAll}
-                    disabled={dataCurrent?.length === 0 || isLoading}
-                  />
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-
-            <TableBody className="border border-solid border-secondary">
-              {dataCurrent?.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center">
-                    {search
-                      ? "❌ Maaf, surah yang anda cari tidak ditemukan nih!"
-                      : tabState === "sudah_setor"
-                      ? "❌ Mahasiswa ini Belum Menyetor Satu pun Hafalan Surah"
-                      : "✔️ Mahasiswa ini Sudah Menyetor semua Hafalan Surah"}
-                  </TableCell>
+        <div className="w-0 min-w-full">
+          <div className="w-full overflow-x-auto md:max-w-full">
+            <Table>
+              <TableHeader className="sticky top-0">
+                <TableRow className="border border-solid border-secondary bg-muted">
+                  <TableHead className="text-center">No</TableHead>
+                  <TableHead className="text-center">Nama Surah</TableHead>
+                  <TableHead className="text-center">
+                    Tanggal Muroja'ah
+                  </TableHead>
+                  <TableHead className="text-center">
+                    Persyaratan Muroja'ah
+                  </TableHead>
+                  <TableHead className="text-center">
+                    Dosen Yang Mengesahkan
+                  </TableHead>
+                  <TableHead className="text-center">
+                    Status Muroja'ah
+                  </TableHead>
+                  <TableHead className="w-24 text-center">
+                    <Checkbox
+                      className="data-[state=checked]:bg-green-500"
+                      checked={selectAll}
+                      onCheckedChange={handleSelectAll}
+                      disabled={dataCurrent?.length === 0 || isLoading}
+                    />
+                  </TableHead>
                 </TableRow>
-              )}
-              {isLoading && <TableLoadingSkeleton columns={7} rows={7} />}
-              {loading ? (
-                <TableLoadingSkeleton columns={7} rows={7} />
-              ) : (
-                dataCurrent?.map((surah: MahasiswaSetoran, index: number) => (
-                  <TableRow
-                    key={surah.id}
-                    className={
-                      index % 2 !== 0
-                        ? "bg-secondary hover:bg-secondary"
-                        : "bg-background hover:bg-background"
-                    }
-                  >
-                    <TableCell className="text-center">{index + 1}.</TableCell>
-                    <TableCell className="text-center">
-                      {surah.nama} {surah.nama_arab && ` - ${surah.nama_arab}`}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {surah.sudah_setor ? (
-                        <div>
-                          <p>
-                            {new Date(surah.info_setoran.tgl_setoran)
-                              .toLocaleDateString("id-ID", {
-                                day: "2-digit",
-                                month: "long",
-                                year: "numeric",
-                              })
-                              .replace(/^(\d+)\s(\w+)\s(\d+)$/, "$1 $2, $3")}
-                          </p>
-                        </div>
-                      ) : (
-                        <p>-</p>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <div
-                        className={`py-1 px-3 rounded-2xl text-center text-white inline-block ${
-                          colourLabelingCategory(surah.label)[1]
-                        }`}
-                      >
-                        {colourLabelingCategory(surah.label)[0]}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {surah.sudah_setor
-                        ? surah.info_setoran.dosen_yang_mengesahkan.nama
-                        : "-"}
-                    </TableCell>
+              </TableHeader>
 
-                    <TableCell className="text-center">
-                      {surah.sudah_setor ? (
-                        <div className="bg-green-600 px-3 py-1 text-white rounded-2xl inline-block">
-                          Selesai
-                        </div>
-                      ) : (
-                        <div>-</div>
-                      )}
-                    </TableCell>
-                    <TableCell className="w-24 text-center">
-                      <Checkbox
-                        className="data-[state=checked]:bg-green-500"
-                        checked={
-                          selectAll ||
-                          tempDataCheck.some(
-                            (item) => item.id_komponen_setoran === surah.id
-                          )
-                        }
-                        onCheckedChange={(checked) =>
-                          handleCheckBoxToTempData(
-                            Boolean(checked),
-                            surah.nama,
-                            surah.id,
-                            surah.info_setoran?.id || ""
-                          )
-                        }
-                      />
+              <TableBody className="border border-solid border-secondary">
+                {dataCurrent?.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center">
+                      {search
+                        ? "❌ Maaf, surah yang anda cari tidak ditemukan nih!"
+                        : tabState === "sudah_setor"
+                        ? "❌ Mahasiswa ini Belum Menyetor Satu pun Hafalan Surah"
+                        : "✔️ Mahasiswa ini Sudah Menyetor semua Hafalan Surah"}
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                )}
+                {isLoading && <TableLoadingSkeleton columns={7} rows={7} />}
+                {loading ? (
+                  <TableLoadingSkeleton columns={7} rows={7} />
+                ) : (
+                  dataCurrent?.map((surah: MahasiswaSetoran, index: number) => (
+                    <TableRow
+                      key={surah.id}
+                      className={
+                        index % 2 !== 0
+                          ? "bg-secondary hover:bg-secondary"
+                          : "bg-background hover:bg-background"
+                      }
+                    >
+                      <TableCell className="text-center">
+                        {index + 1}.
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {surah.nama}{" "}
+                        {surah.nama_arab && ` - ${surah.nama_arab}`}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {surah.sudah_setor ? (
+                          <div>
+                            <p>
+                              {new Date(surah.info_setoran.tgl_setoran)
+                                .toLocaleDateString("id-ID", {
+                                  day: "2-digit",
+                                  month: "long",
+                                  year: "numeric",
+                                })
+                                .replace(/^(\d+)\s(\w+)\s(\d+)$/, "$1 $2, $3")}
+                            </p>
+                          </div>
+                        ) : (
+                          <p>-</p>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <div
+                          className={`py-1 px-3 rounded-2xl text-center text-white inline-block ${
+                            colourLabelingCategory(surah.label)[1]
+                          }`}
+                        >
+                          {colourLabelingCategory(surah.label)[0]}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {surah.sudah_setor
+                          ? surah.info_setoran.dosen_yang_mengesahkan.nama
+                          : "-"}
+                      </TableCell>
+
+                      <TableCell className="text-center">
+                        {surah.sudah_setor ? (
+                          <div className="bg-green-600 px-3 py-1 text-white rounded-2xl inline-block">
+                            Selesai
+                          </div>
+                        ) : (
+                          <div>-</div>
+                        )}
+                      </TableCell>
+                      <TableCell className="w-24 text-center">
+                        <Checkbox
+                          className="data-[state=checked]:bg-green-500"
+                          checked={
+                            selectAll ||
+                            tempDataCheck.some(
+                              (item) => item.id_komponen_setoran === surah.id
+                            )
+                          }
+                          onCheckedChange={(checked) =>
+                            handleCheckBoxToTempData(
+                              Boolean(checked),
+                              surah.nama,
+                              surah.id,
+                              surah.info_setoran?.id || ""
+                            )
+                          }
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </div>
     </DashboardLayout>

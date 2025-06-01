@@ -337,7 +337,7 @@ const KoordinatorJadwalSeminarPage: FC = () => {
   return (
     <DashboardLayout>
       <Toaster position="top-right" />
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-3.5">
         <div className="flex">
           <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
             <span

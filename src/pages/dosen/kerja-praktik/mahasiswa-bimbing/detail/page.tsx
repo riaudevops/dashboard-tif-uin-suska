@@ -1178,7 +1178,8 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
               </TabsContent>
               <TabsContent value="riwayat-bimbingan" className="space-y-4">
                 <Card>
-                  <CardHeader className="flex items-end">
+                  <div className="p-6 pb-3.5 pt-4 flex justify-between items-center">
+                    <span className="font-semibold text-bsae tracking-tight text-foreground/90">🔥 Riwayat Bimbingan Mahasiswa</span>
                     <Button
                       className="bg-blue-500 border text-gray-50 hover:bg-blue-600 dark:bg-blue-500 dark:border-gray-700 dark:hover:bg-blue-600"
                       onClick={() => setOpenModalBimbingan(true)}
@@ -1186,13 +1187,13 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
                       <FilePlus2 className="w-4 h-4" />
                       Tambah Bimbingan
                     </Button>
-                  </CardHeader>
+                  </div>
                   <CardContent>
                     <Card className="overflow-hidden border-none rounded-lg shadow-sm">
                       <Table className="border dark:border-gray-700">
                         <TableHeader className="bg-gray-200 border dark:border-gray-700 dark:bg-gray-800/10">
                           <TableRow>
-                            <TableHead className="text-center">
+                            <TableHead className="max-w-16 text-center">
                               Bimbingan Ke-
                             </TableHead>
                             <TableHead className="text-center">
@@ -1538,7 +1539,7 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
                           );
                         })()}
                       </CardContent>
-                      <CardFooter className="flex justify-end gap-2">
+                      <CardFooter className="flex justify-end gap-2 mr-2">
                         {(() => {
                           const komponen =
                             detailMahasiswaSaya.nilai?.[0]
@@ -1551,12 +1552,12 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
                                 Object.keys(komponen).length > 0));
                           return hasKomponen && !isEditingNilai ? (
                             <Button
-                              className="text-white bg-blue-500 hover:bg-blue-600"
+                              className="text-white bg-yellow-700 hover:bg-yellow-800"
                               onClick={handleEditNilai}
                               aria-label="Edit Nilai"
                             >
                               <FileText className="w-4 h-4 mr-1" />
-                              Edit Nilai
+                              Perbarui Nilai
                             </Button>
                           ) : (
                             <>
@@ -1568,7 +1569,7 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
                                 Batal
                               </Button>
                               <Button
-                                className="text-white bg-blue-500 hover:bg-blue-600"
+                                className="text-white bg-green-600 hover:bg-green-700"
                                 onClick={handleSaveNilai}
                                 disabled={
                                   postNilaiMutation.isPending ||

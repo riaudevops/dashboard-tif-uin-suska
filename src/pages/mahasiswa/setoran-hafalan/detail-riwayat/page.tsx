@@ -59,8 +59,10 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 
   const handleCetakKartuMurojaahMobile = async () => {
     const response = await APISetoran.getKartuMurojaahSaya();
-    
-    const pdfName = response.headers["content-disposition"].split("filename=")[1].replaceAll('"', '');
+
+    const pdfName = response.headers["content-disposition"]
+      .split("filename=")[1]
+      .replaceAll('"', "");
     const blob = new Blob([response.data], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
 
@@ -69,23 +71,26 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
     link.download = pdfName || "";
     link.click();
     link.remove();
-    URL.revokeObjectURL(link.href);   
-  }
+    URL.revokeObjectURL(link.href);
+  };
 
-  const [isLoadingCetakKartuMurojaah, setIsLoadingCetakKartuMurojaah] = useState(false);
+  const [isLoadingCetakKartuMurojaah, setIsLoadingCetakKartuMurojaah] =
+    useState(false);
   const handleCetakKartuMurojaah = async () => {
     setIsLoadingCetakKartuMurojaah(true);
     const response = await APISetoran.getKartuMurojaahSaya();
     setIsLoadingCetakKartuMurojaah(false);
-    
-    const pdfName = response.headers["content-disposition"].split("filename=")[1].replaceAll('"', '');
+
+    const pdfName = response.headers["content-disposition"]
+      .split("filename=")[1]
+      .replaceAll('"', "");
     const blob = new Blob([response.data], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
 
     setPdfUrl(url);
     setPdfName(pdfName);
-    setShowModal(true);    
-  }
+    setShowModal(true);
+  };
 
   const handeDownloadPDF = async () => {
     const link = document.createElement("a");
@@ -98,7 +103,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
     setShowModal(false);
     setPdfUrl(null);
     setPdfName(null);
-  }
+  };
 
   return (
     <>
@@ -107,20 +112,24 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
           <div className="w-[80%] h-[90%] flex flex-col justify-center items-end gap-1">
             <div className="flex gap-1 h-10 w-full">
               <div className="w-full h-full rounded-md bg-green-800 flex justify-start items-center px-4">
-                <p className="text-white text-center font-medium">{ pdfName }</p>
+                <p className="text-white text-center font-medium">{pdfName}</p>
               </div>
-              <Button variant={"default"} className="bg-yellow-700 active:bg-yellow-700 hover:bg-yellow-800 justify-center flex h-full hover:scale-95 active:scale-100"
-                  onClick={handeDownloadPDF}
-                >
-                  <DownloadIcon width={50} height={50} color="white" />
+              <Button
+                variant={"default"}
+                className="bg-yellow-700 active:bg-yellow-700 hover:bg-yellow-800 justify-center flex h-full hover:scale-95 active:scale-100"
+                onClick={handeDownloadPDF}
+              >
+                <DownloadIcon width={50} height={50} color="white" />
               </Button>
-              <Button variant={"destructive"} className="justify-center flex h-full hover:scale-95 active:scale-100"
-                  onClick={() => {
-                    setShowModal(false);
-                    setPdfUrl(null);
-                  }}
-                >
-                  <X width={50} height={50} color="white" />
+              <Button
+                variant={"destructive"}
+                className="justify-center flex h-full hover:scale-95 active:scale-100"
+                onClick={() => {
+                  setShowModal(false);
+                  setPdfUrl(null);
+                }}
+              >
+                <X width={50} height={50} color="white" />
               </Button>
             </div>
             <iframe
@@ -162,8 +171,8 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
               ✨ Detail Riwayat Muroja'ah-mu...
             </div>
             <div className="select-none ml-1 md:text-base text-sm">
-              Berikut detail riwayat muroja'ah kamu untuk persyaratan
-              akademik di UIN Suska Riau, semangat terus ya... 💙❤️
+              Berikut detail riwayat muroja'ah kamu untuk persyaratan akademik
+              di UIN Suska Riau, semangat terus ya... 💙❤️
             </div>
           </div>
 
@@ -227,14 +236,12 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                   <GraduationCap size={19} />
                   <span className="font-medium">Dosen PA</span>
                 </div>
-  
+
                 {/* Titik dua dan nilai */}
                 <div className="flex items-center gap-2">
                   <span>:</span>
                   {isLoading && <Skeleton className="h-4 w-24" />}
-                  <span className="">
-                    {dataRingkasan?.info.dosen_pa.nama}
-                  </span>
+                  <span className="">{dataRingkasan?.info.dosen_pa.nama}</span>
                 </div>
               </div>
               <div className="flex items-center">
@@ -254,7 +261,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                 </div>
               </div>
             </div>
-          </div>          
+          </div>
 
           {/* table and button  */}
           <div className="flex flex-col gap-1.5 sticky top-[51.3px] bg-background pt-2.5 -mb-4 pb-3.5 z-50">
@@ -312,7 +319,9 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                   onClick={handleCetakKartuMurojaah}
                   disabled={isLoadingCetakKartuMurojaah}
                 >
-                  {isLoadingCetakKartuMurojaah && <Loader2 className="mr-1 animate-spin" />}
+                  {isLoadingCetakKartuMurojaah && (
+                    <Loader2 className="mr-1 animate-spin" />
+                  )}
                   <Printer />
                   Cetak Kartu Muroja'ah
                 </Button>
@@ -334,37 +343,42 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                 className="w-full"
               />
             </div>
-          </div>        
-          <div className="overflow-x-auto max-w-xs md:max-w-full">
-            <Table className="w-full">
-              <TableHeader>
-                <TableRow className="border hover:bg-muted border-solid border-secondary bg-muted">
-                  <TableHead className="text-center">No</TableHead>
-                  <TableHead className="text-center">Nama Surah</TableHead>
-                  <TableHead className="text-center">
-                    Tanggal Muroja'ah
-                  </TableHead>
-                  <TableHead className="text-center">
-                    Persyaratan Muroja'ah
-                  </TableHead>
-                  <TableHead className="text-center">
-                    Dosen Yang Mengesahkan
-                  </TableHead>
-                  <TableHead className="text-center">Status Muroja'ah</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody className="border border-solid border-secondary">
-                {dataCurrent?.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center">
-                      {search ? "❌ Maaf, surah yang anda cari tidak ditemukan nih!" : tabState === "sudah_setor"
-                        ? "❌ Anda Belum Menyetor Satu pun Hafalan Surah"
-                        : "✔️ Anda Sudah Menyetor semua Hafalan Surah"}
-                    </TableCell>
+          </div>
+          <div className="w-0 min-w-full">
+            <div className="w-full overflow-x-auto md:max-w-full">
+              <Table className="w-full">
+                <TableHeader>
+                  <TableRow className="border hover:bg-muted border-solid border-secondary bg-muted">
+                    <TableHead className="text-center">No</TableHead>
+                    <TableHead className="text-center">Nama Surah</TableHead>
+                    <TableHead className="text-center">
+                      Tanggal Muroja'ah
+                    </TableHead>
+                    <TableHead className="text-center">
+                      Persyaratan Muroja'ah
+                    </TableHead>
+                    <TableHead className="text-center">
+                      Dosen Yang Mengesahkan
+                    </TableHead>
+                    <TableHead className="text-center">
+                      Status Muroja'ah
+                    </TableHead>
                   </TableRow>
-                )}
-                {isLoading && <TableLoadingSkeleton columns={6} rows={7} />}
-                {dataCurrent?.map((surah, index) => (
+                </TableHeader>
+                <TableBody className="border border-solid border-secondary">
+                  {dataCurrent?.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center">
+                        {search
+                          ? "❌ Maaf, surah yang anda cari tidak ditemukan nih!"
+                          : tabState === "sudah_setor"
+                          ? "❌ Anda Belum Menyetor Satu pun Hafalan Surah"
+                          : "✔️ Anda Sudah Menyetor semua Hafalan Surah"}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {isLoading && <TableLoadingSkeleton columns={6} rows={7} />}
+                  {dataCurrent?.map((surah, index) => (
                   <TableRow
                     key={surah.id}
                     className={
@@ -438,8 +452,9 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-              </TableBody>
-            </Table>
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </div>
       </DashboardLayout>

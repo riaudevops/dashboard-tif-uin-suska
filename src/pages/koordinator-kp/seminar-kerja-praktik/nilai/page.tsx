@@ -236,7 +236,7 @@ const KoordinatorNilaiPage: FC = () => {
     <DashboardLayout>
       <div className="transition-colors duration-300">
         {/* Header */}
-        <div className="space-y-5">
+        <div className="space-y-4">
           <div className="flex justify-between items-center">
             <div className="flex">
               <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">

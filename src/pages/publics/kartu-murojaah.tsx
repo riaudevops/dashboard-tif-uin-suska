@@ -61,7 +61,7 @@ interface MahasiswaSetoran {
 
 interface ResponError {
   response: string;
-  message:string;
+  message: string;
 }
 const KartuMurojaahPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -69,7 +69,7 @@ const KartuMurojaahPage = () => {
   const {
     data: dataRingkasan,
     isFetching,
-    error ,
+    error,
     isError,
   } = useQuery({
     queryKey: ["kartu-murojaah-digital", id],
@@ -84,7 +84,8 @@ const KartuMurojaahPage = () => {
   const { theme } = useTheme();
   return (
     <div className="min-h-screen bg-background">
-      {!(error as AxiosError<ResponError>)?.response?.data?.response && isError ? (
+      {!(error as AxiosError<ResponError>)?.response?.data?.response &&
+      isError ? (
         <NotFoundPage />
       ) : (
         <>
@@ -134,7 +135,7 @@ const KartuMurojaahPage = () => {
                     {infoDataMahasiswa?.nim}
                   </div>
                 </div>
-                <div className="rounded-xl grid grid-cols-2 gap-3 w-full md:grid-cols-3">
+                <div className="rounded-xl grid grid-cols-2 gap-2.5 w-full md:grid-cols-3">
                   <div className="bg-gradient-to-br dark:from-fuchsia-600 dark:to-fuchsia-700 from-cyan-500 to-cyan-600 rounded-xl py-2 px-4 grid col-span-2 md:col-span-1">
                     <div className="flex justify-between items-center">
                       <div>
@@ -146,7 +147,7 @@ const KartuMurojaahPage = () => {
                             <Skeleton className="w-16 h-4 mb-1 md:w-36" />
                           </div>
                         )}
-                        <p className="text-lg font-bold text-cyan-100 dark:text-white">
+                        <p className="text-lg font-bold text-white">
                           {infoDataMahasiswa?.dosen_pa.nama}
                         </p>
                       </div>
@@ -164,7 +165,7 @@ const KartuMurojaahPage = () => {
                           <Skeleton className="w-16 h-4 mb-1 md:w-36" />
                         </div>
                       )}
-                      <p className="text-lg font-bold text-violet-100 dark:text-white">
+                      <p className="text-lg font-bold text-white">
                         {infoDataMahasiswa?.semester}
                       </p>
                     </div>
@@ -180,7 +181,7 @@ const KartuMurojaahPage = () => {
                           <Skeleton className="w-16 h-4 mb-1 md:w-36" />
                         </div>
                       )}
-                      <p className="text-lg font-bold text-lime-100 dark:text-white">
+                      <p className="text-lg font-bold text-white">
                         {infoDataMahasiswa?.angkatan}
                       </p>
                     </div>

@@ -1,28 +1,18 @@
 import { useState, useEffect } from "react";
 
-const ProgressChart = ({ targetProgress}: { targetProgress: number}) => {
-  const [loading, setLoading] = useState(true);
+const ProgressChart = ({ targetProgress, loading }: { targetProgress: number, loading: boolean}) => {
+  // const [loading, setLoading] = useState(true);
   const [currentProgress, setCurrentProgress] = useState(0);
 
-  // Dummy data - bisa diganti sesuai kebutuhan 
-  // Konfigurasi circle
-  const radius = 60;
-  const strokeWidth = 12;
+  const radius = 82;
+  const strokeWidth = 13;
   const normalizedRadius = radius - strokeWidth * 2;
   const circumference = normalizedRadius * 2 * Math.PI;
 
-  // Hitung stroke dash offset berdasarkan progress
   const strokeDashoffset =
     circumference - (currentProgress / 100) * circumference;
 
-  // Simulasi loading dan animasi progress
   useEffect(() => {
-    // Simulasi loading
-    const loadingTimer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-
-    // Animasi progress setelah loading selesai
     const progressTimer = setTimeout(() => {
       if (!loading) {
         const interval = setInterval(() => {
@@ -38,7 +28,7 @@ const ProgressChart = ({ targetProgress}: { targetProgress: number}) => {
     }, 1200);
 
     return () => {
-      clearTimeout(loadingTimer);
+      // clearTimeout(loadingTimer);
       clearTimeout(progressTimer);
     };
   }, [loading, targetProgress]);
@@ -55,7 +45,7 @@ const ProgressChart = ({ targetProgress}: { targetProgress: number}) => {
         {loading ? (
           <Skeleton className="w-20 h-20 rounded-full" />
         ) : (
-          <div className="relative w-full h-full flex items-center justify-center">
+          <div className="relative flex items-center justify-center">
             {/* Glowing background effect */}
             <div className="absolute inset-0 rounded-full opacity-70 animate-pulse"></div>
             {/* Background Circle with light gray */}
@@ -165,7 +155,7 @@ const ProgressChart = ({ targetProgress}: { targetProgress: number}) => {
             {/* Percentage Text */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <div className="relative">
-                <span className="text-2xl font-bold text-gray-900">
+                <span className="text-2xl font-bold text-white">
                   {currentProgress}%
                 </span>
               </div>

@@ -254,8 +254,8 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 
           {/* table and button  */}
           <div className="flex flex-col gap-1.5 sticky top-[51.3px] bg-background pt-2.5 -mb-4 pb-3.5 z-50">
-            <div className="flex justify-between gap-4">
-              <div>
+            <div className="flex justify-between gap-3">
+              <div className="overflow-x-auto max-w-52 md:max-w-full">
                 <Tabs defaultValue="tab1" className="w-full">
                   <TabsList className="gap-1.5">
                     <TabsTrigger
@@ -329,8 +329,8 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
               />
             </div>
           </div>        
-          <div>
-            <Table>
+          <div className="overflow-x-auto max-w-xs md:max-w-full">
+            <Table className="w-full">
               <TableHeader>
                 <TableRow className="border hover:bg-muted border-solid border-secondary bg-muted">
                   <TableHead className="text-center">No</TableHead>

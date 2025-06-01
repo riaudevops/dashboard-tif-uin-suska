@@ -34,7 +34,7 @@ interface CardHeaderProps {
 
 interface EvaluationCardProps {
   title: string;
-  placeholder: string;
+  value: string;
   rotate?: number;
 }
 
@@ -121,7 +121,7 @@ const FormActions: FC<FormActionsProps> = ({
 
 const EvaluationCard: FC<EvaluationCardProps> = ({
   title,
-  placeholder,
+  value,
   rotate = 0,
 }) => (
   <Card
@@ -143,9 +143,8 @@ const EvaluationCard: FC<EvaluationCardProps> = ({
 
     <CardContent className="flex flex-col gap-4 flex-grow p-4">
       <Textarea
-        placeholder={placeholder}
+        value={value}
         className="w-full text-gray-800 bg-yellow-200 border-none shadow-inner min-h-32 resize-none"
-        defaultValue={placeholder}
         readOnly
       />
     </CardContent>
@@ -208,12 +207,12 @@ const EvaluationSection: FC<{
     <div className="flex flex-col md:flex-row gap-6 justify-center items-stretch">
       <EvaluationCard
         title="Catatan/Evaluasi Dosen Pembimbing"
-        placeholder={evaluasiPembimbing || "Belum ada catatan"}
+        value={evaluasiPembimbing}
         rotate={-1}
       />
       <EvaluationCard
         title="Catatan/Evaluasi Dosen Penguji"
-        placeholder={evaluasiPenguji || "Belum ada catatan"}
+        value={evaluasiPenguji}
         rotate={1}
       />
     </div>
@@ -316,6 +315,22 @@ const Step5: FC<Step5Props> = ({ activeStep }) => {
 
     // Default status jika tidak ada kondisi di atas
     return "belum";
+  }, [data]);
+
+  // Ambil catatan dari API dengan penanganan null
+  const evaluasiPembimbing = useMemo(() => {
+    const catatan =
+      data?.data?.nilai?.[0]?.komponen_penilaian_pembimbing?.catatan;
+    return catatan !== null && catatan !== undefined
+      ? catatan
+      : "Belum ada catatan";
+  }, [data]);
+
+  const evaluasiPenguji = useMemo(() => {
+    const catatan = data?.data?.nilai?.[0]?.komponen_penilaian_penguji?.catatan;
+    return catatan !== null && catatan !== undefined
+      ? catatan
+      : "Belum ada catatan";
   }, [data]);
 
   // Handler for link changes
@@ -438,10 +453,6 @@ const Step5: FC<Step5Props> = ({ activeStep }) => {
     }
   };
 
-  // Dummy data for evaluation
-  const evaluasiPembimbing = "Belum ada catatan";
-  const evaluasiPenguji = "Belum ada catatan";
-
   return (
     <div className="space-y-4">
       <div className="flex mb-5">
@@ -450,7 +461,7 @@ const Step5: FC<Step5Props> = ({ activeStep }) => {
             className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
           />
           <LayoutGridIcon className="w-4 h-4 mr-1.5" />
-          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa            
+          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa
         </span>
       </div>
       <Stepper activeStep={activeStep} />

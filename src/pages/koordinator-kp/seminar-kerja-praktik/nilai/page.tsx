@@ -1,5 +1,6 @@
 import { useState, useEffect, type FC } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import toast, { Toaster } from "react-hot-toast";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import {
   Search,
@@ -23,6 +24,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import DetailNilaiModal from "@/components/koordinator-kp/seminar/detail-nilai-modal";
 import { motion } from "framer-motion";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
@@ -41,6 +50,13 @@ interface Mahasiswa {
   pembimbing_instansi: string;
   dosen_pembimbing: string;
   dosen_penguji: string;
+  id_nilai?: string;
+  nilai_instansi?: number;
+  nilai_pembimbing?: number;
+  nilai_penguji?: number;
+  nilai_akhir?: number;
+  nilai_huruf?: string;
+  validasi_nilai_is_approve?: boolean;
 }
 
 interface NilaiResponse {
@@ -121,11 +137,14 @@ const KoordinatorNilaiPage: FC = () => {
   const [selectedTahunAjaranId, setSelectedTahunAjaranId] = useState<
     number | undefined
   >(undefined);
-
+  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
   const [selectedStudent, setSelectedStudent] = useState<Mahasiswa | null>(
     null
   );
+
+  const queryClient = useQueryClient();
 
   const {
     data: tahunAjaranData,
@@ -140,6 +159,30 @@ const KoordinatorNilaiPage: FC = () => {
     queryKey: ["koordinator-nilai", selectedTahunAjaranId],
     queryFn: () => APISeminarKP.getNilai(selectedTahunAjaranId),
     enabled: selectedTahunAjaranId !== undefined,
+  });
+
+  const validateMutation = useMutation({
+    mutationFn: (idNilai: string) => APISeminarKP.validasiNilai({ idNilai }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["koordinator-nilai", selectedTahunAjaranId],
+      });
+      setSelectedStudents([]);
+      setIsConfirmModalOpen(false);
+      toast.success("Nilai mahasiswa berhasil divalidasi!", {
+        duration: 4000,
+        position: "top-right",
+      });
+    },
+    onError: (error: any) => {
+      toast.error(
+        `Gagal memvalidasi nilai: ${error.message || "Terjadi kesalahan"}`,
+        {
+          duration: 4000,
+          position: "top-right",
+        }
+      );
+    },
   });
 
   useEffect(() => {
@@ -164,7 +207,15 @@ const KoordinatorNilaiPage: FC = () => {
       pembimbing_instansi: student.pembimbing_instansi,
       dosen_pembimbing: student.dosen_pembimbing,
       dosen_penguji: student.dosen_penguji,
+      id_nilai: student.id_nilai,
+      nilai_instansi: student.nilai_instansi,
+      nilai_pembimbing: student.nilai_pembimbing,
+      nilai_penguji: student.nilai_penguji,
+      nilai_akhir: student.nilai_akhir,
+      nilai_huruf: student.nilai_huruf,
+      validasi_nilai_is_approve: student.validasi_nilai_is_approve,
     })) || [];
+
   const filteredStudents = students.filter((student) => {
     const matchesSearch = student.nama
       .toLowerCase()
@@ -192,6 +243,31 @@ const KoordinatorNilaiPage: FC = () => {
     setIsDialogOpen(true);
   };
 
+  const handleCheckboxChange = (nim: string) => {
+    setSelectedStudents((prev) =>
+      prev.includes(nim) ? prev.filter((id) => id !== nim) : [...prev, nim]
+    );
+  };
+
+  const handleValidate = () => {
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleConfirmValidate = async () => {
+    const idNilaiList = students
+      .filter((student) => selectedStudents.includes(student.nim))
+      .map((student) => student.id_nilai)
+      .filter((id): id is string => id !== undefined);
+
+    try {
+      await Promise.all(
+        idNilaiList.map((idNilai) => validateMutation.mutateAsync(idNilai))
+      );
+    } catch (error) {
+      // Error handling is managed in onError of useMutation
+    }
+  };
+
   const renderModal = () => {
     return (
       <DetailNilaiModal
@@ -199,6 +275,227 @@ const KoordinatorNilaiPage: FC = () => {
         onClose={() => setIsDialogOpen(false)}
         student={selectedStudent}
       />
+    );
+  };
+
+  const renderConfirmModal = () => {
+    const selectedData = students.filter((student) =>
+      selectedStudents.includes(student.nim)
+    );
+
+    const formatFinalGrade = (
+      nilai_akhir: number | undefined,
+      nilai_huruf: string | undefined
+    ) => {
+      if (!nilai_akhir) return "-";
+      const formattedScore = parseFloat(String(nilai_akhir)).toFixed(1);
+      const letterGrade = nilai_huruf ? ` (${nilai_huruf})` : "";
+      return `${formattedScore}${letterGrade}`;
+    };
+
+    return (
+      <Dialog open={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] dark:bg-gray-800">
+          <DialogHeader className="pb-4 border-b dark:border-gray-700">
+            <DialogTitle className="text-lg font-semibold dark:text-gray-100 flex items-center gap-2">
+              <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-4 h-4 text-emerald-600 dark:text-emerald-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              Konfirmasi Validasi Nilai
+            </DialogTitle>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+              Pastikan data sudah benar sebelum melakukan validasi
+            </p>
+          </DialogHeader>
+
+          <div className="py-4">
+            <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">
+                    {selectedData.length}
+                  </span>
+                </div>
+                <div>
+                  <p className="font-medium text-emerald-800 dark:text-emerald-200">
+                    {selectedData.length} Mahasiswa akan divalidasi
+                  </p>
+                  <p className="text-sm text-emerald-600 dark:text-emerald-400">
+                    Proses ini akan mengonfirmasi semua nilai yang telah diinput
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="border dark:border-gray-700 rounded-lg overflow-hidden">
+              <div className="overflow-x-auto max-h-96 overflow-y-auto">
+                <Table>
+                  <TableHeader className="sticky top-0 bg-gray-50 dark:bg-gray-900 z-10">
+                    <TableRow className="border-b dark:border-gray-700">
+                      <TableHead className="text-xs font-semibold dark:text-gray-200 py-3 px-4 text-left whitespace-nowrap">
+                        Mahasiswa
+                      </TableHead>
+                      <TableHead className="text-xs font-semibold dark:text-gray-200 py-3 px-4 text-center whitespace-nowrap">
+                        Kelas
+                      </TableHead>
+                      <TableHead className="text-xs font-semibold dark:text-gray-200 py-3 px-4 text-center whitespace-nowrap">
+                        Instansi
+                      </TableHead>
+                      <TableHead className="text-xs font-semibold dark:text-gray-200 py-3 px-4 text-center whitespace-nowrap">
+                        Pembimbing
+                      </TableHead>
+                      <TableHead className="text-xs font-semibold dark:text-gray-200 py-3 px-4 text-center whitespace-nowrap">
+                        Penguji
+                      </TableHead>
+                      <TableHead className="text-xs font-semibold dark:text-gray-200 py-3 px-4 text-center whitespace-nowrap">
+                        Nilai Akhir
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {selectedData.map((student, index) => (
+                      <TableRow
+                        key={student.nim}
+                        className={`
+                          dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors
+                          ${
+                            index % 2 === 0
+                              ? "bg-white dark:bg-gray-800"
+                              : "bg-gray-50/50 dark:bg-gray-800/30"
+                          }
+                        `}
+                      >
+                        <TableCell className="py-3 px-4">
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                              {student.nama}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {student.nim}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-3 px-4 text-center">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                            {student.kelas}
+                          </span>
+                        </TableCell>
+                        <TableCell className="py-3 px-4 text-center">
+                          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            {student.nilai_instansi ?? "-"}
+                          </span>
+                        </TableCell>
+                        <TableCell className="py-3 px-4 text-center">
+                          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            {student.nilai_pembimbing ?? "-"}
+                          </span>
+                        </TableCell>
+                        <TableCell className="py-3 px-4 text-center">
+                          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            {student.nilai_penguji ?? "-"}
+                          </span>
+                        </TableCell>
+                        <TableCell className="py-3 px-4 text-center">
+                          <div className="flex flex-col items-center gap-1">
+                            <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                              {formatFinalGrade(
+                                student.nilai_akhir,
+                                student.nilai_huruf
+                              )}
+                            </span>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+
+            <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+              <div className="flex items-start gap-2">
+                <svg
+                  className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.854-.833-2.598 0L3.236 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
+                </svg>
+                <div>
+                  <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                    Perhatian
+                  </p>
+                  <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+                    Setelah dikonfirmasi, nilai akan tervalidasi dan tidak dapat
+                    diubah kembali. Pastikan semua data sudah benar.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="pt-4 border-t dark:border-gray-700 flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setIsConfirmModalOpen(false)}
+              className="flex-1 dark:border-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+              disabled={validateMutation.isPending}
+            >
+              Batalkan
+            </Button>
+            <Button
+              onClick={handleConfirmValidate}
+              disabled={validateMutation.isPending}
+              className="flex-1 bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white font-medium"
+            >
+              {validateMutation.isPending ? (
+                <div className="flex items-center gap-2">
+                  <svg
+                    className="animate-spin h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Memproses...
+                </div>
+              ) : (
+                "Konfirmasi"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     );
   };
 
@@ -234,21 +531,18 @@ const KoordinatorNilaiPage: FC = () => {
 
   return (
     <DashboardLayout>
+      <Toaster />
       <div className="transition-colors duration-300">
-        {/* Header */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <div className="flex">
               <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
-                <span
-                  className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
-                />
+                <span className="inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400" />
                 <CalendarCheck2Icon className="w-4 h-4 mr-1.5" />
                 Nilai Kerja Praktik Mahasiswa
               </span>
             </div>
 
-            {/* Academic Year Dropdown */}
             <div className="flex items-center gap-2 dark:text-gray-200">
               <div className="relative">
                 <select
@@ -280,14 +574,12 @@ const KoordinatorNilaiPage: FC = () => {
             </div>
           </div>
 
-          {/* Cards Section */}
           <motion.div
             className="grid grid-cols-1 md:grid-cols-3 gap-3"
             variants={container}
             initial="hidden"
             animate="show"
           >
-            {/* Card 1 - Nilai Belum Valid */}
             <motion.div variants={item}>
               <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-950 dark:to-gray-900">
                 <div className="flex flex-row items-center justify-between pt-3 px-3 pb-1">
@@ -329,7 +621,6 @@ const KoordinatorNilaiPage: FC = () => {
               </Card>
             </motion.div>
 
-            {/* Card 2 - Nilai Valid */}
             <motion.div variants={item}>
               <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-purple-100 to-purple-50 dark:from-purple-950 dark:to-gray-900">
                 <div className="flex flex-row items-center justify-between pt-3 px-3 pb-1">
@@ -371,7 +662,6 @@ const KoordinatorNilaiPage: FC = () => {
               </Card>
             </motion.div>
 
-            {/* Card 3 - Nilai Approve */}
             <motion.div variants={item}>
               <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-950 dark:to-gray-900">
                 <div className="flex flex-row items-center justify-between pt-3 px-3 pb-1">
@@ -414,7 +704,6 @@ const KoordinatorNilaiPage: FC = () => {
             </motion.div>
           </motion.div>
 
-          {/* Navigation Tabs and Search Bar in a flex container */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <Tabs
               defaultValue="semua"
@@ -451,8 +740,7 @@ const KoordinatorNilaiPage: FC = () => {
                   </TabsTrigger>
                 </TabsList>
 
-                {/* Search Bar - now to the right of tabs */}
-                <div className="flex items-center w-full relative">
+                <div className="flex items-center w-full gap-2 relative">
                   <Search className="h-4 w-4 absolute left-3 text-gray-400" />
                   <Input
                     type="text"
@@ -461,6 +749,17 @@ const KoordinatorNilaiPage: FC = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200 dark:placeholder:text-gray-400"
                   />
+                  {activeTab === "nilaiApprove" && (
+                    <Button
+                      onClick={handleValidate}
+                      disabled={selectedStudents.length === 0}
+                      className="bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700"
+                      size="icon"
+                      title="Validasi Nilai"
+                    >
+                      <CheckCircle className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -468,6 +767,9 @@ const KoordinatorNilaiPage: FC = () => {
                 <StudentTable
                   students={filteredStudents}
                   onViewDetail={handleOpenDialog}
+                  activeTab={activeTab}
+                  selectedStudents={selectedStudents}
+                  onCheckboxChange={handleCheckboxChange}
                 />
               </TabsContent>
 
@@ -475,6 +777,9 @@ const KoordinatorNilaiPage: FC = () => {
                 <StudentTable
                   students={filteredStudents}
                   onViewDetail={handleOpenDialog}
+                  activeTab={activeTab}
+                  selectedStudents={selectedStudents}
+                  onCheckboxChange={handleCheckboxChange}
                 />
               </TabsContent>
 
@@ -482,6 +787,9 @@ const KoordinatorNilaiPage: FC = () => {
                 <StudentTable
                   students={filteredStudents}
                   onViewDetail={handleOpenDialog}
+                  activeTab={activeTab}
+                  selectedStudents={selectedStudents}
+                  onCheckboxChange={handleCheckboxChange}
                 />
               </TabsContent>
 
@@ -489,6 +797,9 @@ const KoordinatorNilaiPage: FC = () => {
                 <StudentTable
                   students={filteredStudents}
                   onViewDetail={handleOpenDialog}
+                  activeTab={activeTab}
+                  selectedStudents={selectedStudents}
+                  onCheckboxChange={handleCheckboxChange}
                 />
               </TabsContent>
             </Tabs>
@@ -496,8 +807,8 @@ const KoordinatorNilaiPage: FC = () => {
         </div>
       </div>
 
-      {/* Render the modal */}
       {renderModal()}
+      {renderConfirmModal()}
     </DashboardLayout>
   );
 };
@@ -505,12 +816,26 @@ const KoordinatorNilaiPage: FC = () => {
 const StudentTable: FC<{
   students: Mahasiswa[];
   onViewDetail: (student: Mahasiswa) => void;
-}> = ({ students, onViewDetail }) => {
+  activeTab: "semua" | NilaiStatus;
+  selectedStudents: string[];
+  onCheckboxChange: (nim: string) => void;
+}> = ({
+  students,
+  onViewDetail,
+  activeTab,
+  selectedStudents,
+  onCheckboxChange,
+}) => {
   return (
     <Card className="shadow-none rounded-none dark:bg-gray-900 dark:border-gray-700">
       <Table>
         <TableHeader className="bg-gray-200 dark:bg-gray-700">
           <TableRow className="hover:bg-gray-300 dark:hover:bg-gray-600">
+            {activeTab === "nilaiApprove" && (
+              <TableHead className="w-12 text-center font-semibold dark:text-gray-200">
+                {/* Kosongkan header untuk kolom checkbox */}
+              </TableHead>
+            )}
             <TableHead className="text-center max-w-4 font-semibold dark:text-gray-200">
               No.
             </TableHead>
@@ -529,6 +854,11 @@ const StudentTable: FC<{
             <TableHead className="text-center font-semibold dark:text-gray-200">
               Status Nilai
             </TableHead>
+            {activeTab === "nilaiApprove" && (
+              <TableHead className="text-center font-semibold dark:text-gray-200">
+                Status
+              </TableHead>
+            )}
             <TableHead className="text-center font-semibold dark:text-gray-200">
               Aksi
             </TableHead>
@@ -538,7 +868,7 @@ const StudentTable: FC<{
           {students.length === 0 ? (
             <TableRow className="dark:border-gray-700 dark:hover:bg-gray-700">
               <TableCell
-                colSpan={7}
+                colSpan={activeTab === "nilaiApprove" ? 9 : 8}
                 className="text-center py-6 text-muted-foreground dark:text-gray-400"
               >
                 Tidak ada data yang ditemukan
@@ -550,6 +880,15 @@ const StudentTable: FC<{
                 key={student.nim}
                 className="dark:border-gray-700 dark:hover:bg-gray-700"
               >
+                {activeTab === "nilaiApprove" && (
+                  <TableCell className="text-center">
+                    <Checkbox
+                      checked={selectedStudents.includes(student.nim)}
+                      onCheckedChange={() => onCheckboxChange(student.nim)}
+                      className="h-4 w-4"
+                    />
+                  </TableCell>
+                )}
                 <TableCell className="text-center dark:text-gray-300 text-xs font-semibold">
                   {index + 1}.
                 </TableCell>
@@ -617,6 +956,19 @@ const StudentTable: FC<{
                     {student.status_nilai}
                   </span>
                 </TableCell>
+                {activeTab === "nilaiApprove" && (
+                  <TableCell className="text-center">
+                    {student.validasi_nilai_is_approve === true ? (
+                      <Badge className="bg-emerald-500 text-white text-xs">
+                        Selesai
+                      </Badge>
+                    ) : (
+                      <span className="text-gray-500 dark:text-gray-400 text-xs">
+                        -
+                      </span>
+                    )}
+                  </TableCell>
+                )}
                 <TableCell className="text-center">
                   <Button
                     variant="default"

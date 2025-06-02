@@ -187,4 +187,17 @@ export default class APISeminarKP {
     const data = response.data;
     return data;
   }
+
+  public static async validasiNilai({ idNilai }: { idNilai: string }) {
+    const axios = api();
+    const request = await axios.post(
+      `${
+        import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
+      }/seminar-kp/nilai/validasi`,
+      {
+        idNilai,
+      }
+    );
+    return request.data;
+  }
 }

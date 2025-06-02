@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import PendaftaranCard from "@/components/mahasiswa/seminar/pendaftaran-card";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
@@ -65,13 +65,6 @@ export default function MahasiswaSeminarDaftarPage() {
     apiResponse?.data?.steps_info?.step1_accessible || false;
   const semuaSyaratTerpenuhi =
     apiResponse?.data?.persyaratan_seminar_kp?.semua_syarat_terpenuhi || false;
-
-  // Redirect if seminar process has started and step1 is accessible
-  if (seminarStarted && !isLoading && step1Accessible) {
-    return (
-      <Navigate to="/mahasiswa/kerja-praktik/seminar/validasi-berkas" replace />
-    );
-  }
 
   const handleNavigation = () => {
     if (semuaSyaratTerpenuhi && step1Accessible) {

@@ -100,14 +100,14 @@ const NilaiSeminarPenguji: React.FC = () => {
     {
       id: "presentasi",
       title: "Teknik Presentasi",
-      percentage: 25,
+      percentage: 20,
       description:
         "Penilaian terhadap kemampuan mahasiswa dalam menyampaikan materi presentasi dengan baik dan jelas.",
     },
     {
       id: "kesesuaian",
       title: "Kesesuaian Laporan dan Presentasi",
-      percentage: 35,
+      percentage: 40,
       description:
         "Penilaian terhadap kesesuaian antara isi laporan dengan materi yang dipresentasikan.",
     },
@@ -116,8 +116,8 @@ const NilaiSeminarPenguji: React.FC = () => {
   useEffect(() => {
     const total =
       scores.penguasaan * 0.4 +
-      scores.presentasi * 0.25 +
-      scores.kesesuaian * 0.35;
+      scores.presentasi * 0.2 +
+      scores.kesesuaian * 0.4;
     setTotalScore(parseFloat(total.toFixed(1)));
   }, [scores]);
 

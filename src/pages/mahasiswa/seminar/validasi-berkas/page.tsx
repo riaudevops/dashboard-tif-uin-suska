@@ -1,26 +1,80 @@
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate, Navigate } from "react-router-dom";
 import Step1 from "@/components/mahasiswa/seminar/steps/step1";
 import Step2 from "@/components/mahasiswa/seminar/steps/step2";
 import Step3 from "@/components/mahasiswa/seminar/steps/step3";
 import Step4 from "@/components/mahasiswa/seminar/steps/step4";
 import Step5 from "@/components/mahasiswa/seminar/steps/step5";
 import Step6 from "@/components/mahasiswa/seminar/steps/step6";
-import { useQuery } from "@tanstack/react-query";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
+
+interface SeminarData {
+  persyaratan_seminar_kp: {
+    semua_syarat_terpenuhi: boolean;
+  };
+  steps_info: {
+    step1_accessible: boolean;
+    step2_accessible: boolean;
+    step3_accessible: boolean;
+    step4_accessible: boolean;
+    step5_accessible: boolean;
+    step6_accessible: boolean;
+  };
+  dokumen_seminar_kp: {
+    [key in `step${1 | 2 | 3 | 4 | 5 | 6}`]: any[];
+  };
+}
+
+interface ApiResponse {
+  response: boolean;
+  message: string;
+  data?: SeminarData;
+}
 
 const stepComponents = [Step1, Step2, Step3, Step4, Step5, Step6];
 
 export default function MahasiswaSeminarValidasiBerkasPage() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const { data } = useQuery({
+
+  const {
+    data: apiResponse,
+    isLoading,
+    isError,
+  } = useQuery<ApiResponse>({
     queryKey: ["seminar-kp-data"],
-    queryFn: APISeminarKP.getDataMydokumen,
+    queryFn: async () => {
+      try {
+        const response = await APISeminarKP.getDataMydokumen();
+        return response;
+      } catch (err) {
+        return {
+          response: false,
+          message: (err as Error).message || "Gagal mengambil data",
+        };
+      }
+    },
   });
 
+  // Check step accessibility
+  const step1Accessible =
+    apiResponse?.data?.steps_info?.step1_accessible || false;
+
+  // Redirect if response is false, error, or step1 is not accessible
   useEffect(() => {
-    if (data?.data?.steps_info) {
-      const accessibleSteps = Object.entries(data.data.steps_info)
+    if (!isLoading) {
+      if (apiResponse?.response === false || isError || !step1Accessible) {
+        navigate("/mahasiswa/kerja-praktik/seminar", { replace: true });
+      }
+    }
+  }, [apiResponse, isError, isLoading, navigate, step1Accessible]);
+
+  // Set active step based on accessible steps
+  useEffect(() => {
+    if (apiResponse?.data?.steps_info) {
+      const accessibleSteps = Object.entries(apiResponse.data.steps_info)
         .filter(([key, value]) => key.endsWith("_accessible") && value)
         .map(
           ([key]) =>
@@ -29,17 +83,36 @@ export default function MahasiswaSeminarValidasiBerkasPage() {
       const highestAccessibleStep = Math.max(...accessibleSteps, -1);
       setStep(highestAccessibleStep >= 0 ? highestAccessibleStep : 0);
     }
-  }, [data]);
+  }, [apiResponse]);
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="text-center text-gray-600 dark:text-gray-300">
+          Mengambil data...
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Fallback redirect if conditions are not met
+  if (apiResponse?.response === false || isError || !step1Accessible) {
+    return <Navigate to="/mahasiswa/kerja-praktik/seminar" replace />;
+  }
 
   const StepComponent = stepComponents[step];
 
   const getStepStatus = () => {
+    const stepKey = `step${
+      step + 1
+    }` as keyof SeminarData["dokumen_seminar_kp"];
     if (
-      !data?.data?.dokumen_seminar_kp ||
-      !data.data.dokumen_seminar_kp[`step${step + 1}`]
-    )
+      !apiResponse?.data?.dokumen_seminar_kp ||
+      !apiResponse.data.dokumen_seminar_kp[stepKey]
+    ) {
       return "belum";
-    return data.data.dokumen_seminar_kp[`step${step + 1}`].some(
+    }
+    return apiResponse.data.dokumen_seminar_kp[stepKey].some(
       (doc: any) => doc.status === "Ditolak"
     )
       ? "ditolak"
@@ -50,119 +123,8 @@ export default function MahasiswaSeminarValidasiBerkasPage() {
     <DashboardLayout>
       <div className="">
         <StepComponent activeStep={step} status={getStepStatus()} />
-
         {/* No manual step navigation buttons */}
       </div>
     </DashboardLayout>
   );
 }
-
-// import { useState } from "react";
-// import Step1 from "@/components/mahasiswa/seminar/steps/step1";
-// import Step2 from "@/components/mahasiswa/seminar/steps/step2";
-// import Step3 from "@/components/mahasiswa/seminar/steps/step3";
-// import Step4 from "@/components/mahasiswa/seminar/steps/step4";
-// import Step5 from "@/components/mahasiswa/seminar/steps/step5";
-// import Step6 from "@/components/mahasiswa/seminar/steps/step6";
-// import { Button } from "@/components/ui/button";
-
-// const stepComponents = [Step1, Step2, Step3, Step4, Step5, Step6];
-// const statuses: ("belum" | "validasi" | "ditolak")[] = ["belum", "validasi", "ditolak"];
-
-// export default function MahasiswaSeminarValidasiBerkasPage() {
-//   const [step, setStep] = useState(0);
-//   const [statusIndex, setStatusIndex] = useState(0);
-
-//   // Added countdown state for testing
-//   const [countdownDays, setCountdownDays] = useState(5);
-
-//   // Create a key that changes whenever step or status changes
-//   const componentKey = `step-${step}-status-${statuses[statusIndex]}-countdown-${countdownDays}`;
-
-//   const StepComponent = stepComponents[step];
-
-//   return (
-//     <div className="flex flex-col items-center gap-4">
-//       {/* Use key prop to force re-render when step or status changes */}
-//       <StepComponent
-//         key={componentKey}
-//         activeStep={step}
-//         status={statuses[statusIndex]}
-//         countdownDays={countdownDays} // Pass countdown days to Step4
-//       />
-
-//       <div className="flex gap-2">
-//         {stepComponents.map((_, index) => (
-//           <Button
-//             key={index}
-//             onClick={() => setStep(index)}
-//             className={
-//               step === index
-//                 ? "bg-blue-500 text-white"
-//                 : "bg-gray-300 text-black"
-//             }
-//           >
-//             Step {index + 1}
-//           </Button>
-//         ))}
-//       </div>
-
-//       <div className="flex gap-2">
-//         <Button
-//           onClick={() => setStep((prev) => Math.max(0, prev - 1))}
-//           disabled={step === 0}
-//         >
-//           Previous Step
-//         </Button>
-//         <Button
-//           onClick={() =>
-//             setStep((prev) => Math.min(stepComponents.length - 1, prev + 1))
-//           }
-//           disabled={step === stepComponents.length - 1}
-//         >
-//           Next Step
-//         </Button>
-//       </div>
-
-//       <div className="flex gap-2">
-//         {statuses.map((status, index) => (
-//           <Button
-//             key={index}
-//             onClick={() => setStatusIndex(index)}
-//             className={
-//               statusIndex === index
-//                 ? "bg-green-500 text-white"
-//                 : "bg-gray-300 text-black"
-//             }
-//           >
-//             {status.charAt(0).toUpperCase() + status.slice(1)}
-//           </Button>
-//         ))}
-//       </div>
-
-//       {/* Added countdown control for testing */}
-//       <div className="flex gap-2 mt-4">
-//         <Button
-//           onClick={() => setCountdownDays(0)}
-//           className={
-//             countdownDays === 0
-//               ? "bg-purple-500 text-white"
-//               : "bg-gray-300 text-black"
-//           }
-//         >
-//           Hari Ini
-//         </Button>
-//         <Button
-//           onClick={() => setCountdownDays(5)}
-//           className={
-//             countdownDays === 5
-//               ? "bg-teal-500 text-white"
-//               : "bg-gray-300 text-black"
-//           }
-//         >
-//           H-5
-//         </Button>
-//       </div>
-//     </div>
-//   );
-// }

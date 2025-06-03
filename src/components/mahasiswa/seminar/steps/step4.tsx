@@ -121,7 +121,7 @@ const CountdownCard: FC<{
             isToday ? "text-4xl" : "text-6xl"
           }`}
         >
-          {isPast ? "Lewat" : isToday ? "Hari Ini" : `H-${countdownDays}`}
+          {isPast ? "Telah Lewat" : isToday ? "Hari Ini" : `H-${countdownDays}`}
         </h2>
 
         <motion.div
@@ -269,7 +269,7 @@ const Step4: FC<Step4Props> = ({ activeStep }) => {
     staleTime: Infinity,
   });
 
-  // Hitung countdownDays, isToday, dan isPast berdasarkan data countdown dari API
+  // Gunakan nilai countdown langsung dari API
   const { countdownDays, isToday, isPast } = useMemo(() => {
     if (
       !data?.data?.jadwal ||
@@ -280,22 +280,21 @@ const Step4: FC<Step4Props> = ({ activeStep }) => {
     }
 
     const countdown = data.data.jadwal[0].countdown || "H-5"; // Default jika countdown tidak ada
-
     let countdownDays = 5;
     let isToday = false;
     let isPast = false;
 
-    if (countdown === "Hari Ini") {
+    if (countdown === "Hari ini") {
       countdownDays = 0;
       isToday = true;
       isPast = false;
-    } else if (countdown === "Lewat") {
+    } else if (countdown === "Telah Lewat") {
       countdownDays = 0;
       isToday = false;
       isPast = true;
     } else if (countdown.startsWith("H-")) {
       const days = parseInt(countdown.replace("H-", ""), 10);
-      countdownDays = isNaN(days) ? 5 : days;
+      countdownDays = isNaN(days) ? 5 : days; // Fallback ke 5 jika parsing gagal
       isToday = false;
       isPast = false;
     }
@@ -410,7 +409,7 @@ const Step4: FC<Step4Props> = ({ activeStep }) => {
             className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
           />
           <LayoutGridIcon className="w-4 h-4 mr-1.5" />
-          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa            
+          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa
         </span>
       </div>
 

@@ -387,15 +387,13 @@ const ScheduleTable: FC<{
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full md:w-64 pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200"
                   />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="ml-2 bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+                  <button
+                    className="ml-2 rounded-sm flex dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 py-[10px] text-white text-xs px-5 transition-colors"
                     onClick={handleOpenLogModal}
                   >
-                    <History className="h-4 w-4 mr-1" />
+                    <History className="h-4 w-4 mr-2" />
                     Log Jadwal
-                  </Button>
+                  </button>
                 </div>
               </div>
 

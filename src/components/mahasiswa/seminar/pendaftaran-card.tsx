@@ -125,34 +125,34 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
   // Stepper data
   const steps = [
     {
-      label: "Pendaftaran",
+      label: "Pendaftaran Seminar",
       step: 0,
-      description: "Pengisian formulir pendaftaran seminar kerja praktik",
+      description: "Upload link dokumen pendaftaran seminar kerja praktik",
     },
     {
       label: "ID Surat Undangan",
       step: 1,
-      description: "Pengajuan ID surat undangan untuk seminar",
+      description: "Upload ID surat undangan seminar",
     },
     {
       label: "Surat Undangan",
       step: 2,
-      description: "Pembuatan surat undangan seminar",
+      description: "Upload link surat undangan seminar",
     },
     {
       label: "Seminar KP",
       step: 3,
-      description: "Pelaksanaan presentasi seminar",
+      description: "Pelaksanaan seminar kerja praktik",
     },
     {
       label: "Pasca Seminar",
       step: 4,
-      description: "Penyelesaian dokumen pasca seminar",
+      description: "Upload link dokumen pasca seminar",
     },
     {
       label: "Nilai KP",
       step: 5,
-      description: "Penilaian akhir kerja praktik",
+      description: "Nilai akhir kerja praktik",
     },
   ];
 

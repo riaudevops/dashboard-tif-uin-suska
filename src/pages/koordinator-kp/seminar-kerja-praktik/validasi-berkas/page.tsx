@@ -340,6 +340,12 @@ const KoordinatorValidasiBerkasPage: FC = () => {
     const pembimbingInstansi =
       pendaftaran?.instansi?.pembimbing_instansi?.[0]?.nama || "Tidak tersedia";
 
+    // Define nilaiInstansi here, adjust the logic as needed
+    const nilaiInstansi =
+      (detailData.data.nilai && detailData.data.nilai.length > 0
+        ? detailData.data.nilai[0]?.nilai_instansi
+        : undefined) || "Tidak tersedia";
+
     return {
       ...selectedStudent,
       status: pendaftaran?.status || "",
@@ -347,7 +353,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
       dosenPembimbing: pendaftaran?.dosen_pembimbing?.nama || "Tidak tersedia",
       dosenPenguji: pendaftaran?.dosen_penguji?.nama || "Tidak tersedia",
       pembimbingInstansi,
-      nilaiInstansi: "Tidak tersedia",
+      nilaiInstansi: nilaiInstansi || "Tidak tersedia",
       dokumen: detailData.data.dokumen || emptyDokumenStep,
       id_pendaftaran_kp: pendaftaran?.id || "",
     };

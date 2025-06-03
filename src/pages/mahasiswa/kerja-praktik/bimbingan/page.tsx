@@ -254,7 +254,8 @@ const MahasiswaKerjaPraktikBimbinganPage = () => {
 													strokeLinecap="round"
 													strokeDasharray="264"
 													strokeDashoffset={
-														264 - (264 * progressPercentage) / 100
+														264 -
+														(264 * Math.min(progressPercentage, 100)) / 100
 													}
 													transform="rotate(-90 50 50)"
 												/>

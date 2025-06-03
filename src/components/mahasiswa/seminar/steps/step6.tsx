@@ -8,13 +8,10 @@ import Status from "../status";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
 import toast from "react-hot-toast";
 
-// Define TypeScript interface for component props
 interface Step6Props {
   activeStep: number;
-  status: string;
 }
 
-// Define the data structure for InfoCard
 interface InfoData {
   judul?: string;
   lokasi?: string;
@@ -29,13 +26,7 @@ interface InfoData {
   [key: string]: string | undefined;
 }
 
-/**
- * Step6 component - Displays the final step of the seminar validation process
- *
- * @param {number} activeStep - Current active step in the stepper
- * @param {string} status - Current validation status ('belum' or 'validasi')
- */
-export default function Step6({ activeStep, status }: Step6Props) {
+export default function Step6({ activeStep }: Step6Props) {
   // Define constants outside the component
   const informasiSeminarFields = [
     "judul",
@@ -50,7 +41,6 @@ export default function Step6({ activeStep, status }: Step6Props) {
     "ruangan",
   ];
 
-  // Fetch data using useQuery
   const {
     data: apiData,
     isLoading,
@@ -58,10 +48,8 @@ export default function Step6({ activeStep, status }: Step6Props) {
   } = useQuery({
     queryKey: ["seminar-kp-my-documents"],
     queryFn: APISeminarKP.getDataMydokumen,
-    // Hapus onError dari sini
   });
 
-  // Tangani error menggunakan properti error
   if (error) {
     const errorMessage =
       error instanceof Error
@@ -70,7 +58,8 @@ export default function Step6({ activeStep, status }: Step6Props) {
     toast.error(errorMessage);
   }
 
-  // Map API response to InfoData
+  const status = apiData?.data?.nilai[0]?.validasi_nilai ? "validasi" : "belum";
+
   const infoData: InfoData = apiData?.data
     ? {
         judul: apiData.data.pendaftaran_kp[0]?.judul_kp || "Belum diisi",
@@ -132,7 +121,6 @@ export default function Step6({ activeStep, status }: Step6Props) {
       }
     : {};
 
-  // Animation variants for consistent motion effects
   const fadeInAnimation = {
     initial: { y: 20, opacity: 0 },
     animate: { y: 0, opacity: 1 },
@@ -155,7 +143,6 @@ export default function Step6({ activeStep, status }: Step6Props) {
     },
   };
 
-  // Handle loading state
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -164,7 +151,6 @@ export default function Step6({ activeStep, status }: Step6Props) {
     );
   }
 
-  // Handle error state
   if (error) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -179,11 +165,9 @@ export default function Step6({ activeStep, status }: Step6Props) {
     <div>
       <div className="flex mb-5">
         <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
-          <span
-            className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
-          />
+          <span className="inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400" />
           <LayoutGridIcon className="w-4 h-4 mr-1.5" />
-          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa            
+          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa
         </span>
       </div>
 
@@ -257,26 +241,22 @@ export default function Step6({ activeStep, status }: Step6Props) {
           </motion.div>
         </div>
 
-        {/* Conditional rendering based on status */}
-        {status === "belum" ? (
-          <>
-            <Status
-              status="belum"
-              title="Nilai Anda Masih dalam Proses Validasi"
-              subtitle="Mohon bersabar"
-            />
+        {/* Status and InfoCard rendering */}
+        <Status
+          status={status}
+          title={
+            status === "belum"
+              ? "Nilai anda masih diproses"
+              : "Nilai anda sudah tersedia di IRAISE"
+          }
+          subtitle={status === "belum" ? "Mohon bersabar" : ""}
+        />
 
-            <InfoCard
-              data={infoData}
-              displayItems={informasiSeminarFields}
-              className="mt-4"
-            />
-          </>
-        ) : (
-          status === "validasi" && (
-            <InfoCard data={infoData} displayItems={informasiSeminarFields} />
-          )
-        )}
+        <InfoCard
+          data={infoData}
+          displayItems={informasiSeminarFields}
+          className="mt-4"
+        />
       </div>
     </div>
   );

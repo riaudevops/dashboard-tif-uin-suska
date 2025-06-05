@@ -114,13 +114,13 @@ const InfoCard: React.FC<InfoCardProps> = React.memo(
                   <h3 className="text-sm font-semibold text-emerald-600 dark:text-emerald-300 text-center mb-2">
                     Nilai Mata Kuliah KP Anda
                   </h3>
-                  <p className="text-4xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">
+                  <p className="text-4xl font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
                     {typeof data[nilaiItem] === "string"
                       ? data[nilaiItem]
                       : "-"}
                   </p>
                   {/* Menampilkan nilai penguji, instansi, dan pembimbing */}
-                  <div className="mt-7 text-left text-xs text-emerald-600 dark:text-emerald-300 w-full">
+                  <div className="mt-3 text-left text-xs text-emerald-600 dark:text-emerald-300 w-full">
                     <p className="flex justify-between items-center gap-2">
                       <span className="font-medium">Nilai Instansi:</span>
                       <span className="inline-flex items-center justify-end px-2 py-0.5  text-emerald-600 dark:text-emerald-300  text-xs font-medium">

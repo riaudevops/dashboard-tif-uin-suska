@@ -4,7 +4,6 @@ import {
   Lock,
   CheckCircle2,
   Circle,
-  AlertTriangle,
   ChevronRight,
   BookOpen,
   Building2,

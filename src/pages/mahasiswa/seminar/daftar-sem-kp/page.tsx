@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
@@ -132,6 +132,15 @@ export default function MahasiswaSeminarDaftarPage() {
 
   const currentStep = determineCurrentStep();
 
+  useEffect(() => {
+    // Redirect if seminar process has already started
+    if (seminarStarted && step1Accessible) {  
+      navigate("/mahasiswa/kerja-praktik/seminar/validasi-berkas", {
+        replace: true,
+      });
+    }
+  }, [seminarStarted, step1Accessible]);
+
   const handleNavigation = () => {
     if (semuaSyaratTerpenuhi && step1Accessible) {
       // Mark seminar process as started
@@ -167,39 +176,41 @@ export default function MahasiswaSeminarDaftarPage() {
   // Render PendaftaranCard
   return (
     <DashboardLayout>
-      <div className="flex mb-3">
-        <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
-          <span
-            className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
-          />
-          <LayoutGridIcon className="w-4 h-4 mr-1.5" />
-          Pengajuan Seminar Kerja Praktik Mahasiswa
-        </span>
-      </div>
+      {(!seminarStarted || !step1Accessible) && <div>
+        <div className="flex mb-3">
+          <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+            <span
+              className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+            />
+            <LayoutGridIcon className="w-4 h-4 mr-1.5" />
+            Pengajuan Seminar Kerja Praktik Mahasiswa
+          </span>
+        </div>
 
-      <PendaftaranCard
-        infoPengajuanSeminar={{
-          step: currentStep,
-          checkItems: {
-            hapalan: true, // Dummy for murojaah 1-16
-            kerja_praktik:
-              apiResponse?.data?.persyaratan_seminar_kp?.masih_terdaftar_kp ??
-              false,
-            bimbingan:
-              apiResponse?.data?.persyaratan_seminar_kp
-                ?.minimal_lima_bimbingan ?? false,
-            dailyReport:
-              apiResponse?.data?.persyaratan_seminar_kp
-                ?.daily_report_sudah_approve ?? false,
-            nilaiInstansi:
-              apiResponse?.data?.persyaratan_seminar_kp
-                ?.sudah_mendapat_nilai_instansi ?? false,
-          },
-        }}
-        navigateFunction={handleNavigation}
-        step1Accessible={step1Accessible}
-        semuaSyaratTerpenuhi={semuaSyaratTerpenuhi}
-      />
+        <PendaftaranCard
+          infoPengajuanSeminar={{
+            step: currentStep,
+            checkItems: {
+              hapalan: true, // Dummy for murojaah 1-16
+              kerja_praktik:
+                apiResponse?.data?.persyaratan_seminar_kp?.masih_terdaftar_kp ??
+                false,
+              bimbingan:
+                apiResponse?.data?.persyaratan_seminar_kp
+                  ?.minimal_lima_bimbingan ?? false,
+              dailyReport:
+                apiResponse?.data?.persyaratan_seminar_kp
+                  ?.daily_report_sudah_approve ?? false,
+              nilaiInstansi:
+                apiResponse?.data?.persyaratan_seminar_kp
+                  ?.sudah_mendapat_nilai_instansi ?? false,
+            },
+          }}
+          navigateFunction={handleNavigation}
+          step1Accessible={step1Accessible}
+          semuaSyaratTerpenuhi={semuaSyaratTerpenuhi}
+        />
+      </div>}
     </DashboardLayout>
   );
 }

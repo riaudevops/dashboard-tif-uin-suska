@@ -698,7 +698,7 @@ const KoordinatorNilaiPage: FC = () => {
           </motion.div>
 
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 w-full">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5 w-full">
               <div className="flex items-center gap-2">
                 <Select
                   value={statusFilter}

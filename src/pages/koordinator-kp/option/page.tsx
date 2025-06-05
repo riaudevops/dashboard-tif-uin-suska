@@ -1,36 +1,11 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout"
-import { FormEvent, useEffect, useState } from "react"
-
-interface tanggalDaftarKPInterface {
-    tanggal_mulai_pendaftaran_kp        : string
-  tanggal_akhir_pendaftaran_kp        : string
-  tanggal_mulai_pendaftaran_kp_lanjut : string
-  tanggal_akhir_pendaftaran_kp_lanjut : string
-}
+import { FormEvent, useState } from "react"
 
 function OptionPage() {
     const [tanggalMulaiPendaftaran, setTanggalMulaiPendaftaran] = useState<string>("");
     const [tanggalAkhirPendaftaran, setTanggalAkhirPendaftaran] = useState<string>("");
     const [tanggalMulaiPendaftaranLanjut, setTanggalMulaiPendaftaranLanjut] = useState<string>("");
     const [tanggalAkhirPendaftaranLanjut, setTanggalAkhirPendaftaranLanjut] = useState<string>("");
-
-    // useEffect(() => {
-    //     (async function() {
-    //         const response = await fetch("http://localhost:5000/daftar-kp/get-tanggal-daftar-kp");
-    //         if (!response.ok) {
-    //             throw new Error("Gagal mendapatkan data Tanggal Daftar KP");
-    //         }
-
-    //         const data = (await response.json()).data as tanggalDaftarKPInterface;
-
-    //         setTanggalMulaiPendaftaran(data.tanggal_mulai_pendaftaran_kp)
-    //     })()
-    // }, [])
-
-    
-
-
-    // console.log(new Date((tanggalMulaiPendaftaran as Date)?.toISOString()))
 
     async function handleOnSubmitTanggalPendaftaranKP(e : FormEvent<HTMLFormElement>) {
         e.preventDefault();

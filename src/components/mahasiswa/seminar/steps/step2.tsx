@@ -184,6 +184,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
       });
     },
     onSuccess: (response, newIdPengajuan) => {
+      console.log("ID Pengajuan berhasil dikirim:", response);
       toast({
         title: "👌 Berhasil",
         description: `ID Pengajuan berhasil dikirim`,

@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import ScheduleTableContent from "./ScheduleTableContent";
 import DashboardJadwalCard from "@/components/dosen/seminar-kp/DashboardJadwalCard";
 

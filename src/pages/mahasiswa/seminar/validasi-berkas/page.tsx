@@ -33,7 +33,7 @@ interface ApiResponse {
   data?: SeminarData;
 }
 
-const stepComponents = [Step1, Step2, Step3, Step4, Step5, Step6];
+const stepComponents: any = [Step1, Step2, Step3, Step4, Step5, Step6];
 
 export default function MahasiswaSeminarValidasiBerkasPage() {
   const navigate = useNavigate();

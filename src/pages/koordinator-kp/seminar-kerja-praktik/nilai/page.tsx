@@ -13,7 +13,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -35,6 +34,13 @@ import {
 } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import DetailNilaiModal from "@/components/koordinator-kp/seminar/detail-nilai-modal";
 import { motion } from "framer-motion";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
@@ -136,7 +142,9 @@ const item = {
 
 const KoordinatorNilaiPage: FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<"semua" | NilaiStatus>("semua");
+  const [statusFilter, setStatusFilter] = useState<"semua" | NilaiStatus>(
+    "semua"
+  );
   const [selectedTahunAjaranId, setSelectedTahunAjaranId] = useState<
     number | undefined
   >(undefined);
@@ -191,7 +199,6 @@ const KoordinatorNilaiPage: FC = () => {
     }
   }, [tahunAjaranData, selectedTahunAjaranId]);
 
-  // Extract unique classes from API response
   const uniqueKelas = Array.from(
     new Set(data?.detailMahasiswa.map((student) => student.kelas) || [])
   ).sort();
@@ -221,16 +228,17 @@ const KoordinatorNilaiPage: FC = () => {
     const matchesSearch = student.nama
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
-    const matchesTab =
-      activeTab === "semua" ||
-      (activeTab === "nilaiBelumValid" &&
+    const matchesStatus =
+      statusFilter === "semua" ||
+      (statusFilter === "nilaiBelumValid" &&
         student.status_nilai === "Nilai Belum Valid") ||
-      (activeTab === "nilaiValid" && student.status_nilai === "Nilai Valid") ||
-      (activeTab === "nilaiApprove" &&
+      (statusFilter === "nilaiValid" &&
+        student.status_nilai === "Nilai Valid") ||
+      (statusFilter === "nilaiApprove" &&
         student.status_nilai === "Nilai Approve");
     const matchesKelas =
       selectedKelas === "semua" || student.kelas === selectedKelas;
-    return matchesSearch && matchesTab && matchesKelas;
+    return matchesSearch && matchesStatus && matchesKelas;
   });
 
   const totalStudents = students.length || 0;
@@ -359,7 +367,7 @@ const KoordinatorNilaiPage: FC = () => {
                       <TableHead className="text-xs font-semibold dark:text-gray-200 py-2 px-2 sm:py-3 sm:px-4 text-left whitespace-nowrap">
                         Mahasiswa
                       </TableHead>
-                      <TableHead className="text-xs font-semibold dark:text-gray-200 py-2 px-2 sm:py-3 sm:px-4 text-center whitespace-nowrap">
+                      <TableHead className="text-xs font-semibold dark:text-gray-200 py-2 px-2 sm:py-3 sm:px-px-4 text-center whitespace-nowrap">
                         Kelas
                       </TableHead>
                       <TableHead className="text-xs font-semibold dark:text-gray-200 py-2 px-2 sm:py-3 sm:px-4 text-center whitespace-nowrap">
@@ -368,10 +376,10 @@ const KoordinatorNilaiPage: FC = () => {
                       <TableHead className="text-xs font-semibold dark:text-gray-200 py-2 px-2 sm:py-3 sm:px-4 text-center whitespace-nowrap">
                         Pembimbing
                       </TableHead>
-                      <TableHead className="text-xs font-semibold dark:text-gray-200 py-2 px-2 sm:py-3 sm:px-4 text-center whitespace-nowrap">
+                      <TableHead className="text-xs font-semibold text-center whitespace-nowrap dark:text-gray-200 py-2 px-2 sm:px-4">
                         Penguji
                       </TableHead>
-                      <TableHead className="text-xs font-semibold dark:text-gray-200 py-2 px-2 sm:py-3 sm:px-4 text-center whitespace-nowrap">
+                      <TableHead className="text-xs font-semibold dark:text-gray-200 py-2 px-2 sm:px-4 text-center whitespace-nowrap">
                         Nilai Akhir
                       </TableHead>
                     </TableRow>
@@ -381,15 +389,15 @@ const KoordinatorNilaiPage: FC = () => {
                       <TableRow
                         key={student.nim}
                         className={`
-                        dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors
+                        dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors
                         ${
-                          index % 2 === 0
-                            ? "bg-white dark:bg-gray-800"
-                            : "bg-gray-50/50 dark:bg-gray-800/30"
+                          index
+                            ? "bg-emerald-100 dark:bg-gray-800"
+                            : "bg-gray-50/50 dark:bg-gray-900/30"
                         }
                       `}
                       >
-                        <TableCell className="py-2 px-2 sm:py-3 sm:px-4">
+                        <TableCell className="py-2 px-2 sm:p-4 sm:px-4">
                           <div className="min-w-0">
                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                               {student.nama}
@@ -399,27 +407,27 @@ const KoordinatorNilaiPage: FC = () => {
                             </p>
                           </div>
                         </TableCell>
-                        <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center">
-                          <span className="inline-flex items-center px-1 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        <TableCell className="py-2 px-2 sm:p-3 sm:px-4 text-center">
+                          <span className="inline-flex items-center px-1 sm:px-2 sm:p-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                             {student.kelas}
                           </span>
                         </TableCell>
-                        <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center">
+                        <TableCell className="py-2 px-2 sm:p-3 sm:px-4 text-center">
                           <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             {student.nilai_instansi ?? "-"}
                           </span>
                         </TableCell>
-                        <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center">
+                        <TableCell className="py-2 px-2 sm:p-3 sm:px-4 text-center">
                           <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             {student.nilai_pembimbing ?? "-"}
                           </span>
                         </TableCell>
-                        <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center">
+                        <TableCell className="py-2 px-2 sm:p-3 sm:px-4 text-center">
                           <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             {student.nilai_penguji ?? "-"}
                           </span>
                         </TableCell>
-                        <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center">
+                        <TableCell className="py-2 px-2 sm:p-3 sm:px-4 text-center">
                           <div className="flex flex-col items-center gap-1">
                             <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                               {formatFinalGrade(
@@ -437,7 +445,7 @@ const KoordinatorNilaiPage: FC = () => {
             </div>
           </div>
 
-          <DialogFooter className="pt-4 border-t dark:border-gray-700 flex gap-2 sm:gap-3">
+          <DialogFooter className="pt-4 py-4 border-t dark:border-gray-700 flex gap-2 sm:gap-3">
             <Button
               variant="outline"
               onClick={() => setIsConfirmModalOpen(false)}
@@ -469,7 +477,7 @@ const KoordinatorNilaiPage: FC = () => {
                     <path
                       className="opacity-75"
                       fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 2 7.938l3-2.647z"
                     ></path>
                   </svg>
                   Memproses...
@@ -590,7 +598,7 @@ const KoordinatorNilaiPage: FC = () => {
                   <p className="text-xs text-blue-600 dark:text-blue-300 mt-0.5">
                     Mahasiswa
                   </p>
-                  <div className="h-1.5 w-full bg-blue-100 dark:bg-blue-900 rounded-full mt-2">
+                  <div className="h-1.5 w-full bg-blueq-100 dark:bg-blue-900 rounded-full mt-2">
                     <motion.div
                       initial={{ width: "0%" }}
                       animate={{
@@ -689,142 +697,94 @@ const KoordinatorNilaiPage: FC = () => {
             </motion.div>
           </motion.div>
 
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <Tabs
-              defaultValue="semua"
-              onValueChange={(value) =>
-                setActiveTab(value as "semua" | NilaiStatus)
-              }
-              className="w-full"
-            >
-              <div className="flex flex-col gap-4 w-full">
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 w-full">
-                  <TabsList className="dark:bg-gray-700">
-                    <TabsTrigger
-                      value="semua"
-                      className="dark:data-[state=active]:bg-gray-800"
-                    >
-                      Semua
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="nilaiBelumValid"
-                      className="dark:data-[state=active]:bg-gray-800"
-                    >
-                      Nilai Belum Valid
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="nilaiValid"
-                      className="dark:data-[state=active]:bg-gray-800"
-                    >
-                      Nilai Valid
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="nilaiApprove"
-                      className="dark:data-[state=active]:bg-gray-800"
-                    >
-                      Approve
-                    </TabsTrigger>
-                  </TabsList>
-
-                  <div className="flex items-center w-full gap-2 relative">
-                    <Search className="h-4 w-4 absolute left-3 text-gray-400" />
-                    <Input
-                      type="text"
-                      placeholder="Cari nama mahasiswa..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200 dark:placeholder:text-gray-400"
-                    />
-                    {activeTab === "nilaiApprove" && (
-                      <Button
-                        onClick={handleValidate}
-                        disabled={selectedStudents.length === 0}
-                        className="bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700"
-                        size="icon"
-                        title="Validasi Nilai"
-                      >
-                        <Check className="h-6 w-6 dark:text-white" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                <RadioGroup
-                  value={selectedKelas}
-                  onValueChange={setSelectedKelas}
-                  className="flex flex-wrap gap-4"
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 w-full">
+              <div className="flex items-center gap-2">
+                <Select
+                  value={statusFilter}
+                  onValueChange={(value) =>
+                    setStatusFilter(value as "semua" | NilaiStatus)
+                  }
                 >
-                  <div className="flex items-center space-x-2">
+                  <SelectTrigger className="w-[180px] dark:bg-gray-800 dark:border-gray-700">
+                    <SelectValue placeholder="Filter Status Nilai" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="semua">Semua Status</SelectItem>
+                    <SelectItem value="nilaiBelumValid">
+                      Nilai Belum Valid
+                    </SelectItem>
+                    <SelectItem value="nilaiValid">Nilai Valid</SelectItem>
+                    <SelectItem value="nilaiApprove">Nilai Approve</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center w-full gap-2 relative">
+                <Search className="h-4 w-4 absolute left-3 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Cari nama mahasiswa..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200 dark:placeholder:text-gray-400"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between gap-4">
+              <RadioGroup
+                value={selectedKelas}
+                onValueChange={setSelectedKelas}
+                className="flex flex-wrap gap-4 py-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="semua"
+                    id="semua"
+                    className="text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600"
+                  />
+                  <Label
+                    htmlFor="semua"
+                    className="text-sm font-medium text-gray-700 dark:text-gray-200"
+                  >
+                    Semua Kelas
+                  </Label>
+                </div>
+                {uniqueKelas.map((kelas) => (
+                  <div key={kelas} className="flex items-center space-x-2">
                     <RadioGroupItem
-                      value="semua"
-                      id="semua"
+                      value={kelas}
+                      id={kelas}
                       className="text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600"
                     />
                     <Label
-                      htmlFor="semua"
+                      htmlFor={kelas}
                       className="text-sm font-medium text-gray-700 dark:text-gray-200"
                     >
-                      Semua Kelas
+                      {kelas}
                     </Label>
                   </div>
-                  {uniqueKelas.map((kelas) => (
-                    <div key={kelas} className="flex items-center space-x-2">
-                      <RadioGroupItem
-                        value={kelas}
-                        id={kelas}
-                        className="text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600"
-                      />
-                      <Label
-                        htmlFor={kelas}
-                        className="text-sm font-medium text-gray-700 dark:text-gray-200"
-                      >
-                        {kelas}
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </div>
+                ))}
+              </RadioGroup>
+              {selectedStudents.length > 0 ? (
+                <Button
+                  onClick={handleValidate}
+                  className="bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700"
+                  size="sm"
+                  title="Konfirmasi Nilai"
+                >
+                  <Check className="h-4 w-4 dark:text-white" />
+                </Button>
+              ) : null}
+            </div>
 
-              <TabsContent value="semua" className="mt-4">
-                <StudentTable
-                  students={filteredStudents}
-                  onViewDetail={handleOpenDialog}
-                  activeTab={activeTab}
-                  selectedStudents={selectedStudents}
-                  onCheckboxChange={handleCheckboxChange}
-                />
-              </TabsContent>
-
-              <TabsContent value="nilaiBelumValid" className="mt-4">
-                <StudentTable
-                  students={filteredStudents}
-                  onViewDetail={handleOpenDialog}
-                  activeTab={activeTab}
-                  selectedStudents={selectedStudents}
-                  onCheckboxChange={handleCheckboxChange}
-                />
-              </TabsContent>
-
-              <TabsContent value="nilaiValid" className="mt-4">
-                <StudentTable
-                  students={filteredStudents}
-                  onViewDetail={handleOpenDialog}
-                  activeTab={activeTab}
-                  selectedStudents={selectedStudents}
-                  onCheckboxChange={handleCheckboxChange}
-                />
-              </TabsContent>
-
-              <TabsContent value="nilaiApprove" className="mt-4">
-                <StudentTable
-                  students={filteredStudents}
-                  onViewDetail={handleOpenDialog}
-                  activeTab={activeTab}
-                  selectedStudents={selectedStudents}
-                  onCheckboxChange={handleCheckboxChange}
-                />
-              </TabsContent>
-            </Tabs>
+            <StudentTable
+              students={filteredStudents}
+              onViewDetail={handleOpenDialog}
+              selectedStudents={selectedStudents}
+              onCheckboxChange={handleCheckboxChange}
+            />
           </div>
         </div>
       </div>
@@ -838,26 +798,17 @@ const KoordinatorNilaiPage: FC = () => {
 const StudentTable: FC<{
   students: Mahasiswa[];
   onViewDetail: (student: Mahasiswa) => void;
-  activeTab: "semua" | NilaiStatus;
   selectedStudents: string[];
   onCheckboxChange: (nim: string) => void;
-}> = ({
-  students,
-  onViewDetail,
-  activeTab,
-  selectedStudents,
-  onCheckboxChange,
-}) => {
+}> = ({ students, onViewDetail, selectedStudents, onCheckboxChange }) => {
   return (
     <Card className="shadow-none rounded-none dark:bg-gray-900 dark:border-gray-700">
       <Table>
         <TableHeader className="bg-gray-200 dark:bg-gray-700">
           <TableRow className="hover:bg-gray-300 dark:hover:bg-gray-600">
-            {activeTab === "nilaiApprove" && (
-              <TableHead className="w-12 text-center font-semibold dark:text-gray-200">
-                {/* Kosongkan header untuk kolom checkbox */}
-              </TableHead>
-            )}
+            <TableHead className="w-12 text-center font-semibold dark:text-gray-200">
+              {/* Kosongkan header untuk kolom checkbox */}
+            </TableHead>
             <TableHead className="text-center max-w-4 font-semibold dark:text-gray-200">
               No.
             </TableHead>
@@ -876,11 +827,9 @@ const StudentTable: FC<{
             <TableHead className="text-center font-semibold dark:text-gray-200">
               Status Nilai
             </TableHead>
-            {activeTab === "nilaiApprove" && (
-              <TableHead className="text-center font-semibold dark:text-gray-200">
-                Status
-              </TableHead>
-            )}
+            <TableHead className="text-center font-semibold dark:text-gray-200">
+              Status Konfirmasi
+            </TableHead>
             <TableHead className="text-center font-semibold dark:text-gray-200">
               Aksi
             </TableHead>
@@ -890,7 +839,7 @@ const StudentTable: FC<{
           {students.length === 0 ? (
             <TableRow className="dark:border-gray-700 dark:hover:bg-gray-700">
               <TableCell
-                colSpan={activeTab === "nilaiApprove" ? 9 : 8}
+                colSpan={9}
                 className="text-center py-6 text-muted-foreground dark:text-gray-400"
               >
                 Tidak ada data yang ditemukan
@@ -902,9 +851,9 @@ const StudentTable: FC<{
                 key={student.nim}
                 className="dark:border-gray-700 dark:hover:bg-gray-700"
               >
-                {activeTab === "nilaiApprove" && (
-                  <TableCell className="text-center">
-                    {student.validasi_nilai_is_approve === true ? (
+                <TableCell className="text-center">
+                  {student.status_nilai === "Nilai Approve" ? (
+                    student.validasi_nilai_is_approve === true ? (
                       <span className="text-xs text-green-500 dark:text-green-400">
                         ✓
                       </span>
@@ -914,9 +863,15 @@ const StudentTable: FC<{
                         onCheckedChange={() => onCheckboxChange(student.nim)}
                         className="h-4 w-4"
                       />
-                    )}
-                  </TableCell>
-                )}
+                    )
+                  ) : (
+                    <Checkbox
+                      disabled
+                      className="h-4 w-4 opacity-100"
+                      title="Hanya nilai dengan status 'Nilai Approve' yang dapat dikonfirmasi"
+                    />
+                  )}
+                </TableCell>
                 <TableCell className="text-center dark:text-gray-300 text-xs font-semibold">
                   {index + 1}.
                 </TableCell>
@@ -984,19 +939,18 @@ const StudentTable: FC<{
                     {student.status_nilai}
                   </span>
                 </TableCell>
-                {activeTab === "nilaiApprove" && (
-                  <TableCell className="text-center">
-                    {student.validasi_nilai_is_approve === true ? (
-                      <div className="py-1 rounded-full text-xs font-medium bg-emerald-100/70 text-emerald-700  dark:bg-emerald-900/30 dark:text-emerald-300">
-                        Selesai
-                      </div>
-                    ) : (
-                      <span className="text-gray-500 dark:text-gray-400 text-xs">
-                        -
-                      </span>
-                    )}
-                  </TableCell>
-                )}
+                <TableCell className="text-center">
+                  {student.status_nilai === "Nilai Approve" &&
+                  student.validasi_nilai_is_approve === true ? (
+                    <div className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-emerald-100/70 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                      Selesai
+                    </div>
+                  ) : (
+                    <span className="text-gray-500 dark:text-gray-400 text-xs">
+                      -
+                    </span>
+                  )}
+                </TableCell>
                 <TableCell className="text-center">
                   <Button
                     variant="default"

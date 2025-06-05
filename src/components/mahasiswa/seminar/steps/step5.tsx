@@ -236,6 +236,7 @@ const Step5: FC<Step5Props> = ({ activeStep }) => {
   const mutation = useMutation({
     mutationFn: APISeminarKP.postLinkDokumen,
     onSuccess: (response) => {
+      console.log("Response from API:", response);
       toast({
         title: "👌 Berhasil",
         description: `Dokumen berhasil dikirim`,

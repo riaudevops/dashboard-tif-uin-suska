@@ -34,6 +34,7 @@ interface InfoData {
   nilai_penguji?: string;
   nilai_instansi?: string;
   nilai_pembimbing?: string;
+  nilai_huruf?: string;
   [key: string]: string | undefined;
 }
 
@@ -112,31 +113,31 @@ const InfoCard: React.FC<InfoCardProps> = React.memo(
               <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-md p-4 h-full flex flex-col items-center justify-center">
                 <div className="flex flex-col items-center justify-center w-full">
                   <h3 className="text-sm font-semibold text-emerald-600 dark:text-emerald-300 text-center mb-2">
-                    Nilai Mata Kuliah KP Anda
+                    Nilai Akhir Matkul KP Kamu
                   </h3>
                   <p className="text-4xl font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
                     {typeof data[nilaiItem] === "string"
                       ? data[nilaiItem]
-                      : "-"}
+                      : "-"} <span className="text-[1.35rem]">({data.nilai_huruf})</span>
                   </p>
                   {/* Menampilkan nilai penguji, instansi, dan pembimbing */}
                   <div className="mt-3 text-left text-xs text-emerald-600 dark:text-emerald-300 w-full">
                     <p className="flex justify-between items-center gap-2">
-                      <span className="font-medium">Nilai Instansi:</span>
+                      <span className="font-medium">Nilai Instansi (40%)</span>
                       <span className="inline-flex items-center justify-end px-2 py-0.5  text-emerald-600 dark:text-emerald-300  text-xs font-medium">
                         {data.nilai_instansi || "-"}
                       </span>
                     </p>
                     <hr className="my-2 border-emerald-200 dark:border-emerald-700" />
                     <p className="flex justify-between items-center gap-2">
-                      <span className="font-medium">Nilai Penguji:</span>
+                      <span className="font-medium">Nilai Penguji (40%)</span>
                       <span className="inline-flex items-center justify-end px-2 py-0.5  text-emerald-600 dark:text-emerald-300  text-xs font-medium">
                         {data.nilai_penguji || "-"}
                       </span>
                     </p>
                     <hr className="my-2 border-emerald-200 dark:border-emerald-700" />
                     <p className="flex justify-between items-center gap-2">
-                      <span className="font-medium">Nilai Pembimbing:</span>
+                      <span className="font-medium">Nilai Pembimbing (20%)</span>
                       <span className="inline-flex items-center justify-end px-2 py-0.5  text-emerald-600 dark:text-emerald-300  text-xs font-medium">
                         {data.nilai_pembimbing || "-"}
                       </span>
@@ -314,6 +315,7 @@ export default function Step6({ activeStep }: Step6Props) {
         nilai_pembimbing: apiData.data.nilai[0]?.nilai_pembimbing
           ? String(apiData.data.nilai[0].nilai_pembimbing)
           : "Belum diisi",
+        nilai_huruf: apiData.data.nilai[0]?.nilai_huruf ? String(apiData.data.nilai[0].nilai_huruf) : "Belum diisi",
       }
     : {};
 
@@ -369,7 +371,7 @@ export default function Step6({ activeStep }: Step6Props) {
 
       <Stepper activeStep={activeStep} />
 
-      <div className="p-4">
+      <div className="p-0 pt-2.5">
         <div className="flex flex-col gap-12 mb-4">
           {/* Success banner */}
           <motion.div

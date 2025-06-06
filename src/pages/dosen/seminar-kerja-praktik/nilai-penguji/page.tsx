@@ -351,21 +351,21 @@ const DosenPengujiNilaiPage: FC = () => {
           <DashboardCards students={students} statistics={apiData.statistics} />
 
           {seminarHariIni.length > 0 && (
-            <div className="mt-8 mb-6">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-xl font-extrabold flex items-center dark:text-white">
-                  <span className="bg-gradient-to-br from-blue-600 to-violet-600 text-white p-1.5 rounded-lg mr-3">
+            <div className="pt-2 pb-3">
+              <div className="mb-2.5 flex items-center">
+                <div className="text-xl tracking-tight font-semibold flex items-center dark:text-white">
+                  <span className="bg-gradient-to-br from-blue-600 to-violet-600 text-white p-1.5 rounded-lg mr-2">
                     <Calendar className="h-4 w-4" />
                   </span>
                   Seminar Hari Ini
-                </h2>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {seminarHariIni.map((seminar) => (
                   <div
                     key={seminar.id}
-                    className="group relative rounded-xl bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 dark:bg-gray-900/60 dark:hover:bg-gray-900/80 overflow-hidden border border-gray-200/60 dark:border-gray-700/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1 cursor-pointer backdrop-blur-sm"
+                    className="group relative rounded-xl bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/10 dark:hover:to-indigo-900/10 dark:bg-gray-900/60 dark:hover:bg-gray-900/80 overflow-hidden border border-gray-200/60 dark:border-gray-700/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 cursor-pointer backdrop-blur-sm"
                     onClick={() => handleOpenInputNilaiPage(seminar)}
                   >
                     {/* Subtle gradient overlay */}

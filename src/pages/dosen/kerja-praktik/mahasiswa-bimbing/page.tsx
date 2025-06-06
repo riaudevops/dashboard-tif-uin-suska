@@ -540,7 +540,7 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
 										initial={{ opacity: 0, scale: 0.8 }}
 										animate={{ opacity: 1, scale: 1 }}
 										exit={{ opacity: 0, scale: 0.8 }}
-										className="flex items-center gap-1 px-3 py-1 rounded-full shadow-sm bg-blue-50 dark:bg-blue-900/20"
+										className="mb-3 flex items-center gap-1 px-3 py-1 rounded-full shadow-sm bg-blue-50 dark:bg-blue-900/20"
 									>
 										<span className="text-blue-600 dark:text-blue-400">
 											{selectedFilter}
@@ -562,7 +562,7 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
 										initial={{ opacity: 0, scale: 0.8 }}
 										animate={{ opacity: 1, scale: 1 }}
 										exit={{ opacity: 0, scale: 0.8 }}
-										className="flex items-center gap-1 px-3 py-1 rounded-full shadow-sm bg-blue-50 dark:bg-blue-900/20"
+										className="mb-3 flex items-center gap-1 px-3 py-1 rounded-full shadow-sm bg-blue-50 dark:bg-blue-900/20"
 									>
 										<span className="text-blue-600 dark:text-blue-400">
 											Search: {searchQuery}
@@ -578,11 +578,7 @@ const DosenKerjaPraktikMahasiswaBimbingPage = () => {
 									</motion.div>
 								)}
 							</AnimatePresence>
-						</div>
-						{/* <div className="flex items-center gap-2 dark:text-gray-400">
-              <Info className="w-4 h-4 dark:text-gray-400" />
-              <span>{filteredStudents.length} Mahasiswa</span>
-            </div> */}
+						</div>					
 					</motion.div>
 				)}
 				{!isLoading && !isError && (

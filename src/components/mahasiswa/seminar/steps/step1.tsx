@@ -245,7 +245,16 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
                   year: "numeric",
                 })
               : "Belum diisi"
-          } - ${data.data.pendaftaran_kp[0]?.tanggal_selesai || "Belum diisi"}`,
+          } - ${data.data.pendaftaran_kp[0]?.tanggal_selesai
+              ? new Date(
+                  data.data.pendaftaran_kp[0].tanggal_selesai
+                ).toLocaleDateString("id-ID", {
+                  day: "2-digit",
+                  month: "long",
+                  year: "numeric",
+                })
+              : "Belum diisi"
+          }`,
         }
       : {};
   }, [data]);

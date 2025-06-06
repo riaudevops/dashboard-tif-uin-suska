@@ -7,6 +7,7 @@ import {
   Award,
   ArrowLeft,
   FileText,
+  GraduationCapIcon,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import APISeminarKP from "@/services/api/dosen/seminar-kp.service";
@@ -389,8 +390,8 @@ const NilaiSeminarPenguji: React.FC = () => {
   return (
     <DashboardLayout>
       <Toaster position="top-right" />
-      <div className="p-5">
-        <div className="mb-4">
+      <div className="">
+        <div className="mb-4 flex gap-5">
           <button
             onClick={handleGoBack}
             className="flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
@@ -398,12 +399,17 @@ const NilaiSeminarPenguji: React.FC = () => {
             <ArrowLeft size={20} className="mr-1" />
             <span className="text-sm font-medium">Kembali</span>
           </button>
+
+          <div className="flex">
+              <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+                <span
+                  className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+                />
+                <GraduationCapIcon className="w-4 h-4 mr-1.5" />
+                Penilaian Seminar Kerja Praktik
+              </span>
+            </div>
         </div>
-
-        <h2 className="text-xl font-bold text-center text-gray-800 dark:text-gray-100 mb-6">
-          Penilaian Seminar Kerja Praktik
-        </h2>
-
         <div className="bg-white dark:bg-gray-900 rounded-lg p-5 border border-gray-200 dark:border-gray-800 mb-6 shadow-sm">
           <div className="flex justify-between items-center mb-4">
             <div>

@@ -641,21 +641,8 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
       evaluationValues.bimbingan_sikap * evaluationCriteria[1].weight;
     weightedSum +=
       evaluationValues.kualitas_laporan * evaluationCriteria[2].weight;
-    return weightedSum;
+    return Math.round(weightedSum * 100) / 100;
   };
-
-  // const getGrade = (score: number) => {
-  //   if (score >= 85) return "A";
-  //   if (score >= 80) return "A-";
-  //   if (score >= 75) return "B+";
-  //   if (score >= 70) return "B";
-  //   if (score >= 65) return "B-";
-  //   if (score >= 60) return "C+";
-  //   if (score >= 55) return "C";
-  //   if (score >= 50) return "C-";
-  //   if (score >= 40) return "D";
-  //   return "E";
-  // };
 
   const handleSaveNilai = () => {
     if (!validateForm()) return;

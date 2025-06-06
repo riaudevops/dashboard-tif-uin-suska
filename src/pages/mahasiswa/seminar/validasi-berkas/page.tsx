@@ -9,6 +9,7 @@ import Step5 from "@/components/mahasiswa/seminar/steps/step5";
 import Step6 from "@/components/mahasiswa/seminar/steps/step6";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
+import { LayoutGridIcon } from "lucide-react";
 
 interface SeminarData {
   persyaratan_seminar_kp: {
@@ -88,8 +89,25 @@ export default function MahasiswaSeminarValidasiBerkasPage() {
   if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="text-center text-gray-600 dark:text-gray-300">
-          Mengambil data...
+        <div className="flex mb-3">
+          <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+            <span
+              className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+            />
+            <LayoutGridIcon className="w-4 h-4 mr-1.5" />
+            Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa
+          </span>
+        </div>
+        <div className="bg-foreground/5 flex justify-center items-center w-full border border-gray-300 dark:border-gray-700 shadow-sm rounded-xl h-full">
+          <div className="p-4 bg-yellow-100 dark:bg-gray-800 border border-yellow-300 dark:border-gray-700 rounded-md shadow-md">
+            <div className="flex items-center space-x-2">
+              <svg className="animate-spin h-5 w-5 text-yellow-900 dark:text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 014.293-7.293l1.414 1.414A6 6 0 006 12H4zm2 5.293A8 8 0 0112 20v-2a6 6 0 00-4.293-5.707l-1.414 1.414z"></path>
+              </svg>
+              <span className="text-gray-600 dark:text-gray-300 text-lg">Sedang Proses Memuat Data! 🔥</span>
+            </div>
+          </div>
         </div>
       </DashboardLayout>
     );

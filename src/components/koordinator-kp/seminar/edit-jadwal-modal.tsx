@@ -382,7 +382,7 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                               id="ruangan"
                               className="bg-white dark:bg-gray-800 pl-9"
                             >
-                              <SelectValue placeholder="Pilih ruangan seminar" />
+                              <SelectValue placeholder="Pilih Ruangan Seminar" />
                             </SelectTrigger>
                             <SelectContent>
                               {isLoadingRuangan ? (

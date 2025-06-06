@@ -31,6 +31,7 @@ interface Step2Props {
 
 interface CardHeaderProps {
   title: string;
+  status?: DocumentStatus;
 }
 
 interface IDInputCardProps {
@@ -42,8 +43,8 @@ interface IDInputCardProps {
 }
 
 // Komponen CardHeaderGradient
-const CardHeaderGradient: FC<CardHeaderProps> = ({ title }) => (
-  <div className="bg-gradient-to-r from-emerald-600 to-green-500 px-6 py-4">
+const CardHeaderGradient: FC<CardHeaderProps> = ({ title, status }) => (
+  <div className={`bg-gradient-to-r ${status === "Ditolak" ? "from-red-600 to-rose-500" : "from-emerald-600 to-green-500"} px-6 py-4`}>
     <CardTitle className="text-white text-lg font-medium">{title}</CardTitle>
   </div>
 );
@@ -112,7 +113,7 @@ const IDInputCard: FC<IDInputCardProps> = ({
 
   return (
     <Card className="h-full overflow-hidden rounded-xl border shadow-none dark:border-none dark:bg-gray-900">
-      <CardHeaderGradient title="Silakan Masukkan ID Pengajuan" />
+      <CardHeaderGradient status={status} title="Silahkan Masukkan ID Pengajuan" />
       <CardContent className="flex flex-col h-[calc(100%-4rem)] gap-4 p-6">
         <div className="space-y-2">
           <Label
@@ -131,7 +132,7 @@ const IDInputCard: FC<IDInputCardProps> = ({
               }
               value={inputValue}
               onChange={handleInputChange}
-              className="border-gray-200 dark:border-gray-700 focus:border-emerald-500 focus:ring-emerald-500 dark:focus:border-emerald-400 dark:focus:ring-emerald-400 pl-3 pr-3 py-2"
+              className={`border-gray-200 dark:border-gray-700 ${status == "Terkirim" ? 'focus:border-yellow-500 focus:ring-yellow-500 dark:focus:border-yellow-400 dark:focus:ring-yellow-400' : status == "Ditolak" ? 'focus:border-red-500 focus:ring-red-500 dark:focus:border-red-400 dark:focus:ring-red-400' : 'focus:border-blue-500 focus:ring-blue-500 dark:focus:border-blue-400 dark:focus:ring-blue-400'} pl-3 pr-3 py-2`}
               readOnly={readOnly}
             />
           </div>
@@ -210,7 +211,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
       const step2Accessible = data.data.steps_info.step2_accessible;
 
       if (step2Docs.length > 0) {
-        const apiIdPengajuan = step2Docs[0].id_pengajuan || "";
+        const apiIdPengajuan = step2Docs[0].link_path || "";
         // Prioritaskan lastSubmittedId jika ada, jika tidak gunakan dari API
         setIdPengajuan(lastSubmittedId || apiIdPengajuan);
         setStep2Status(step2Docs[0].status as DocumentStatus);
@@ -250,7 +251,16 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
                   year: "numeric",
                 })
               : "Belum diisi"
-          } - ${data.data.pendaftaran_kp[0]?.tanggal_selesai || "Belum diisi"}`,
+          } - ${data.data.pendaftaran_kp[0]?.tanggal_selesai
+              ? new Date(
+                  data.data.pendaftaran_kp[0].tanggal_selesai
+                ).toLocaleDateString("id-ID", {
+                  day: "2-digit",
+                  month: "long",
+                  year: "numeric",
+                })
+              : "Belum diisi"
+          }`,
         }
       : {};
   }, [data]);
@@ -302,15 +312,15 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
       case "Ditolak":
         return {
           title: "Input ID Pengajuan Surat Undangan Anda Ditolak",
-          subtitle: komentar || "Silakan masukkan kode yang benar!",
+          subtitle: komentar || "Silahkan masukkan kode yang benar!",
           readonly: false,
-          defaultValue: undefined,
+          defaultValue: idPengajuan || lastSubmittedId || "",
         };
       case "default":
       default:
         return {
           title: "Anda belum memasukkan ID Pengajuan Surat Undangan Seminar KP",
-          subtitle: "Silakan masukkan ID Pengajuan Surat Undangan Seminar KP!",
+          subtitle: "Silahkan masukkan ID Pengajuan Surat Undangan Seminar KP!",
           readonly: false,
           defaultValue: undefined,
         };

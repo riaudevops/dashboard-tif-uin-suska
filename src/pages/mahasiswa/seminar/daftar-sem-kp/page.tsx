@@ -80,51 +80,30 @@ export default function MahasiswaSeminarDaftarPage() {
   // Determine the current step based on API data
   const determineCurrentStep = () => {
     let currentStep = 0;
+    const stepState = apiResponse?.data?.steps_info
 
-    // Step 1: Check if step1 documents are validated
-    const step1Docs = apiResponse?.data?.dokumen_seminar_kp?.step1 || [];
-    if (step1Docs.every((doc) => doc.status === "Divalidasi")) {
-      currentStep = 1;
+    if (stepState?.step1_accessible) {
+      currentStep = 0
     }
 
-    // Step 2: Check if step2 documents are validated
-    const step2Docs = apiResponse?.data?.dokumen_seminar_kp?.step2 || [];
-    if (
-      currentStep === 1 &&
-      step2Docs.every((doc) => doc.status === "Divalidasi")
-    ) {
-      currentStep = 2;
+    if (stepState?.step2_accessible) {
+      currentStep = 1
     }
 
-    // Step 3: Check if step3 documents are validated
-    const step3Docs = apiResponse?.data?.dokumen_seminar_kp?.step3 || [];
-    if (
-      currentStep === 2 &&
-      step3Docs.every((doc) => doc.status === "Divalidasi")
-    ) {
-      currentStep = 3;
+    if (stepState?.step3_accessible) {
+      currentStep = 2
     }
 
-    // Step 4: Check if seminar is completed
-    const seminarStatus = apiResponse?.data?.jadwal?.[0]?.status;
-    if (currentStep === 3 && seminarStatus === "Selesai") {
-      currentStep = 4;
+    if (stepState?.step4_accessible) {
+      currentStep = 3
     }
 
-    // Step 5: Check if step5 documents are validated
-    const step5Docs = apiResponse?.data?.dokumen_seminar_kp?.step5 || [];
-    if (
-      currentStep === 4 &&
-      step5Docs.every((doc) => doc.status === "Divalidasi")
-    ) {
-      currentStep = 5;
+    if (stepState?.step5_accessible) {
+      currentStep = 4
     }
 
-    // Step 6: Check if validation is approved
-    const isValidationApproved =
-      apiResponse?.data?.nilai?.[0]?.validasi_nilai?.is_approve;
-    if (currentStep === 5 && isValidationApproved) {
-      currentStep = 5; // Already at the final step
+    if (stepState?.step6_accessible) {
+      currentStep = 5
     }
 
     return currentStep;
@@ -155,8 +134,25 @@ export default function MahasiswaSeminarDaftarPage() {
   if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="text-center text-gray-600 dark:text-gray-300">
-          Mengambil data...
+        <div className="flex mb-3">
+          <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+            <span
+              className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+            />
+            <LayoutGridIcon className="w-4 h-4 mr-1.5" />
+            Pengajuan Seminar Kerja Praktik Mahasiswa
+          </span>
+        </div>
+        <div className="bg-foreground/5 flex justify-center items-center w-full border border-gray-300 dark:border-gray-700 shadow-sm rounded-xl h-full">
+          <div className="p-4 bg-yellow-100 dark:bg-gray-800 border border-yellow-300 dark:border-gray-700 rounded-md shadow-md">
+            <div className="flex items-center space-x-2">
+              <svg className="animate-spin h-5 w-5 text-yellow-900 dark:text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 014.293-7.293l1.414 1.414A6 6 0 006 12H4zm2 5.293A8 8 0 0112 20v-2a6 6 0 00-4.293-5.707l-1.414 1.414z"></path>
+              </svg>
+              <span className="text-gray-600 dark:text-gray-300 text-lg">Sedang Proses Memuat Data! 🔥</span>
+            </div>
+          </div>
         </div>
       </DashboardLayout>
     );

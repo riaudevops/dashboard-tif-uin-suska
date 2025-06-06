@@ -613,7 +613,7 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
                           id="nama_ruangan"
                           className="text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
                         >
-                          <SelectValue placeholder="Pilih ruangan" />
+                          <SelectValue placeholder="Pilih Ruangan Seminar" />
                         </SelectTrigger>
                         <SelectContent>
                           {ruanganData.map((ruangan: any) => (

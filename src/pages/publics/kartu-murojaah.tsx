@@ -238,7 +238,7 @@ const KartuMurojaahPage = () => {
 								</div>
 							</div>
 
-							<div className="w-full flex items-center justify-center font-sans">
+							<div className="w-full flex items-center justify-center font-sans bg-transparent">
 								{/* Definisi animasi kustom */}
 								<style>{`
 									@keyframes shimmer {
@@ -257,11 +257,12 @@ const KartuMurojaahPage = () => {
 									}
 								`}</style>
 
-								<div className="w-full max-w-7xl bg-transparent backdrop-blur-xl overflow-hidden flex flex-col md:flex-row gap-6">
+								{/* Kontainer utama */}
+								<div className="w-full max-w-7xl bg-transparent dark:shadow-black/50 backdrop-blur-xl overflow-hidden flex flex-col md:flex-row gap-6">
 									{/* ====== BAGIAN KIRI (PROFIL) - w-1/3 ====== */}
-									<div className="w-full md:w-1/3 bg-gradient-to-br from-violet-800/10 to-slate-900/5 rounded-2xl border border-slate-700 group/profile flex flex-col justify-center items-center text-center p-6">
+									<div className="w-full md:w-1/3 bg-transparent dark:bg-gradient-to-br dark:from-violet-800/10 dark:to-slate-900/5 rounded-2xl border border-slate-300 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/80 transition-colors duration-300 group/profile flex flex-col justify-center items-center text-center p-6">
 										<div className="relative mb-4">
-											<div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-full blur-md opacity-30 group-hover/profile:opacity-60 transition-opacity duration-500 animate-pulse"></div>
+											<div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-full blur-md opacity-30 group-hover/profile:opacity-60 transition-opacity duration-500"></div>
 											<div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-emerald-400 via-blue-500 to-purple-600 p-1 shadow-2xl group-hover/profile:scale-110 transition-transform duration-500">
 												<div className="flex items-center justify-center h-full w-full rounded-full bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 text-white text-xl md:text-2xl font-bold shadow-inner relative overflow-hidden">
 													<div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-shimmer"></div>
@@ -282,22 +283,22 @@ const KartuMurojaahPage = () => {
 												<Sparkles className="w-3 h-3 text-white animate-spin-slow" />
 											</div>
 										</div>
-										<h2 className="text-xl font-bold text-white tracking-tight">
+										<h2 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">
 											{isFetching ? (
 												<Skeleton className="h-7 w-48 mx-auto" />
 											) : (
 												infoDataMahasiswa?.nama
 											)}
 										</h2>
-										<p className="text-sm text-cyan-400 font-mono mt-1">
+										<p className="text-sm text-cyan-600 dark:text-cyan-400 font-mono mt-1">
 											{isFetching ? (
 												<Skeleton className="h-5 w-32 mx-auto mt-1" />
 											) : (
 												infoDataMahasiswa?.nim
 											)}
 										</p>
-										<div className="flex justify-center items-center gap-1.5 mt-3 text-xs text-slate-400 w-full px-2">
-											<Mail className="w-4 h-4 text-slate-500 flex-shrink-0" />
+										<div className="flex justify-center items-center gap-1.5 mt-3 text-xs text-slate-500 dark:text-slate-400 w-full px-2">
+											<Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 flex-shrink-0" />
 											<span
 												className="truncate"
 												title={infoDataMahasiswa?.email}
@@ -314,17 +315,17 @@ const KartuMurojaahPage = () => {
 									{/* ====== BAGIAN KANAN (DATA & PROGRES) - w-2/3 ====== */}
 									<div className="w-full md:w-2/3 flex flex-col gap-4">
 										{/* --- Baris Atas: Dosen & Info Akademik --- */}
-										<div className="flex flex-col sm:flex-row gap-4">
-											<div className="w-full sm:w-2/3 bg-gradient-to-br from-violet-800/10 to-slate-900/5 p-4 rounded-2xl border border-slate-700 flex items-center gap-4 hover:border-indigo-500/80 transition-colors duration-300">
-												<div className="bg-indigo-500/20 p-3 rounded-lg flex-shrink-0">
-													<GraduationCap className="w-6 h-6 text-indigo-300" />
+										<div className="-mt-2 md:mt-0 flex flex-col sm:flex-row gap-4">
+											<div className="w-full sm:w-2/3 bg-transparent dark:bg-gradient-to-br dark:from-violet-800/10 dark:to-slate-900/5 p-4 rounded-2xl border border-slate-300 dark:border-slate-700 flex items-center gap-4 hover:border-indigo-300 dark:hover:border-indigo-500/80 transition-colors duration-300">
+												<div className="bg-indigo-100 dark:bg-indigo-500/20 p-3 rounded-lg flex-shrink-0">
+													<GraduationCap className="w-6 h-6 text-indigo-500 dark:text-indigo-300" />
 												</div>
 												<div className="overflow-hidden">
-													<label className="text-xs font-semibold text-indigo-300 uppercase">
+													<label className="text-xs font-semibold text-indigo-500 dark:text-indigo-300 uppercase">
 														Dosen PA
 													</label>
 													<p
-														className="text-base font-bold text-white leading-tight truncate"
+														className="text-base font-bold text-slate-800 dark:text-white leading-tight truncate"
 														title={infoDataMahasiswa?.dosen_pa.nama}
 													>
 														{isFetching ? (
@@ -335,120 +336,124 @@ const KartuMurojaahPage = () => {
 													</p>
 												</div>
 											</div>
-											<div className="w-full sm:w-1/3 bg-gradient-to-br from-violet-800/10 to-slate-900/5 p-2 rounded-2xl border border-slate-700 grid grid-cols-2 items-center text-center">
-												<div className="border-r border-slate-700/50 -mt-1">
-													<span className="flex justify-center items-center gap-1.5 text-xs text-green-400">
+											<div className="w-full sm:w-1/3 bg-transparent dark:bg-gradient-to-br dark:from-violet-800/10 dark:to-slate-900/5 p-2 rounded-2xl border border-slate-300 dark:border-slate-700 grid grid-cols-2 items-center text-center hover:border-indigo-300 dark:hover:border-indigo-500/80 transition-colors duration-300">
+												<div className="border-r border-slate-200 dark:border-slate-700/50 h-full flex flex-col justify-center">
+													<span className="flex justify-center items-center gap-1.5 text-xs text-green-600 dark:text-green-400">
 														<TrendingUp className="w-3 h-3" />
 														<span>Semester</span>
 													</span>
-													<p className="text-2xl font-bold text-white leading-none mt-1">
+													<p className="text-2xl font-bold text-slate-800 dark:text-white leading-none mt-1">
 														{isFetching ? "..." : infoDataMahasiswa?.semester}
 													</p>
 												</div>
-												<div className="-mt-1">
-													<span className="flex justify-center items-center gap-1 text-xs text-amber-400">
+												<div className="h-full flex flex-col justify-center">
+													<span className="flex justify-center items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
 														<ShieldHalf className="w-3 h-3 -ml-0.5" />
 														<span>Angkatan</span>
 													</span>
-													<p className="text-2xl font-bold text-white leading-none mt-1">
+													<p className="text-2xl font-bold text-slate-800 dark:text-white leading-none mt-1">
 														{isFetching ? "..." : infoDataMahasiswa?.angkatan}
 													</p>
 												</div>
 											</div>
 										</div>
 										{/* --- Baris Bawah: Progres Setoran --- DENGAN SEKAT */}
-										<div className="bg-gradient-to-br from-violet-800/10 to-slate-900/5 p-0 rounded-2xl border border-slate-700 flex-grow flex flex-col overflow-hidden">
-											{/* Bagian Judul - GAYA BARU DENGAN BG FULL-WIDTH */}
-											<div
-												className="text-center p-3"
-												style={{
-													backgroundImage:
-														"linear-gradient(to right, #262c4d, #4338ca, #6d28d9, #4338ca, #262c4d)",
-												}}
-											>
-												<label
-													className="text-sm font-bold text-white tracking-wider"
-													style={{ textShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
+										<div className="bg-transparent dark:bg-gradient-to-br dark:from-violet-800/10 dark:to-slate-900/5 p-0 rounded-2xl border border-slate-300 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/80 transition-colors duration-300 flex-grow flex flex-col overflow-hidden">
+											{/* Bagian Judul - GAYA DIPERBAIKI */}
+											<div>
+												{/* Header untuk Light Mode */}
+												<div className="dark:hidden text-center p-2 bg-gradient-to-br from-orange-300/25 via-pink-300/25 to-red-500/25">
+													<label className="text-sm md:text-lg font-bold font-mono text-indigo-800 tracking-tight">
+														🔥 Progres Keseluruhan Muroja'ah 🔥
+													</label>
+												</div>
+												{/* Header untuk Dark Mode */}
+												<div
+													className="hidden dark:block text-center p-2"
+													style={{
+														backgroundImage:
+															"linear-gradient(to right, #262c4d, #4338ca, #6d28d9, #4338ca, #262c4d)",
+													}}
 												>
-													Progres Keseluruhan Muroja'ah
-												</label>
+													<label
+														className="text-sm md:text-lg font-bold font-mono text-white tracking-tight"
+														style={{ textShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
+													>
+														🔥 Progres Keseluruhan Muroja'ah 🔥
+													</label>
+												</div>
 											</div>
 
 											{/* Bagian Utama (Grafik & Stats) */}
-											<div className="flex-grow flex flex-col items-center justify-center p-4">
+											<div className="flex-grow flex flex-col items-center justify-center py-4 px-8">
 												{isFetching ? (
 													<Skeleton className="h-40 w-full" />
 												) : (
-													<div className="w-full max-w-md">
+													// Kontainer konten diubah menjadi w-full tanpa max-width
+													<div className="w-full">
 														{/* Progress Bar & Persentase */}
-														<div className="flex items-center gap-4">
-															<div className="w-full bg-slate-700/50 rounded-full h-4 overflow-hidden shadow-inner">
+														<div className="flex items-center gap-3">
+															<div className="w-full bg-slate-200 dark:bg-slate-700/50 rounded-full h-4 overflow-hidden shadow-inner">
 																<div
 																	className="h-4 rounded-full transition-all duration-1000 ease-out"
 																	style={{
-																		width: `${infoDataMurojaahUmumMahasiswa.persentase_progres_setor}%`,
+																		width: `${infoDataMurojaahUmumMahasiswa?.persentase_progres_setor}%`,
 																		backgroundImage:
 																			"linear-gradient(to right, #86efac, #67e8f9, #818cf8, #f472b6, #fb923c, #facc15)",
 																	}}
 																/>
 															</div>
-															<p
-																className="text-xl font-black bg-gradient-to-br from-slate-50 to-cyan-300 bg-clip-text text-transparent whitespace-nowrap"
-																style={{
-																	textShadow:
-																		"0 0 10px rgba(103, 232, 249, 0.3)",
-																}}
-															>
+															<p className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-br from-sky-600 to-cyan-500 dark:from-slate-50 dark:to-cyan-300 whitespace-nowrap">
 																{
-																	infoDataMurojaahUmumMahasiswa.persentase_progres_setor
+																	infoDataMurojaahUmumMahasiswa?.persentase_progres_setor
 																}
 																%
 															</p>
 														</div>
 
 														{/* Bar Statistik Terintegrasi */}
-														<div className="mt-4 grid grid-cols-3 gap-2">
-															<div className="text-center p-2 rounded-lg bg-slate-600/20 border border-slate-600/30">
-																<label className="flex items-center justify-center gap-1.5 text-xs text-slate-400">
+														<div className="mt-4 grid grid-cols-3 gap-3">
+															<div className="text-center p-2 rounded-lg bg-slate-100 dark:bg-slate-600/20 border border-slate-200 dark:border-slate-600/30">
+																<label className="flex items-center justify-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
 																	<Target size={12} /> Wajib
 																</label>
 																<div className="flex items-baseline justify-center gap-1.5">
-																	<p className="text-lg font-bold text-white">
+																	<p className="text-lg font-bold text-slate-800 dark:text-white">
 																		{
-																			infoDataMurojaahUmumMahasiswa.total_wajib_setor
+																			infoDataMurojaahUmumMahasiswa?.total_wajib_setor
 																		}
 																	</p>
-																	<span className="text-xs text-slate-500">
+																	<span className="text-xs text-slate-400 dark:text-slate-500">
 																		surah
 																	</span>
 																</div>
 															</div>
-															<div className="text-center p-2 rounded-lg bg-green-500/10 border border-green-500/20">
-																<label className="flex items-center justify-center gap-1.5 text-xs text-green-400">
+															<div className="text-center p-2 rounded-lg bg-green-100 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20">
+																<label className="flex items-center justify-center gap-1.5 text-xs text-green-600 dark:text-green-400">
 																	<CheckCircle size={12} /> Sudah
 																</label>
 																<div className="flex items-baseline justify-center gap-1.5">
-																	<p className="text-lg font-bold text-white">
+																	<p className="text-lg font-bold text-slate-800 dark:text-white">
 																		{
-																			infoDataMurojaahUmumMahasiswa.total_sudah_setor
+																			infoDataMurojaahUmumMahasiswa?.total_sudah_setor
 																		}
 																	</p>
-																	<span className="text-xs text-slate-500">
+																	<span className="text-xs text-slate-400 dark:text-slate-500">
 																		surah
 																	</span>
 																</div>
 															</div>
-															<div className="text-center p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
-																<label className="flex items-center justify-center gap-1.5 text-xs text-amber-400">
+															<div className="text-center p-2 rounded-lg bg-amber-100 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
+																<label className="flex items-center justify-center gap-1.5 text-xs text-amber-600 dark:text-amber-400">
 																	<BookOpen size={12} /> Belum
 																</label>
 																<div className="flex items-baseline justify-center gap-1.5">
-																	<p className="text-lg font-bold text-white">
+																	<p className="text-lg font-bold text-slate-800 dark:text-white">
 																		{
-																			infoDataMurojaahUmumMahasiswa.total_belum_setor
+																			infoDataMurojaahUmumMahasiswa?.total_belum_setor
 																		}
 																	</p>
-																	<span className="text-xs text-slate-500">
+																	<span className="text-xs text-slate-400 dark:text-slate-500">
 																		surah
 																	</span>
 																</div>
@@ -459,15 +464,15 @@ const KartuMurojaahPage = () => {
 											</div>
 
 											{/* Bagian Info Bawah */}
-											<div className="p-4 pt-3 border-t border-slate-700/50">
-												<div className="text-xs text-slate-400 flex items-center gap-2">
+											<div className="p-4 pt-3 border-t border-slate-200 dark:border-slate-700/50">
+												<div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
 													<Clock className="w-3 h-3" />
 													<span>
 														Terakhir muroja'ah:{" "}
 														{isFetching ? (
 															<Skeleton className="h-4 w-24 inline-block" />
 														) : (
-															infoDataMurojaahUmumMahasiswa.terakhir_setor
+															infoDataMurojaahUmumMahasiswa?.terakhir_setor
 														)}
 													</span>
 												</div>

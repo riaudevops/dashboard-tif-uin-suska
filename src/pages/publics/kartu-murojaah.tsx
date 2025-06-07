@@ -106,7 +106,7 @@ const ModernMarquee = () => {
 	];
 
 	return (
-		<div className="relative flex overflow-x-hidden bg-yellow-50 border-y border-yellow-300 dark:bg-yellow-800/20 dark:border-yellow-900/20">
+		<div className="relative flex overflow-x-hidden bg-gradient-to-r from-red-50 via-blue-50 to-pink-50 border-y border-yellow-300 dark:from-red-800/20 dark:via-blue-800/20 dark:to-pink-800/20 dark:border-yellow-900/20">
 			{/*
         Elemen ini menggunakan animasi kustom 'marquee' yang didefinisikan di CSS global atau <style> tag.
         Kita merender list dua kali untuk menciptakan efek loop yang mulus.
@@ -115,11 +115,9 @@ const ModernMarquee = () => {
 				{announcements.map((announcement, index) => (
 					<MarqueeItem key={index} text={announcement.text} icon={announcement.icon} />
 				))}
-			</div>
 
-			<div className="absolute top-0 py-3 animate-marquee2 whitespace-nowrap flex">
 				{announcements.map((announcement, index) => (
-					<MarqueeItem key={index} text={announcement.text} icon={announcement.icon} />
+					<MarqueeItem key={`v2-${index}`} text={announcement.text} icon={announcement.icon} />
 				))}
 			</div>
 		</div>
@@ -152,17 +150,12 @@ const KartuMurojaahPage = () => {
 				{`
 					@keyframes marquee {
 						0% { transform: translateX(0%); }
-						100% { transform: translateX(-100%); }
+						100% { transform: translateX(-50%); }
 					}
-					@keyframes marquee2 {
-						0% { transform: translateX(100%); }
-						100% { transform: translateX(0%); }
-					}
+
 					.animate-marquee {
-						animation: marquee 40s linear infinite;
-					}
-					.animate-marquee2 {
-						animation: marquee2 40s linear infinite;
+						/* Hanya satu baris 'animation' yang benar */
+						animation: marquee 60s linear infinite;
 					}
 				`}
 			</style>

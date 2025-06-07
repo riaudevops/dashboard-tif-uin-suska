@@ -1,6 +1,8 @@
 import {
 	BookCheckIcon,
 	BookOpen,
+	CheckCircle,
+	Clock,
 	FileBadge,
 	GraduationCap,
 	Mail,
@@ -9,6 +11,7 @@ import {
 	PhoneCall,
 	ShieldHalf,
 	Sparkles,
+	Target,
 	TrendingUp,
 	User,
 	UserCircle2Icon,
@@ -99,10 +102,24 @@ const MarqueeItem = ({ icon, text }: { icon: JSX.Element; text: string }) => (
 // Komponen Marquee Utama
 const ModernMarquee = () => {
 	const announcements = [
-		{ text: "Selamat datang di Halaman Kartu Muroja'ah Digital.", icon: <MegaphoneIcon className="w-5 h-5 mr-3 text-yellow-500 shrink-0" />}, 
-		{ text: "Halaman ini ditujukan untuk melakukan validasi keaslian progres hafalan mahasiswa.", icon: <MedalIcon className="w-5 h-5 mr-3 text-yellow-500 shrink-0" />},
-		{ text: "Halaman ini merupakan acuan utama dan versi digital dari kartu muroja'ah fisik mahasiswa.", icon: <BookCheckIcon className="w-5 h-5 mr-3 text-yellow-500 shrink-0" />},
-		{ text: "Jika terdapat data yang tidak sesuai, harap segera melapor kepada tim teknis untuk klarifikasi lebih lanjut.", icon: <UserCircle2Icon className="w-5 h-5 mr-3 text-yellow-500 shrink-0" />},
+		{
+			text: "Selamat datang di Halaman Kartu Muroja'ah Digital.",
+			icon: <MegaphoneIcon className="w-5 h-5 mr-3 text-yellow-500 shrink-0" />,
+		},
+		{
+			text: "Halaman ini ditujukan untuk melakukan validasi keaslian progres hafalan mahasiswa.",
+			icon: <MedalIcon className="w-5 h-5 mr-3 text-yellow-500 shrink-0" />,
+		},
+		{
+			text: "Halaman ini merupakan acuan utama dan versi digital dari kartu muroja'ah fisik mahasiswa.",
+			icon: <BookCheckIcon className="w-5 h-5 mr-3 text-yellow-500 shrink-0" />,
+		},
+		{
+			text: "Jika terdapat data yang tidak sesuai, harap segera melapor kepada tim teknis untuk klarifikasi lebih lanjut.",
+			icon: (
+				<UserCircle2Icon className="w-5 h-5 mr-3 text-yellow-500 shrink-0" />
+			),
+		},
 	];
 
 	return (
@@ -113,11 +130,19 @@ const ModernMarquee = () => {
       */}
 			<div className="py-3 animate-marquee whitespace-nowrap flex">
 				{announcements.map((announcement, index) => (
-					<MarqueeItem key={index} text={announcement.text} icon={announcement.icon} />
+					<MarqueeItem
+						key={index}
+						text={announcement.text}
+						icon={announcement.icon}
+					/>
 				))}
 
 				{announcements.map((announcement, index) => (
-					<MarqueeItem key={`v2-${index}`} text={announcement.text} icon={announcement.icon} />
+					<MarqueeItem
+						key={`v2-${index}`}
+						text={announcement.text}
+						icon={announcement.icon}
+					/>
 				))}
 			</div>
 		</div>
@@ -139,6 +164,8 @@ const KartuMurojaahPage = () => {
 		staleTime: Infinity,
 	});
 	const infoDataMahasiswa = dataRingkasan?.data?.info;
+	const infoDataMurojaahUmumMahasiswa =
+		dataRingkasan?.data?.setoran?.info_dasar;
 	const dataRingkasanSetoran = dataRingkasan?.data?.setoran?.ringkasan;
 
 	const dataSurah = dataRingkasan?.data?.setoran?.detail;
@@ -177,7 +204,10 @@ const KartuMurojaahPage = () => {
 							</span>
 						</div>
 						<div className="flex items-center gap-3 text-sm font-medium tracking-tight text-muted-foreground">
-							<span className="hidden md:flex">©&nbsp;&nbsp;Kartu Muroja'ah Digital - {new Date().getFullYear()}</span>
+							<span className="hidden md:flex">
+								©&nbsp;&nbsp;Kartu Muroja'ah Digital -{" "}
+								{new Date().getFullYear()}
+							</span>
 							<ModeToggle />
 						</div>
 					</div>
@@ -207,138 +237,239 @@ const KartuMurojaahPage = () => {
 									</div>
 								</div>
 							</div>
-							<div className="flex flex-col gap-3 justify-center items-center">
-								{/* Avatar with Multiple Layers */}
-								<div className="relative mb-3">
-									{/* Outer Glow Ring */}
-									<div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-full blur-md opacity-30 group-hover/profile:opacity-60 transition-opacity duration-500 animate-pulse"></div>
 
-									{/* Middle Ring */}
-									<div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-emerald-400 via-blue-500 to-purple-600 p-1 shadow-2xl group-hover/profile:scale-110 transition-transform duration-500">
-										{/* Inner Avatar */}
-										<div className="flex items-center justify-center h-full w-full rounded-full bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 text-white text-xl md:text-2xl font-bold shadow-inner relative overflow-hidden">
-											{/* Shimmer Effect */}
-											<div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-shimmer"></div>
+							<div className="w-full flex items-center justify-center font-sans">
+								{/* Definisi animasi kustom */}
+								<style>{`
+									@keyframes shimmer {
+									0% { transform: translateX(-100%) skewX(-12deg); }
+									100% { transform: translateX(100%) skewX(-12deg); }
+									}
+									.animate-shimmer {
+									animation: shimmer 2s infinite;
+									}
+									@keyframes spin-slow {
+									from { transform: rotate(0deg); }
+									to { transform: rotate(360deg); }
+									}
+									.animate-spin-slow {
+									animation: spin-slow 3s linear infinite;
+									}
+								`}</style>
 
-											{isFetching ? (
-												<Skeleton className="w-full h-full rounded-full" />
-											) : (
-												<span className="relative z-10">
-													{infoDataMahasiswa?.nama
-														.split(" ")
-														.slice(0, 2)
-														.map((word: string) => word.charAt(0))
-														.join("")}
-												</span>
-											)}
-										</div>
-									</div>
-
-									{/* Status Indicator */}
-									<div className="absolute -top-1 -right-1 w-7 h-7 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900 group-hover/profile:scale-125 transition-transform duration-300">
-										<Sparkles className="w-3 h-3 text-white animate-spin-slow" />
-									</div>
-								</div>
-								{/* Student Info with Enhanced Typography */}
-								<div className="text-center space-y-2">
-									{isFetching ? (
-										<div className="flex flex-col items-center space-y-3">
-											<Skeleton className="w-48 h-7 rounded-lg" />
-											<Skeleton className="w-32 h-5 rounded-lg" />
-										</div>
-									) : (
-										<>
-											<h4 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-slate-900 via-blue-800 to-purple-800 dark:from-white dark:via-blue-200 dark:to-purple-200 bg-clip-text text-transparent mb-2 tracking-tight">
-												{infoDataMahasiswa?.nama}
-											</h4>
-											<div className="flex items-center justify-center gap-2">
-												<div className="w-1 h-1 bg-slate-400 rounded-full"></div>
-												<p className="text-sm md:text-base text-slate-600 dark:text-slate-400 font-medium tracking-wide">
-													{infoDataMahasiswa?.nim}
-												</p>
-												<div className="w-1 h-1 bg-slate-400 rounded-full"></div>
+								<div className="w-full max-w-7xl bg-transparent backdrop-blur-xl overflow-hidden flex flex-col md:flex-row gap-6">
+									{/* ====== BAGIAN KIRI (PROFIL) - w-1/3 ====== */}
+									<div className="w-full md:w-1/3 bg-gradient-to-br from-violet-800/10 to-slate-900/5 rounded-2xl border border-slate-700 group/profile flex flex-col justify-center items-center text-center p-6">
+										<div className="relative mb-4">
+											<div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-full blur-md opacity-30 group-hover/profile:opacity-60 transition-opacity duration-500 animate-pulse"></div>
+											<div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-emerald-400 via-blue-500 to-purple-600 p-1 shadow-2xl group-hover/profile:scale-110 transition-transform duration-500">
+												<div className="flex items-center justify-center h-full w-full rounded-full bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 text-white text-xl md:text-2xl font-bold shadow-inner relative overflow-hidden">
+													<div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-shimmer"></div>
+													{isFetching ? (
+														<Skeleton className="w-full h-full rounded-full" />
+													) : (
+														<span className="relative z-10">
+															{infoDataMahasiswa?.nama
+																.split(" ")
+																.slice(0, 2)
+																.map((word: any) => word.charAt(0))
+																.join("")}
+														</span>
+													)}
+												</div>
 											</div>
-										</>
-									)}
-								</div>
-								{/* Enhanced Grid Cards */}
-								<div className="mt-3 rounded-2xl grid grid-cols-2 md:grid-cols-3 w-full overflow-hidden shadow-xl border border-white/20 dark:border-slate-700/30 backdrop-blur-sm">
-									{/* Dosen PA Card - Enhanced */}
-									<div className="col-span-2 md:col-span-1 group/card relative overflow-hidden">
-										<div className="absolute inset-0 bg-gradient-to-br from-fuchsia-600 via-purple-700 to-violet-800"></div>
-										<div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent group-hover/card:from-white/20 transition-all duration-300"></div>
-										<div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full blur-xl group-hover/card:scale-150 transition-transform duration-500"></div>
+											<div className="absolute -top-1 -right-1 w-7 h-7 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900 group-hover/profile:scale-125 transition-transform duration-300">
+												<Sparkles className="w-3 h-3 text-white animate-spin-slow" />
+											</div>
+										</div>
+										<h2 className="text-xl font-bold text-white tracking-tight">
+											{isFetching ? (
+												<Skeleton className="h-7 w-48 mx-auto" />
+											) : (
+												infoDataMahasiswa?.nama
+											)}
+										</h2>
+										<p className="text-sm text-cyan-400 font-mono mt-1">
+											{isFetching ? (
+												<Skeleton className="h-5 w-32 mx-auto mt-1" />
+											) : (
+												infoDataMahasiswa?.nim
+											)}
+										</p>
+										<div className="flex justify-center items-center gap-1.5 mt-3 text-xs text-slate-400 w-full px-2">
+											<Mail className="w-4 h-4 text-slate-500 flex-shrink-0" />
+											<span
+												className="truncate"
+												title={infoDataMahasiswa?.email}
+											>
+												{isFetching ? (
+													<Skeleton className="h-4 w-40" />
+												) : (
+													infoDataMahasiswa?.email
+												)}
+											</span>
+										</div>
+									</div>
 
-										<div className="relative py-6 px-6 h-full">
-											<div className="flex justify-between items-center h-full">
-												<div className="flex-1">
-													<label className="block text-xs font-semibold mb-2 text-fuchsia-100/90 tracking-wider uppercase">
+									{/* ====== BAGIAN KANAN (DATA & PROGRES) - w-2/3 ====== */}
+									<div className="w-full md:w-2/3 flex flex-col gap-4">
+										{/* --- Baris Atas: Dosen & Info Akademik --- */}
+										<div className="flex flex-col sm:flex-row gap-4">
+											<div className="w-full sm:w-2/3 bg-gradient-to-br from-violet-800/10 to-slate-900/5 p-4 rounded-2xl border border-slate-700 flex items-center gap-4 hover:border-indigo-500/80 transition-colors duration-300">
+												<div className="bg-indigo-500/20 p-3 rounded-lg flex-shrink-0">
+													<GraduationCap className="w-6 h-6 text-indigo-300" />
+												</div>
+												<div className="overflow-hidden">
+													<label className="text-xs font-semibold text-indigo-300 uppercase">
 														Dosen PA
 													</label>
-													{isFetching ? (
-														<Skeleton className="w-full h-5 bg-white/20 rounded" />
-													) : (
-														<p className="text-base md:text-lg font-bold tracking-tight text-white leading-tight">
-															{infoDataMahasiswa?.dosen_pa.nama}
-														</p>
-													)}
+													<p
+														className="text-base font-bold text-white leading-tight truncate"
+														title={infoDataMahasiswa?.dosen_pa.nama}
+													>
+														{isFetching ? (
+															<Skeleton className="h-5 w-40 mt-1" />
+														) : (
+															infoDataMahasiswa?.dosen_pa.nama
+														)}
+													</p>
 												</div>
-												<div className="ml-4 group-hover/card:scale-110 group-hover/card:rotate-12 transition-transform duration-300">
-													<GraduationCap className="w-7 h-7 text-white/90" />
+											</div>
+											<div className="w-full sm:w-1/3 bg-gradient-to-br from-violet-800/10 to-slate-900/5 p-2 rounded-2xl border border-slate-700 grid grid-cols-2 items-center text-center">
+												<div className="border-r border-slate-700/50 -mt-1">
+													<span className="flex justify-center items-center gap-1.5 text-xs text-green-400">
+														<TrendingUp className="w-3 h-3" />
+														<span>Semester</span>
+													</span>
+													<p className="text-2xl font-bold text-white leading-none mt-1">
+														{isFetching ? "..." : infoDataMahasiswa?.semester}
+													</p>
+												</div>
+												<div className="-mt-1">
+													<span className="flex justify-center items-center gap-1 text-xs text-amber-400">
+														<ShieldHalf className="w-3 h-3 -ml-0.5" />
+														<span>Angkatan</span>
+													</span>
+													<p className="text-2xl font-bold text-white leading-none mt-1">
+														{isFetching ? "..." : infoDataMahasiswa?.angkatan}
+													</p>
 												</div>
 											</div>
 										</div>
-									</div>
-
-									{/* Semester Card - Enhanced */}
-									<div className="group/card relative overflow-hidden">
-										<div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-green-600 to-teal-700"></div>
-										<div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent group-hover/card:from-white/20 transition-all duration-300"></div>
-										<div className="absolute bottom-0 left-0 w-16 h-16 bg-white/5 rounded-full blur-lg group-hover/card:scale-150 transition-transform duration-500"></div>
-
-										<div className="relative py-6 px-6 h-full">
-											<div className="flex justify-between items-center h-full">
-												<div>
-													<label className="block text-xs font-semibold mb-2 text-emerald-100 tracking-wider uppercase">
-														Semester
-													</label>
-													{isFetching ? (
-														<Skeleton className="w-12 h-6 bg-white/20 rounded" />
-													) : (
-														<p className="text-2xl font-bold text-white">
-															{infoDataMahasiswa?.semester}
-														</p>
-													)}
-												</div>
-												<div className="group-hover/card:scale-110 group-hover/card:rotate-12 transition-transform duration-300">
-													<TrendingUp className="w-7 h-7 text-white/90" />
-												</div>
+										{/* --- Baris Bawah: Progres Setoran --- DENGAN SEKAT */}
+										<div className="bg-gradient-to-br from-violet-800/10 to-slate-900/5 p-0 rounded-2xl border border-slate-700 flex-grow flex flex-col overflow-hidden">
+											{/* Bagian Judul - GAYA BARU DENGAN BG FULL-WIDTH */}
+											<div
+												className="text-center p-3"
+												style={{
+													backgroundImage:
+														"linear-gradient(to right, #262c4d, #4338ca, #6d28d9, #4338ca, #262c4d)",
+												}}
+											>
+												<label
+													className="text-sm font-bold text-white tracking-wider"
+													style={{ textShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
+												>
+													Progres Keseluruhan Muroja'ah
+												</label>
 											</div>
-										</div>
-									</div>
 
-									{/* Angkatan Card - Enhanced */}
-									<div className="group/card relative overflow-hidden">
-										<div className="absolute inset-0 bg-gradient-to-br from-amber-500 via-orange-600 to-red-600"></div>
-										<div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent group-hover/card:from-white/20 transition-all duration-300"></div>
-										<div className="absolute top-0 left-0 w-16 h-16 bg-white/5 rounded-full blur-lg group-hover/card:scale-150 transition-transform duration-500"></div>
+											{/* Bagian Utama (Grafik & Stats) */}
+											<div className="flex-grow flex flex-col items-center justify-center p-4">
+												{isFetching ? (
+													<Skeleton className="h-40 w-full" />
+												) : (
+													<div className="w-full max-w-md">
+														{/* Progress Bar & Persentase */}
+														<div className="flex items-center gap-4">
+															<div className="w-full bg-slate-700/50 rounded-full h-4 overflow-hidden shadow-inner">
+																<div
+																	className="h-4 rounded-full transition-all duration-1000 ease-out"
+																	style={{
+																		width: `${infoDataMurojaahUmumMahasiswa.persentase_progres_setor}%`,
+																		backgroundImage:
+																			"linear-gradient(to right, #86efac, #67e8f9, #818cf8, #f472b6, #fb923c, #facc15)",
+																	}}
+																/>
+															</div>
+															<p
+																className="text-xl font-black bg-gradient-to-br from-slate-50 to-cyan-300 bg-clip-text text-transparent whitespace-nowrap"
+																style={{
+																	textShadow:
+																		"0 0 10px rgba(103, 232, 249, 0.3)",
+																}}
+															>
+																{
+																	infoDataMurojaahUmumMahasiswa.persentase_progres_setor
+																}
+																%
+															</p>
+														</div>
 
-										<div className="relative py-6 px-6 h-full">
-											<div className="flex justify-between items-center h-full">
-												<div>
-													<label className="block text-xs font-semibold mb-2 text-orange-100 tracking-wider uppercase">
-														Angkatan
-													</label>
-													{isFetching ? (
-														<Skeleton className="w-12 h-6 bg-white/20 rounded" />
-													) : (
-														<p className="text-2xl font-bold text-white">
-															{infoDataMahasiswa?.angkatan}
-														</p>
-													)}
-												</div>
-												<div className="group-hover/card:scale-110 group-hover/card:rotate-12 transition-transform duration-300">
-													<ShieldHalf className="w-7 h-7 text-white/90" />
+														{/* Bar Statistik Terintegrasi */}
+														<div className="mt-4 grid grid-cols-3 gap-2">
+															<div className="text-center p-2 rounded-lg bg-slate-600/20 border border-slate-600/30">
+																<label className="flex items-center justify-center gap-1.5 text-xs text-slate-400">
+																	<Target size={12} /> Wajib
+																</label>
+																<div className="flex items-baseline justify-center gap-1.5">
+																	<p className="text-lg font-bold text-white">
+																		{
+																			infoDataMurojaahUmumMahasiswa.total_wajib_setor
+																		}
+																	</p>
+																	<span className="text-xs text-slate-500">
+																		surah
+																	</span>
+																</div>
+															</div>
+															<div className="text-center p-2 rounded-lg bg-green-500/10 border border-green-500/20">
+																<label className="flex items-center justify-center gap-1.5 text-xs text-green-400">
+																	<CheckCircle size={12} /> Sudah
+																</label>
+																<div className="flex items-baseline justify-center gap-1.5">
+																	<p className="text-lg font-bold text-white">
+																		{
+																			infoDataMurojaahUmumMahasiswa.total_sudah_setor
+																		}
+																	</p>
+																	<span className="text-xs text-slate-500">
+																		surah
+																	</span>
+																</div>
+															</div>
+															<div className="text-center p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+																<label className="flex items-center justify-center gap-1.5 text-xs text-amber-400">
+																	<BookOpen size={12} /> Belum
+																</label>
+																<div className="flex items-baseline justify-center gap-1.5">
+																	<p className="text-lg font-bold text-white">
+																		{
+																			infoDataMurojaahUmumMahasiswa.total_belum_setor
+																		}
+																	</p>
+																	<span className="text-xs text-slate-500">
+																		surah
+																	</span>
+																</div>
+															</div>
+														</div>
+													</div>
+												)}
+											</div>
+
+											{/* Bagian Info Bawah */}
+											<div className="p-4 pt-3 border-t border-slate-700/50">
+												<div className="text-xs text-slate-400 flex items-center gap-2">
+													<Clock className="w-3 h-3" />
+													<span>
+														Terakhir muroja'ah:{" "}
+														{isFetching ? (
+															<Skeleton className="h-4 w-24 inline-block" />
+														) : (
+															infoDataMurojaahUmumMahasiswa.terakhir_setor
+														)}
+													</span>
 												</div>
 											</div>
 										</div>
@@ -406,8 +537,8 @@ const KartuMurojaahPage = () => {
 													/>
 													<div className="text-sm opacity-75 bg-background rounded-md whitespace-nowrap px-2">
 														<div>
-															{item.total_sudah_setor} dari {item.total_wajib_setor}{" "}
-															selesai
+															{item.total_sudah_setor} dari{" "}
+															{item.total_wajib_setor} selesai
 														</div>
 													</div>
 												</div>

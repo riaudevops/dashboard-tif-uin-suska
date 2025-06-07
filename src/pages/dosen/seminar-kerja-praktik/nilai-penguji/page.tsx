@@ -445,7 +445,7 @@ const DosenPengujiNilaiPage: FC = () => {
               }
               className="w-full"
             >
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 w-full">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 w-full">
                 <TabsList className="dark:bg-gray-700">
                   <TabsTrigger
                     value="belum_dinilai"

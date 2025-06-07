@@ -176,7 +176,10 @@ const KartuMurojaahPage = () => {
 								dashboard<span className="italic font-medium">.tif-usr</span>
 							</span>
 						</div>
-						<ModeToggle />
+						<div className="flex items-center gap-3 text-sm font-medium tracking-tight text-muted-foreground">
+							<span className="hidden md:flex">©&nbsp;&nbsp;Kartu Muroja'ah Digital - {new Date().getFullYear()}</span>
+							<ModeToggle />
+						</div>
 					</div>
 
 					{/* Create Marquee with Yellow BG */}

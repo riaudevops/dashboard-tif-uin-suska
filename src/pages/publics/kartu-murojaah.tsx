@@ -1,14 +1,19 @@
 import {
+	BookCheckIcon,
 	BookOpen,
+	CheckIcon,
 	FileBadge,
 	GraduationCap,
 	Mail,
 	MapPin,
+	MedalIcon,
 	PhoneCall,
 	ShieldHalf,
 	Sparkles,
 	TrendingUp,
 	User,
+	User2Icon,
+	UserCircle2Icon,
 } from "lucide-react";
 import {
 	Table,
@@ -30,6 +35,7 @@ import TableLoadingSkeleton from "@/components/globals/table-loading-skeleton";
 import { ModeToggle } from "@/components/themes/mode-toggle";
 import NotFoundPage from "./not-found.page";
 import { AxiosError } from "axios";
+import { colourLabelingCategory } from "@/helpers/colour-labeling-category";
 interface ProgresSetoranProps {
 	label: string;
 	persentase_progres_setor: number;
@@ -64,6 +70,64 @@ interface ResponError {
 	response: string;
 	message: string;
 }
+
+const MegaphoneIcon = (props: any) => (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="24"
+		height="24"
+		viewBox="0 0 24 24"
+		fill="none"
+		stroke="currentColor"
+		strokeWidth="2"
+		strokeLinecap="round"
+		strokeLinejoin="round"
+		{...props}
+	>
+		<path d="m3 11 18-5v12L3 14v-3z" />
+		<path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+	</svg>
+);
+
+const MarqueeItem = ({ icon, text }: { icon: JSX.Element; text: string }) => (
+	<div className="flex items-center mx-6">
+		{icon}
+		<span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+			{text}
+		</span>
+	</div>
+);
+
+// Komponen Marquee Utama
+const ModernMarquee = () => {
+	const announcements = [
+		{ text: "Selamat datang di Halaman Kartu Muroja'ah Digital.", icon: <MegaphoneIcon className="w-5 h-5 mr-3 text-yellow-500 shrink-0" />}, 
+		{ text: "Halaman ini ditujukan untuk melakukan validasi keaslian progres hafalan mahasiswa.", icon: <MedalIcon className="w-5 h-5 mr-3 text-yellow-500 shrink-0" />},
+		{ text: "Halaman ini merupakan acuan utama dan versi digital dari kartu muroja'ah fisik mahasiswa.", icon: <BookCheckIcon className="w-5 h-5 mr-3 text-yellow-500 shrink-0" />},
+		{ text: "Jika terdapat data yang tidak sesuai, harap segera melapor kepada tim teknis untuk klarifikasi lebih lanjut.", icon: <UserCircle2Icon className="w-5 h-5 mr-3 text-yellow-500 shrink-0" />},
+	];
+
+	return (
+		<div className="relative flex overflow-x-hidden bg-yellow-50 border-y border-yellow-300 dark:bg-yellow-800/20 dark:border-yellow-900/20">
+			{/*
+        Elemen ini menggunakan animasi kustom 'marquee' yang didefinisikan di CSS global atau <style> tag.
+        Kita merender list dua kali untuk menciptakan efek loop yang mulus.
+      */}
+			<div className="py-3 animate-marquee whitespace-nowrap flex">
+				{announcements.map((announcement, index) => (
+					<MarqueeItem key={index} text={announcement.text} icon={announcement.icon} />
+				))}
+			</div>
+
+			<div className="absolute top-0 py-3 animate-marquee2 whitespace-nowrap flex">
+				{announcements.map((announcement, index) => (
+					<MarqueeItem key={index} text={announcement.text} icon={announcement.icon} />
+				))}
+			</div>
+		</div>
+	);
+};
+
 const KartuMurojaahPage = () => {
 	const { id } = useParams<{ id: string }>();
 
@@ -85,6 +149,25 @@ const KartuMurojaahPage = () => {
 	const { theme } = useTheme();
 	return (
 		<div className="min-h-screen bg-background">
+			{/* Tambahkan tag <style> untuk mendefinisikan animasi marquee */}
+			<style>
+				{`
+					@keyframes marquee {
+						0% { transform: translateX(0%); }
+						100% { transform: translateX(-100%); }
+					}
+					@keyframes marquee2 {
+						0% { transform: translateX(100%); }
+						100% { transform: translateX(0%); }
+					}
+					.animate-marquee {
+						animation: marquee 40s linear infinite;
+					}
+					.animate-marquee2 {
+						animation: marquee2 40s linear infinite;
+					}
+				`}
+			</style>
 			{!(error as AxiosError<ResponError>)?.response?.data?.response &&
 			isError ? (
 				<NotFoundPage />
@@ -105,9 +188,12 @@ const KartuMurojaahPage = () => {
 						<ModeToggle />
 					</div>
 
+					{/* Create Marquee with Yellow BG */}
+					<ModernMarquee />
+
 					<div className="max-w-6xl mx-auto px-4 mt-5">
 						{/* Informasi Mahasiswa */}
-						<div className="bg-card rounded-2xl shadow-md p-8 border border-foreground/20 mb-6">
+						<div className="bg-card rounded-2xl shadow-md p-8 border border-foreground/20 -mt-2 mb-6">
 							<div className="flex items-center mb-8 group/header">
 								<div className="relative">
 									<div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-lg opacity-30 group-hover/header:opacity-50 transition-opacity duration-300"></div>
@@ -314,9 +400,9 @@ const KartuMurojaahPage = () => {
 													key={item.label || index}
 													className={`text-center bg-gradient-to-br ${
 														colors[index] || "from-gray-500 to-gray-600"
-													} rounded-xl shadow-lg flex flex-col items-center justify-center py-3.5 px-4 tracking-tight`}
+													} rounded-xl shadow-lg flex flex-col items-center justify-center py-3.5 px-2 tracking-tight`}
 												>
-													<div className="text-base font-medium">
+													<div className="text-base bg-background rounded-md whitespace-nowrap px-2 font-medium">
 														{displayNames[item.label] || item.label}
 													</div>
 													{/* progress bar */}
@@ -324,9 +410,9 @@ const KartuMurojaahPage = () => {
 														targetProgress={item.persentase_progres_setor}
 														loading={isFetching}
 													/>
-													<div className="text-sm opacity-75">
+													<div className="text-sm opacity-75 bg-background rounded-md whitespace-nowrap px-2">
 														<div>
-															{item.total_sudah_setor}/{item.total_wajib_setor}{" "}
+															{item.total_sudah_setor} dari {item.total_wajib_setor}{" "}
 															selesai
 														</div>
 													</div>
@@ -373,6 +459,9 @@ const KartuMurojaahPage = () => {
 												Tanggal Muroja'ah
 											</TableHead>
 											<TableHead className="text-center p-4 font-semibold">
+												Persyaratan Muroja'ah
+											</TableHead>
+											<TableHead className="text-center p-4 font-semibold">
 												Dosen Yang Mengesahkan
 											</TableHead>
 											<TableHead className="text-center p-4 font-semibold">
@@ -409,10 +498,18 @@ const KartuMurojaahPage = () => {
 																})
 																.replace(/^(\d+)\s(\w+)\s(\d+)$/, "$1 $2, $3")}
 													</TableCell>
+													<TableCell className="text-center">
+														<div
+															className={`py-1 px-3 rounded-2xl text-center text-white inline-block ${
+																colourLabelingCategory(surah.label)[1]
+															}`}
+														>
+															{colourLabelingCategory(surah.label)[0]}
+														</div>
+													</TableCell>
 													<TableCell className="p-4 text-center">
 														{surah?.info_setoran?.dosen_yang_mengesahkan.nama}
 													</TableCell>
-
 													<TableCell className="p-4 text-center">
 														<span
 															className={`${

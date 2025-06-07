@@ -1,7 +1,6 @@
 import {
 	BookCheckIcon,
 	BookOpen,
-	CheckIcon,
 	FileBadge,
 	GraduationCap,
 	Mail,
@@ -12,7 +11,6 @@ import {
 	Sparkles,
 	TrendingUp,
 	User,
-	User2Icon,
 	UserCircle2Icon,
 } from "lucide-react";
 import {

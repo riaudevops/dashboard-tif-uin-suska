@@ -176,7 +176,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
 
   else if (currentPage === 9 && dataKPTerbaru?.level_akses! >= 9) {
     url = "http://localhost:5000/daftar-kp/unggah-surat-perpanjangan-kp";
-    const isItOKDaftar = new Date(tanggalPendaftaran?.tanggal_akhir_pendaftaran_kp_lanjut).getTime() - (new Date()).getTime() > 0;
+    const isItOKDaftar = new Date((tanggalPendaftaran as any).tanggal_akhir_pendaftaran_kp_lanjut).getTime() - (new Date()).getTime() > 0;
     InputField = <div className="border-[1px] border-slate-300 p-3 rounded-lg">
     <div className="flex flex-col">
     <h3 className="font-bold text-lg">Pendaftaran KP Berhasil</h3>
@@ -252,7 +252,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
           <h4 className="font-bold text-sm tracking-wide my-2">🥚 Validasi Berkas</h4>
           {InputField}
       </div>
-      {currentPage === dataKPTerbaru?.level_akses! && (dataKPTerbaru?.level_akses! !== 9 || dataKPTerbaru?.level_akses! === 9 && new Date(tanggalPendaftaran?.tanggal_akhir_pendaftaran_kp_lanjut).getTime() - (new Date()).getTime() > 0) && <div className="flex justify-end items-center mt-2">
+      {currentPage === dataKPTerbaru?.level_akses! && (dataKPTerbaru?.level_akses! !== 9 || dataKPTerbaru?.level_akses! === 9 && new Date((tanggalPendaftaran as any).tanggal_akhir_pendaftaran_kp_lanjut).getTime() - (new Date()).getTime() > 0) && <div className="flex justify-end items-center mt-2">
       <button onClick={() => setInputValue("")} disabled={isLoading} type="reset" className=" px-16 tracking-wide py-1 font-semibold rounded-lg hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Kosongkan Formulir</button>
       <button disabled={isLoading} type="submit" className=" px-24 py-1 tracking-wide text-white font-medium rounded-lg bg-green-950 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Kirim</button>
       </div>}

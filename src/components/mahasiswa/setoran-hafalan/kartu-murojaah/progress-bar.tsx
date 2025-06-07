@@ -1,170 +1,142 @@
 import { useState, useEffect } from "react";
 
-const ProgressChart = ({ targetProgress, loading }: { targetProgress: number, loading: boolean}) => {
-  // const [loading, setLoading] = useState(true);
-  const [currentProgress, setCurrentProgress] = useState(0);
+// Props
+interface ShinyProgressChartProps {
+	targetProgress: number;
+	loading: boolean;
+	size?: number;
+	strokeWidth?: number;
+}
 
-  const radius = 82;
-  const strokeWidth = 13;
-  const normalizedRadius = radius - strokeWidth * 2;
-  const circumference = normalizedRadius * 2 * Math.PI;
+// Komponen utama yang telah disederhanakan
+const ShinyProgressChart = ({
+	targetProgress,
+	loading,
+	size = 150, // Ukuran diperkecil
+	strokeWidth = 17, // Batang dibuat lebih tebal ("tembem")
+}: ShinyProgressChartProps) => {
+	const [currentProgress, setCurrentProgress] = useState(0);
 
-  const strokeDashoffset =
-    circumference - (currentProgress / 100) * circumference;
+	// Animasi progress yang mulus dan ringan
+	useEffect(() => {
+		if (loading) {
+			setCurrentProgress(0);
+			return;
+		}
+		let animationFrameId: number;
+		const animate = () => {
+			setCurrentProgress((prev) => {
+				const diff = targetProgress - prev;
+				if (Math.abs(diff) < 0.1) {
+					cancelAnimationFrame(animationFrameId);
+					return targetProgress;
+				}
+				const newProgress = prev + diff * 0.1;
+				animationFrameId = requestAnimationFrame(animate);
+				return newProgress;
+			});
+		};
+		animationFrameId = requestAnimationFrame(animate);
+		return () => cancelAnimationFrame(animationFrameId);
+	}, [loading, targetProgress]);
 
-  useEffect(() => {
-    const progressTimer = setTimeout(() => {
-      if (!loading) {
-        const interval = setInterval(() => {
-          setCurrentProgress((prev) => {
-            if (prev >= targetProgress) {
-              clearInterval(interval);
-              return targetProgress;
-            }
-            return prev + 1;
-          });
-        }, 30);
-      }
-    }, 1200);
+	// Pengaturan dasar SVG
+	const center = size / 2;
+	const radius = center - strokeWidth / 2;
+	const circumference = 2 * Math.PI * radius;
+	// Memastikan offset tidak pernah NaN, default ke circumference penuh jika NaN.
+	const offset = isNaN(currentProgress)
+		? circumference
+		: circumference - (currentProgress / 100) * circumference;
 
-    return () => {
-      // clearTimeout(loadingTimer);
-      clearTimeout(progressTimer);
-    };
-  }, [loading, targetProgress]);
+	const Skeleton = () => (
+		<div
+			className="relative flex items-center justify-center"
+			style={{ width: size, height: size }}
+		>
+			<div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+		</div>
+	);
 
-  // Skeleton component untuk loading state
- const Skeleton = ({ className }: { className: string }) => (
-  <div className={`animate-pulse bg-gray-200 ${className}`}></div>
-);
+	if (loading) return <Skeleton />;
 
-  return (
-    <div className="flex flex-col items-center">
-      {/* Progress Chart Section */}
-      <div className="relative flex items-center justify-center">
-        {loading ? (
-          <Skeleton className="w-20 h-20 rounded-full" />
-        ) : (
-          <div className="relative flex items-center justify-center">
-            {/* Glowing background effect */}
-            <div className="absolute inset-0 rounded-full opacity-70 animate-pulse"></div>
-            {/* Background Circle with light gray */}
-            <svg
-              height={radius * 2}
-              width={radius * 2}
-              className="drop-shadow-md"
-            >
-              <defs>
-                <linearGradient
-                  id="bgGradient"
-                  x1="0%"
-                  y1="0%"
-                  x2="100%"
-                  y2="100%"
-                >
-                  <stop offset="0%" stopColor="#f1f5f9" />
-                  <stop offset="100%" stopColor="#e2e8f0" />
-                </linearGradient>
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-              </defs>
-              <circle
-                stroke="url(#bgGradient)"
-                fill="transparent"
-                strokeWidth={strokeWidth}
-                r={normalizedRadius}
-                cx={radius}
-                cy={radius}
-              />
+	return (
+		<div
+			className="relative flex items-center justify-center my-4 mx-3"
+			style={{ width: size, height: size }}
+		>
+			<svg
+				width={size}
+				height={size}
+				viewBox={`0 0 ${size} ${size}`}
+				className="-rotate-90"
+			>
+				<defs>
+					{/* Gradien untuk progress bar */}
+					<linearGradient id="richGradient" gradientTransform="rotate(90)">
+						<stop offset="0%" stopColor="#86efac" />
+						<stop offset="20%" stopColor="#67e8f9" />
+						<stop offset="40%" stopColor="#818cf8" />
+						<stop offset="60%" stopColor="#f472b6" />
+						<stop offset="80%" stopColor="#fb923c" />
+						<stop offset="100%" stopColor="#facc15" />
+					</linearGradient>
 
-              {/* Progress Circle with multi-color gradient */}
-              <defs>
-                <linearGradient
-                  id="progressGradient"
-                  gradientUnits="userSpaceOnUse"
-                  x1="60"
-                  y1="0"
-                  x2="80"
-                  y2="160"
-                >
-                  <stop offset="0%" stopColor="#4ADE80" />
-                  <stop offset="33%" stopColor="#84CC16" />
-                  <stop offset="66%" stopColor="#EAB308" />
-                  <stop offset="100%" stopColor="#EF4444" />
-                </linearGradient>
-                {/* Add shimmer effect */}
-                <linearGradient id="shimmer" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="rgba(255,255,255,0)" />
-                  <stop offset="50%" stopColor="rgba(255,255,255,0.7)" />
-                  <stop offset="100%" stopColor="rgba(255,255,255,0)" />
-                  <animate
-                    attributeName="x1"
-                    from="-100%"
-                    to="100%"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                  <animate
-                    attributeName="x2"
-                    from="0%"
-                    to="200%"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                </linearGradient>
-              </defs>
-              <circle
-                stroke="url(#progressGradient)"
-                fill="transparent"
-                strokeWidth={strokeWidth}
-                strokeDasharray={circumference + " " + circumference}
-                style={{
-                  strokeDashoffset,
-                  transform: "rotate(-90deg)",
-                  transformOrigin: "center",
-                  transition: "stroke-dashoffset 1.5s ease-in-out",
-                }}
-                strokeLinecap="round"
-                r={normalizedRadius}
-                cx={radius}
-                cy={radius}
-                filter="url(#glow)"
-              />
+					{/* Gradien untuk Teks Persentase */}
+					<linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+						<stop offset="0%" stopColor="#67e8f9" />
+						<stop offset="50%" stopColor="#818cf8" />
+						<stop offset="100%" stopColor="#f472b6" />
+					</linearGradient>
+				</defs>
 
-              {/* Add shimmer overlay */}
-              <circle
-                stroke="url(#shimmer)"
-                fill="transparent"
-                strokeWidth={strokeWidth}
-                strokeDasharray={circumference + " " + circumference}
-                style={{
-                  strokeDashoffset,
-                  transform: "rotate(-90deg)",
-                  transformOrigin: "center",
-                }}
-                strokeLinecap="round"
-                r={normalizedRadius}
-                cx={radius}
-                cy={radius}
-                opacity="0.5"
-              />
-            </svg>
+				{/* Lingkaran Latar Belakang (Jalur Kosong) */}
+				<circle
+					cx={center}
+					cy={center}
+					r={radius}
+					fill="transparent"
+					stroke="#E5E7EB" // Warna abu-abu terang untuk light mode
+					className="dark:stroke-gray-500/20" // Warna abu-abu gelap untuk dark mode
+					strokeWidth={strokeWidth}
+				/>
 
-            {/* Percentage Text */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="relative">
-                <span className="text-xl font-semibold">
-                  {currentProgress}%
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+				{/* Lingkaran Progress yang Terisi */}
+				<circle
+					cx={center}
+					cy={center}
+					r={radius}
+					fill="transparent"
+					stroke="url(#richGradient)" // Menggunakan gradien baru
+					strokeWidth={strokeWidth}
+					strokeDasharray={circumference}
+					strokeDashoffset={offset}
+					strokeLinecap="round" // Membuat ujung bar melengkung
+					style={{ transition: "stroke-dashoffset 0.3s ease" }}
+				/>
+			</svg>
+
+			{/* Teks di Tengah */}
+			<div className="absolute flex flex-col items-center justify-center">
+				<span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+					Progres
+				</span>
+				<div
+					className="font-bold bg-clip-text text-transparent tracking-tighter leading-none"
+					style={{
+						fontSize: size / 5.3,
+						backgroundImage:
+							"linear-gradient(to right, #67e8f9, #818cf8, #f472b6)",
+						fontFamily: "monospace", // PERUBAHAN: Menambahkan font digital
+					}}
+				>
+					{/* PERUBAHAN: Angka dan simbol % dipisah untuk styling */}
+					{isNaN(currentProgress) ? 0 : Number(currentProgress).toFixed(2)}
+					<span className="ml-1" style={{ fontSize: size / 7, verticalAlign: "top" }}>%</span>
+				</div>
+			</div>
+		</div>
+	);
 };
 
-export default ProgressChart;
+export default ShinyProgressChart;

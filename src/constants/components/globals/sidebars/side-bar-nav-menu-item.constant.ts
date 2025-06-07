@@ -32,22 +32,6 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
       label: "Kerja Praktik",
       menus: [
         {
-          title: "Administrasi",
-          url: "#",
-          icon: UserRoundPenIcon,
-          isActive: true,
-          items: [
-            {
-              title: "Permohonan",
-              url: "/mahasiswa/kerja-praktik/daftar-kp/permohonan",
-            },
-            {
-              title: "Kelengkapan Berkas",
-              url: "/mahasiswa/kerja-praktik/daftar-kp/kelengkapan-berkas",
-            },
-          ],
-        },
-        {
           title: "Daily Report",
           url: "/mahasiswa/kerja-praktik/daily-report",
           icon: BookOpen,

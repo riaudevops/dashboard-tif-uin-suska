@@ -131,7 +131,7 @@ const ShinyProgressChart = ({
 					}}
 				>
 					{/* PERUBAHAN: Angka dan simbol % dipisah untuk styling */}
-					{isNaN(currentProgress) ? 0 : Number(currentProgress).toFixed(2)}
+					{isNaN(currentProgress) ? 0 : Number(currentProgress).toFixed(currentProgress % 1 ? 2 : 0)}
 					<span className="ml-1" style={{ fontSize: size / 7, verticalAlign: "top" }}>%</span>
 				</div>
 			</div>

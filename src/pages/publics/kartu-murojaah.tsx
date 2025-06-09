@@ -1,6 +1,7 @@
 import {
 	BookCheckIcon,
 	BookOpen,
+	ChartPieIcon,
 	CheckCircle,
 	Clock,
 	FileBadge,
@@ -10,7 +11,6 @@ import {
 	MapPin,
 	MedalIcon,
 	PhoneCall,
-	SatelliteDish,
 	ShieldHalf,
 	Sparkles,
 	Target,
@@ -608,7 +608,7 @@ const KartuMurojaahPage = () => {
 												</div>
 												<div className="flex md:gap-3 gap-2">
 													<button onClick={() => setIsPopUpRincianOpen(true)} className="flex gap-1 text-xs text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-md hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 focus:outline-none">
-														<SatelliteDish className="text-indigo-400 w-4 h-4" />
+														<ChartPieIcon className="text-indigo-400 w-4 h-4" />
 														<span className="hidden font-semibold text-violet-400 underline underline-offset-2 md:inline">Cek Rincian</span>
 													</button>
 													<button onClick={() => setIsPopUpLogOpen(true)} className="flex gap-1 text-xs text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-md hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 focus:outline-none">

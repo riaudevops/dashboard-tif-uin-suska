@@ -733,8 +733,8 @@ const KartuMurojaahPage = () => {
 					</div>
 					{/* Footer */}
 					<footer className="flex flex-col border-t border-foreground/20">
-						<div className="z-10 px-16 py-10">
-							<div className="grid grid-cols-1 gamd:p-8 p-3 text-center md:text-start md:grid-cols-3">
+						<div className="z-10 md:px-16 py-10">
+							<div className="grid grid-cols-1 md:p-8 p-3 text-center md:text-start md:grid-cols-3">
 								{/* Logo and Copyright Section */}
 								<div className="flex flex-col items-center space-y-4 md:items-start">
 									<div className="flex items-center gap-1.5 rounded-xl">
@@ -749,15 +749,15 @@ const KartuMurojaahPage = () => {
 										</span>
 									</div>
 									<p className="text-sm">
-										Teknik Informatika. © 2025. All rights reserved.
+										Teknik Informatika © 2024-{new Date().getFullYear()}.<br className="md:hidden"/>&nbsp;All rights reserved.
 									</p>
 								</div>
 								{/* Contact Section */}
 								<div className="flex justify-center md:justify-end">
-									<div className="flex flex-col items-center space-y-4 md:items-start">
+									<div className="flex flex-col text-sm md:text-base mt-6 md:mt-0 mb-7 md:mb-0 items-center space-y-1 md:space-y-4 md:items-start">
 										<div className="flex items-center gap-2">
 											<PhoneCall className="w-5 h-5 " />
-											<span className="">+62878-6868-5950</span>
+											<span className="">+62-878-6868-5950</span>
 										</div>
 										<div className="flex items-center gap-2">
 											<Mail className="w-5 h-5 " />
@@ -766,7 +766,7 @@ const KartuMurojaahPage = () => {
 											</a>
 										</div>
 										<div className="flex items-start gap-2">
-											<MapPin className="hidden w-5 h-5 md:block" />
+											<MapPin className="w-5 h-5" />
 											<p className="">Jl. HR. Soebrantas No.155 KM 18</p>
 										</div>
 									</div>

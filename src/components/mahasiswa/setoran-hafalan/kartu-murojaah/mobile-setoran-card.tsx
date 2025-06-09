@@ -83,11 +83,19 @@ const toArabicNumber = (num: string) => {
 
 const formatDate = (dateString: string) => {
 	if (!dateString) return "N/A";
-	return new Date(dateString).toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" });
+	return new Date(dateString).toLocaleDateString("id-ID", {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	});
 };
 
 // --- CARD COMPONENT ---
-export default function MobileSetoranCard({ item }: { item: MahasiswaSetoran }) {
+export default function MobileSetoranCard({
+	item,
+}: {
+	item: MahasiswaSetoran;
+}) {
 	const isDeposited = item.sudah_setor;
 
 	const cardGradientClass = isDeposited
@@ -120,7 +128,13 @@ export default function MobileSetoranCard({ item }: { item: MahasiswaSetoran }) 
 			<div className="p-6">
 				<div className="flex justify-between items-center">
 					<div className="relative flex-shrink-0 grid place-items-center w-20 h-20">
-						<OrnamentIcon className={`absolute inset-0 w-full h-full text-indigo-300/60 ${item.sudah_setor ? 'dark:text-indigo-700/30' : 'dark:text-orange-700/30'} `} />
+						<OrnamentIcon
+							className={`absolute inset-0 w-full h-full text-indigo-300/60 ${
+								item.sudah_setor
+									? "dark:text-indigo-700/30"
+									: "dark:text-orange-700/30"
+							} `}
+						/>
 						<div className="relative z-10 flex flex-col items-center justify-center">
 							<span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-br from-fuchsia-600 via-sky-500 to-emerald-400">
 								{toArabicNumber(item.external_id)}
@@ -133,14 +147,16 @@ export default function MobileSetoranCard({ item }: { item: MahasiswaSetoran }) 
 						</h3>
 						<p className="text-2xl text-slate-500 dark:text-slate-400 font-serif">
 							<span className="text-xs">
-                                (Q.S. {item.external_id})&nbsp;&nbsp;
-                            </span>
-                            {item.nama_arab}
+								(Q.S. {item.external_id})&nbsp;&nbsp;
+							</span>
+							{item.nama_arab}
 						</p>
 					</div>
 				</div>
 
-				{item.sudah_setor && <hr className="my-4 border-slate-200 dark:border-slate-700" />}
+				{item.sudah_setor && (
+					<hr className="my-4 border-slate-200 dark:border-slate-700" />
+				)}
 
 				{isDeposited && item.info_setoran && (
 					<div className="mt-4 space-y-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 p-4 border border-slate-200 dark:border-slate-700/50">
@@ -168,7 +184,45 @@ export default function MobileSetoranCard({ item }: { item: MahasiswaSetoran }) 
 						</div>
 					</div>
 				)}
+
+				<div className="flex flex-col">
+					{!item.sudah_setor && <hr className="my-4 border-slate-200 dark:border-slate-700" />}
+					<div className={`${item.sudah_setor && "mt-5"} relative group`}>
+						<div
+							className={`inline-flex items-center px-2 py-1 text-xs rounded-md ${getLabelStyle(
+								item.label
+							)}`}
+						>
+							{labelMap[item.label]}
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	);
 }
+
+const labelMap: Record<string, string> = {
+	KP: "Kerja Praktik",
+	SEMKP: "Seminar Kerja Praktik",
+	DAFTAR_TA: "Pendaftaran Tugas Akhir",
+	SEMPRO: "Seminar Proposal",
+	SIDANG_TA: "Sidang Tugas Akhir",
+};
+
+const getLabelStyle = (label: string) => {
+	switch (label) {
+		case "KP":
+			return "text-blue-600 bg-blue-100 dark:text-blue-300 dark:bg-blue-900/50";
+		case "SEMKP":
+			return "text-purple-600 bg-purple-100 dark:text-purple-300 dark:bg-purple-900/50";
+		case "DAFTAR_TA":
+			return "text-orange-600 bg-orange-100 dark:text-orange-300 dark:bg-orange-900/50";
+		case "SEMPRO":
+			return "text-pink-600 bg-pink-100 dark:text-pink-300 dark:bg-pink-900/50";
+		case "SIDANG_TA":
+			return "text-teal-600 bg-teal-100 dark:text-teal-300 dark:bg-teal-900/50";
+		default:
+			return "text-gray-600 bg-gray-100 dark:text-gray-300 dark:bg-gray-700/50";
+	}
+};

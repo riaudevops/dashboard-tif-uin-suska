@@ -263,9 +263,9 @@ const TimelineItem = ({ item }: { item: LogDataProps }) => {
 						>
 							{item.aksi}
 						</span>
-						<div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400">
+						<div className="ml-5 flex overflow-hidden items-center space-x-2 text-gray-500 dark:text-gray-400">
 							<ActionIcon aksi={item.aksi} />
-							<span className="font-mono text-xs md:text-sm font-semibold text-gray-800 dark:text-gray-200">
+							<span className="truncate font-mono text-xs md:text-sm font-semibold text-gray-800 dark:text-gray-200">
 								ID: {item.id}
 							</span>
 						</div>

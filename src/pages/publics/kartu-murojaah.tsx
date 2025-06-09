@@ -45,6 +45,7 @@ import { useState } from "react";
 import LogAktivitas from "@/components/mahasiswa/setoran-hafalan/kartu-murojaah/log-akitivitas";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFilteringSetoranSurat } from "@/hooks/use-filtering-setor-surat";
+import MobileSetoranCard from "@/components/mahasiswa/setoran-hafalan/kartu-murojaah/mobile-setoran-card";
 
 interface ProgresSetoranProps {
 	label: string;
@@ -370,7 +371,7 @@ const KartuMurojaahPage = () => {
 
 					<div className="max-w-6xl mx-auto px-4 mt-5">
 						{/* Informasi Mahasiswa */}
-						<div className="bg-card rounded-2xl shadow-md p-3 md:p-8 border border-foreground/20 -mt-2 mb-6">
+						<div className="bg-card rounded-2xl shadow-md p-3 md:p-8 border border-foreground/20 -mt-2 mb-5">
 							<div className="flex items-center mb-6 group/header">
 								<div className="relative">
 									<div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-lg opacity-30 group-hover/header:opacity-50 transition-opacity duration-300"></div>
@@ -450,7 +451,7 @@ const KartuMurojaahPage = () => {
 												infoDataMahasiswa?.nim
 											)}
 										</span>
-										<div className="flex justify-center items-center gap-1.5 mt-3 text-xs text-slate-500 dark:text-slate-400 w-full px-2">
+										<a target="_blank" href={"mailto:" + infoDataMahasiswa?.email} className="flex justify-center items-center gap-1.5 mt-3 text-xs text-slate-500 dark:text-slate-400 w-full px-2 hover:underline hover:underline-offset-2">
 											<Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 flex-shrink-0" />
 											<span
 												className="truncate"
@@ -462,7 +463,7 @@ const KartuMurojaahPage = () => {
 													infoDataMahasiswa?.email
 												)}
 											</span>
-										</div>
+										</a>
 									</div>
 
 									{/* ====== BAGIAN KANAN (DATA & PROGRES) - w-2/3 ====== */}
@@ -632,7 +633,7 @@ const KartuMurojaahPage = () => {
 												<div className="flex md:gap-3 gap-2">
 													<button
 														onClick={() => setIsPopUpRincianOpen(true)}
-														className="flex gap-1 text-xs text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-md hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 focus:outline-none"
+														className="flex gap-1 text-xs text-transparent bg-transparent rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none"
 													>
 														<ChartPieIcon className="text-indigo-400 w-4 h-4" />
 														<span className="hidden font-semibold text-violet-400 underline underline-offset-2 md:inline">
@@ -641,10 +642,10 @@ const KartuMurojaahPage = () => {
 													</button>
 													<button
 														onClick={() => setIsPopUpLogOpen(true)}
-														className="flex gap-1 text-xs text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-md hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 focus:outline-none"
+														className="flex gap-1 text-xs text-transparent bg-transparent rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none"
 													>
 														<HistoryIcon className="text-orange-400 w-4 h-4" />
-														<span className="hidden font-semibold text-yellow-400 underline underline-offset-2 md:inline">
+														<span className="hidden font-semibold text-yellow-500 dark:text-yellow-400 underline underline-offset-2 md:inline">
 															Cek Aktivitas
 														</span>
 													</button>
@@ -657,8 +658,8 @@ const KartuMurojaahPage = () => {
 						</div>
 
 						{/* Detail Surah */}
-						<div className="bg-card rounded-2xl shadow-md md:p-8 p-3 border border-foreground/20 mb-6">
-							<div className="flex items-center mb-4 group/header">
+						<div className="bg-card rounded-2xl shadow-md md:p-8 p-3 border border-foreground/20 -mt-0.5 mb-6">
+							<div className="flex items-center mb-3 group/header">
 								<div className="relative">
 									<div className="absolute inset-0 bg-gradient-to-r from-green-500 to-violet-600 rounded-2xl blur-lg opacity-30 group-hover/header:opacity-50 transition-opacity duration-300"></div>
 									<div className="relative flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500 via-green-600 to-purple-600 rounded-2xl shadow-lg mr-4 group-hover/header:scale-110 transition-transform duration-300">
@@ -678,44 +679,59 @@ const KartuMurojaahPage = () => {
 								</div>
 							</div>
 							<div className="flex flex-col gap-1.5 sticky top-[51.3px] bg-background pt-2.5 -mb-4 pb-3.5 z-50">
-								<div className="flex justify-between gap-3">
-									<div className="overflow-x-auto max-w-52 md:max-w-full">
+								<div className="flex md:flex-row flex-col justify-between gap-3">
+									<div className="overflow-x-auto max-w-full">
 										<Tabs defaultValue="tab1" className="w-full">
-											<TabsList className="gap-1.5">
+											<TabsList className="gap-1.5 w-full">
 												<TabsTrigger
 													value="tab1"
 													onClick={() => setTabState("default")}
-													className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+													className={`w-full data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
 														tabState !== "default" &&
 														"hover:bg-blue-100 dark:hover:bg-background/20"
 													}`}
 												>
-													Semua riwayat muroja'ah
+													<span className="hidden md:inline">
+														Semua riwayat muroja'ah
+													</span>
+													<span className="md:hidden">
+														Semua
+													</span>
 												</TabsTrigger>
 												<TabsTrigger
 													value="tab2"
 													onClick={() => setTabState("sudah_setor")}
-													className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+													className={`w-full data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
 														tabState !== "sudah_setor" &&
 														"hover:bg-blue-100 dark:hover:bg-background/20"
 													}`}
 												>
-													Selesai di-muroja'ah
+													<span className="hidden md:inline">
+														Selesai di-muroja'ah
+													</span>
+													<span className="md:hidden">
+														Selesai
+													</span>
 												</TabsTrigger>
 												<TabsTrigger
 													value="tab3"
 													onClick={() => setTabState("belum_setor")}
-													className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+													className={`w-full data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
 														tabState !== "belum_setor" &&
 														"hover:bg-blue-100 dark:hover:bg-background/20"
 													}`}
 												>
-													Belum di-muroja'ah
+													<span className="hidden md:inline">
+														Belum di-muroja'ah
+													</span>
+													<span className="md:hidden">
+														Belum
+													</span>
 												</TabsTrigger>
 											</TabsList>
 										</Tabs>
 									</div>
-									<div className="flex gap-2.5 border border-foreground/20 px-2 rounded-md justify-center items-center w-[16rem]">
+									<div className="flex gap-2.5 border border-foreground/20 px-2 rounded-md justify-center items-center w-full py-2 md:w-[15rem]">
 										<SearchIcon className="w-5 h-5 text-sm text-slate-600 dark:text-slate-400" />
 										<input
 											type="text"
@@ -728,7 +744,7 @@ const KartuMurojaahPage = () => {
 									</div>
 								</div>
 							</div>
-							<div className="overflow-x-auto">
+							<div className="hidden md:block overflow-x-auto">
 								<Table className="w-full mt-4">
 									<TableHeader>
 										<TableRow className="border hover:bg-muted border-solid border-secondary bg-muted">
@@ -832,6 +848,26 @@ const KartuMurojaahPage = () => {
 										</TableBody>
 									)}
 								</Table>
+							</div>
+							<div className="md:hidden flex flex-col gap-5 mt-4 items-center justify-center w-full">
+								{
+									dataCurrent?.length == 0 ? (
+										<span className="text-center text-sm">
+											{search
+												? "❌ Maaf, surah yang anda cari tidak ditemukan nih!"
+													: tabState === "sudah_setor"
+												? "❌ Mahasiswa ini Belum Menyetor Satu pun Hafalan Surah"
+													: "✔️ Mahasiswa Ini Sudah Menyetor semua Hafalan Surah"
+											}
+										</span>
+									) : (
+										dataCurrent?.map(
+											(surah: MahasiswaSetoran, index: number) => (
+												<MobileSetoranCard key={index} item={surah} />
+											)
+										)
+									)
+								}
 							</div>
 						</div>
 					</div>

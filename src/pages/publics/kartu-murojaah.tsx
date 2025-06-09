@@ -5,16 +5,19 @@ import {
 	Clock,
 	FileBadge,
 	GraduationCap,
+	HistoryIcon,
 	Mail,
 	MapPin,
 	MedalIcon,
 	PhoneCall,
+	SatelliteDish,
 	ShieldHalf,
 	Sparkles,
 	Target,
 	TrendingUp,
 	User,
 	UserCircle2Icon,
+	X,
 } from "lucide-react";
 import {
 	Table,
@@ -37,6 +40,8 @@ import { ModeToggle } from "@/components/themes/mode-toggle";
 import NotFoundPage from "./not-found.page";
 import { AxiosError } from "axios";
 import { colourLabelingCategory } from "@/helpers/colour-labeling-category";
+import { useState } from "react";
+import LogAktivitas from "@/components/mahasiswa/setoran-hafalan/kartu-murojaah/log-akitivitas";
 interface ProgresSetoranProps {
 	label: string;
 	persentase_progres_setor: number;
@@ -152,6 +157,9 @@ const ModernMarquee = () => {
 const KartuMurojaahPage = () => {
 	const { id } = useParams<{ id: string }>();
 
+	const [isPopUpRincianOpen, setIsPopUpRincianOpen] = useState(false);
+	const [isPopUpLogOpen, setIsPopUpLogOpen] = useState(false);
+
 	const {
 		data: dataRingkasan,
 		isFetching,
@@ -167,11 +175,133 @@ const KartuMurojaahPage = () => {
 	const infoDataMurojaahUmumMahasiswa =
 		dataRingkasan?.data?.setoran?.info_dasar;
 	const dataRingkasanSetoran = dataRingkasan?.data?.setoran?.ringkasan;
+	const logData = dataRingkasan?.data?.setoran?.log;
 
 	const dataSurah = dataRingkasan?.data?.setoran?.detail;
 	const { theme } = useTheme();
 	return (
 		<div className="min-h-screen bg-background">
+
+			{/* Popup Modal */}
+            {isPopUpRincianOpen && (
+                <div onClick={() =>{
+					setIsPopUpRincianOpen(false)
+				}} className="fixed inset-0 bg-gray-700 dark:bg-black dark:bg-opacity-70 bg-opacity-60 backdrop-blur-sm flex justify-center items-center z-[9999] p-4 transition-opacity duration-300">
+                    <div onClick={(e) => e.stopPropagation()} className="bg-gradient-to-br from-red-100/50 via-violet-100/50 to-pink-100/50 dark:from-black dark:via-violet-900/20 dark:to-black rounded-2xl shadow-2xl w-full max-w-6xl relative animate-in fade-in-0 zoom-in-95">
+                        <button onClick={() => setIsPopUpRincianOpen(false)} className="absolute top-4 right-4 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                            <X className="w-6 h-6" />
+                        </button>
+
+                        <div className="rounded-2xl shadow-md md:p-8 p-3 border border-foreground/10">
+							<div className="flex items-center mb-8 group/header">
+								<div className="relative">
+									<div className="absolute inset-0 bg-gradient-to-r from-green-500 to-violet-600 rounded-2xl blur-lg opacity-30 group-hover/header:opacity-50 transition-opacity duration-300"></div>
+									<div className="relative flex items-center justify-center w-12 h-12 bg-gradient-to-br from-red-500 via-violet-600 to-green-600 rounded-2xl shadow-lg mr-4 group-hover/header:scale-110 transition-transform duration-300">
+										<BookOpen className="w-6 h-6 text-white" />
+									</div>
+								</div>
+								<div>
+									<h3 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-slate-900 via-blue-800 to-purple-800 dark:from-white dark:via-blue-200 dark:to-purple-200 bg-clip-text text-transparent">
+										Progres Muroja'ah
+									</h3>
+									<div className="flex items-center gap-2 mt-1">
+										<div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+										<span className="text-sm text-slate-600 dark:text-slate-400">
+											Statistik Terkini
+										</span>
+									</div>
+								</div>
+							</div>
+							<div className="md:grid md:grid-cols-5 md:gap-4">
+								<div className="flex gap-3 overflow-x-auto pb-3 md:pb-0 md:contents">
+									{dataRingkasanSetoran?.map(
+										(item: ProgresSetoranProps, index: number) => {
+											const colors = [
+												"from-blue-100 to-blue-50 dark:from-blue-950 dark:to-gray-900 text-blue-800 dark:text-blue-300",
+												"from-green-100 to-green-50 dark:from-green-950 dark:to-gray-900 text-green-800 dark:text-green-300", // SEMKP
+												"from-purple-100 to-purple-50 dark:from-purple-950 dark:to-gray-900 text-purple-800 dark:text-purple-300", // DAFTAR_TA
+												"from-orange-100 to-orange-50 dark:from-orange-950 dark:to-gray-900 text-orange-800 dark:text-orange-300", // SEMPRO
+												"from-pink-100 to-pink-50 dark:from-pink-950 dark:to-gray-900 text-pink-800 dark:text-pink-300", // SIDANG_TA
+											];
+
+											// Define display names for each label
+											const displayNames: { [key: string]: string } = {
+												KP: "Kerja Praktik",
+												SEMKP: "Seminar Kerja Praktik",
+												DAFTAR_TA: "Tugas Akhir",
+												SEMPRO: "Seminar Proposal",
+												SIDANG_TA: "Sidang Akhir",
+											};
+
+											return (
+												<div
+													key={item.label || index}
+													className={`text-center bg-gradient-to-br ${
+														colors[index] || "from-gray-500 to-gray-600"
+													} rounded-xl shadow-lg flex flex-col items-center justify-center py-3.5 px-2 tracking-tight`}
+												>
+													<div className="text-base bg-background rounded-md whitespace-nowrap px-2 font-medium">
+														{displayNames[item.label] || item.label}
+													</div>
+													{/* progress bar */}
+													<ProgressChart
+														targetProgress={item.persentase_progres_setor}
+														loading={isFetching}
+													/>
+													<div className="text-sm opacity-75 bg-background rounded-md whitespace-nowrap px-2">
+														<div>
+															{item.total_sudah_setor} dari{" "}
+															{item.total_wajib_setor} selesai
+														</div>
+													</div>
+												</div>
+											);
+										}
+									)}
+								</div>
+							</div>
+						</div>
+                    </div>
+                </div>
+            )}
+
+			{/* Popup Modal */}
+            {isPopUpLogOpen && (
+                <div onClick={() =>{
+					setIsPopUpLogOpen(false)
+				}} className="fixed inset-0 bg-gray-700 dark:bg-black dark:bg-opacity-70 bg-opacity-60 backdrop-blur-sm flex justify-center items-center z-[9999] p-4 transition-opacity duration-300">
+                    <div onClick={(e) => e.stopPropagation()} className="bg-gradient-to-br from-red-100/50 via-violet-100/50 to-pink-100/50 dark:from-black dark:via-violet-900/20 dark:to-black rounded-2xl shadow-2xl w-full max-w-5xl relative animate-in fade-in-0 zoom-in-95">
+                        <button onClick={() => setIsPopUpLogOpen(false)} className="absolute top-4 right-4 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                            <X className="w-6 h-6" />
+                        </button>
+
+                        <div className="rounded-2xl shadow-md md:p-8 p-3 border border-foreground/10">
+							<div className="flex items-center mb-8 group/header">
+								<div className="relative">
+									<div className="absolute inset-0 bg-gradient-to-r from-green-500 to-violet-600 rounded-2xl blur-lg opacity-30 group-hover/header:opacity-50 transition-opacity duration-300"></div>
+									<div className="relative flex items-center justify-center w-12 h-12 bg-gradient-to-br from-yellow-500 via-pink-600 to-orange-600 rounded-2xl shadow-lg mr-4 group-hover/header:scale-110 transition-transform duration-300">
+										<HistoryIcon className="w-6 h-6 text-white" />
+									</div>
+								</div>
+								<div>
+									<h3 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-slate-900 via-blue-800 to-purple-800 dark:from-white dark:via-blue-200 dark:to-purple-200 bg-clip-text text-transparent">
+										Aktivitas Muroja'ah
+									</h3>
+									<div className="flex items-center gap-2 mt-1">
+										<div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+										<span className="text-sm text-slate-600 dark:text-slate-400">
+											Riwayat Terkini
+										</span>
+									</div>
+								</div>
+							</div>
+
+							<LogAktivitas logData={logData} />
+						</div>
+                    </div>
+                </div>
+            )}
+
 			{/* Tambahkan tag <style> untuk mendefinisikan animasi marquee */}
 			<style>
 				{`
@@ -217,7 +347,7 @@ const KartuMurojaahPage = () => {
 
 					<div className="max-w-6xl mx-auto px-4 mt-5">
 						{/* Informasi Mahasiswa */}
-						<div className="bg-card rounded-2xl shadow-md p-8 border border-foreground/20 -mt-2 mb-6">
+						<div className="bg-card rounded-2xl shadow-md p-3 md:p-8 border border-foreground/20 -mt-2 mb-6">
 							<div className="flex items-center mb-8 group/header">
 								<div className="relative">
 									<div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-lg opacity-30 group-hover/header:opacity-50 transition-opacity duration-300"></div>
@@ -283,20 +413,20 @@ const KartuMurojaahPage = () => {
 												<Sparkles className="w-3 h-3 text-white animate-spin-slow" />
 											</div>
 										</div>
-										<h2 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">
+										<span className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">
 											{isFetching ? (
 												<Skeleton className="h-7 w-48 mx-auto" />
 											) : (
 												infoDataMahasiswa?.nama
 											)}
-										</h2>
-										<p className="text-sm text-cyan-600 dark:text-cyan-400 font-mono mt-1">
+										</span>
+										<span className="text-sm text-cyan-600 dark:text-cyan-400 font-mono mt-1">
 											{isFetching ? (
 												<Skeleton className="h-5 w-32 mx-auto mt-1" />
 											) : (
 												infoDataMahasiswa?.nim
 											)}
-										</p>
+										</span>
 										<div className="flex justify-center items-center gap-1.5 mt-3 text-xs text-slate-500 dark:text-slate-400 w-full px-2">
 											<Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 flex-shrink-0" />
 											<span
@@ -320,11 +450,11 @@ const KartuMurojaahPage = () => {
 												<div className="bg-indigo-100 dark:bg-indigo-500/20 p-3 rounded-lg flex-shrink-0">
 													<GraduationCap className="w-6 h-6 text-indigo-500 dark:text-indigo-300" />
 												</div>
-												<div className="overflow-hidden">
+												<div className="overflow-hidden flex flex-col -ml-1">
 													<label className="text-xs font-semibold text-indigo-500 dark:text-indigo-300 uppercase">
 														Dosen PA
 													</label>
-													<p
+													<span
 														className="text-base font-bold text-slate-800 dark:text-white leading-tight truncate"
 														title={infoDataMahasiswa?.dosen_pa.nama}
 													>
@@ -333,7 +463,7 @@ const KartuMurojaahPage = () => {
 														) : (
 															infoDataMahasiswa?.dosen_pa.nama
 														)}
-													</p>
+													</span>
 												</div>
 											</div>
 											<div className="w-full sm:w-1/3 bg-transparent dark:bg-gradient-to-br dark:from-violet-800/10 dark:to-slate-900/5 p-2 rounded-2xl border border-slate-300 dark:border-slate-700 grid grid-cols-2 items-center text-center hover:border-indigo-300 dark:hover:border-indigo-500/80 transition-colors duration-300">
@@ -363,7 +493,7 @@ const KartuMurojaahPage = () => {
 											<div>
 												{/* Header untuk Light Mode */}
 												<div className="dark:hidden text-center p-2 bg-gradient-to-br from-orange-300/25 via-pink-300/25 to-red-500/25">
-													<label className="text-sm md:text-lg font-bold font-mono text-indigo-800 tracking-tight">
+													<label className="text-[0.795rem] md:text-lg font-bold font-mono text-indigo-800 tracking-tight">
 														🔥 Progres Keseluruhan Muroja'ah 🔥
 													</label>
 												</div>
@@ -376,7 +506,7 @@ const KartuMurojaahPage = () => {
 													}}
 												>
 													<label
-														className="text-sm md:text-lg font-bold font-mono text-white tracking-tight"
+														className="text-[0.820rem] md:text-lg font-bold font-mono text-white tracking-tight"
 														style={{ textShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
 													>
 														🔥 Progres Keseluruhan Muroja'ah 🔥
@@ -385,7 +515,7 @@ const KartuMurojaahPage = () => {
 											</div>
 
 											{/* Bagian Utama (Grafik & Stats) */}
-											<div className="flex-grow flex flex-col items-center justify-center py-4 px-8">
+											<div className="flex-grow flex flex-col items-center justify-center py-4 md:px-8 px-3">
 												{isFetching ? (
 													<Skeleton className="h-40 w-full" />
 												) : (
@@ -464,7 +594,7 @@ const KartuMurojaahPage = () => {
 											</div>
 
 											{/* Bagian Info Bawah */}
-											<div className="p-4 pt-3 border-t border-slate-200 dark:border-slate-700/50">
+											<div className="p-4 pt-3 border-t flex justify-between border-slate-200 dark:border-slate-700/50">
 												<div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
 													<Clock className="w-3 h-3" />
 													<span>
@@ -476,6 +606,16 @@ const KartuMurojaahPage = () => {
 														)}
 													</span>
 												</div>
+												<div className="flex md:gap-3 gap-2">
+													<button onClick={() => setIsPopUpRincianOpen(true)} className="flex gap-1 text-xs text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-md hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 focus:outline-none">
+														<SatelliteDish className="text-indigo-400 w-4 h-4" />
+														<span className="hidden font-semibold text-violet-400 underline underline-offset-2 md:inline">Cek Rincian</span>
+													</button>
+													<button onClick={() => setIsPopUpLogOpen(true)} className="flex gap-1 text-xs text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-md hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 focus:outline-none">
+														<HistoryIcon className="text-orange-400 w-4 h-4" />
+														<span className="hidden font-semibold text-yellow-400 underline underline-offset-2 md:inline">Cek Aktivitas</span>
+													</button>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -483,79 +623,8 @@ const KartuMurojaahPage = () => {
 							</div>
 						</div>
 
-						{/* Progress Hafalan Overview */}
-						<div className="bg-card rounded-2xl shadow-md p-8 border border-foreground/20 mb-6">
-							<div className="flex items-center mb-8 group/header">
-								<div className="relative">
-									<div className="absolute inset-0 bg-gradient-to-r from-green-500 to-violet-600 rounded-2xl blur-lg opacity-30 group-hover/header:opacity-50 transition-opacity duration-300"></div>
-									<div className="relative flex items-center justify-center w-12 h-12 bg-gradient-to-br from-red-500 via-violet-600 to-green-600 rounded-2xl shadow-lg mr-4 group-hover/header:scale-110 transition-transform duration-300">
-										<BookOpen className="w-6 h-6 text-white" />
-									</div>
-								</div>
-								<div>
-									<h3 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-slate-900 via-blue-800 to-purple-800 dark:from-white dark:via-blue-200 dark:to-purple-200 bg-clip-text text-transparent">
-										Progres Muroja'ah
-									</h3>
-									<div className="flex items-center gap-2 mt-1">
-										<div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-										<span className="text-sm text-slate-600 dark:text-slate-400">
-											Statistik Terkini
-										</span>
-									</div>
-								</div>
-							</div>
-							<div className="md:grid md:grid-cols-5 md:gap-4">
-								<div className="flex gap-3 overflow-x-auto pb-3 md:pb-0 md:contents">
-									{dataRingkasanSetoran?.map(
-										(item: ProgresSetoranProps, index: number) => {
-											const colors = [
-												"from-blue-100 to-blue-50 dark:from-blue-950 dark:to-gray-900 text-blue-800 dark:text-blue-300",
-												"from-green-100 to-green-50 dark:from-green-950 dark:to-gray-900 text-green-800 dark:text-green-300", // SEMKP
-												"from-purple-100 to-purple-50 dark:from-purple-950 dark:to-gray-900 text-purple-800 dark:text-purple-300", // DAFTAR_TA
-												"from-orange-100 to-orange-50 dark:from-orange-950 dark:to-gray-900 text-orange-800 dark:text-orange-300", // SEMPRO
-												"from-pink-100 to-pink-50 dark:from-pink-950 dark:to-gray-900 text-pink-800 dark:text-pink-300", // SIDANG_TA
-											];
-
-											// Define display names for each label
-											const displayNames: { [key: string]: string } = {
-												KP: "Kerja Praktik",
-												SEMKP: "Seminar Kerja Praktik",
-												DAFTAR_TA: "Tugas Akhir",
-												SEMPRO: "Seminar Proposal",
-												SIDANG_TA: "Sidang Akhir",
-											};
-
-											return (
-												<div
-													key={item.label || index}
-													className={`text-center bg-gradient-to-br ${
-														colors[index] || "from-gray-500 to-gray-600"
-													} rounded-xl shadow-lg flex flex-col items-center justify-center py-3.5 px-2 tracking-tight`}
-												>
-													<div className="text-base bg-background rounded-md whitespace-nowrap px-2 font-medium">
-														{displayNames[item.label] || item.label}
-													</div>
-													{/* progress bar */}
-													<ProgressChart
-														targetProgress={item.persentase_progres_setor}
-														loading={isFetching}
-													/>
-													<div className="text-sm opacity-75 bg-background rounded-md whitespace-nowrap px-2">
-														<div>
-															{item.total_sudah_setor} dari{" "}
-															{item.total_wajib_setor} selesai
-														</div>
-													</div>
-												</div>
-											);
-										}
-									)}
-								</div>
-							</div>
-						</div>
-
 						{/* Detail Surah */}
-						<div className="bg-card rounded-2xl shadow-md p-8 border border-foreground/20 mb-6">
+						<div className="bg-card rounded-2xl shadow-md md:p-8 p-3 border border-foreground/20 mb-6">
 							<div className="flex items-center mb-8 group/header">
 								<div className="relative">
 									<div className="absolute inset-0 bg-gradient-to-r from-green-500 to-violet-600 rounded-2xl blur-lg opacity-30 group-hover/header:opacity-50 transition-opacity duration-300"></div>
@@ -665,7 +734,7 @@ const KartuMurojaahPage = () => {
 					{/* Footer */}
 					<footer className="flex flex-col border-t border-foreground/20">
 						<div className="z-10 px-16 py-10">
-							<div className="grid grid-cols-1 gap-8 text-center md:text-start md:grid-cols-3">
+							<div className="grid grid-cols-1 gamd:p-8 p-3 text-center md:text-start md:grid-cols-3">
 								{/* Logo and Copyright Section */}
 								<div className="flex flex-col items-center space-y-4 md:items-start">
 									<div className="flex items-center gap-1.5 rounded-xl">

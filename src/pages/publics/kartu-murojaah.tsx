@@ -230,7 +230,7 @@ const KartuMurojaahPage = () => {
 												SEMKP: "Seminar Kerja Praktik",
 												DAFTAR_TA: "Tugas Akhir",
 												SEMPRO: "Seminar Proposal",
-												SIDANG_TA: "Sidang Akhir",
+												SIDANG_TA: "Sidang Tugas Akhir",
 											};
 
 											return (

@@ -11,6 +11,7 @@ import {
 	MapPin,
 	MedalIcon,
 	PhoneCall,
+	SearchIcon,
 	ShieldHalf,
 	Sparkles,
 	Target,
@@ -42,6 +43,9 @@ import { AxiosError } from "axios";
 import { colourLabelingCategory } from "@/helpers/colour-labeling-category";
 import { useState } from "react";
 import LogAktivitas from "@/components/mahasiswa/setoran-hafalan/kartu-murojaah/log-akitivitas";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useFilteringSetoranSurat } from "@/hooks/use-filtering-setor-surat";
+
 interface ProgresSetoranProps {
 	label: string;
 	persentase_progres_setor: number;
@@ -177,22 +181,32 @@ const KartuMurojaahPage = () => {
 	const dataRingkasanSetoran = dataRingkasan?.data?.setoran?.ringkasan;
 	const logData = dataRingkasan?.data?.setoran?.log;
 
-	const dataSurah = dataRingkasan?.data?.setoran?.detail;
+	const { dataCurrent, setTabState, tabState, setSearch, search } =
+		useFilteringSetoranSurat(dataRingkasan?.data.setoran.detail, "default");
+
 	const { theme } = useTheme();
 	return (
 		<div className="min-h-screen bg-background">
-
 			{/* Popup Modal */}
-            {isPopUpRincianOpen && (
-                <div onClick={() =>{
-					setIsPopUpRincianOpen(false)
-				}} className="fixed inset-0 bg-gray-700 dark:bg-black dark:bg-opacity-70 bg-opacity-60 backdrop-blur-sm flex justify-center items-center z-[9999] p-4 transition-opacity duration-300">
-                    <div onClick={(e) => e.stopPropagation()} className="bg-gradient-to-br from-red-100/50 via-violet-100/50 to-pink-100/50 dark:from-black dark:via-violet-900/20 dark:to-black rounded-2xl shadow-2xl w-full max-w-6xl relative animate-in fade-in-0 zoom-in-95">
-                        <button onClick={() => setIsPopUpRincianOpen(false)} className="absolute top-4 right-4 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
-                            <X className="w-6 h-6" />
-                        </button>
+			{isPopUpRincianOpen && (
+				<div
+					onClick={() => {
+						setIsPopUpRincianOpen(false);
+					}}
+					className="fixed inset-0 bg-gray-700 dark:bg-black dark:bg-opacity-70 bg-opacity-60 backdrop-blur-sm flex justify-center items-center z-[9999] p-4 transition-opacity duration-300"
+				>
+					<div
+						onClick={(e) => e.stopPropagation()}
+						className="bg-gradient-to-br from-red-100/50 via-violet-100/50 to-pink-100/50 dark:from-black dark:via-violet-900/20 dark:to-black rounded-2xl shadow-2xl w-full max-w-6xl relative animate-in fade-in-0 zoom-in-95"
+					>
+						<button
+							onClick={() => setIsPopUpRincianOpen(false)}
+							className="absolute top-4 right-4 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
+						>
+							<X className="w-6 h-6" />
+						</button>
 
-                        <div className="rounded-2xl shadow-md md:p-8 p-3 border border-foreground/10">
+						<div className="rounded-2xl shadow-md md:p-8 p-3 border border-foreground/10">
 							<div className="flex items-center mb-8 group/header">
 								<div className="relative">
 									<div className="absolute inset-0 bg-gradient-to-r from-green-500 to-violet-600 rounded-2xl blur-lg opacity-30 group-hover/header:opacity-50 transition-opacity duration-300"></div>
@@ -261,21 +275,30 @@ const KartuMurojaahPage = () => {
 								</div>
 							</div>
 						</div>
-                    </div>
-                </div>
-            )}
+					</div>
+				</div>
+			)}
 
 			{/* Popup Modal */}
-            {isPopUpLogOpen && (
-                <div onClick={() =>{
-					setIsPopUpLogOpen(false)
-				}} className="fixed inset-0 bg-gray-700 dark:bg-black dark:bg-opacity-70 bg-opacity-60 backdrop-blur-sm flex justify-center items-center z-[9999] p-4 transition-opacity duration-300">
-                    <div onClick={(e) => e.stopPropagation()} className="bg-gradient-to-br from-red-100/50 via-violet-100/50 to-pink-100/50 dark:from-black dark:via-violet-900/20 dark:to-black rounded-2xl shadow-2xl w-full max-w-5xl relative animate-in fade-in-0 zoom-in-95">
-                        <button onClick={() => setIsPopUpLogOpen(false)} className="absolute top-4 right-4 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
-                            <X className="w-6 h-6" />
-                        </button>
+			{isPopUpLogOpen && (
+				<div
+					onClick={() => {
+						setIsPopUpLogOpen(false);
+					}}
+					className="fixed inset-0 bg-gray-700 dark:bg-black dark:bg-opacity-70 bg-opacity-60 backdrop-blur-sm flex justify-center items-center z-[9999] p-4 transition-opacity duration-300"
+				>
+					<div
+						onClick={(e) => e.stopPropagation()}
+						className="bg-gradient-to-br from-red-100/50 via-violet-100/50 to-pink-100/50 dark:from-black dark:via-violet-900/20 dark:to-black rounded-2xl shadow-2xl w-full max-w-5xl relative animate-in fade-in-0 zoom-in-95"
+					>
+						<button
+							onClick={() => setIsPopUpLogOpen(false)}
+							className="absolute top-4 right-4 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
+						>
+							<X className="w-6 h-6" />
+						</button>
 
-                        <div className="rounded-2xl shadow-md md:p-8 p-3 border border-foreground/10">
+						<div className="rounded-2xl shadow-md md:p-8 p-3 border border-foreground/10">
 							<div className="flex items-center mb-8 group/header">
 								<div className="relative">
 									<div className="absolute inset-0 bg-gradient-to-r from-green-500 to-violet-600 rounded-2xl blur-lg opacity-30 group-hover/header:opacity-50 transition-opacity duration-300"></div>
@@ -298,9 +321,9 @@ const KartuMurojaahPage = () => {
 
 							<LogAktivitas logData={logData} />
 						</div>
-                    </div>
-                </div>
-            )}
+					</div>
+				</div>
+			)}
 
 			{/* Tambahkan tag <style> untuk mendefinisikan animasi marquee */}
 			<style>
@@ -348,7 +371,7 @@ const KartuMurojaahPage = () => {
 					<div className="max-w-6xl mx-auto px-4 mt-5">
 						{/* Informasi Mahasiswa */}
 						<div className="bg-card rounded-2xl shadow-md p-3 md:p-8 border border-foreground/20 -mt-2 mb-6">
-							<div className="flex items-center mb-8 group/header">
+							<div className="flex items-center mb-6 group/header">
 								<div className="relative">
 									<div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-lg opacity-30 group-hover/header:opacity-50 transition-opacity duration-300"></div>
 									<div className="relative flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500 via-blue-600 to-purple-600 rounded-2xl shadow-lg mr-4 group-hover/header:scale-110 transition-transform duration-300">
@@ -607,13 +630,23 @@ const KartuMurojaahPage = () => {
 													</span>
 												</div>
 												<div className="flex md:gap-3 gap-2">
-													<button onClick={() => setIsPopUpRincianOpen(true)} className="flex gap-1 text-xs text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-md hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 focus:outline-none">
+													<button
+														onClick={() => setIsPopUpRincianOpen(true)}
+														className="flex gap-1 text-xs text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-md hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 focus:outline-none"
+													>
 														<ChartPieIcon className="text-indigo-400 w-4 h-4" />
-														<span className="hidden font-semibold text-violet-400 underline underline-offset-2 md:inline">Cek Rincian</span>
+														<span className="hidden font-semibold text-violet-400 underline underline-offset-2 md:inline">
+															Cek Rincian
+														</span>
 													</button>
-													<button onClick={() => setIsPopUpLogOpen(true)} className="flex gap-1 text-xs text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-md hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 focus:outline-none">
+													<button
+														onClick={() => setIsPopUpLogOpen(true)}
+														className="flex gap-1 text-xs text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-md hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 focus:outline-none"
+													>
 														<HistoryIcon className="text-orange-400 w-4 h-4" />
-														<span className="hidden font-semibold text-yellow-400 underline underline-offset-2 md:inline">Cek Aktivitas</span>
+														<span className="hidden font-semibold text-yellow-400 underline underline-offset-2 md:inline">
+															Cek Aktivitas
+														</span>
 													</button>
 												</div>
 											</div>
@@ -625,7 +658,7 @@ const KartuMurojaahPage = () => {
 
 						{/* Detail Surah */}
 						<div className="bg-card rounded-2xl shadow-md md:p-8 p-3 border border-foreground/20 mb-6">
-							<div className="flex items-center mb-8 group/header">
+							<div className="flex items-center mb-4 group/header">
 								<div className="relative">
 									<div className="absolute inset-0 bg-gradient-to-r from-green-500 to-violet-600 rounded-2xl blur-lg opacity-30 group-hover/header:opacity-50 transition-opacity duration-300"></div>
 									<div className="relative flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500 via-green-600 to-purple-600 rounded-2xl shadow-lg mr-4 group-hover/header:scale-110 transition-transform duration-300">
@@ -644,8 +677,59 @@ const KartuMurojaahPage = () => {
 									</div>
 								</div>
 							</div>
+							<div className="flex flex-col gap-1.5 sticky top-[51.3px] bg-background pt-2.5 -mb-4 pb-3.5 z-50">
+								<div className="flex justify-between gap-3">
+									<div className="overflow-x-auto max-w-52 md:max-w-full">
+										<Tabs defaultValue="tab1" className="w-full">
+											<TabsList className="gap-1.5">
+												<TabsTrigger
+													value="tab1"
+													onClick={() => setTabState("default")}
+													className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+														tabState !== "default" &&
+														"hover:bg-blue-100 dark:hover:bg-background/20"
+													}`}
+												>
+													Semua riwayat muroja'ah
+												</TabsTrigger>
+												<TabsTrigger
+													value="tab2"
+													onClick={() => setTabState("sudah_setor")}
+													className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+														tabState !== "sudah_setor" &&
+														"hover:bg-blue-100 dark:hover:bg-background/20"
+													}`}
+												>
+													Selesai di-muroja'ah
+												</TabsTrigger>
+												<TabsTrigger
+													value="tab3"
+													onClick={() => setTabState("belum_setor")}
+													className={`data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+														tabState !== "belum_setor" &&
+														"hover:bg-blue-100 dark:hover:bg-background/20"
+													}`}
+												>
+													Belum di-muroja'ah
+												</TabsTrigger>
+											</TabsList>
+										</Tabs>
+									</div>
+									<div className="flex gap-2.5 border border-foreground/20 px-2 rounded-md justify-center items-center w-[16rem]">
+										<SearchIcon className="w-5 h-5 text-sm text-slate-600 dark:text-slate-400" />
+										<input
+											type="text"
+											placeholder="Cari disini nama surah-nya..."
+											onChange={(e) => {
+												setSearch(e.target.value);
+											}}
+											className="placeholder:text-sm w-full h-full bg-transparent border-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-transparent active:ring-0 outline-none shadow-none"
+										/>
+									</div>
+								</div>
+							</div>
 							<div className="overflow-x-auto">
-								<Table className="w-full">
+								<Table className="w-full mt-4">
 									<TableHeader>
 										<TableRow className="border hover:bg-muted border-solid border-secondary bg-muted">
 											<TableHead className="text-center p-4 font-semibold">
@@ -668,65 +752,85 @@ const KartuMurojaahPage = () => {
 											</TableHead>
 										</TableRow>
 									</TableHeader>
-									<TableBody>
-										{dataSurah?.map(
-											(surah: MahasiswaSetoran, index: number) => (
-												<TableRow
-													key={index}
-													className={
-														index % 2 !== 0
-															? "bg-secondary hover:bg-secondary"
-															: "bg-background hover:bg-background"
-													}
+									{dataCurrent?.length == 0 ? (
+										<TableBody className="border-b border-foreground/20">
+											<TableRow className="bg-background">
+												<TableCell
+													colSpan={6}
+													className="p-4 text-center font-medium"
 												>
-													<TableCell className="p-4 text-center font-medium">
-														{index + 1}.
-													</TableCell>
-													<TableCell className="p-4 text-center">
-														<div className="font-semibold">
-															{surah.nama} - {surah.nama_arab}
-														</div>
-													</TableCell>
-													<TableCell className="p-4 text-center">
-														{surah?.sudah_setor &&
-															new Date(surah?.info_setoran?.tgl_setoran)
-																.toLocaleDateString("id-ID", {
-																	day: "2-digit",
-																	month: "long",
-																	year: "numeric",
-																})
-																.replace(/^(\d+)\s(\w+)\s(\d+)$/, "$1 $2, $3")}
-													</TableCell>
-													<TableCell className="text-center">
-														<div
-															className={`py-1 px-3 rounded-2xl text-center text-white inline-block ${
-																colourLabelingCategory(surah.label)[1]
-															}`}
-														>
-															{colourLabelingCategory(surah.label)[0]}
-														</div>
-													</TableCell>
-													<TableCell className="p-4 text-center">
-														{surah?.info_setoran?.dosen_yang_mengesahkan.nama}
-													</TableCell>
-													<TableCell className="p-4 text-center">
-														<span
-															className={`${
-																surah.sudah_setor
-																	? "text-green-100 bg-green-700"
-																	: "text-red-100 bg-red-700"
-															} px-2.5 py-1.5 rounded-full text-md font-medium border`}
-														>
-															{surah.sudah_setor ? "Selesai" : "Belum"}
-														</span>
-													</TableCell>
-												</TableRow>
-											)
-										)}
-										{isFetching && (
-											<TableLoadingSkeleton columns={6} rows={7} />
-										)}
-									</TableBody>
+													{search
+														? "❌ Maaf, surah yang anda cari tidak ditemukan nih!"
+														: tabState === "sudah_setor"
+														? "❌ Mahasiswa ini Belum Menyetor Satu pun Hafalan Surah"
+														: "✔️ Mahasiswa Ini Sudah Menyetor semua Hafalan Surah"}
+												</TableCell>
+											</TableRow>
+										</TableBody>
+									) : (
+										<TableBody>
+											{dataCurrent?.map(
+												(surah: MahasiswaSetoran, index: number) => (
+													<TableRow
+														key={index}
+														className={
+															index % 2 !== 0
+																? "bg-secondary hover:bg-secondary"
+																: "bg-background hover:bg-background"
+														}
+													>
+														<TableCell className="p-4 text-center font-medium">
+															{index + 1}.
+														</TableCell>
+														<TableCell className="p-4 text-center">
+															<div className="font-semibold">
+																{surah.nama} - {surah.nama_arab}
+															</div>
+														</TableCell>
+														<TableCell className="p-4 text-center">
+															{surah?.sudah_setor &&
+																new Date(surah?.info_setoran?.tgl_setoran)
+																	.toLocaleDateString("id-ID", {
+																		day: "2-digit",
+																		month: "long",
+																		year: "numeric",
+																	})
+																	.replace(
+																		/^(\d+)\s(\w+)\s(\d+)$/,
+																		"$1 $2, $3"
+																	)}
+														</TableCell>
+														<TableCell className="text-center">
+															<div
+																className={`py-1 px-3 rounded-2xl text-center text-white inline-block ${
+																	colourLabelingCategory(surah.label)[1]
+																}`}
+															>
+																{colourLabelingCategory(surah.label)[0]}
+															</div>
+														</TableCell>
+														<TableCell className="p-4 text-center">
+															{surah?.info_setoran?.dosen_yang_mengesahkan.nama}
+														</TableCell>
+														<TableCell className="p-4 text-center">
+															<span
+																className={`${
+																	surah.sudah_setor
+																		? "text-green-100 bg-green-700"
+																		: "text-red-100 bg-red-700"
+																} px-2.5 py-1.5 rounded-full text-md font-medium border`}
+															>
+																{surah.sudah_setor ? "Selesai" : "Belum"}
+															</span>
+														</TableCell>
+													</TableRow>
+												)
+											)}
+											{isFetching && (
+												<TableLoadingSkeleton columns={6} rows={7} />
+											)}
+										</TableBody>
+									)}
 								</Table>
 							</div>
 						</div>
@@ -749,7 +853,9 @@ const KartuMurojaahPage = () => {
 										</span>
 									</div>
 									<p className="text-sm">
-										Teknik Informatika © 2024-{new Date().getFullYear()}.<br className="md:hidden"/>&nbsp;All rights reserved.
+										Teknik Informatika © 2024-{new Date().getFullYear()}.
+										<br className="md:hidden" />
+										&nbsp;All rights reserved.
 									</p>
 								</div>
 								{/* Contact Section */}

@@ -78,6 +78,7 @@ function ModalBoxBatalSetoran({
             disabled={!checkBoxState}
             className="bg-red-600 hover:bg-destructive/90 w-full text-white"
             onClick={() => {
+              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               !buttonLoading && deleteSetoran();
             }}
           >

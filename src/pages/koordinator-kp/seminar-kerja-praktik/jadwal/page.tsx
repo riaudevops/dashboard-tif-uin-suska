@@ -1,93 +1,261 @@
-import { useState, type FC } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useState, useEffect, type FC } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { Search, Edit } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import DashboardJadwalCard from "@/components/dosen/seminar-kp/DashboardJadwalCard";
-import EditJadwalSeminarModal from "@/components/koordinator/seminar/edit-jadwal-modal";
+import ScheduleTable from "@/components/koordinator-kp/seminar/ScheduleTable";
+import EditJadwalSeminarModal from "@/components/koordinator-kp/seminar/edit-jadwal-modal";
+import LogJadwalModal from "@/components/koordinator-kp/seminar/log-jadwal-modal";
+import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
+import { Toaster } from "react-hot-toast";
+import { toast } from "@/hooks/use-toast";
+import { CalendarCheck2Icon, ChevronRight } from "lucide-react";
 
-// Interface untuk data seminar
-interface Seminar {
-  id: number;
-  namaMahasiswa: string;
-  ruangan: string;
-  jam: string;
-  tanggalSeminar: string;
-  dosenPenguji: string;
-  status: "terjadwal" | "selesai" | "diganti";
+// Type Definitions
+interface Mahasiswa {
+  nama: string;
+  nim: string;
+  semester: number;
 }
 
-// Komponen Utama
+interface JadwalSeminar {
+  id: string;
+  mahasiswa: Mahasiswa;
+  status_kp: "Baru" | "Lanjut";
+  ruangan: string;
+  waktu_mulai: string;
+  waktu_selesai: string;
+  tanggal: string;
+  dosen_penguji: string;
+  dosen_pembimbing: string;
+  instansi: string;
+  pembimbing_instansi: string;
+  status: "Menunggu" | "Selesai" | "Jadwal_Ulang";
+  durasi?: number;
+}
+
+interface TahunAjaran {
+  id: number;
+  nama: string;
+}
+
+interface JadwalResponse {
+  total_seminar: number;
+  total_seminar_minggu_ini: number;
+  total_jadwal_ulang: number;
+  jadwal: {
+    semua: JadwalSeminar[];
+    hari_ini: JadwalSeminar[];
+    minggu_ini: JadwalSeminar[];
+    by_ruangan: {
+      semua: { [key: string]: JadwalSeminar[] };
+      hari_ini: { [key: string]: JadwalSeminar[] };
+      minggu_ini: { [key: string]: JadwalSeminar[] };
+    };
+  };
+  tahun_ajaran: TahunAjaran;
+}
+
+interface LogEntry {
+  id: string;
+  action: "create" | "update";
+  timestamp: string;
+  changes: {
+    field: string;
+    oldValue?: string;
+    newValue?: string;
+  }[];
+  keterangan?: string;
+  id_jadwal?: string;
+}
+
 const KoordinatorJadwalSeminarPage: FC = () => {
+  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedSeminar, setSelectedSeminar] = useState<Seminar | null>(null);
+  const [isLogModalOpen, setIsLogModalOpen] = useState(false);
+  const [selectedSeminar, setSelectedSeminar] = useState<JadwalSeminar | null>(
+    null
+  );
+  const [selectedSeminarId, setSelectedSeminarId] = useState<string | null>(
+    null
+  );
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<
     "semua" | "hari_ini" | "minggu_ini"
   >("semua");
-  // const navigate = useNavigate();
+  const [selectedTahunAjaranId, setSelectedTahunAjaranId] = useState<
+    number | null
+  >(null);
+  const [hoveredItem, setHoveredItem] = useState<JadwalSeminar | null>(null);
+  const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
 
-  // Data dummy seminar
-  const [seminars, setSeminars] = useState<Seminar[]>([
-    {
-      id: 1,
-      namaMahasiswa: "M Farhan Aulia Pratama",
-      ruangan: "FST301",
-      jam: "09:00",
-      tanggalSeminar: "2025-05-08",
-      dosenPenguji: "Dr. Ahmad Fauzi",
-      status: "terjadwal",
-    },
-    {
-      id: 2,
-      namaMahasiswa: "Gilang Ramadhan",
-      ruangan: "FST302",
-      jam: "10:30",
-      tanggalSeminar: "2025-05-08",
-      dosenPenguji: "Dr. Siti Aminah",
-      status: "selesai",
-    },
-    {
-      id: 3,
-      namaMahasiswa: "Farhan Fadilla",
-      ruangan: "FST303",
-      jam: "13:00",
-      tanggalSeminar: "2025-05-09",
-      dosenPenguji: "Prof. Arif Rahman",
-      status: "diganti",
-    },
-    {
-      id: 4,
-      namaMahasiswa: "Ahmad Kurniawan",
-      ruangan: "FST304",
-      jam: "14:00",
-      tanggalSeminar: "2025-05-10",
-      dosenPenguji: "Dr. Dewi Susanti",
-      status: "terjadwal",
-    },
-    {
-      id: 5,
-      namaMahasiswa: "Anisa Putri",
-      ruangan: "FST305",
-      jam: "09:30",
-      tanggalSeminar: "2025-05-11",
-      dosenPenguji: "Prof. Eko Prasetyo",
-      status: "terjadwal",
-    },
-  ]);
+  // Fetch academic years
+  const {
+    data: tahunAjaranData,
+    isLoading: isTahunAjaranLoading,
+    isError: isTahunAjaranError,
+    error: tahunAjaranError,
+  } = useQuery<TahunAjaran[]>({
+    queryKey: ["tahun-ajaran"],
+    queryFn: APISeminarKP.getTahunAjaran,
+  });
 
-  const handleOpenModal = (seminar: Seminar) => {
+  // Fetch seminar schedule
+  const { data, isLoading, isError, error } = useQuery<JadwalResponse>({
+    queryKey: ["koordinator-jadwal-seminar", selectedTahunAjaranId],
+    queryFn: () =>
+      APISeminarKP.getJadwalSeminar(selectedTahunAjaranId ?? undefined),
+    enabled: selectedTahunAjaranId !== null,
+  });
+
+  // Fetch log jadwal
+  const {
+    data: logData,
+    isLoading: isLogLoading,
+    isError: isLogError,
+    error: logError,
+  } = useQuery({
+    queryKey: ["log-jadwal"],
+    queryFn: APISeminarKP.getLogJadwal,
+  });
+
+  // Set default tahun ajaran
+  useEffect(() => {
+    if (
+      tahunAjaranData &&
+      tahunAjaranData.length > 0 &&
+      selectedTahunAjaranId === null
+    ) {
+      setSelectedTahunAjaranId(tahunAjaranData[0].id);
+    }
+  }, [tahunAjaranData, selectedTahunAjaranId]);
+
+  // Synchronize tahun ajaran
+  useEffect(() => {
+    if (
+      data?.tahun_ajaran?.id &&
+      data.tahun_ajaran.id !== selectedTahunAjaranId &&
+      tahunAjaranData?.some((tahun) => tahun.id === data.tahun_ajaran.id)
+    ) {
+      setSelectedTahunAjaranId(data.tahun_ajaran.id);
+    }
+  }, [data, tahunAjaranData, selectedTahunAjaranId]);
+
+  // Map logJadwal to LogEntry
+  const logs: LogEntry[] = (logData?.logJadwal || [])
+    .map((log: any) => {
+      const changes: LogEntry["changes"] = [];
+      if (
+        log.tanggal_lama &&
+        log.tanggal_baru &&
+        log.tanggal_lama !== log.tanggal_baru
+      ) {
+        changes.push({
+          field: "tanggal",
+          oldValue: new Date(log.tanggal_lama).toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          }),
+          newValue: new Date(log.tanggal_baru).toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          }),
+        });
+      }
+      if (
+        log.ruangan_lama &&
+        log.ruangan_baru &&
+        log.ruangan_lama !== log.ruangan_baru
+      ) {
+        changes.push({
+          field: "ruangan",
+          oldValue: log.ruangan_lama,
+          newValue: log.ruangan_baru,
+        });
+      }
+      if (
+        log.nama_penguji_lama &&
+        log.nama_penguji_baru &&
+        log.nama_penguji_lama !== log.nama_penguji_baru
+      ) {
+        changes.push({
+          field: "dosen_penguji",
+          oldValue: log.nama_penguji_lama,
+          newValue: log.nama_penguji_baru,
+        });
+      }
+      return {
+        id: log.id,
+        action: log.log_type.toLowerCase() as "create" | "update",
+        timestamp: log.created_at,
+        changes,
+        keterangan: log.keterangan,
+        id_jadwal: log.id_jadwal,
+      };
+    })
+    .sort(
+      (a: LogEntry, b: LogEntry) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
+
+  const filteredLogs = selectedSeminarId
+    ? logs.filter((log) => log.id_jadwal === selectedSeminarId)
+    : logs;
+
+  // Filter seminars based on search query
+  const filteredData: JadwalResponse["jadwal"] = {
+    semua: (data?.jadwal.semua || []).filter((seminar) =>
+      seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
+    ),
+    hari_ini: (data?.jadwal.hari_ini || []).filter((seminar) =>
+      seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
+    ),
+    minggu_ini: (data?.jadwal.minggu_ini || []).filter((seminar) =>
+      seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
+    ),
+    by_ruangan: {
+      semua: Object.keys(data?.jadwal.by_ruangan.semua || {}).reduce(
+        (acc, room) => ({
+          ...acc,
+          [room]: (data?.jadwal.by_ruangan.semua[room] || []).filter(
+            (seminar) =>
+              seminar.mahasiswa.nama
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase())
+          ),
+        }),
+        {} as { [key: string]: JadwalSeminar[] }
+      ),
+      hari_ini: Object.keys(data?.jadwal.by_ruangan.hari_ini || {}).reduce(
+        (acc, room) => ({
+          ...acc,
+          [room]: (data?.jadwal.by_ruangan.hari_ini[room] || []).filter(
+            (seminar) =>
+              seminar.mahasiswa.nama
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase())
+          ),
+        }),
+        {} as { [key: string]: JadwalSeminar[] }
+      ),
+      minggu_ini: Object.keys(data?.jadwal.by_ruangan.minggu_ini || {}).reduce(
+        (acc, room) => ({
+          ...acc,
+          [room]: (data?.jadwal.by_ruangan.minggu_ini[room] || []).filter(
+            (seminar) =>
+              seminar.mahasiswa.nama
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase())
+          ),
+        }),
+        {} as { [key: string]: JadwalSeminar[] }
+      ),
+    },
+  };
+
+  const handleOpenModal = (seminar: JadwalSeminar) => {
     setSelectedSeminar(seminar);
     setIsModalOpen(true);
   };
@@ -97,225 +265,148 @@ const KoordinatorJadwalSeminarPage: FC = () => {
     setSelectedSeminar(null);
   };
 
-  const handleSaveSeminar = (updatedSeminar: Seminar) => {
-    // Update the seminar data in the state
-    setSeminars((prevSeminars) =>
-      prevSeminars.map((seminar) =>
-        seminar.id === updatedSeminar.id ? updatedSeminar : seminar
-      )
-    );
-    console.log("Updated seminar:", updatedSeminar);
-  };
-
-  // Filter seminars berdasarkan tab dan pencarian
-  const filteredSeminars = seminars.filter((seminar) => {
-    const matchesSearch = seminar.namaMahasiswa
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const seminarDate = new Date(seminar.tanggalSeminar);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const thisWeekStart = new Date(today);
-    thisWeekStart.setDate(today.getDate() - today.getDay());
-
-    if (activeTab === "hari_ini") {
-      return (
-        matchesSearch && seminarDate.toDateString() === today.toDateString()
-      );
-    } else if (activeTab === "minggu_ini") {
-      return (
-        matchesSearch &&
-        seminarDate >= thisWeekStart &&
-        seminarDate <=
-          new Date(thisWeekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
-      );
+  const handleSaveSeminar = async () => {
+    try {
+      await queryClient.invalidateQueries({ queryKey: ["log-jadwal"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["koordinator-jadwal-seminar", selectedTahunAjaranId],
+      });
+    } catch (error) {
+      toast({
+        title: "❌ Gagal",
+        description: "Gagal memperbarui jadwal seminar.",
+        duration: 3000,
+      });
+    } finally {
+      handleCloseModal();
     }
-    return matchesSearch;
-  });
-
-  // Format tanggal
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
   };
+
+  const handleOpenLogModal = () => {
+    setSelectedSeminarId(null);
+    setIsLogModalOpen(true);
+  };
+
+  const handleCloseLogModal = () => {
+    setIsLogModalOpen(false);
+    setSelectedSeminarId(null);
+  };
+
+  if (isTahunAjaranError) {
+    toast({
+      title: "❌ Gagal",
+      description: `Gagal mengambil daftar tahun ajaran: ${
+        (tahunAjaranError as Error).message
+      }`,
+      duration: 3000,
+    });
+    return (
+      <DashboardLayout>
+        <div className="text-center text-gray-600 dark:text-gray-300 py-10">
+          Gagal memuat daftar tahun ajaran. Silakan coba lagi nanti.
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (isLoading || isTahunAjaranLoading) {
+    return (
+      <DashboardLayout>
+        <div className="text-center text-gray-600 dark:text-gray-300">
+          Memuat jadwal seminar...
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (isError) {
+    toast({
+      title: "❌ Gagal",
+      description: `Gagal mengambil data jadwal: ${(error as Error).message}`,
+      duration: 3000,
+    });
+    return (
+      <DashboardLayout>
+        <div className="text-center text-red-600 dark:text-red-300">
+          Gagal mengambil data jadwal. Silakan coba lagi nanti.
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
-      <div>
-        <div className="space-y-6">
-          <h1 className="text-2xl font-bold dark:text-white">Jadwal Seminar</h1>
+      <Toaster position="top-right" />
+      <div className="flex justify-between items-center mb-3.5">
+        <div className="flex">
+          <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+            <span
+              className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+            />
+            <CalendarCheck2Icon className="w-4 h-4 mr-1.5" />
+            Jadwal Seminar Kerja Praktik Mahasiswa
+          </span>
+        </div>
 
-          <DashboardJadwalCard seminars={seminars} />
-
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <Tabs
-              defaultValue="semua"
-              onValueChange={(value) =>
-                setActiveTab(value as "semua" | "hari_ini" | "minggu_ini")
-              }
-              className="w-full"
+        {/* Academic Year Dropdown */}
+        <div className="flex items-center gap-2 dark:text-gray-200">
+          <div className="relative">
+            <select
+              className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0 disabled:opacity-50"
+              value={selectedTahunAjaranId ?? ""}
+              onChange={(e) => setSelectedTahunAjaranId(Number(e.target.value))}
+              disabled={isTahunAjaranLoading || !tahunAjaranData}
             >
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 w-full">
-                <TabsList className="dark:bg-gray-700">
-                  <TabsTrigger
-                    value="semua"
-                    className="dark:data-[state=active]:bg-gray-800"
-                  >
-                    Semua
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="hari_ini"
-                    className="dark:data-[state=active]:bg-gray-800"
-                  >
-                    Hari Ini
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="minggu_ini"
-                    className="dark:data-[state=active]:bg-gray-800"
-                  >
-                    Minggu Ini
-                  </TabsTrigger>
-                </TabsList>
-
-                <div className="flex items-center w-full relative">
-                  <Search className="h-4 w-4 absolute left-3 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="Cari nama mahasiswa..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200"
-                  />
-                </div>
-              </div>
-
-              <TabsContent value="semua" className="mt-4">
-                <SeminarTable
-                  seminars={filteredSeminars}
-                  onEdit={handleOpenModal}
-                  formatDate={formatDate}
-                />
-              </TabsContent>
-              <TabsContent value="hari_ini" className="mt-4">
-                <SeminarTable
-                  seminars={filteredSeminars}
-                  onEdit={handleOpenModal}
-                  formatDate={formatDate}
-                />
-              </TabsContent>
-              <TabsContent value="minggu_ini" className="mt-4">
-                <SeminarTable
-                  seminars={filteredSeminars}
-                  onEdit={handleOpenModal}
-                  formatDate={formatDate}
-                />
-              </TabsContent>
-            </Tabs>
+              {isTahunAjaranLoading ? (
+                <option value="">Memuat tahun ajaran...</option>
+              ) : tahunAjaranData && tahunAjaranData.length > 0 ? (
+                tahunAjaranData.map((year) => (
+                  <option key={year.id} value={year.id}>
+                    {year.nama}
+                  </option>
+                ))
+              ) : (
+                <option value="">Tidak ada tahun ajaran tersedia</option>
+              )}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <ChevronRight className="w-4 h-4 text-gray-500 rotate-90" />
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Render the modal */}
+      <ScheduleTable
+        data={filteredData}
+        onEdit={handleOpenModal}
+        selectedTahunAjaranId={selectedTahunAjaranId}
+        setSelectedTahunAjaranId={setSelectedTahunAjaranId}
+        tahunAjaranData={tahunAjaranData}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        handleOpenLogModal={handleOpenLogModal}
+        hoveredItem={hoveredItem}
+        setHoveredItem={setHoveredItem}
+        hoverPosition={hoverPosition}
+        setHoverPosition={setHoverPosition}
+      />
       <EditJadwalSeminarModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         seminar={selectedSeminar}
         onSave={handleSaveSeminar}
       />
+      <LogJadwalModal
+        isOpen={isLogModalOpen}
+        onClose={handleCloseLogModal}
+        seminarId={selectedSeminarId}
+        logs={filteredLogs}
+        isLoading={isLogLoading}
+        isError={isLogError}
+        error={logError}
+      />
     </DashboardLayout>
-  );
-};
-
-// Komponen Tabel Seminar
-const SeminarTable: FC<{
-  seminars: Seminar[];
-  onEdit: (seminar: Seminar) => void;
-  formatDate: (dateString: string) => string;
-}> = ({ seminars, onEdit, formatDate }) => {
-  return (
-    <Card className="shadow-none rounded-none dark:bg-gray-900 dark:border-gray-700">
-      <Table>
-        <TableHeader className="bg-gray-200 dark:bg-gray-700">
-          <TableRow className="hover:bg-gray-300 dark:hover:bg-gray-600">
-            <TableHead className="w-12 text-center font-semibold dark:text-gray-200">
-              No
-            </TableHead>
-            <TableHead className="font-semibold dark:text-gray-200">
-              Nama Mahasiswa
-            </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
-              Ruangan
-            </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
-              Jam
-            </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
-              Tanggal Seminar
-            </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
-              Dosen Penguji
-            </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
-              Aksi
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {seminars.length === 0 ? (
-            <TableRow className="dark:border-gray-700 dark:hover:bg-gray-700">
-              <TableCell
-                colSpan={7}
-                className="text-center py-6 text-muted-foreground dark:text-gray-400"
-              >
-                Tidak ada data yang ditemukan
-              </TableCell>
-            </TableRow>
-          ) : (
-            seminars.map((seminar, index) => (
-              <TableRow
-                key={seminar.id}
-                className="dark:border-gray-700 dark:hover:bg-gray-700"
-              >
-                <TableCell className="font-medium text-center dark:text-gray-300">
-                  {index + 1}
-                </TableCell>
-                <TableCell className="dark:text-gray-300">
-                  {seminar.namaMahasiswa}
-                </TableCell>
-                <TableCell className="text-center dark:text-gray-300">
-                  {seminar.ruangan}
-                </TableCell>
-                <TableCell className="text-center dark:text-gray-300">
-                  {seminar.jam}
-                </TableCell>
-                <TableCell className="text-center dark:text-gray-300">
-                  {formatDate(seminar.tanggalSeminar)}
-                </TableCell>
-                <TableCell className="text-center dark:text-gray-300">
-                  {seminar.dosenPenguji}
-                </TableCell>
-                <TableCell className="text-center">
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="bg-blue-500 hover:bg-blue-600 text-white"
-                    onClick={() => onEdit(seminar)}
-                  >
-                    <Edit className="h-3.5 w-3.5 mr-1" />
-                    Edit
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </Card>
   );
 };
 

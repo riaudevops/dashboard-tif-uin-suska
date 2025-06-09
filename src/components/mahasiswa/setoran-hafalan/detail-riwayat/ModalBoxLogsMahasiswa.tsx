@@ -18,7 +18,6 @@ function ModalBoxLogsMahasiswa({
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  console.log(dataLogs);
   // utils/formatDateTime.ts
   function formatDateTime(isoTimestamp: string): string {
     const date = new Date(isoTimestamp);
@@ -117,7 +116,7 @@ function ModalBoxLogsMahasiswa({
                     </div>
                   </div>
                 ) : (
-                  <div className="px-3 py-4 rounded-lg bg-gradient-to-r from-red-500/50 to-secondary">
+                  <div key={item.id} className="px-3 py-4 rounded-lg bg-gradient-to-r from-red-500/50 to-secondary">
                     <div className="flex gap-3 justify-start">
                       <div>
                         <CircleX className="stroke-red-500" size={50} />

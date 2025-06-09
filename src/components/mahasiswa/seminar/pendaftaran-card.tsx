@@ -1,21 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useState, useEffect } from "react";
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Lock } from "lucide-react";
-import {
-  Terminal,
-  TypingAnimation,
-  AnimatedSpan,
-} from "@/components/magic-ui/terminal";
-import { useNavigate } from "react-router-dom";
+  Lock,
+  CheckCircle2,
+  Circle,
+  ChevronRight,
+  BookOpen,
+  Building2,
+  GraduationCap,
+  FileText,
+  Star,
+  Info,
+} from "lucide-react";
 
-// Define interfaces clearly with proper documentation
 interface CheckItems {
   hapalan: boolean;
   kerja_praktik: boolean;
@@ -25,41 +22,32 @@ interface CheckItems {
 }
 
 interface PendaftaranCardProps {
-  /**
-   * Information about the seminar application status
-   */
   infoPengajuanSeminar: {
     step: number;
     checkItems?: CheckItems;
   };
-  /** Navigation function to call when button is clicked */
   navigateFunction?: () => void;
+  step1Accessible: boolean;
+  semuaSyaratTerpenuhi: boolean;
 }
 
-/**
- * Component to display Kerja Praktik seminar registration card with requirement verification
- */
 const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
   infoPengajuanSeminar,
   navigateFunction,
+  step1Accessible,
+  semuaSyaratTerpenuhi,
 }) => {
-  const navigate = useNavigate();
-  console.log(navigate);
-
-  // Default checkmark values
   const defaultCheckmarks: CheckItems = {
     hapalan: true,
-    kerja_praktik: true,
-    bimbingan: true,
-    nilaiInstansi: false, // Example of one unmet requirement
-    dailyReport: true,
+    kerja_praktik: false,
+    bimbingan: false,
+    nilaiInstansi: false,
+    dailyReport: false,
   };
 
-  // State to track requirement status
   const [checkmarks, setCheckmarks] = useState<CheckItems>(defaultCheckmarks);
-  const [allRequirementsMet, setAllRequirementsMet] = useState<boolean>(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  // Update checkmarks when props change
   useEffect(() => {
     if (infoPengajuanSeminar.checkItems) {
       setCheckmarks((prevState) => ({
@@ -69,144 +57,218 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
     }
   }, [infoPengajuanSeminar.checkItems]);
 
-  // Update overall status when individual checkmarks change
-  useEffect(() => {
-    const areAllMet = Object.values(checkmarks).every(
-      (value) => value === true
-    );
-    setAllRequirementsMet(areAllMet);
-  }, [checkmarks]);
-
-  /**
-   * Get array of requirement names that are not yet met
-   */
-  const getUnmetRequirements = (): string[] => {
-    const requirementMapping = {
-      hapalan: "Muroja'ah",
-      kerja_praktik: "Verifikasi Kerja Praktik",
-      bimbingan: "Bimbingan Dosen",
-      nilaiInstansi: "Nilai Pembimbing Instansi",
-      dailyReport: "Daily Report",
-    };
-
-    return Object.entries(checkmarks)
-      .filter(([_, isComplete]) => !isComplete)
-      .map(([key]) => requirementMapping[key as keyof CheckItems]);
-  };
-
-  /**
-   * Handle button click
-   */
   const handleButtonClick = (): void => {
-    if (allRequirementsMet && navigateFunction) {
-      navigateFunction();
+    if (semuaSyaratTerpenuhi && step1Accessible && navigateFunction) {
+      setIsAnimating(true);
+      setTimeout(() => {
+        navigateFunction();
+        setIsAnimating(false);
+      }, 300);
     }
   };
 
-  // Common class for check indicators
-  const renderCheckItem = (
-    isComplete: boolean,
-    text: string,
-    delay: number
-  ): JSX.Element => (
-    <AnimatedSpan delay={delay} className="flex items-start gap-2">
-      <span className={isComplete ? "text-green-600" : "text-red-600"}>
-        {isComplete ? "✓" : "✗"}
-      </span>
-      <span>{text}</span>
-    </AnimatedSpan>
-  );
+  const getIconForRequirement = (key: string) => {
+    const iconMap = {
+      hapalan: BookOpen,
+      kerja_praktik: Building2,
+      bimbingan: GraduationCap,
+      dailyReport: FileText,
+      nilaiInstansi: Star,
+    };
+    return iconMap[key as keyof typeof iconMap] || Circle;
+  };
+
+  const renderCheckItem = (isComplete: boolean, text: string, key: string) => {
+    const IconComponent = getIconForRequirement(key);
+
+    return (
+      <div
+        key={key}
+        className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 ${
+          isComplete
+            ? "bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800"
+            : "bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800"
+        }`}
+      >
+        <div
+          className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${
+            isComplete ? "bg-emerald-500 text-white" : "bg-red-500 text-white"
+          }`}
+        >
+          {isComplete ? (
+            <CheckCircle2 className="w-3 h-3" />
+          ) : (
+            <Circle className="w-3 h-3" />
+          )}
+        </div>
+        <IconComponent
+          className={`w-4 h-4 ${
+            isComplete
+              ? "text-emerald-600 dark:text-emerald-400"
+              : "text-red-600 dark:text-red-400"
+          }`}
+        />
+        <span
+          className={`text-sm font-medium flex-1 leading-tight ${
+            isComplete
+              ? "text-emerald-700 dark:text-emerald-300"
+              : "text-red-700 dark:text-red-300"
+          }`}
+        >
+          {text}
+        </span>
+      </div>
+    );
+  };
+
+  // Stepper data
+  const steps = [
+    {
+      label: "Pendaftaran Seminar",
+      step: 0,
+      description: "Upload link dokumen pendaftaran seminar kerja praktik",
+    },
+    {
+      label: "ID Surat Undangan",
+      step: 1,
+      description: "Upload ID surat undangan seminar",
+    },
+    {
+      label: "Surat Undangan",
+      step: 2,
+      description: "Upload link surat undangan seminar",
+    },
+    {
+      label: "Seminar KP",
+      step: 3,
+      description: "Pelaksanaan seminar kerja praktik",
+    },
+    {
+      label: "Pasca Seminar",
+      step: 4,
+      description: "Upload link dokumen pasca seminar",
+    },
+    {
+      label: "Nilai KP",
+      step: 5,
+      description: "Nilai akhir kerja praktik",
+    },
+  ];
+
+  // Get current active step
+  const currentStep = steps.find((s) => s.step === infoPengajuanSeminar.step);
 
   return (
-    <Card className="bg-[#F5F9F4] dark:bg-slate-700 border border-green-400 dark:border-green-500 shadow-none">
-      <CardHeader>
-        <CardTitle className="text-xl font-bold dark:text-white">
-          Permohonan Pendaftaran Seminar Kerja Praktik
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent>
-        <Terminal className="shadow-none border-none dark:bg-slate-800 flex-1 h-full flex flex-col min-h-64">
-          <TypingAnimation>&gt; tif kerja-praktik@latest</TypingAnimation>
-
-          {renderCheckItem(checkmarks.hapalan, "Muroja'ah 1-16 .", 500)}
-          {renderCheckItem(
-            checkmarks.kerja_praktik,
-            "Masih Terdaftar Melaksanakan Kerja Praktik.",
-            1000
-          )}
-          {renderCheckItem(
-            checkmarks.bimbingan,
-            "Sudah melakukan minimal 5 kali bimbingan dosen pa.",
-            1500
-          )}
-          {renderCheckItem(
-            checkmarks.dailyReport,
-            "Daily report sudah di approve Pembimbing.",
-            2000
-          )}
-          {renderCheckItem(
-            checkmarks.nilaiInstansi,
-            "Sudah mendapatkan nilai dari pembimbing instansi.",
-            2500
+    <div className="w-full mx-auto">
+      <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg rounded-lg overflow-hidden">
+        {/* Main Content */}
+        <div className="p-4">
+          {/* Current Step Section - Show at top when requirements are met */}
+          {semuaSyaratTerpenuhi && currentStep && (
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg p-4 mb-4 text-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <span className="text-lg font-bold">
+                      {currentStep.step + 1}
+                    </span>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-bold text-lg">{currentStep.label}</h4>
+                      <span className="bg-white/20 text-xs px-2 py-0.5 rounded-full">
+                        {currentStep.step + 1} dari {steps.length}
+                      </span>
+                    </div>
+                    <p className="text-white/90 text-sm">
+                      {currentStep.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
 
-          <AnimatedSpan delay={3000} className="py-2 text-blue-600">
-            <span>📦 Updated 1 file:</span>
-          </AnimatedSpan>
-          <AnimatedSpan delay={3200} className="pl-4 text-blue-600">
-            <span>- lib/seminar-kerja-praktik.ts</span>
-          </AnimatedSpan>
+          {/* Requirements Section */}
+          <div className="bg-white dark:bg-slate-800/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700 mb-4">
+            <h3 className="font-semibold text-base mb-3 text-slate-700 dark:text-slate-300">
+              Daftar Persyaratan
+            </h3>
 
-          {allRequirementsMet ? (
-            <>
-              <AnimatedSpan delay={3500} className="text-green-500">
-                <span>✅ Success! Sistem siap digunakan.</span>
-              </AnimatedSpan>
-              <AnimatedSpan
-                delay={4000}
-                className="text-gray-600 dark:text-gray-400"
-              >
-                <span>
-                  Silakan mulai pendaftaran Seminar kerja praktik Anda.
-                </span>
-              </AnimatedSpan>
-            </>
-          ) : (
-            <>
-              <AnimatedSpan delay={3500} className="text-yellow-500">
-                <span>
-                  ⚠️ Warning! Terdapat persyaratan yang belum terpenuhi.
-                </span>
-              </AnimatedSpan>
-              <AnimatedSpan
-                delay={4000}
-                className="text-red-500 dark:text-red-400"
-              >
-                <span>
-                  Anda perlu memenuhi persyaratan:{" "}
-                  {getUnmetRequirements().join(", ")}.
-                </span>
-              </AnimatedSpan>
-            </>
+            <div className="grid grid-cols-1 gap-3">
+              {renderCheckItem(checkmarks.hapalan, "Muroja'ah 1-16", "hapalan")}
+              {renderCheckItem(
+                checkmarks.kerja_praktik,
+                "Terdaftar Melaksanakan Kerja Praktik",
+                "kerja_praktik"
+              )}
+              {renderCheckItem(
+                checkmarks.bimbingan,
+                "Minimal 5x bimbingan dosen",
+                "bimbingan"
+              )}
+              {renderCheckItem(
+                checkmarks.dailyReport,
+                "Daily report di-approve",
+                "dailyReport"
+              )}
+              {renderCheckItem(
+                checkmarks.nilaiInstansi,
+                "Nilai pembimbing instansi",
+                "nilaiInstansi"
+              )}
+            </div>
+          </div>
+
+          {/* Status Section - Only show when requirements are not met */}
+          {!semuaSyaratTerpenuhi && (
+            <div className="rounded-xl p-4 border-2 shadow-md transform transition-all duration-300 bg-gradient-to-r from-amber-500 to-orange-500 border-amber-400 text-white shadow-amber-200 dark:shadow-amber-900/50">
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center bg-white/20 backdrop-blur-sm">
+                  <Info className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-bold text-lg mb-1">
+                    ⚠️ Persyaratan Belum Lengkap
+                  </h4>
+                  <p className="text-white/90 text-sm">
+                    Silakan lengkapi semua persyaratan yang diperlukan sebelum
+                    melanjutkan.
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
-        </Terminal>
-      </CardContent>
+        </div>
 
-      <CardFooter>
-        <Button
-          className={`w-full ${
-            allRequirementsMet
-              ? "bg-green-600 hover:bg-green-700 dark:bg-green-400 dark:hover:bg-green-500"
-              : "bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 cursor-not-allowed"
-          }`}
-          disabled={!allRequirementsMet}
-          onClick={handleButtonClick}
-        >
-          Buat Permohonan {!allRequirementsMet && <Lock className="ml-2" />}
-        </Button>
-      </CardFooter>
-    </Card>
+        {/* Action Button */}
+        <div className="border-t border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-800/30">
+          <button
+            className={`w-full h-12 text-sm font-semibold transition-all duration-300 rounded-lg ${
+              semuaSyaratTerpenuhi && step1Accessible
+                ? "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md hover:shadow-lg transform hover:scale-[1.02]"
+                : "bg-slate-300 dark:bg-slate-600 text-slate-500 dark:text-slate-400 cursor-not-allowed"
+            } ${
+              isAnimating ? "animate-pulse" : ""
+            } flex items-center justify-center gap-2`}
+            disabled={!semuaSyaratTerpenuhi || !step1Accessible}
+            onClick={handleButtonClick}
+          >
+            {semuaSyaratTerpenuhi && step1Accessible ? (
+              <>
+                <span>Lanjut</span>
+                <ChevronRight className="w-4 h-4" />
+              </>
+            ) : (
+              <>
+                <Lock className="w-4 h-4" />
+                <span>Lengkapi Persyaratan Terlebih Dahulu</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

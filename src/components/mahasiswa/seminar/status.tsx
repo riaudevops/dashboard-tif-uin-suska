@@ -10,7 +10,7 @@ interface StatusProps {
 }
 
 const Status: React.FC<StatusProps> = ({ status, title, subtitle }) => {
-  if (status === "validasi") {
+  if (status === "belum") {
     return (
       <Alert className="border-blue-100 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/50 transition-colors">
         <InfoIcon className="size-4 text-blue-600 dark:text-blue-400" />
@@ -39,12 +39,12 @@ const Status: React.FC<StatusProps> = ({ status, title, subtitle }) => {
   }
 
   return (
-    <Alert className="border-green-100 bg-green-50 dark:border-green-900 dark:bg-green-900/50 transition-colors">
-      <InfoIcon className="size-4 text-green-600 dark:text-green-400" />
-      <AlertTitle className="text-base font-semibold text-green-800 dark:text-green-200">
+    <Alert className="border-yellow-100 bg-yellow-50 dark:border-yellow-900 dark:bg-yellow-900/50 transition-colors">
+      <InfoIcon className="size-4 text-yellow-600 dark:text-yellow-400" />
+      <AlertTitle className="text-base font-semibold text-yellow-800 dark:text-yellow-200">
         {title}
       </AlertTitle>
-      <AlertDescription className="text-green-600 dark:text-green-400">
+      <AlertDescription className="text-yellow-600 dark:text-yellow-400">
         {subtitle}
       </AlertDescription>
     </Alert>

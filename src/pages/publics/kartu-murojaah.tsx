@@ -618,7 +618,7 @@ const KartuMurojaahPage = () => {
 											</div>
 
 											{/* Bagian Info Bawah */}
-											<div className="p-4 pt-3 border-t flex justify-between border-slate-200 dark:border-slate-700/50">
+											<div className="px-4 py-3 border-t flex justify-between border-slate-200 dark:border-slate-700/50">
 												<div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
 													<Clock className="w-3 h-3" />
 													<span>

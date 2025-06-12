@@ -100,6 +100,162 @@ interface ApiResponse {
   semuaJadwal: Jadwal[];
 }
 
+const SkeletonDashboardCards: FC = () => {
+  return (
+    <div
+      className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse"
+      aria-busy="true"
+    >
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div
+          key={index}
+          className="bg-white dark:bg-gray-800 border-none shadow-md rounded-lg p-4"
+        >
+          <div className="flex justify-between items-center mb-2">
+            <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="h-6 w-6 bg-gray-200 dark:bg-gray-700 rounded-full" />
+          </div>
+          <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded mb-1" />
+          <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+          <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded" />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// const SkeletonSeminarHariIni: FC = () => {
+//   return (
+//     <div className="pt-2 pb-3 animate-pulse" aria-busy="true">
+//       <div className="mb-2.5 flex items-center">
+//         <div className="h-6 w-48 bg-gray-200 dark:bg-gray-700 rounded" />
+//       </div>
+//       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+//         {Array.from({ length: 3 }).map((_, index) => (
+//           <div
+//             key={index}
+//             className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4"
+//           >
+//             <div className="flex justify-between items-start mb-3">
+//               <div className="flex items-center gap-2">
+//                 <div className="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded" />
+//                 <div className="h-6 w-20 bg-gray-200 dark:bg-gray-700 rounded" />
+//               </div>
+//               <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded" />
+//             </div>
+//             <div className="space-y-2 mb-4">
+//               <div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded" />
+//               <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded" />
+//             </div>
+//             <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
+//               <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
+//               <div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded" />
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };
+
+const SkeletonFilter: FC = () => {
+  return (
+    <div
+      className="flex flex-col md:flex-row justify-between items-center gap-4 animate-pulse"
+      aria-busy="true"
+    >
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 w-full">
+        <div className="flex gap-2">
+          <div className="h-9 w-24 bg-gray-200 dark:bg-gray-700 rounded-md" />
+          <div className="h-9 w-24 bg-gray-200 dark:bg-gray-700 rounded-md" />
+        </div>
+        <div className="flex items-center w-full relative">
+          <div className="h-9 w-full bg-gray-200 dark:bg-gray-700 rounded-md" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SkeletonTable: FC = () => {
+  return (
+    <div
+      className="shadow-none rounded-none dark:bg-gray-900 dark:border-gray-700 border border-gray-200 animate-pulse"
+      aria-busy="true"
+    >
+      <Table>
+        <TableHeader className="bg-gray-200 dark:bg-gray-700">
+          <TableRow className="hover:bg-gray-300 dark:hover:bg-gray-600">
+            <TableHead className="text-center w-12">
+              <div className="h-4 w-8 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center">
+              <div className="h-4 w-24 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center">
+              <div className="h-4 w-20 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center">
+              <div className="h-4 w-24 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center">
+              <div className="h-4 w-20 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center">
+              <div className="h-4 w-16 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center">
+              <div className="h-4 w-16 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center">
+              <div className="h-4 w-24 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center">
+              <div className="h-4 w-24 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <TableRow
+              key={index}
+              className="dark:border-gray-700 dark:hover:bg-gray-700"
+            >
+              <TableCell className="text-center">
+                <div className="h-4 w-8 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-4 w-24 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-4 w-20 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-4 w-24 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-4 w-20 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-4 w-16 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-4 w-16 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-4 w-24 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-8 w-48 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
+
 const DosenPengujiNilaiPage: FC = () => {
   const [selectedTahunAjaranId, setSelectedTahunAjaranId] = useState<
     number | undefined
@@ -180,8 +336,11 @@ const DosenPengujiNilaiPage: FC = () => {
   if (isLoading || isTahunAjaranLoading) {
     return (
       <DashboardLayout>
-        <div className="p-6 text-center dark:text-gray-300">
-          <p>Loading data...</p>
+        <div className="p-6 space-y-4">
+          <SkeletonDashboardCards />
+          {/* <SkeletonSeminarHariIni /> */}
+          <SkeletonFilter />
+          <SkeletonTable />
         </div>
       </DashboardLayout>
     );
@@ -201,8 +360,11 @@ const DosenPengujiNilaiPage: FC = () => {
   if (!apiData) {
     return (
       <DashboardLayout>
-        <div className="p-6 text-center dark:text-gray-300">
-          <p>Loading data...</p>
+        <div className="p-6 space-y-4">
+          <SkeletonDashboardCards />
+          {/* <SkeletonSeminarHariIni /> */}
+          <SkeletonFilter />
+          <SkeletonTable />
         </div>
       </DashboardLayout>
     );

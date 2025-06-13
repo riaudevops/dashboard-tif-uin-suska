@@ -336,7 +336,7 @@ const DosenPengujiNilaiPage: FC = () => {
   if (isLoading || isTahunAjaranLoading) {
     return (
       <DashboardLayout>
-        <div className="p-6 space-y-4">
+        <div className="space-y-4">
           <SkeletonDashboardCards />
           {/* <SkeletonSeminarHariIni /> */}
           <SkeletonFilter />

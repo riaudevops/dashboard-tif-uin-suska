@@ -46,13 +46,13 @@ import { motion } from "framer-motion";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 
 type NilaiStatus = "nilaiBelumValid" | "nilaiValid" | "nilaiApprove";
-type status_daftar_kp = "Baru" | "Lanjut" | "Selesai";
+type StatusDaftarKP = "Baru" | "Lanjut" | "Selesai";
 
 interface Mahasiswa {
   nim: string;
   nama: string;
   kelas: string;
-  status_daftar_kp: status_daftar_kp;
+  status_daftar_kp: StatusDaftarKP;
   status_nilai: string;
   semester: string;
   instansi: string;
@@ -140,6 +140,136 @@ const item = {
   show: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300 } },
 };
 
+// Skeleton Components
+const SkeletonCard: FC = () => {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-3" aria-busy="true">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div
+          key={index}
+          className="bg-white dark:bg-gray-800 border-none shadow-md rounded-lg p-4 animate-pulse"
+        >
+          <div className="flex justify-between items-center mb-2">
+            <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="h-6 w-6 bg-gray-200 dark:bg-gray-700 rounded-full" />
+          </div>
+          <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded mb-1" />
+          <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+          <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded" />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const SkeletonFilter: FC = () => {
+  return (
+    <div
+      className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5 w-full animate-pulse"
+      aria-busy="true"
+    >
+      <div className="flex items-center gap-2">
+        <div className="h-9 w-[180px] bg-gray-200 dark:bg-gray-700 rounded-md" />
+      </div>
+      <div className="flex items-center w-full gap-2 relative">
+        <div className="h-9 w-full bg-gray-200 dark:bg-gray-700 rounded-md" />
+      </div>
+    </div>
+  );
+};
+
+const SkeletonRadioGroup: FC = () => {
+  return (
+    <div className="flex flex-wrap gap-4 py-2 animate-pulse" aria-busy="true">
+      {Array.from({ length: 4 }).map((_, index) => (
+        <div key={index} className="flex items-center space-x-2">
+          <div className="h-4 w-4 bg-gray-200 dark:bg-gray-700 rounded-full" />
+          <div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded" />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const SkeletonTable: FC = () => {
+  return (
+    <div
+      className="shadow-none rounded-none dark:bg-gray-900 dark:border-gray-700 border border-gray-200 animate-pulse"
+      aria-busy="true"
+    >
+      <Table>
+        <TableHeader className="bg-gray-200 dark:bg-gray-700">
+          <TableRow className="hover:bg-gray-300 dark:hover:bg-gray-600">
+            <TableHead className="w-12 text-center">
+              <div className="h-4 w-4 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center max-w-4">
+              <div className="h-4 w-8 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center">
+              <div className="h-4 w-24 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center">
+              <div className="h-4 w-20 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center">
+              <div className="h-4 w-16 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center">
+              <div className="h-4 w-12 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center">
+              <div className="h-4 w-24 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center">
+              <div className="h-4 w-20 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+            <TableHead className="text-center">
+              <div className="h-4 w-16 bg-gray-300 dark:bg-gray-600 rounded mx-auto" />
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <TableRow
+              key={index}
+              className="dark:border-gray-700 dark:hover:bg-gray-700"
+            >
+              <TableCell className="text-center">
+                <div className="h-4 w-4 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-4 w-8 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-4 w-24 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-4 w-20 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-4 w-12 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-4 w-16 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-4 w-24 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-4 w-20 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <div className="h-8 w-16 bg-gray-200 dark:bg-gray-600 rounded mx-auto" />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
+
 const KoordinatorNilaiPage: FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<"semua" | NilaiStatus>(
@@ -208,7 +338,7 @@ const KoordinatorNilaiPage: FC = () => {
       nim: student.nim,
       nama: student.nama,
       kelas: student.kelas,
-      status_daftar_kp: student.status_daftar_kp as status_daftar_kp,
+      status_daftar_kp: student.status_daftar_kp as StatusDaftarKP,
       status_nilai: student.status_nilai,
       semester: student.semester,
       instansi: student.instansi,
@@ -367,7 +497,7 @@ const KoordinatorNilaiPage: FC = () => {
                       <TableHead className="text-xs font-semibold dark:text-gray-200 py-2 px-2 sm:py-3 sm:px-4 text-left whitespace-nowrap">
                         Mahasiswa
                       </TableHead>
-                      <TableHead className="text-xs font-semibold dark:text-gray-200 py-2 px-2 sm:py-3 sm:px-px-4 text-center whitespace-nowrap">
+                      <TableHead className="text-xs font-semibold dark:text-gray-200 py-2 px-2 sm:py-3 sm:px-4 text-center whitespace-nowrap">
                         Kelas
                       </TableHead>
                       <TableHead className="text-xs font-semibold dark:text-gray-200 py-2 px-2 sm:py-3 sm:px-4 text-center whitespace-nowrap">
@@ -388,14 +518,11 @@ const KoordinatorNilaiPage: FC = () => {
                     {selectedData.map((student, index) => (
                       <TableRow
                         key={student.nim}
-                        className={`
-                        dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors
-                        ${
-                          index
+                        className={`dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors ${
+                          index % 2
                             ? "bg-emerald-100 dark:bg-gray-800"
                             : "bg-gray-50/50 dark:bg-gray-900/30"
-                        }
-                      `}
+                        }`}
                       >
                         <TableCell className="py-2 px-2 sm:p-4 sm:px-4">
                           <div className="min-w-0">
@@ -502,21 +629,40 @@ const KoordinatorNilaiPage: FC = () => {
     );
   }
 
-  if (isLoading || isTahunAjaranLoading) {
-    return (
-      <DashboardLayout>
-        <div className="text-center text-gray-600 dark:text-gray-300">
-          Memuat data nilai...
-        </div>
-      </DashboardLayout>
-    );
-  }
-
   if (isError) {
     return (
       <DashboardLayout>
         <div className="text-center text-red-600 dark:text-red-300">
           Gagal mengambil data: {(error as Error).message}
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (isLoading || isTahunAjaranLoading) {
+    return (
+      <DashboardLayout>
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div className="flex">
+              <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+                <span className="inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400" />
+                <CalendarCheck2Icon className="w-4 h-4 mr-1.5" />
+                Nilai Kerja Praktik Mahasiswa
+              </span>
+            </div>
+            <div className="flex items-center gap-2 dark:text-gray-200">
+              <div className="relative">
+                <div className="px-3 py-1 pr-8 text-sm bg-white border rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 h-8 w-32 animate-pulse" />
+              </div>
+            </div>
+          </div>
+          <SkeletonCard />
+          <div className="flex flex-col gap-4">
+            <SkeletonFilter />
+            <SkeletonRadioGroup />
+            <SkeletonTable />
+          </div>
         </div>
       </DashboardLayout>
     );
@@ -598,7 +744,7 @@ const KoordinatorNilaiPage: FC = () => {
                   <p className="text-xs text-blue-600 dark:text-blue-300 mt-0.5">
                     Mahasiswa
                   </p>
-                  <div className="h-1.5 w-full bg-blueq-100 dark:bg-blue-900 rounded-full mt-2">
+                  <div className="h-1.5 w-full bg-blue-100 dark:bg-blue-900 rounded-full mt-2">
                     <motion.div
                       initial={{ width: "0%" }}
                       animate={{
@@ -902,7 +1048,7 @@ const StudentTable: FC<{
                 </TableCell>
                 <TableCell className="text-center">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
                       nilaiStatusBadgeConfig[
                         student.status_nilai === "Nilai Belum Valid"
                           ? "nilaiBelumValid"
@@ -942,24 +1088,22 @@ const StudentTable: FC<{
                 <TableCell className="text-center">
                   {student.status_nilai === "Nilai Approve" &&
                   student.validasi_nilai_is_approve === true ? (
-                    <div className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-emerald-100/70 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                    <div className="inline-block px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/50">
                       Selesai
                     </div>
                   ) : (
-                    <span className="text-gray-500 dark:text-gray-400 text-xs">
-                      -
-                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">-</span>
                   )}
                 </TableCell>
                 <TableCell className="text-center">
                   <Button
                     variant="default"
                     size="sm"
-                    className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white mx-auto dark:from-emerald-600 dark:to-teal-600 dark:hover:from-emerald-700 dark:hover:to-teal-700 border-0 transition-all flex items-center gap-1.5 py-1 rounded-md text-xs"
+                    className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-semibold mx-auto dark:text-white rounded-sm transition-colors duration-150 flex items-center"
                     onClick={() => onViewDetail(student)}
                   >
-                    <Eye className="h-3.5 w-3.5" />
-                    <span>Detail</span>
+                    <Eye className="h-4 w-4 mr-2" />
+                    Detail
                   </Button>
                 </TableCell>
               </TableRow>

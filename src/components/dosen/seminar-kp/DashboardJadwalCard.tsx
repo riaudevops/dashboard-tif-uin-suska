@@ -195,6 +195,7 @@ const DashboardJadwalCard: FC<DashboardJadwalCardProps> = ({
                 }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
                 className="h-1.5 bg-amber-500 rounded-full"
+                style={{ maxWidth: "100%" }}
               />
             </div>
           </CardContent>

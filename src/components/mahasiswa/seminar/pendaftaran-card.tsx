@@ -204,7 +204,7 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
               )}
               {renderCheckItem(
                 checkmarks.bimbingan,
-                "Minimal 5x Bimbingan dengan Dosen Pembimbing",
+                "Minimal 5x Bimbingan Dengan Dosen Pembimbing",
                 "bimbingan"
               )}
               {renderCheckItem(

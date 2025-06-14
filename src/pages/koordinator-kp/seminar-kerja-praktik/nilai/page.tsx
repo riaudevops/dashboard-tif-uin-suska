@@ -438,7 +438,7 @@ const KoordinatorNilaiPage: FC = () => {
       nilai_huruf: string | undefined
     ) => {
       if (!nilai_akhir) return "-";
-      const formattedScore = parseFloat(String(nilai_akhir)).toFixed(1);
+      const formattedScore = parseFloat(String(nilai_akhir)).toFixed(2);
       const letterGrade = nilai_huruf ? ` (${nilai_huruf})` : "";
       return `${formattedScore}${letterGrade}`;
     };

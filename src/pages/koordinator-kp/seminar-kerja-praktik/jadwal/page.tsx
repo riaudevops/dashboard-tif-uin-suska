@@ -188,7 +188,6 @@ const KoordinatorJadwalSeminarPage: FC = () => {
     data: tahunAjaranData,
     isLoading: isTahunAjaranLoading,
     isError: isTahunAjaranError,
-    error: tahunAjaranError,
   } = useQuery<TahunAjaran[]>({
     queryKey: ["tahun-ajaran"],
     queryFn: APISeminarKP.getTahunAjaran,

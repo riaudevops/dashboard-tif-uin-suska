@@ -655,9 +655,12 @@ const KoordinatorValidasiBerkasPage: FC = () => {
                     <div className="h-1.5 w-full bg-blue-100 dark:bg-blue-900 rounded-full mt-2">
                       <motion.div
                         initial={{ width: "0%" }}
-                        animate={{ width: "100%" }}
+                        animate={{
+                          width: totalMahasiswa > 0 ? "100%" : "0%",
+                        }}
                         transition={{ duration: 1.5, ease: "easeOut" }}
                         className="h-1.5 bg-blue-500 rounded-full"
+                        style={{ maxWidth: "100%" }}
                       />
                     </div>
                   </CardContent>

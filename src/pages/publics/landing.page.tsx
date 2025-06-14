@@ -410,13 +410,13 @@ const LandingPage = () => {
 							threshold={0.2}
 							delay={1750}
 						>
-							<div className="flex text-white text-md md:text-2xl tracking-tighter items-center justify-center transition duration-300 hover:-translate-y-1">
+							<div className="flex text-white dark:text-pink-200 text-md md:text-2xl tracking-tighter items-center justify-center transition duration-300 hover:-translate-y-1">
 								{!auth.isAuthenticated ? (
 									<div
 										onClick={handleKeycloakAuth}
 										className="flex items-center justify-center px-6 py-2 gap-3 bg-gradient-to-bl hover:bg-gradient-to-tl from-pink-600 dark:from-violet-800 to-orange-600 dark:to-pink-800 cursor-pointer border border-black rounded-3xl"
 									>
-										<FingerprintIcon color="white" />
+										<FingerprintIcon />
 										<span>Mulai Sekarang</span>
 									</div>
 								) : (
@@ -424,7 +424,7 @@ const LandingPage = () => {
 										to={dashboardURL}
 										className="flex items-center justify-center px-6 py-2 gap-3 bg-gradient-to-bl hover:bg-gradient-to-tl from-pink-600 dark:from-violet-800 to-orange-600 dark:to-pink-800 cursor-pointer border border-black rounded-3xl"
 									>
-										<CircleArrowOutUpRight color="white" />
+										<CircleArrowOutUpRight />
 										<span>Pergi Ke Dashboard</span>
 									</NavLink>
 								)}

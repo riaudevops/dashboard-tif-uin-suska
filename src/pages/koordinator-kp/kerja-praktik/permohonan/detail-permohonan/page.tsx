@@ -28,51 +28,11 @@ import APIDaftarKP from "@/services/api/mahasiswa/daftar-kp.service";
 import { toast } from "@/hooks/use-toast";
 
 const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [response, setResponse] = useState<
-    | {
-        response: Boolean;
-        message: string;
-      }
-    | null
-    | string
-  >(null);
-
   const [isRejectButtonClicked, setIsRejectButtonClicked] =
     useState<boolean>(false);
   const [rejectMessage, setRejectMessage] = useState<string>("");
-  const [level_akses, setlevel_akses] = useState(1);
-  const [id_instansi, setid_instansi] = useState("");
-  const [tujuan_surat_instansi, settujuan_surat_instansi] = useState("");
-  const [link_surat_pengantar, setlink_surat_pengantar] = useState("");
-  const [link_surat_balasan, setlink_surat_balasan] = useState("");
-  const [id_surat_pengajuan_dospem, set_id_surat_pengajuan_dospem] =
-    useState("");
-  const [link_surat_penunjukan_dospem, setlink_surat_penunjukan_dospem] =
-    useState("");
-  const [link_surat_perpanjangan_kp, setlink_surat_perpanjangan_kp] =
-    useState("");
-  const [kelas_kp, setkelas_kp] = useState("");
-  const [alasan_lanjut_kp, setalasan_lanjut_kp] = useState("");
-  const [judul_kp, setjudul_kp] = useState("");
-  const [status, setstatus] = useState("");
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const { id } = useParams();
-
-  // const getstatusmahasiswa = (status: string) => {
-  //   switch (status) {
-  //     case "Baru":
-  //       return "bg-green-300 ";
-  //     case "Lanjut":
-  //       return "bg-yellow-500";
-  //     case "Selesai":
-  //       return "bg-red-500 ";
-  //     case "Gagal":
-  //       return "bg-red-500";
-  //     default:
-  //       return "bg-gray-500";
-  //   }
-  // };
 
   const queryClient = useQueryClient();
 
@@ -110,6 +70,11 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
     },
   });
 
+  const { data: dataKPMahasiswa } = useQuery({
+    queryKey: ["kp-terbaru-mahasiswa-detail-koordinator-kp"],
+    queryFn: () => APIDaftarKP.getDataKPMahasiswa(id),
+  });
+
   const tolakMutation = useMutation({
     mutationFn: (data: any) => APIDaftarKP.postTolakBerkasMahasiswa(data),
     onSuccess: (data: any) => {
@@ -145,114 +110,44 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
     tolakMutation.mutate({ id, message: rejectMessage });
   }
 
-  async function handleOnAccept1(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setIsLoading((prev) => !prev);
-    try {
-      const axios = api();
-      const response = await axios.post(
-        `${
-          import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
-        }/koordinator-kp/daftar-kp/berkas-mahasiswa`,
-        {
-          id,
-          status,
-          kelas_kp,
-          tujuan_surat_instansi,
-          link_surat_pengantar,
-          link_surat_balasan,
-          link_surat_penunjukan_dospem,
-          link_surat_perpanjangan_kp,
-          id_surat_pengajuan_dospem,
-          level_akses,
-          judul_kp,
-          alasan_lanjut_kp,
-          id_instansi,
-        }
-      );
+  // async function handleOnEdit(e: FormEvent<HTMLFormElement>) {
+  //   e.preventDefault();
+  //   setIsLoading((prev) => !prev);
+  //   try {
+  //     const axios = api();
+  //     const response = await axios.post(
+  //       `${
+  //         import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
+  //       }/koordinator-kp/daftar-kp/berkas-mahasiswa`,
+  //       {
+  //         id,
+  //         status,
+  //         kelas_kp,
+  //         tujuan_surat_instansi,
+  //         link_surat_pengantar,
+  //         link_surat_balasan,
+  //         link_surat_penunjukan_dospem,
+  //         link_surat_perpanjangan_kp,
+  //         id_surat_pengajuan_dospem,
+  //         level_akses,
+  //         judul_kp,
+  //         alasan_lanjut_kp,
+  //         id_instansi,
+  //       }
+  //     );
 
-      setResponse(response.data.message);
-      const pointer = setTimeout(() => {
-        setResponse(null);
-        clearTimeout(pointer);
-      }, 1000);
+  //     setResponse(response.data.message);
+  //     const pointer = setTimeout(() => {
+  //       setResponse(null);
+  //       clearTimeout(pointer);
+  //     }, 1000);
 
-      setIsEditing((prev) => !prev);
-      setIsLoading((prev) => !prev);
-    } catch (e) {
-      throw new Error("Terjadi kesalahan pada sistem");
-    }
-  }
-
-  async function handleOnReject1(e: FormEvent<HTMLFormElement>) {
-    e.stopPropagation();
-    e.preventDefault();
-    try {
-      const axios = api();
-      const response = await axios.post(
-        `${
-          import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
-        }/koordinator-kp/daftar-kp/tolak-berkas-mahasiswa`,
-        {
-          id: id,
-          message: rejectMessage,
-        }
-      );
-
-      setIsLoading((prev) => !prev);
-
-      setResponse(response.data.message);
-      const pointer = setTimeout(() => {
-        setResponse(null);
-        clearTimeout(pointer);
-      }, 1000);
-
-      setIsRejectButtonClicked((prev) => !prev);
-    } catch (e) {
-      throw new Error("Terjadi kesalahan pada sistem");
-    }
-  }
-
-  useEffect(() => {
-    (async function () {
-      const axios = api();
-      const response = await axios.get(
-        `${
-          import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
-        }/koordinator-kp/daftar-kp/get-data-kp/${id}`
-      );
-      // if (response.data?.data?.level_akses % 2 === 0) {
-      //   setIsEditing(true);
-      // }
-      setlevel_akses(response.data?.data?.level_akses);
-      setid_instansi(response.data?.data?.id_instansi);
-      settujuan_surat_instansi(response.data?.data?.tujuan_surat_instansi);
-      setlink_surat_pengantar(response.data?.data?.document[1].data);
-      setlink_surat_balasan(response.data?.data?.document[2].data);
-      set_id_surat_pengajuan_dospem(response.data?.data?.document[3].data);
-      setlink_surat_penunjukan_dospem(response.data?.data?.document[4].data);
-      setlink_surat_perpanjangan_kp(response.data?.data?.document[5].data);
-      setkelas_kp(response.data?.data?.kelas_kp);
-      setalasan_lanjut_kp(response.data?.data?.alasan_lanjut_kp);
-      setjudul_kp(response.data?.data?.judul_kp);
-      setstatus(response.data?.data?.status);
-    })();
-  }, []);
-
-  // Mock data - in a real app, this would come from your API
-  // const biodataMahasiswa = {
-  //   name: "John Doe",
-  //   nim: "123456789",
-  //   status: "Baru",
-  //   instansi: "PT. ABC",
-  //   semester: 6,
-  //   PembimbingInstansi: "Jane Smith",
-  //   dosenPembimbing: "Dr. John Smith",
-  //   tanggalMulai: "03/02/2024",
-  //   tanggalSelesai: "03/05/2024",
-  //   linkGdrive: "http://drive.google.com/drive/folders/file.pdf",
-  //   alasanPerpanjangan: "Habis masa waktu",
-  // };
+  //     setIsEditing((prev) => !prev);
+  //     setIsLoading((prev) => !prev);
+  //   } catch (e) {
+  //     throw new Error("Terjadi kesalahan pada sistem");
+  //   }
+  // }
 
   // Render different content based on status
   const renderStatusContent = (
@@ -360,12 +255,6 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                 <Textarea
                   id="tujuan-surat-instansi"
                   key="tujuan_surat_instansi"
-                  onChange={(e) => settujuan_surat_instansi(e.target.value)}
-                  value={
-                    isEditing
-                      ? tujuan_surat_instansi
-                      : biodataMahasiswa?.tujuan_surat_instansi || ""
-                  }
                   className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-md block w-full p-2.5 
                       dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:placeholder-gray-400 
                       focus:ring-primary focus:border-primary focus:outline-none min-h-24 resize-none"
@@ -393,15 +282,6 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                   className="p-2 border border-gray-300 rounded-lg bg-gray-100"
                   type="text"
                   id="surat-pengantar"
-                  onChange={(e) => setlink_surat_pengantar(e.target.value)}
-                  value={
-                    isEditing
-                      ? link_surat_pengantar
-                      : (biodataMahasiswa &&
-                          biodataMahasiswa.document &&
-                          biodataMahasiswa?.document[1]?.data) ||
-                        ""
-                  }
                 />
               </div>
 
@@ -412,15 +292,6 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
               >
                 <Label htmlFor="surat-balasan">Surat Balasan Instansi : </Label>
                 <Input
-                  onChange={(e) => setlink_surat_balasan(e.target.value)}
-                  value={
-                    isEditing
-                      ? link_surat_balasan
-                      : (biodataMahasiswa &&
-                          biodataMahasiswa.document &&
-                          biodataMahasiswa?.document[2]?.data) ||
-                        ""
-                  }
                   readOnly={!isEditing}
                   className="p-2 border border-gray-300 rounded-lg bg-gray-100"
                   type="text"
@@ -441,17 +312,6 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                   className="p-2 border border-gray-300 rounded-lg bg-gray-100"
                   type="text"
                   id="id-pengajuan"
-                  onChange={(e) =>
-                    set_id_surat_pengajuan_dospem(e.target.value)
-                  }
-                  value={
-                    isEditing
-                      ? id_surat_pengajuan_dospem
-                      : (biodataMahasiswa &&
-                          biodataMahasiswa.document &&
-                          biodataMahasiswa?.document[3]?.data) ||
-                        ""
-                  }
                 />
               </div>
 
@@ -468,17 +328,6 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                   className="p-2 border border-gray-300 rounded-lg bg-gray-100"
                   type="text"
                   id="surat-penunjukkan"
-                  onChange={(e) =>
-                    setlink_surat_penunjukan_dospem(e.target.value)
-                  }
-                  value={
-                    isEditing
-                      ? link_surat_penunjukan_dospem
-                      : (biodataMahasiswa &&
-                          biodataMahasiswa.document &&
-                          biodataMahasiswa?.document[4]?.data) ||
-                        ""
-                  }
                 />
               </div>
               <div
@@ -493,17 +342,6 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                     className="p-2 border border-gray-300 rounded-lg bg-gray-100"
                     type="text"
                     id="surat-lanjut"
-                    onChange={(e) =>
-                      setlink_surat_perpanjangan_kp(e.target.value)
-                    }
-                    value={
-                      isEditing
-                        ? link_surat_perpanjangan_kp
-                        : (biodataMahasiswa &&
-                            biodataMahasiswa.document &&
-                            biodataMahasiswa?.document[5]?.data) ||
-                          ""
-                    }
                   />
                 </div>
                 <div>
@@ -514,12 +352,6 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                     readOnly={!isEditing}
                     className="p-2 border border-gray-300 rounded-lg bg-gray-100"
                     id="alasan-lanjut-kp"
-                    onChange={(e) => setalasan_lanjut_kp(e.target.value)}
-                    value={
-                      isEditing
-                        ? alasan_lanjut_kp
-                        : biodataMahasiswa?.alasan_lanjut_kp || ""
-                    }
                   />
                 </div>
               </div>
@@ -533,7 +365,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
               <div className="flex justify-end gap-3 mt-6">
                 <Button
                   onClick={() => setIsRejectButtonClicked(true)}
-                  disabled={isLoading}
+                  disabled={accMutation.isPending || tolakMutation.isPending}
                   className={
                     "px-4 py-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-md shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
                   }
@@ -542,7 +374,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                 </Button>
                 <form onSubmit={handleOnAccept}>
                   <Button
-                    disabled={isLoading}
+                    disabled={accMutation.isPending || tolakMutation.isPending}
                     className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-md shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Validasi Permohonan
@@ -550,24 +382,11 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                 </form>
               </div>
             )}
-          {/* {biodataMahasiswa?.level_akses % 2 === 1 && !isEditing && (
-            <div className="flex justify-end gap-3 mt-6">
-              <Button
-                onClick={() => setIsEditing((prev) => !prev)}
-                disabled={isLoading}
-                className={
-                  "px-4 py-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-md shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
-                }
-              >
-                Edit
-              </Button>
-            </div>
-          )} */}
           {biodataMahasiswa?.level_akses % 2 === 1 && isEditing && (
             <div className="flex justify-end gap-3 mt-6">
               <Button
                 onClick={() => setIsEditing((prev) => !prev)}
-                disabled={isLoading}
+                disabled={accMutation.isPending || tolakMutation.isPending}
                 className={
                   "px-4 py-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-md shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
                 }
@@ -576,7 +395,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
               </Button>
               <form onSubmit={handleOnAccept}>
                 <Button
-                  disabled={isLoading}
+                  disabled={accMutation.isPending || tolakMutation.isPending}
                   className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-md shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Perbarui
@@ -599,11 +418,6 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
               : ""
           }
         >
-          {response && (
-            <div className="fixed p-2 left-[50%] -translate-x-0.5 rounded-lg bg-green-600 text-white">
-              {response as string}
-            </div>
-          )}
           {isRejectButtonClicked && (
             <Card
               onClick={(e: any) => e.stopPropagation()}

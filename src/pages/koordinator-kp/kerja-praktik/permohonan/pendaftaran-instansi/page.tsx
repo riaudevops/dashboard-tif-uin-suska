@@ -48,7 +48,6 @@ function KoordinatorKerjaPraktikInstansiPage() {
   const navigate = useNavigate();
 
   const { data: dataInstansi, isLoading } = useQuery({
-    staleTime : Infinity,
     queryKey: ["data-instansi"],
     queryFn: () =>
       APIDaftarKP.getAllDataInstansi().then((res) => {

@@ -3,7 +3,7 @@ import ProgressBar from "@/components/mahasiswa/daftar-kp/ProgressBar";
 import { act, FormEvent, useEffect, useState } from "react";
 import RiwayatCard from "@/components/mahasiswa/daftar-kp/RiwayatCard";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Card,
   CardHeader,
@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { IsPendaftaranKPClosedSync } from "@/helpers/batas-waktu-pendaftaran..validator";
 import { toast } from "@/hooks/use-toast";
+import { UpdatePendaftaranMahasiswaInterface } from "@/interfaces/pages/mahasiswa/kerja-praktik/daftar-kp/pendaftaran.interface";
 
 interface KPInterface {
   id: string;
@@ -34,9 +35,7 @@ export default function MahasiswaKerjaPraktekDaftarKpPermohonanPage() {
   const [idLog, setIdLog] = useState<string | null>(null);
   const [isPenolakanInstansiModalOpen, setIsPenolakanInstansiModalOpen] =
     useState<boolean>(false);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean | null>(
-    false
-  );
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
 
   // KPInterface = aktif
   // null = data gagal didapatkan
@@ -196,13 +195,21 @@ export default function MahasiswaKerjaPraktekDaftarKpPermohonanPage() {
     );
   }
 
+  console.log(activeKP);
+
   return (
     <DashboardLayout>
       {isPenolakanInstansiModalOpen && (
-        <DetailDialog
+        <PenolakanInstansiDialog
           setIsPenolakanInstansiModalOpen={() =>
             setIsPenolakanInstansiModalOpen((prev) => !prev)
           }
+        />
+      )}
+      {isDetailModalOpen && (
+        <DetailDialog
+          activeKP={activeKP}
+          setIsDetailModalOpen={() => setIsDetailModalOpen((prev) => !prev)}
         />
       )}
       {isLoading && (
@@ -230,30 +237,43 @@ export default function MahasiswaKerjaPraktekDaftarKpPermohonanPage() {
                   Tidak ada data riwayat KP yang tersedia saat ini.
                 </Card>
               )}
+              {activeKP && (
+                <RiwayatCard
+                  count={riwayatKP.length}
+                  setIsPenolakanInstansiModalOpen={() =>
+                    setIsPenolakanInstansiModalOpen((prev) => !prev)
+                  }
+                  setIsDetailModalOpen={() =>
+                    setIsDetailModalOpen((prev) => !prev)
+                  }
+                  setIdLog={() => setIdLog(activeKP.id)}
+                  key={activeKP.id}
+                  status={activeKP.status}
+                  tanggalMulai={new Date(activeKP.tanggal_mulai).toDateString()}
+                  namaInstansi={activeKP.instansi.nama || ""}
+                />
+              )}
               {riwayatKP &&
                 riwayatKP.length > 0 &&
-                riwayatKP.map(
-                  (
-                    { id, status, tanggal_mulai, instansi: { nama } }: any,
-                    i: number
-                  ) => (
-                    <RiwayatCard
-                      setIsPenolakanInstansiModalOpen={() =>
-                        setIsPenolakanInstansiModalOpen((prev) => !prev)
-                      }
-                      setIsDetailModalOpen={() =>
-                        setIsDetailModalOpen((prev) => !prev)
-                      }
-                      setIdLog={() => setIdLog(id)}
-                      key={i}
-                      status={status}
-                      tanggalMulai={tanggal_mulai
-                        .slice(0, 10)
-                        .replaceAll("-", "/")}
-                      namaInstansi={nama || ""}
-                    />
-                  )
-                )}
+                riwayatKP
+                  .filter((e: any) => e.status === "Gagal")
+                  .map(
+                    (
+                      { id, status, tanggal_mulai, instansi: { nama } }: any,
+                      i: number
+                    ) => (
+                      <RiwayatCard
+                        count={i}
+                        setIdLog={() => setIdLog(id)}
+                        key={i}
+                        status={status}
+                        tanggalMulai={tanggal_mulai
+                          .slice(0, 10)
+                          .replaceAll("-", "/")}
+                        namaInstansi={nama || ""}
+                      />
+                    )
+                  )}
               {idLog && (
                 <LogComponent data={log.data} setIdLog={() => setIdLog("")} />
               )}
@@ -286,30 +306,43 @@ export default function MahasiswaKerjaPraktekDaftarKpPermohonanPage() {
                   Tidak ada data riwayat KP yang tersedia saat ini.
                 </Card>
               )}
+              {activeKP && (
+                <RiwayatCard
+                  count={riwayatKP.length}
+                  setIsPenolakanInstansiModalOpen={() =>
+                    setIsPenolakanInstansiModalOpen((prev) => !prev)
+                  }
+                  setIsDetailModalOpen={() =>
+                    setIsDetailModalOpen((prev) => !prev)
+                  }
+                  setIdLog={() => setIdLog(activeKP.id)}
+                  key={activeKP.id}
+                  status={activeKP.status}
+                  tanggalMulai={new Date(activeKP.tanggal_mulai).toDateString()}
+                  namaInstansi={activeKP.instansi.nama || ""}
+                />
+              )}
               {riwayatKP &&
                 riwayatKP.length > 0 &&
-                riwayatKP.map(
-                  (
-                    { id, status, tanggal_mulai, instansi: { nama } }: any,
-                    i: number
-                  ) => (
-                    <RiwayatCard
-                      setIsPenolakanInstansiModalOpen={() =>
-                        setIsPenolakanInstansiModalOpen((prev) => !prev)
-                      }
-                      setIsDetailModalOpen={() =>
-                        setIsDetailModalOpen((prev) => !prev)
-                      }
-                      setIdLog={() => setIdLog(id)}
-                      key={i}
-                      status={status}
-                      tanggalMulai={tanggal_mulai
-                        .slice(0, 10)
-                        .replaceAll("-", "/")}
-                      namaInstansi={nama || ""}
-                    />
-                  )
-                )}
+                riwayatKP
+                  .filter((e: any) => e.status === "Gagal")
+                  .map(
+                    (
+                      { id, status, tanggal_mulai, instansi: { nama } }: any,
+                      i: number
+                    ) => (
+                      <RiwayatCard
+                        count={i}
+                        setIdLog={() => setIdLog(id)}
+                        key={i}
+                        status={status}
+                        tanggalMulai={tanggal_mulai
+                          .slice(0, 10)
+                          .replaceAll("-", "/")}
+                        namaInstansi={nama || ""}
+                      />
+                    )
+                  )}
               {idLog && (
                 <LogComponent data={log} setIdLog={() => setIdLog("")} />
               )}
@@ -330,11 +363,183 @@ interface LogInterface {
   }[];
 }
 
-interface DetailDialog {
+interface DetailModalInterface {
+  setIsDetailModalOpen: () => void;
+  activeKP: any;
+}
+
+function DetailDialog({
+  activeKP,
+  setIsDetailModalOpen,
+}: DetailModalInterface) {
+  const queryClient = useQueryClient();
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const mutation = useMutation({
+    mutationFn: (data: UpdatePendaftaranMahasiswaInterface) =>
+      APIDaftarKP.updatePendaftaranMahasiswa(data),
+    onSuccess: (data) => {
+      toast({
+        title: "Sukses",
+        description:
+          data.message ||
+          "Berhasil mengubah judul laporan / kelas kerja praktek",
+        duration: 3000,
+      });
+      setIsEditing((prev) => !prev);
+      queryClient.invalidateQueries({
+        queryKey: ["kp-terbaru-mahasiswa"],
+        exact: true,
+      });
+    },
+    onError: (data) => {
+      toast({
+        title: "Gagal",
+        description:
+          data.message ||
+          "Berhasil mengubah judul laporan / kelas kerja praktek",
+        duration: 3000,
+      });
+    },
+  });
+
+  async function handleOnSubmitUpdateDetailKP(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    mutation.mutate(data);
+  }
+  return (
+    <Card className="flex flex-col gap-4 absolute left-[50%] -translate-x-1/2 top-[50%] -translate-y-1/2 min-w-[50%] h-[80%] overflow-scroll p-2 bg-white rounded-lg shadow-md">
+      <CardHeader>
+        <CardTitle className="text-center text-lg font-bold tracking-wide">
+          Informasi Kerja Praktek
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Card className="p-4 mb-4">
+          <CardTitle>Instansi</CardTitle>
+          <Label>Nama Instansi:</Label>
+          <p>{activeKP.instansi.nama}</p>
+          <Label>Jenis :</Label>
+          <p>{activeKP.instansi.jenis}</p>
+          <Label>Nama Penanggung Jawab :</Label>
+          <p>{activeKP.instansi.nama_pj}</p>
+          <Label>No HP Penanggung Jawab : :</Label>
+          <p>{activeKP.instansi.no_hp_pj}</p>
+          <Label>Profil Singkat :</Label>
+          <p>{activeKP.instansi.profil_singkat}</p>
+          <br />
+          <Label>Alamat :</Label>
+          <p>{activeKP.instansi.alamat}</p>
+          <Label>Longitude :</Label>
+          <p>{activeKP.instansi.longitude}</p>
+          <Label>Latitude :</Label>
+          <p>{activeKP.instansi.latitude}</p>
+          <Label>Radius :</Label>
+          <p>{activeKP.instansi.radius}</p>
+        </Card>
+
+        <Card className="p-4">
+          <form onSubmit={handleOnSubmitUpdateDetailKP}>
+            <CardTitle className="mb-2">Informasi Kerja Praktek</CardTitle>
+            <Label>Tujuan Surat Instansi :</Label>
+            <p>{activeKP.tujuan_surat_instansi}</p>
+            <Label>Tanggal Mulai :</Label>
+            <p>{activeKP.tanggal_mulai}</p>
+            <Label>Tanggal Pengajuan :</Label>
+            <p>{activeKP.tanggal_pengajuan}</p>
+            <Label htmlFor="kelas-kerja-praktek">Kelas Kerja Praktek :</Label>
+            {isEditing ? (
+              <CardContent className="text-black bg-white p-0 rounded-md border-black border-[1px]">
+                <select
+                  name="kelas_kp"
+                  id="kelas-kerja-praktek"
+                  className="bg-white block w-[100%] p-2"
+                >
+                  <option value="">Pilih Kelas</option>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                  <option value="E">E</option>
+                  <option value="F">F</option>
+                  <option value="G">G</option>
+                  <option value="H">H</option>
+                  <option value="I">I</option>
+                  <option value="J">J</option>
+                  <option value="K">K</option>
+                  <option value="L">L</option>
+                  <option value="M">M</option>
+                  <option value="N">N</option>
+                  <option value="O">O</option>
+                  <option value="P">P</option>
+                  <option value="Q">Q</option>
+                  <option value="R">R</option>
+                  <option value="S">S</option>
+                  <option value="T">T</option>
+                  <option value="U">U</option>
+                  <option value="V">V</option>
+                  <option value="W">W</option>
+                  <option value="X">X</option>
+                  <option value="Y">Y</option>
+                  <option value="Z">Z</option>
+                </select>
+              </CardContent>
+            ) : (
+              <p>{activeKP.kelas_kp || "Kelas Kerja Praktek belum Tersedia"}</p>
+            )}
+            <Label htmlFor="laporan-kerja-praktek">
+              Judul Laporan Kerja Praktek :
+            </Label>
+            {isEditing ? (
+              <Input id="laporan-kerja-praktek" name="judul_kp" />
+            ) : (
+              <p>{activeKP.judul_kp || "Judul belum tersedia"} </p>
+            )}
+            <div className="mt-2 flex flex-col gap-2">
+              {isEditing && (
+                <>
+                  <Button disabled={mutation.isPending} type="submit">
+                    Kirim
+                  </Button>
+                  <Button
+                    disabled={mutation.isPending}
+                    type="reset"
+                    onClick={() => setIsEditing((prev) => !prev)}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              )}
+            </div>
+          </form>
+          {!isEditing && (
+            <div className="mt-2 flex flex-col gap-2">
+              <Button onClick={() => setIsEditing((prev) => !prev)}>
+                Edit
+              </Button>
+              <Button
+                disabled={mutation.isPending}
+                type="button"
+                onClick={setIsDetailModalOpen}
+              >
+                Tutup
+              </Button>
+            </div>
+          )}
+        </Card>
+      </CardContent>
+    </Card>
+  );
+}
+
+interface PenolakanInstansiDialogInterface {
   setIsPenolakanInstansiModalOpen: () => void;
 }
 
-function DetailDialog({ setIsPenolakanInstansiModalOpen }: DetailDialog) {
+function PenolakanInstansiDialog({
+  setIsPenolakanInstansiModalOpen,
+}: PenolakanInstansiDialogInterface) {
   const mutation = useMutation({
     mutationFn: (link_surat_penolakan_instansi: string) =>
       APIDaftarKP.postSuratPenolakanInstansi(link_surat_penolakan_instansi),

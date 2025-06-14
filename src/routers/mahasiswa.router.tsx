@@ -38,7 +38,6 @@ export const mahasiswaRouter = [
     element: (
       <ProtectedRoute roles={["mahasiswa"]}>
         <MahasiswaKerjaPraktekDaftarKpPermohonanPage />
-        //{" "}
       </ProtectedRoute>
     ),
   },
@@ -47,7 +46,6 @@ export const mahasiswaRouter = [
     element: (
       <ProtectedRoute roles={["mahasiswa"]}>
         <MahasiswaKerjaPraktekDaftarKpPermohonanFormPendaftaranPage />
-        //{" "}
       </ProtectedRoute>
     ),
   },
@@ -56,7 +54,6 @@ export const mahasiswaRouter = [
     element: (
       <ProtectedRoute roles={["mahasiswa"]}>
         <MahasiswaKerjaPraktekDaftarKpPermohonanFormDaftarInstansiPage />
-        //{" "}
       </ProtectedRoute>
     ),
   },
@@ -65,7 +62,6 @@ export const mahasiswaRouter = [
     element: (
       <ProtectedRoute roles={["mahasiswa"]}>
         <MahasiswaKerjaPraktekDaftarKpKelengkapanBerkasPage />
-        //{" "}
       </ProtectedRoute>
     ),
   },

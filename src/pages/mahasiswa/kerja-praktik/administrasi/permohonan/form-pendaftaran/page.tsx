@@ -18,20 +18,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import APIDaftarKP from "@/services/api/mahasiswa/daftar-kp.service";
-import { api } from "@/lib/axios-instance";
 import { CreatePendaftaranMahasiswaInterface } from "@/interfaces/pages/mahasiswa/kerja-praktik/daftar-kp/pendaftaran.interface";
 import { toast } from "@/hooks/use-toast";
-
-interface CommonResponse {
-  response: boolean;
-  message: string;
-}
 
 function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
   const [date, setDate] = useState<Date>(new Date());
   const navigate = useNavigate();
 
-  const { data: dataInstansi, isLoading } = useQuery({
+  const { data: dataInstansi } = useQuery({
     queryKey: ["instansi-aktif"],
     queryFn: () => APIDaftarKP.getDataInstansiAktif().then((res) => res.data),
   });
@@ -65,10 +59,13 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const objectFormData = Object.fromEntries(formData.entries());
+    console.log(objectFormData);
     mutation.mutate({
       tanggalMulai: date.toISOString(),
       tujuanSuratInstansi: objectFormData.tujuanSuratInstansi as string,
       idInstansi: objectFormData.idInstansi as string,
+      kelas_kp: objectFormData.kelas_kp as string,
+      judul_kp: objectFormData.judul_kp as string,
     });
   }
 
@@ -95,9 +92,9 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
             <CardContent className="text-black bg-white p-0 rounded-md border-black border-[1px]">
               <select
                 required
-                className="bg-white block w-[100%] p-2"
                 name="idInstansi"
                 id="instansi"
+                className="bg-white block w-[100%] p-2"
               >
                 <option value="">Pilih Instansi</option>
                 {dataInstansi?.map(({ id, nama }: any) => (
@@ -107,6 +104,7 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
                 ))}
               </select>
             </CardContent>
+
             <CardDescription className="text-sm text-slate-500">
               Instansi belum terdaftar? Daftarkan segera{" "}
               <Link
@@ -131,6 +129,63 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
               name="tujuanSuratInstansi"
               id="tujuan-surat"
               placeholder="Masukkan tujuan instansi disini..."
+            ></Textarea>
+          </CardContent>
+
+          <CardContent>
+            <CardTitle className="font-bold text-lg">
+              🪪 Informasi Kerja Praktek
+            </CardTitle>
+            <Label className="text-sm font-bold mt-6" htmlFor="kelas">
+              Kelas
+            </Label>
+            <CardContent className="text-black bg-white p-0 rounded-md border-black border-[1px]">
+              <select
+                name="kelas_kp"
+                id="kelas"
+                className="bg-white block w-[100%] p-2"
+              >
+                <option value="">Pilih Kelas</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+                <option value="G">G</option>
+                <option value="H">H</option>
+                <option value="I">I</option>
+                <option value="J">J</option>
+                <option value="K">K</option>
+                <option value="L">L</option>
+                <option value="M">M</option>
+                <option value="N">N</option>
+                <option value="O">O</option>
+                <option value="P">P</option>
+                <option value="Q">Q</option>
+                <option value="R">R</option>
+                <option value="S">S</option>
+                <option value="T">T</option>
+                <option value="U">U</option>
+                <option value="V">V</option>
+                <option value="W">W</option>
+                <option value="X">X</option>
+                <option value="Y">Y</option>
+                <option value="Z">Z</option>
+              </select>
+            </CardContent>
+          </CardContent>
+
+          <CardContent>
+            <Label className="text-sm font-bold" htmlFor="judul">
+              Judul Laporan Kerja Praktek
+            </Label>
+            <Textarea
+              required
+              className="text-black block bg-white w-full p-2 border-slate-300 border-[1px] h-42"
+              name="judul_kp"
+              id="judul"
+              placeholder="Masukkan judul laporan kerja praktek disini..."
             ></Textarea>
           </CardContent>
 

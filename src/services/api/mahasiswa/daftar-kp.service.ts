@@ -1,8 +1,12 @@
 import { api } from "@/lib/axios-instance";
 import { DataInstansi } from "@/interfaces/pages/koordinator-kp/kerja-praktik/instansi.interface";
-import { CreatePendaftaranMahasiswaInterface } from "@/interfaces/pages/mahasiswa/kerja-praktik/daftar-kp/pendaftaran.interface";
+import {
+  CreatePendaftaranMahasiswaInterface,
+  UpdatePendaftaranMahasiswaInterface,
+} from "@/interfaces/pages/mahasiswa/kerja-praktik/daftar-kp/pendaftaran.interface";
 
 export default class APIDaftarKP {
+
   static async getAllPermohonanMahasiswa() {
     const axios = api();
     const response = await axios.get(
@@ -14,10 +18,30 @@ export default class APIDaftarKP {
     return data;
   }
 
+  static async updatePendaftaranMahasiswa({
+    judul_kp,
+    kelas_kp,
+  }: UpdatePendaftaranMahasiswaInterface) {
+    const axios = api();
+    const response = await axios.put(
+      `${
+        import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
+      }/mahasiswa/daftar-kp/pendaftaran-kp`,
+      {
+        judul_kp,
+        kelas_kp,
+      }
+    );
+    const data = response.data;
+    return data;
+  }
+
   static async createPendaftaranMahasiswa({
     tanggalMulai,
     tujuanSuratInstansi,
     idInstansi,
+    judul_kp,
+    kelas_kp,
   }: CreatePendaftaranMahasiswaInterface) {
     const axios = api();
     const response = await axios.post(
@@ -28,6 +52,8 @@ export default class APIDaftarKP {
         tanggalMulai,
         tujuanSuratInstansi,
         idInstansi,
+        judul_kp,
+        kelas_kp,
       }
     );
     const data = response.data;
@@ -211,7 +237,13 @@ export default class APIDaftarKP {
     return data;
   }
 
-  static async postSuratPerpanjanganKP(linkSuratPerpanjanganKP: string) {
+  static async postSuratPerpanjanganKP({
+    linkSuratPerpanjanganKP,
+    alasan_lanjut_kp,
+  }: {
+    linkSuratPerpanjanganKP: string;
+    alasan_lanjut_kp: string;
+  }) {
     const axios = api();
     const response = await axios.post(
       `${
@@ -219,6 +251,7 @@ export default class APIDaftarKP {
       }/mahasiswa/daftar-kp/unggah-surat-perpanjangan-kp`,
       {
         linkSuratPerpanjanganKP,
+        alasan_lanjut_kp,
       }
     );
     const data = response.data;

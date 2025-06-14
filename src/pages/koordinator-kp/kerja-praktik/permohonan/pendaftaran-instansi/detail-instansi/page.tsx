@@ -209,6 +209,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                 <Card>
                   <CardContent>
                     <MapContainer
+                      key={longitudeInput + latitudeInput}
                       className="z-0 mt-6 rounded-lg"
                       center={[latitudeInput, longitudeInput]}
                       zoom={13}
@@ -266,7 +267,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                   </CardContent>
                 </Card>
                 <Card className="mt-4">
-                  <CardContent>
+                  <CardContent className="p-2">
                     <Label htmlFor="profil-singkat">Profil Singkat : </Label>
                     {isEditing ? (
                       <Textarea
@@ -304,6 +305,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                   <CardTitle>Jenis Instansi: </CardTitle>
                   {isEditing ? (
                     <select
+                      className="my-2 border-[1px] border-gray-300 outline-none rounded-lg"
                       name="jenis-instansi"
                       id="jenis-instansi"
                       value={jenisInput}
@@ -321,6 +323,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                   <CardTitle>Status : </CardTitle>
                   {isEditing ? (
                     <select
+                      className="my-2 border-[1px] border-gray-300 outline-none rounded-lg"
                       name="status-instansi"
                       id="status-instansi"
                       value={statusInput}
@@ -346,7 +349,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                   <CardTitle>Longitude : </CardTitle>
                   {isEditing ? (
                     <Input
-                      className="rounded-lg border-[1px] border-gray-300 p-2"
+                      className="rounded-lg border-[1px] border-gray-300 p-2 my-2"
                       onChange={(e) => inputValidator(e, setLongitudeInput)}
                       type="number"
                       value={isEditing ? longitudeInput : data?.data.longitude}
@@ -358,7 +361,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                   <CardTitle>Latitude : </CardTitle>
                   {isEditing ? (
                     <Input
-                      className="rounded-lg border-[1px] border-gray-300 p-2"
+                      className="rounded-lg border-[1px] border-gray-300 p-2 my-2"
                       onChange={(e) => inputValidator(e, setLatitudeInput)}
                       type="number"
                       value={isEditing ? latitudeInput : data?.data.latitude}
@@ -370,7 +373,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                   <CardTitle>Alamat : </CardTitle>
                   {isEditing ? (
                     <Input
-                      className="rounded-lg border-[1px] border-gray-300 p-2"
+                      className="rounded-lg border-[1px] border-gray-300 p-2 my-2"
                       onChange={(e) => setAlamatInput(e.currentTarget.value)}
                       type="text"
                       value={isEditing ? alamatInput : data?.data.alamat}
@@ -391,7 +394,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                   <CardTitle>Nama Penanggung Jawab : </CardTitle>
                   {isEditing ? (
                     <Input
-                      className="rounded-lg border-[1px] border-gray-300 p-2"
+                      className="rounded-lg border-[1px] border-gray-300 p-2 my-2"
                       onChange={(e) => setNama_PjInput(e.currentTarget.value)}
                       type="text"
                       value={isEditing ? nama_pjInput : data?.data.nama_pj}
@@ -403,7 +406,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                   <CardTitle>Nomor Penanggung Jawab : </CardTitle>
                   {isEditing ? (
                     <Input
-                      className="rounded-lg border-[1px] border-gray-300 p-2"
+                      className="rounded-lg border-[1px] border-gray-300 p-2 my-2"
                       onChange={(e) => setNo_Hp_PjInput(e.currentTarget.value)}
                       type="text"
                       value={isEditing ? no_hp_pjInput : data?.data.no_hp_pj}

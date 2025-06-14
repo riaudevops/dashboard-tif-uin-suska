@@ -336,7 +336,16 @@ const DosenPengujiNilaiPage: FC = () => {
   if (isLoading || isTahunAjaranLoading) {
     return (
       <DashboardLayout>
-        <div className="p-6 space-y-4">
+        <div className="flex">
+          <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+            <span
+              className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+            />
+            <GraduationCapIcon className="w-4 h-4 mr-1.5" />
+            Mahasiswa Uji Kerja Praktik
+          </span>
+        </div>
+        <div className="space-y-4">
           <SkeletonDashboardCards />
           {/* <SkeletonSeminarHariIni /> */}
           <SkeletonFilter />

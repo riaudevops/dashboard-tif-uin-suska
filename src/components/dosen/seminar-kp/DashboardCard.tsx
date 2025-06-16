@@ -89,9 +89,12 @@ const DashboardCards: FC<DashboardCardsProps> = ({ statistics }) => {
             <div className="h-1.5 w-full bg-indigo-100 dark:bg-indigo-900 rounded-full mt-2">
               <motion.div
                 initial={{ width: "0%" }}
-                animate={{ width: "100%" }}
+                animate={{
+                  width: totalMahasiswa > 0 ? "100%" : "0%",
+                }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
                 className="h-1.5 bg-indigo-500 rounded-full"
+                style={{ maxWidth: "100%" }}
               />
             </div>
           </CardContent>

@@ -8,6 +8,7 @@ import { LayoutGridIcon } from "lucide-react";
 
 interface SeminarData {
   persyaratan_seminar_kp: {
+    sudah_selesai_murojaah: boolean;
     masih_terdaftar_kp: boolean;
     minimal_lima_bimbingan: boolean;
     daily_report_sudah_approve: boolean;
@@ -187,7 +188,7 @@ export default function MahasiswaSeminarDaftarPage() {
           infoPengajuanSeminar={{
             step: currentStep,
             checkItems: {
-              hapalan: true, // Dummy for murojaah 1-16
+              hapalan: apiResponse?.data?.persyaratan_seminar_kp?.sudah_selesai_murojaah ?? false, // Dummy for murojaah 1-16
               kerja_praktik:
                 apiResponse?.data?.persyaratan_seminar_kp?.masih_terdaftar_kp ??
                 false,

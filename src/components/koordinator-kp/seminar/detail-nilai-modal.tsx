@@ -217,7 +217,7 @@ const DetailNilaiModal: FC<DetailNilaiModalProps> = ({
                     NILAI AKHIR
                   </div>
                   <div className="text-2xl font-bold mb-0.5">
-                    {student.nilai_akhir?.toFixed(1) || "0.0"} (
+                    {student.nilai_akhir?.toFixed(2) || "0.0"} (
                     {student.nilai_huruf || "N/A"})
                   </div>
                 </div>

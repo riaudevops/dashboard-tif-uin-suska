@@ -2,6 +2,20 @@ import { type FC } from "react";
 import { Card } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
 
+const ConvertToStringTimeFormat = (dateTimeStr: string) => {
+  const dateTime = new Date(dateTimeStr);
+  return dateTime
+    ? dateTime.toLocaleTimeString(
+        "id-ID",
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "Asia/Jakarta",
+        }
+      ).replace(".", ":")
+    : "Waktu belum ditentukan";
+}
+
 interface JadwalSeminar {
   id: string;
   mahasiswa: {
@@ -306,7 +320,7 @@ const ScheduleTableContent: FC<{
                                 </div>
                                 <div className="flex items-center whitespace-nowrap">
                                   <span className="text-xs truncate text-gray-600 dark:text-gray-200">
-                                    {item.waktu_mulai} - {item.waktu_selesai}
+                                    {ConvertToStringTimeFormat(item.waktu_mulai)} - {ConvertToStringTimeFormat(item.waktu_selesai)}
                                   </span>
                                 </div>
                               </div>
@@ -430,8 +444,8 @@ const ScheduleTableContent: FC<{
                             {sortSchedulesByTime(roomSchedules).map(
                               (item, itemIndex) => {
                                 const [startHour, startMinute] =
-                                  item.waktu_mulai.split(":").map(Number);
-                                const [endHour, endMinute] = item.waktu_selesai
+                                  ConvertToStringTimeFormat(item.waktu_mulai).split(":").map(Number);
+                                const [endHour, endMinute] = ConvertToStringTimeFormat(item.waktu_selesai)
                                   .split(":")
                                   .map(Number);
                                 const firstDisplayHour = Number.parseInt(
@@ -517,8 +531,8 @@ const ScheduleTableContent: FC<{
                                     </div>
                                     <div className="flex items-center justify-center w-full overflow-hidden">
                                       <span className="text-xs truncate text-gray-600 dark:text-gray-200 text-center">
-                                        {item.waktu_mulai} -{" "}
-                                        {item.waktu_selesai}
+                                        {ConvertToStringTimeFormat(item.waktu_mulai)} -{" "}
+                                        {ConvertToStringTimeFormat(item.waktu_selesai)}
                                       </span>
                                     </div>
                                   </div>
@@ -579,8 +593,10 @@ const ScheduleTableContent: FC<{
                                       </div>
                                       <div className="flex items-center whitespace-nowrap">
                                         <span className="text-xs truncate text-gray-600 dark:text-gray-200">
-                                          {item.waktu_mulai} -{" "}
-                                          {item.waktu_selesai}
+                                          {ConvertToStringTimeFormat(item.waktu_mulai)} -{" "}
+                                          {ConvertToStringTimeFormat(
+                                            item.waktu_selesai
+                                          )}
                                         </span>
                                       </div>
                                     </div>

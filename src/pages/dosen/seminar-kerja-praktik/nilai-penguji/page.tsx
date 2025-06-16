@@ -100,6 +100,38 @@ interface ApiResponse {
   semuaJadwal: Jadwal[];
 }
 
+const ConvertToStringDateFormat = (dateStr: string) => {
+  const date = new Date(dateStr);
+  // Opsi untuk Intl.DateTimeFormat
+  const options: any = {
+    weekday: 'long', // "Jumat"
+    day: 'numeric',  // "13"
+    month: 'long',   // "Juni"
+    year: 'numeric'  // "2025"
+  };
+
+  // Membuat formatter untuk lokal "id-ID" (Indonesia)
+  const formatter = new Intl.DateTimeFormat('id-ID', options);
+
+  // Menggunakan formatter untuk mengubah tanggal dan mengganti "pukul" jika ada
+  return formatter.format(date).replace(/pukul.*/, '').trim();
+}
+
+const ConvertToStringTimeFormat = (dateTimeStr: string) => {
+  if (!dateTimeStr.includes("T")) return dateTimeStr;
+  const dateTime = new Date(dateTimeStr);
+  return dateTime
+    ? dateTime.toLocaleTimeString(
+        "id-ID",
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "Asia/Jakarta",
+        }
+      ).replace(".", ":")
+    : "Waktu belum ditentukan";
+}
+
 const SkeletonDashboardCards: FC = () => {
   return (
     <div
@@ -345,7 +377,7 @@ const DosenPengujiNilaiPage: FC = () => {
             Mahasiswa Uji Kerja Praktik
           </span>
         </div>
-        <div className="space-y-4">
+        <div className="mt-3.5 space-y-4">
           <SkeletonDashboardCards />
           {/* <SkeletonSeminarHariIni /> */}
           <SkeletonFilter />
@@ -390,9 +422,9 @@ const DosenPengujiNilaiPage: FC = () => {
     dosenPembimbing: jadwal.dosen_pembimbing,
     pembimbingInstansi: jadwal.pembimbing_instansi,
     ruangan: jadwal.ruangan,
-    waktu_mulai: jadwal.waktu_mulai,
-    waktu_selesai: jadwal.waktu_selesai,
-    tanggalSeminar: jadwal.tanggal,
+    waktu_mulai: ConvertToStringTimeFormat(jadwal.waktu_mulai),
+    waktu_selesai: ConvertToStringTimeFormat(jadwal.waktu_selesai),
+    tanggalSeminar: ConvertToStringDateFormat(jadwal.tanggal),
     status: jadwal.status,
     tanggalDinilai:
       jadwal.status === "Belum Dinilai" || !jadwal.waktu_dinilai
@@ -421,9 +453,9 @@ const DosenPengujiNilaiPage: FC = () => {
       dosenPembimbing: jadwal.dosen_pembimbing,
       pembimbingInstansi: jadwal.pembimbing_instansi,
       ruangan: jadwal.ruangan,
-      waktu_mulai: jadwal.waktu_mulai,
-      waktu_selesai: jadwal.waktu_selesai,
-      tanggalSeminar: jadwal.tanggal,
+      waktu_mulai: ConvertToStringTimeFormat(jadwal.waktu_mulai),
+      waktu_selesai: ConvertToStringTimeFormat(jadwal.waktu_selesai),
+      tanggalSeminar: ConvertToStringDateFormat(jadwal.tanggal),
       status: jadwal.status,
       tanggalDinilai:
         jadwal.status === "Belum Dinilai" || !jadwal.waktu_dinilai

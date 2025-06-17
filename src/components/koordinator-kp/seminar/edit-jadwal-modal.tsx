@@ -23,6 +23,38 @@ import {
 import toast from "react-hot-toast";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 
+const ConvertToStringDateFormat = (dateStr: string) => {
+  const date = new Date(dateStr);
+  // Opsi untuk Intl.DateTimeFormat
+  const options: any = {
+    weekday: 'long', // "Jumat"
+    day: 'numeric',  // "13"
+    month: 'long',   // "Juni"
+    year: 'numeric'  // "2025"
+  };
+
+  // Membuat formatter untuk lokal "id-ID" (Indonesia)
+  const formatter = new Intl.DateTimeFormat('id-ID', options);
+
+  // Menggunakan formatter untuk mengubah tanggal dan mengganti "pukul" jika ada
+  return formatter.format(date).replace(/pukul.*/, '').trim();
+}
+
+const ConvertToStringTimeFormat = (dateTimeStr: string) => {
+  if (!dateTimeStr.includes("T")) return dateTimeStr;
+  const dateTime = new Date(dateTimeStr);
+  return dateTime
+    ? dateTime.toLocaleTimeString(
+        "id-ID",
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "Asia/Jakarta",
+        }
+      ).replace(".", ":")
+    : "Waktu belum ditentukan";
+}
+
 interface Mahasiswa {
   nama: string;
   nim: string;
@@ -156,7 +188,7 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
   const [editSeminar, setEditSeminar] = useState<JadwalSeminar>({ ...seminar });
 
   const [isoDate, setIsoDate] = useState<string>(() => {
-    return convertToISODate(seminar.tanggal);
+    return convertToISODate(ConvertToStringDateFormat(seminar.tanggal));
   });
 
   const { data: dosenData, isLoading: isLoadingDosen } = useQuery<Dosen[]>({
@@ -177,11 +209,11 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
     onSuccess: (data) => {
       const updatedSeminar = {
         ...editSeminar,
-        tanggal: data.tanggal
-          ? formatDateForDisplay(data.tanggal)
-          : editSeminar.tanggal,
-        waktu_mulai: data.waktu_mulai || editSeminar.waktu_mulai,
-        waktu_selesai: data.waktu_selesai || editSeminar.waktu_selesai,
+        tanggal: ConvertToStringDateFormat(data.tanggal)
+          ? formatDateForDisplay(ConvertToStringDateFormat(data.tanggal))
+          : ConvertToStringDateFormat(editSeminar.tanggal),
+        waktu_mulai: ConvertToStringTimeFormat(data.waktu_mulai) || ConvertToStringTimeFormat(editSeminar.waktu_mulai),
+        waktu_selesai: ConvertToStringTimeFormat(data.waktu_selesai) || ConvertToStringTimeFormat(editSeminar.waktu_selesai),
         ruangan: data.nama_ruangan || editSeminar.ruangan,
         dosen_penguji: data.nip_penguji
           ? dosenData?.find((d) => d.nip === data.nip_penguji)?.nama ||
@@ -236,20 +268,20 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
       id: editSeminar.id,
     };
 
-    const originalIsoDate = convertToISODate(seminar.tanggal);
+    const originalIsoDate = convertToISODate(ConvertToStringDateFormat(seminar.tanggal));
     if (isoDate !== originalIsoDate) {
       payload.tanggal = isoDate;
       // Sertakan waktu_mulai dan waktu_selesai saat tanggal diubah
-      payload.waktu_mulai = editSeminar.waktu_mulai;
-      payload.waktu_selesai = editSeminar.waktu_selesai;
+      payload.waktu_mulai = ConvertToStringTimeFormat(editSeminar.waktu_mulai);
+      payload.waktu_selesai = ConvertToStringTimeFormat(editSeminar.waktu_selesai);
     }
 
-    if (editSeminar.waktu_mulai !== seminar.waktu_mulai) {
-      payload.waktu_mulai = editSeminar.waktu_mulai;
+    if (ConvertToStringTimeFormat(editSeminar.waktu_mulai) !== ConvertToStringTimeFormat(seminar.waktu_mulai)) {
+      payload.waktu_mulai = ConvertToStringTimeFormat(editSeminar.waktu_mulai);
     }
 
-    if (editSeminar.waktu_selesai !== seminar.waktu_selesai) {
-      payload.waktu_selesai = editSeminar.waktu_selesai;
+    if (ConvertToStringTimeFormat(editSeminar.waktu_selesai) !== ConvertToStringTimeFormat(seminar.waktu_selesai)) {
+      payload.waktu_selesai = ConvertToStringTimeFormat(editSeminar.waktu_selesai);
     }
 
     if (editSeminar.ruangan !== seminar.ruangan) {
@@ -434,7 +466,7 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                               <Input
                                 id="waktuMulai"
                                 type="time"
-                                value={editSeminar.waktu_mulai}
+                                value={ConvertToStringTimeFormat(editSeminar.waktu_mulai)}
                                 onChange={(e) =>
                                   handleInputChange(
                                     "waktu_mulai",
@@ -457,7 +489,7 @@ const EditJadwalSeminarModal: FC<EditJadwalSeminarModalProps> = ({
                               <Input
                                 id="waktuSelesai"
                                 type="time"
-                                value={editSeminar.waktu_selesai}
+                                value={ConvertToStringTimeFormat(editSeminar.waktu_selesai)}
                                 onChange={(e) =>
                                   handleInputChange(
                                     "waktu_selesai",

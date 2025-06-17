@@ -320,7 +320,34 @@ const KartuMurojaahPage = () => {
 								</div>
 							</div>
 
-							<LogAktivitas logData={logData} />
+							{
+								logData.length === 0 ?
+								<LogAktivitas logData={[{ 
+									id: 404,
+									keterangan: "Mahasiswa ini belum pernah melakukan aktivitas muroja'ah.",
+									ip: "127.0.0.1",
+									aksi: "Belum Ada",
+									user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/237.84.2.178 Safari/537.36",
+									timestamp: "1945-08-17T12:34:56.789Z",
+									dosen_yang_mengesahkan: {
+										nama: "M. Farhan Aulia Pratama",
+										email: "farhanaulia.p@gmail.com",
+									},
+								}, {
+									id: 404,
+									keterangan: "Silahkan mulai muroja'ah untuk memperoleh catatan riwayat.",
+									ip: "127.0.0.1",
+									aksi: "Belum Ada",
+									user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/237.84.2.178 Safari/537.36",
+									timestamp: "1945-08-17T12:34:56.789Z",
+									dosen_yang_mengesahkan: {
+										nama: "M. Farhan Aulia Pratama",
+										email: "farhanaulia.p@gmail.com",
+									},
+								}
+								]} /> :
+								<LogAktivitas logData={logData} />
+							}
 						</div>
 					</div>
 				</div>

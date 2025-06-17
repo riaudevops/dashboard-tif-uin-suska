@@ -183,16 +183,17 @@ const AudioIcon = ({ isPlaying, ...props }: { isPlaying: boolean }) => {
 
 interface AyatItemProps {
 	ayat: Ayat;
+    jumlahAyat: number;
 	onPlay: () => void;
 	isPlaying: boolean;
 }
 
 const AyatItem = React.forwardRef<HTMLDivElement, AyatItemProps>(
-	({ ayat, onPlay, isPlaying }, ref) => {
+	({ ayat, jumlahAyat, onPlay, isPlaying }, ref) => {
 		return (
 			<div
 				ref={ref}
-				className="py-8 border-b border-gray-200 dark:border-gray-700 scroll-mt-40"
+				className={`py-8 ${jumlahAyat !== ayat.nomorAyat && "border-b"} border-gray-200 dark:border-gray-700 scroll-mt-40`}
 			>
 				<div
 					className={`flex font-["Amiri"] justify-between items-center text-right text-3xl md:text-4xl mt-0 text-gray-800 dark:text-gray-100 mb-3`}
@@ -216,7 +217,7 @@ const AyatItem = React.forwardRef<HTMLDivElement, AyatItemProps>(
 						<AudioIcon isPlaying={isPlaying} />
 					</button>
 					<p className="text-xs text-gray-500 dark:text-gray-400">
-						QS. {ayat.namaLatin} Ayat ke-{ayat.nomorAyat}
+						QS. {ayat.namaLatin} ayat ke-{ayat.nomorAyat}
 					</p>
 				</div>
 			</div>
@@ -313,6 +314,7 @@ const QuranReader = ({ surahData }: QuranReaderProps) => {
 						<AyatItem
 							ref={(el) => (ayatRefs.current[index] = el)}
 							key={ayat.nomorAyat}
+                            jumlahAyat={surahData.jumlahAyat}
 							ayat={{ ...ayat, namaLatin: surahData.namaLatin }}
 							onPlay={() => handlePlayPause(ayat)}
 							isPlaying={playingAyat === ayat.nomorAyat}

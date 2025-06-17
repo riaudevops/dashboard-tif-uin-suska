@@ -19,11 +19,13 @@ import ModalBoxStatistik from "@/components/dosen/setoran-hafalan/ModalBoxStatis
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFilteringSetoranSurat } from "@/hooks/use-filtering-setor-surat";
 import {
+  BookOpenIcon,
   Calendar,
   ChartSpline,
   FileDigit,
   GraduationCap,
   History,
+  Loader2,
   Rocket,
   User,
 } from "lucide-react";
@@ -39,11 +41,34 @@ import {
 } from "@/interfaces/pages/dosen/setoran-hafalan/mahasiswa-pa/detail-mahasiswa-setoran.interface";
 import { useParams } from "react-router-dom";
 import TableLoadingSkeleton from "@/components/globals/table-loading-skeleton";
+import { ModalBoxQuran, SurahData } from "@/components/dosen/setoran-hafalan/ModalBoxQuran";
 
 function DetailMahasiswaSetoran() {
   const { nim } = useParams<{ nim: string }>();
   const { toast } = useToast();
   const queryclient = useQueryClient();
+
+  // Connect to External e-Quran API
+  const [nomorSurah, setNomorSurah] = useState<string | undefined>();
+  const [dataSurah, setDataSurah] = useState<SurahData | undefined>();
+  const [openModalQuran, setOpenModalQuran] = useState(false);
+  const [openModalQuranIsLoading, setOpenModalQuranIsLoading] = useState<{ [key: string]: boolean }>({});
+  const [modalQuranRefresh, setModalQuranRefresh] = useState(false);
+  useEffect(() => {
+    if (!nomorSurah) return;
+    setOpenModalQuranIsLoading(prevState => ({ ...prevState, [nomorSurah]: true }));
+    fetch(`https://equran.id/api/v2/surat/${nomorSurah}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setOpenModalQuranIsLoading(prevState => ({ ...prevState, [nomorSurah]: false }));
+        setDataSurah(data.data)
+        setOpenModalQuran(true);
+      });
+  }, [nomorSurah, modalQuranRefresh])
+  const handleNomorSurahChange = (nomorSurah: string) => {
+    setNomorSurah(nomorSurah);
+    setModalQuranRefresh(prev => !prev);
+  }
 
   const { data: dataInfoSetoran, isLoading } = useQuery({
     queryKey: ["info-mahasiswa-by-email"],
@@ -137,6 +162,10 @@ function DetailMahasiswaSetoran() {
   // console.log(dataInfoSetoran?.setoran.log);
   return (
     <DashboardLayout>
+      {
+        openModalQuran &&
+        <ModalBoxQuran isOpen={openModalQuran} setIsOpen={setOpenModalQuran} dataSurah={dataSurah} />
+      }
       <ModalBoxStatistik
         isOpen={openModalStatistik}
         dataRingkasan={dataInfoSetoran?.setoran.ringkasan}
@@ -293,7 +322,6 @@ function DetailMahasiswaSetoran() {
                 </ToastAction>
               ),
             });
-            console.log(error);
           }
         }}
         info={dataInfoSetoran?.info}
@@ -591,9 +619,15 @@ function DetailMahasiswaSetoran() {
                       <TableCell className="text-center">
                         {index + 1}.
                       </TableCell>
-                      <TableCell className="text-center">
-                        {surah.nama}{" "}
-                        {surah.nama_arab && ` - ${surah.nama_arab}`}
+                      <TableCell className="flex gap-2 justify-center items-center text-center">
+                        <span>
+                          {surah.nama}{" "}
+                          {surah.nama_arab && ` - ${surah.nama_arab}`}
+                        </span>
+                        <div onClick={() => handleNomorSurahChange(surah.external_id)} className="rounded-full hover:scale-110 active:scale-100 hover:bg-orange-400/25 flex justify-center items-center duration-300 cursor-pointer p-1 bg-orange-400/20 text-orange-600">
+                          {openModalQuranIsLoading[surah.external_id] && <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />}
+                          <BookOpenIcon className="w-3.5 h-3.5" />
+                        </div>
                       </TableCell>
                       <TableCell className="text-center">
                         {surah.sudah_setor ? (

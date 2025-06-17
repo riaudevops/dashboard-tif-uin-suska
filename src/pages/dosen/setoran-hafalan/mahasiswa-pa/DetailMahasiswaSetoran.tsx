@@ -50,6 +50,7 @@ function DetailMahasiswaSetoran() {
 
   // Connect to External e-Quran API
   const [nomorSurah, setNomorSurah] = useState<string | undefined>();
+  const [namaSurah, setNamaSurah] = useState<string | undefined>();
   const [dataSurah, setDataSurah] = useState<SurahData | undefined>();
   const [openModalQuran, setOpenModalQuran] = useState(false);
   const [openModalQuranIsLoading, setOpenModalQuranIsLoading] = useState<{ [key: string]: boolean }>({});
@@ -61,12 +62,13 @@ function DetailMahasiswaSetoran() {
       .then((res) => res.json())
       .then((data) => {
         setOpenModalQuranIsLoading(prevState => ({ ...prevState, [nomorSurah]: false }));
-        setDataSurah(data.data)
+        setDataSurah({...data.data, namaLatin: namaSurah})
         setOpenModalQuran(true);
       });
   }, [nomorSurah, modalQuranRefresh])
-  const handleNomorSurahChange = (nomorSurah: string) => {
+  const handleNomorSurahChange = (nomorSurah: string, namaSurah: string) => {
     setNomorSurah(nomorSurah);
+    setNamaSurah(namaSurah);
     setModalQuranRefresh(prev => !prev);
   }
 
@@ -624,7 +626,7 @@ function DetailMahasiswaSetoran() {
                           {surah.nama}{" "}
                           {surah.nama_arab && ` - ${surah.nama_arab}`}
                         </span>
-                        <div onClick={() => handleNomorSurahChange(surah.external_id)} className="rounded-full hover:scale-110 active:scale-100 hover:bg-orange-400/25 flex justify-center items-center duration-300 cursor-pointer p-1 bg-orange-400/20 text-orange-600">
+                        <div onClick={() => handleNomorSurahChange(surah.external_id, surah.nama)} className="rounded-full hover:scale-110 active:scale-100 hover:bg-orange-400/25 flex justify-center items-center duration-300 cursor-pointer p-1 bg-orange-400/20 text-orange-600">
                           {openModalQuranIsLoading[surah.external_id] && <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />}
                           <BookOpenIcon className="w-3.5 h-3.5" />
                         </div>

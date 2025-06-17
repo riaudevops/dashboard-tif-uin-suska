@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Award, LayoutGridIcon } from "lucide-react";
+import { Award, EyeIcon, LayoutGridIcon } from "lucide-react";
 import React, { useState, type FC, type ReactNode } from "react";
 import {
   Map,
@@ -249,10 +249,11 @@ const InfoCard: FC<InfoCardProps> = React.memo(
                       </p>
                     </div>
                     <button
-                      className="mt-4 bg-emerald-500 text-white px-4 py-2 rounded-md hover:bg-emerald-600 transition-colors text-xs font-medium w-full"
+                      className="flex gap-1 justify-center items-center mt-4 bg-gradient-to-r from-violet-700/85 via-orange-700/85 to-pink-700/85 dark:from-violet-700 dark:via-orange-700 dark:to-pink-700 text-white px-4 py-2 rounded-md hover:bg-gradient-to-br transition-colors text-xs font-medium w-full"
                       onClick={() => setIsModalOpen(true)}
                     >
-                      Detail
+                      <EyeIcon className="w-4 h-4" />
+                      <span>Detail Nilai KP Kamu</span>
                     </button>
                   </div>
                 </div>

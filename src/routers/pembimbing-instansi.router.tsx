@@ -4,7 +4,7 @@ import PembimbingInstansiKerjaPraktikMahasiswaDetailAgendaPage from "@/pages/pem
 
 export const instansiRouter = [
   {
-    path: "/pembimbing-instansi/kerja-praktik",
+    path: "/pembimbing-instansi/kerja-praktik/:id",
     element: <PembimbingInstansiKerjaPraktikMahasiswaPage />,
   },
   {

@@ -560,7 +560,7 @@ const DosenPengujiNilaiPage: FC = () => {
                   <span className="bg-gradient-to-br from-blue-600 to-violet-600 text-white p-1.5 rounded-lg mr-2">
                     <Calendar className="h-4 w-4" />
                   </span>
-                  Seminar Hari Ini
+                  Seminar Terdekat
                 </div>
               </div>
 

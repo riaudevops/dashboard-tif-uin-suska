@@ -58,6 +58,37 @@ interface JadwalResponse {
   tahun_ajaran: TahunAjaran;
 }
 
+const ConvertToStringDateFormat = (dateStr: string) => {
+  const date = new Date(dateStr);
+  // Opsi untuk Intl.DateTimeFormat
+  const options: any = {
+    weekday: 'long', // "Jumat"
+    day: 'numeric',  // "13"
+    month: 'long',   // "Juni"
+    year: 'numeric'  // "2025"
+  };
+
+  // Membuat formatter untuk lokal "id-ID" (Indonesia)
+  const formatter = new Intl.DateTimeFormat('id-ID', options);
+
+  // Menggunakan formatter untuk mengubah tanggal dan mengganti "pukul" jika ada
+  return formatter.format(date).replace(/pukul.*/, '').trim();
+}
+
+const ConvertToStringTimeFormat = (dateTimeStr: string) => {
+  const dateTime = new Date(dateTimeStr);
+  return dateTime
+    ? dateTime.toLocaleTimeString(
+        "id-ID",
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "Asia/Jakarta",
+        }
+      ).replace(".", ":")
+    : "Waktu belum ditentukan";
+}
+
 const ScheduleTable: FC<{
   data: JadwalResponse["jadwal"];
   onEdit: (seminar: JadwalSeminar) => void;
@@ -146,16 +177,16 @@ const ScheduleTable: FC<{
     (acc, room) => ({
       ...acc,
       [room]: (data.by_ruangan[activeTab][room] || []).map((item) => {
-        const [startHour, startMinute] = item.waktu_mulai
+        const [startHour, startMinute] = ConvertToStringTimeFormat(item.waktu_mulai)
           .split(":")
           .map(Number);
-        const [endHour, endMinute] = item.waktu_selesai.split(":").map(Number);
+        const [endHour, endMinute] = ConvertToStringTimeFormat(item.waktu_selesai).split(":").map(Number);
         const startMinutes = startHour * 60 + startMinute;
         const endMinutes = endHour * 60 + endMinute;
         return {
           ...item,
-          jam: item.waktu_mulai,
-          jam_selesai: item.waktu_selesai,
+          jam: ConvertToStringTimeFormat(item.waktu_mulai),
+          jam_selesai: ConvertToStringTimeFormat(item.waktu_selesai),
           durasi: endMinutes - startMinutes,
         };
       }),
@@ -169,7 +200,7 @@ const ScheduleTable: FC<{
     const daysSet = new Set<string>();
     Object.values(currentData).forEach((roomSchedules: JadwalSeminar[]) => {
       roomSchedules.forEach((schedule: JadwalSeminar) =>
-        daysSet.add(schedule.tanggal)
+        daysSet.add(ConvertToStringDateFormat(schedule.tanggal))
       );
     });
     const daysArray = Array.from(daysSet);
@@ -235,8 +266,8 @@ const ScheduleTable: FC<{
     if (activeTab === "semua") {
       const schedulesPerDate: { [key: string]: number } = {};
       schedules.forEach((schedule: JadwalSeminar) => {
-        schedulesPerDate[schedule.tanggal] =
-          (schedulesPerDate[schedule.tanggal] || 0) + 1;
+        schedulesPerDate[ConvertToStringDateFormat(schedule.tanggal)] =
+          (schedulesPerDate[ConvertToStringDateFormat(schedule.tanggal)] || 0) + 1;
       });
       const maxSchedules = Math.max(...Object.values(schedulesPerDate), 0);
       return maxSchedules === 0 ? 80 : 120;
@@ -268,7 +299,7 @@ const ScheduleTable: FC<{
     targetDate: string
   ) => {
     return roomSchedules.filter(
-      (schedule: JadwalSeminar) => schedule.tanggal === targetDate
+      (schedule: JadwalSeminar) => ConvertToStringDateFormat(schedule.tanggal) === targetDate
     );
   };
 
@@ -286,7 +317,7 @@ const ScheduleTable: FC<{
     };
     return roomSchedules.filter(
       (schedule: JadwalSeminar) =>
-        schedule.tanggal.split(",")[0] === dayMapping[targetDay]
+        ConvertToStringDateFormat(schedule.tanggal).split(",")[0] === dayMapping[targetDay]
     );
   };
 
@@ -296,7 +327,7 @@ const ScheduleTable: FC<{
   ) => {
     if (activeTab !== "hari_ini") return [];
     return roomSchedules.filter((schedule: JadwalSeminar) => {
-      const scheduleHour = Number.parseInt(schedule.waktu_mulai.split(":")[0]);
+      const scheduleHour = Number.parseInt(ConvertToStringTimeFormat(schedule.waktu_mulai).split(":")[0]);
       const targetHour = Number.parseInt(targetTime.split(":")[0]);
       return scheduleHour === targetHour;
     });
@@ -304,8 +335,8 @@ const ScheduleTable: FC<{
 
   const sortSchedulesByTime = (schedules: JadwalSeminar[]) => {
     return schedules.sort((a: JadwalSeminar, b: JadwalSeminar) => {
-      const [aHour, aMinute] = a.waktu_mulai.split(":").map(Number);
-      const [bHour, bMinute] = b.waktu_mulai.split(":").map(Number);
+      const [aHour, aMinute] = ConvertToStringTimeFormat(a.waktu_mulai).split(":").map(Number);
+      const [bHour, bMinute] = ConvertToStringTimeFormat(b.waktu_mulai).split(":").map(Number);
       const aMinutes = aHour * 60 + aMinute;
       const bMinutes = bHour * 60 + bMinute;
       return aMinutes - bMinutes;
@@ -485,13 +516,13 @@ const ScheduleTable: FC<{
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-4 h-4 text-blue-500 flex-shrink-0" />
                   <span className="text-sm dark:text-gray-300">
-                    {hoveredItem.tanggal}
+                    {ConvertToStringDateFormat(hoveredItem.tanggal)}
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Clock className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span className="text-sm dark:text-gray-300">
-                    {hoveredItem.waktu_mulai} - {hoveredItem.waktu_selesai}
+                    {ConvertToStringTimeFormat(hoveredItem.waktu_mulai)} - {ConvertToStringTimeFormat(hoveredItem.waktu_selesai)}
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">

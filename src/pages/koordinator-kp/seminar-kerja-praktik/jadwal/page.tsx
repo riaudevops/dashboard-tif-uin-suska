@@ -1,13 +1,19 @@
 import { useState, useEffect, type FC } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import ScheduleTable from "@/components/koordinator-kp/seminar/ScheduleTable";
-import EditJadwalSeminarModal from "@/components/koordinator-kp/seminar/edit-jadwal-modal";
-import LogJadwalModal from "@/components/koordinator-kp/seminar/log-jadwal-modal";
+import { Input } from "@/components/ui/input";
+import {
+  Search,
+  History,
+  CalendarCheck2Icon,
+  ChevronRight,
+} from "lucide-react";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 import { Toaster } from "react-hot-toast";
 import { toast } from "@/hooks/use-toast";
-import { CalendarCheck2Icon, ChevronRight } from "lucide-react";
+import EditJadwalSeminarModal from "@/components/koordinator-kp/seminar/edit-jadwal-modal";
+import LogJadwalModal from "@/components/koordinator-kp/seminar/log-jadwal-modal";
+import ScheduleTable from "@/components/koordinator-kp/seminar/ScheduleTable";
 
 // Type Definitions
 interface Mahasiswa {
@@ -67,6 +73,96 @@ interface LogEntry {
   id_jadwal?: string;
 }
 
+// Skeleton Components
+const SkeletonCard: FC = () => {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-3" aria-busy="true">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div
+          key={index}
+          className="bg-white dark:bg-gray-800 border-none shadow-md rounded-lg p-4 animate-pulse"
+        >
+          <div className="flex justify-between items-center mb-2">
+            <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="h-6 w-6 bg-gray-200 dark:bg-gray-700 rounded-full" />
+          </div>
+          <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded mb-1" />
+          <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+          <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded" />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const SkeletonTable: FC = () => {
+  return (
+    <div
+      className="rounded-lg shadow-lg overflow-hidden bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 animate-pulse"
+      aria-busy="true"
+    >
+      <div className="flex">
+        {/* Room Column */}
+        <div className="flex-shrink-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 w-[90px]">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+            <div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded mx-auto" />
+          </div>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-center border-b border-gray-200 dark:border-gray-700 h-[80px]"
+            >
+              <div className="h-4 w-12 bg-gray-200 dark:bg-gray-700 rounded" />
+            </div>
+          ))}
+        </div>
+        {/* Schedule Columns */}
+        <div className="flex-1">
+          <div className="flex border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={index}
+                className="flex-1 p-4 text-center border-r border-gray-200 dark:border-gray-700 last:border-r-0"
+              >
+                <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded mx-auto" />
+              </div>
+            ))}
+          </div>
+          {Array.from({ length: 5 }).map((_, rowIndex) => (
+            <div
+              key={rowIndex}
+              className="flex border-b border-gray-200 dark:border-gray-700 h-[80px]"
+            >
+              {Array.from({ length: 6 }).map((_, colIndex) => (
+                <div
+                  key={colIndex}
+                  className="flex-1 border-r border-gray-200 dark:border-gray-700 last:border-r-0 p-2"
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SkeletonTabs: FC = () => {
+  return (
+    <div
+      className="flex space-x-1 rounded-md bg-gray-100 dark:bg-gray-700 p-1"
+      aria-busy="true"
+    >
+      {["Semua", "Hari Ini", "Minggu Ini"].map((_, index) => (
+        <div
+          key={index}
+          className="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-600 animate-pulse h-8 w-20"
+        />
+      ))}
+    </div>
+  );
+};
+
 const KoordinatorJadwalSeminarPage: FC = () => {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -92,7 +188,6 @@ const KoordinatorJadwalSeminarPage: FC = () => {
     data: tahunAjaranData,
     isLoading: isTahunAjaranLoading,
     isError: isTahunAjaranError,
-    error: tahunAjaranError,
   } = useQuery<TahunAjaran[]>({
     queryKey: ["tahun-ajaran"],
     queryFn: APISeminarKP.getTahunAjaran,
@@ -293,27 +388,10 @@ const KoordinatorJadwalSeminarPage: FC = () => {
   };
 
   if (isTahunAjaranError) {
-    toast({
-      title: "❌ Gagal",
-      description: `Gagal mengambil daftar tahun ajaran: ${
-        (tahunAjaranError as Error).message
-      }`,
-      duration: 3000,
-    });
     return (
       <DashboardLayout>
         <div className="text-center text-gray-600 dark:text-gray-300 py-10">
           Gagal memuat daftar tahun ajaran. Silakan coba lagi nanti.
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  if (isLoading || isTahunAjaranLoading) {
-    return (
-      <DashboardLayout>
-        <div className="text-center text-gray-600 dark:text-gray-300">
-          Memuat jadwal seminar...
         </div>
       </DashboardLayout>
     );
@@ -337,60 +415,93 @@ const KoordinatorJadwalSeminarPage: FC = () => {
   return (
     <DashboardLayout>
       <Toaster position="top-right" />
-      <div className="flex justify-between items-center mb-3.5">
-        <div className="flex">
-          <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
-            <span
-              className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
-            />
-            <CalendarCheck2Icon className="w-4 h-4 mr-1.5" />
-            Jadwal Seminar Kerja Praktik Mahasiswa
-          </span>
-        </div>
-
-        {/* Academic Year Dropdown */}
-        <div className="flex items-center gap-2 dark:text-gray-200">
-          <div className="relative">
-            <select
-              className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0 disabled:opacity-50"
-              value={selectedTahunAjaranId ?? ""}
-              onChange={(e) => setSelectedTahunAjaranId(Number(e.target.value))}
-              disabled={isTahunAjaranLoading || !tahunAjaranData}
-            >
-              {isTahunAjaranLoading ? (
-                <option value="">Memuat tahun ajaran...</option>
-              ) : tahunAjaranData && tahunAjaranData.length > 0 ? (
-                tahunAjaranData.map((year) => (
-                  <option key={year.id} value={year.id}>
-                    {year.nama}
-                  </option>
-                ))
+      <div className="space-y-4">
+        <div className="flex justify-between items-center mb-3.5">
+          <div className="flex">
+            <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+              <span className="inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400" />
+              <CalendarCheck2Icon className="w-4 h-4 mr-1.5" />
+              Jadwal Seminar Kerja Praktik Mahasiswa
+            </span>
+          </div>
+          <div className="flex items-center gap-2 dark:text-gray-200">
+            <div className="relative">
+              {isLoading || isTahunAjaranLoading ? (
+                <div className="px-3 py-1 pr-8 text-sm bg-white border rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 h-8 w-32 animate-pulse" />
               ) : (
-                <option value="">Tidak ada tahun ajaran tersedia</option>
+                <>
+                  <select
+                    className="px-3 py-1 pr-8 text-sm bg-white border focus:outline-none active:outline-none rounded-lg shadow-sm appearance-none dark:bg-gray-800 dark:border-gray-700 focus:ring-0 active:ring-0 disabled:opacity-50"
+                    value={selectedTahunAjaranId ?? ""}
+                    onChange={(e) =>
+                      setSelectedTahunAjaranId(Number(e.target.value))
+                    }
+                    disabled={isTahunAjaranLoading || !tahunAjaranData}
+                  >
+                    {tahunAjaranData && tahunAjaranData.length > 0 ? (
+                      tahunAjaranData.map((year) => (
+                        <option key={year.id} value={year.id}>
+                          {year.nama}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="">Tidak ada tahun ajaran tersedia</option>
+                    )}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                    <ChevronRight className="w-4 h-4 text-gray-500 rotate-90" />
+                  </div>
+                </>
               )}
-            </select>
-            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-              <ChevronRight className="w-4 h-4 text-gray-500 rotate-90" />
             </div>
           </div>
         </div>
+
+        {isLoading || isTahunAjaranLoading ? (
+          <>
+            <SkeletonCard />
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <SkeletonTabs />
+              <div className="relative flex items-center w-full md:w-auto">
+                <Search className="absolute w-4 h-4 text-gray-400 left-3" />
+                <Input
+                  type="text"
+                  placeholder="Cari nama mahasiswa..."
+                  value=""
+                  className="w-full md:w-64 pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200 animate-pulse"
+                  disabled
+                />
+                <button
+                  className="ml-2 rounded-sm flex bg-gradient-to-r from-blue-500 to-blue-600 py-[10px] text-white text-xs px-5 opacity-50 cursor-not-allowed"
+                  disabled
+                >
+                  <History className="h-4 w-4 mr-2" />
+                  Log Jadwal
+                </button>
+              </div>
+            </div>
+            <SkeletonTable />
+          </>
+        ) : (
+          <ScheduleTable
+            data={filteredData}
+            onEdit={handleOpenModal}
+            selectedTahunAjaranId={selectedTahunAjaranId}
+            setSelectedTahunAjaranId={setSelectedTahunAjaranId}
+            tahunAjaranData={tahunAjaranData}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            handleOpenLogModal={handleOpenLogModal}
+            hoveredItem={hoveredItem}
+            setHoveredItem={setHoveredItem}
+            hoverPosition={hoverPosition}
+            setHoverPosition={setHoverPosition}
+          />
+        )}
       </div>
-      <ScheduleTable
-        data={filteredData}
-        onEdit={handleOpenModal}
-        selectedTahunAjaranId={selectedTahunAjaranId}
-        setSelectedTahunAjaranId={setSelectedTahunAjaranId}
-        tahunAjaranData={tahunAjaranData}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        handleOpenLogModal={handleOpenLogModal}
-        hoveredItem={hoveredItem}
-        setHoveredItem={setHoveredItem}
-        hoverPosition={hoverPosition}
-        setHoverPosition={setHoverPosition}
-      />
+
       <EditJadwalSeminarModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

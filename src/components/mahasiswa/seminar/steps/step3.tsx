@@ -152,7 +152,7 @@ const Step3: FC<Step3Props> = ({ activeStep }) => {
 
   // Fetch data
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["seminar-kp-dokumen"],
+    queryKey: ["seminar-kp-step3"],
     queryFn: APISeminarKP.getDataMydokumen,
     staleTime: Infinity,
   });
@@ -338,7 +338,7 @@ const Step3: FC<Step3Props> = ({ activeStep }) => {
         description: `Berhasil mengirim link dokumen: ${docList}`,
         duration: 3000,
       });
-      queryClient.invalidateQueries({ queryKey: ["seminar-kp-dokumen"] });
+      queryClient.invalidateQueries({ queryKey: ["seminar-kp-step3"] });
     }
   };
 
@@ -441,7 +441,7 @@ const Step3: FC<Step3Props> = ({ activeStep }) => {
             className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
           />
           <LayoutGridIcon className="w-4 h-4 mr-1.5" />
-          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa            
+          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa
         </span>
       </div>
 

@@ -1,4 +1,4 @@
-import { Card, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 
 interface CardProgressKelengkapanBerkasProps {
   status?: boolean;

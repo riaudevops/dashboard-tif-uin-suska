@@ -176,7 +176,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
       {isLoading && <p className="text-center">Loading...</p>}
       {isDeleteButtonClicked && (
         <Card>
-          <CardHeader className="absolute z-50 bg-white left-[50%] -translate-x-[50%] -translate-y-[50%] top-[50%] border-[1px] border-black shadow-md rounded-lg p-4">
+          <CardHeader className="absolute z-50 bg-white dark:bg-black left-[50%] -translate-x-[50%] -translate-y-[50%] top-[50%] border-[1px] border-black shadow-md rounded-lg p-4">
             <CardTitle>Apakah anda yakin?</CardTitle>
             <div className="flex gap-4 justify-end mt-4">
               <Button
@@ -231,7 +231,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                       Longitude
                     </Label>
                     <Input
-                      className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
+                      className="block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
                       type="number"
                       id="longitude"
                       name="longitude"
@@ -244,7 +244,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                       Latitude
                     </Label>
                     <Input
-                      className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
+                      className="block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
                       type="number"
                       id="latitude"
                       name="latitude"
@@ -256,7 +256,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                       Radius
                     </Label>
                     <Input
-                      className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
+                      className="block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
                       type="number"
                       id="radius"
                       name="radius"
@@ -266,7 +266,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                     />
                   </CardContent>
                 </Card>
-                <Card className="mt-4">
+                <Card className="mt-4 px-4 py-2">
                   <CardContent className="p-2">
                     <Label htmlFor="profil-singkat">Profil Singkat : </Label>
                     {isEditing ? (
@@ -305,7 +305,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                   <CardTitle>Jenis Instansi: </CardTitle>
                   {isEditing ? (
                     <select
-                      className="my-2 border-[1px] border-gray-300 outline-none rounded-lg"
+                      className="my-2 dark:bg-gray-800/50 dark:border-gray-700 border-[1px] p-2 border-gray-300 outline-none rounded-md"
                       name="jenis-instansi"
                       id="jenis-instansi"
                       value={jenisInput}
@@ -323,7 +323,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                   <CardTitle>Status : </CardTitle>
                   {isEditing ? (
                     <select
-                      className="my-2 border-[1px] border-gray-300 outline-none rounded-lg"
+                      className="my-2 border-[1px] dark:bg-gray-800/50 dark:border-gray-700 p-2 border-gray-300 outline-none rounded-md"
                       name="status-instansi"
                       id="status-instansi"
                       value={statusInput}
@@ -444,6 +444,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                 <Button
                   disabled={editMutation.isPending}
                   onClick={() => setIsDeleteButtonClicked((prev) => !prev)}
+                  variant="destructive"
                   className="bg-red-600 p-2 rounded-lg text-white font-semibold tracking-wide"
                 >
                   Hapus Instansi

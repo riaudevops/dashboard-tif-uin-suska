@@ -103,7 +103,7 @@ function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
               </Label>
               <Input
                 required
-                className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
+                className=" block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
                 type="number"
                 id="longitude"
                 name="longitude"
@@ -123,7 +123,7 @@ function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
               </Label>
               <Input
                 required
-                className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
+                className=" block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
                 type="number"
                 id="latitude"
                 name="latitude"
@@ -142,7 +142,7 @@ function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
               </Label>
               <Input
                 required
-                className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
+                className=" block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
                 type="number"
                 id="radius"
                 name="radius"
@@ -162,7 +162,7 @@ function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
                 </Label>
                 <Input
                   required
-                  className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
+                  className=" block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
                   placeholder="Nama Perusahaan..."
                   type="text"
                   id="instansi"
@@ -184,7 +184,7 @@ function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
                   Jenis Instansi
                 </Label>
                 <select
-                  className="block w-full my-2 p-2 border-[1px] border-slate-300"
+                  className="block w-full my-2 dark:bg-black dark:white border-[1px] rounded-lg p-2 border-slate-300"
                   name="jenisInstansi"
                   id="jenis-instansi"
                 >
@@ -199,7 +199,7 @@ function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
                   Profil Singkat
                 </Label>
                 <textarea
-                  className="block w-full border-[1px] p-1 border-slate-300"
+                  className="block w-full dark:bg-black dark:white rounded-lg border-[1px] p-1 border-slate-300"
                   name="profilSingkat"
                   id="profil-singkat"
                   rows={5}
@@ -217,7 +217,7 @@ function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
                 </Label>
                 <Input
                   required
-                  className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
+                  className=" block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
                   placeholder="Nama Penanggung Jawab..."
                   type="text"
                   id="nama-penanggung-jawab"
@@ -232,7 +232,7 @@ function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
                 </Label>
                 <Input
                   required
-                  className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
+                  className=" block w-full border-[1px] border-slate-300 rounded-md p-1 mb-4"
                   placeholder="+62-000-0000-0000"
                   type="text"
                   id="no-telp-penanggung-jawab-instansi"
@@ -247,7 +247,7 @@ function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
                 </Label>
                 <Input
                   required
-                  className="text-black block w-full border-[1px] border-slate-300 rounded-md p-1"
+                  className=" block w-full border-[1px] border-slate-300 rounded-md p-1"
                   placeholder="example@email.com"
                   type="text"
                   id="email-penanggung-jawab-instansi"
@@ -268,7 +268,7 @@ function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
             <Button
               type="submit"
               disabled={isPending}
-              className="bg-green-600 py-1 md:w-[198px] text-white font-bold hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+              className="bg-green-600 text-white py-1 md:w-[198px] font-bold hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
             >
               Ajukan Permohonan
             </Button>

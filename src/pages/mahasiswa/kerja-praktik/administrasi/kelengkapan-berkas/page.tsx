@@ -2,7 +2,7 @@
 
 import { Link } from "react-router";
 import CardProgressKelengkapanBerkas from "@/components/mahasiswa/daftar-kp/CardProgressKelengkapanBerkas";
-import { Dispatch, FormEvent, SetStateAction, useState } from "react";
+import { useState } from "react";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import {
   IsPendaftaranKPClosedSync,
@@ -205,7 +205,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
   let isEditing = isEditingSuratPengantar;
   let setIsEditing = setIsEditingSuratPengantar;
 
-  const { data: dataKPTerbaru } = useQuery({
+  const { data: dataKPTerbaru, isError: isErrorDataKPTerbaru } = useQuery({
     queryKey: ["kp-terbaru-kelengkapan-berkas"],
     queryFn: () =>
       APIDaftarKP.getKPAktifMahasiswa().then((res) => {
@@ -235,21 +235,27 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
     isPendaftaranKPLanjutClosed = IsPendaftaranKPLanjutClosedSync(tanggalKP);
   }
 
-  if (dataKPTerbaru?.level_akses === 1) {
-    if (dataKPTerbaru.document[0].status === "Ditolak") {
-      statusValidasi.style = "bg-red-600";
-      statusValidasi.message = dataKPTerbaru.document[0].catatan;
-    } else {
-      statusValidasi.style = "bg-gray-400";
-      statusValidasi.message = "Belum mengirimkan berkas";
-    }
-  } else if (dataKPTerbaru?.level_akses === 2) {
+  if (dataKPTerbaru && dataKPTerbaru?.document[1].status === "Ditolak") {
+    statusValidasi.style = "bg-red-600";
+    statusValidasi.message =
+      (dataKPTerbaru && dataKPTerbaru?.document[1].catatan) ||
+      "Periksa kembali dokumen anda";
+  } else if (
+    dataKPTerbaru &&
+    dataKPTerbaru?.document[1].status === "Terkirim"
+  ) {
     statusValidasi.style = "bg-blue-400";
     statusValidasi.message = "menunggu divalidasi oleh Koordinator KP";
-  } else {
+  } else if (
+    dataKPTerbaru &&
+    dataKPTerbaru?.document[1].status === "Divalidasi"
+  ) {
     statusValidasi.style = "bg-green-600";
     statusValidasi.message =
       "Berkas KP berhasil divalidasi oleh Koordinator KP";
+  } else {
+    statusValidasi.style = "bg-gray-400";
+    statusValidasi.message = "Belum mengirimkan berkas";
   }
   let InputField = (
     <Card className="border-[1px] border-slate-300 ">
@@ -273,7 +279,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
             <Input
               required
               key="surat-pengantar"
-              className={"mt-1 text-black p-2 border-[1px] border-slate-300"}
+              className={"mt-1 p-2 border-[1px] border-slate-300"}
               type="text"
               placeholder="Masukkan Link Berkas..."
               id="surat-pengantar-kp"
@@ -281,7 +287,9 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
             />
           ) : (
             <p>
-              {(dataKPTerbaru && dataKPTerbaru.document[1].data) ||
+              {(dataKPTerbaru &&
+                dataKPTerbaru &&
+                dataKPTerbaru?.document[1].data) ||
                 "Data tidak tersedia"}
             </p>
           )}
@@ -292,21 +300,20 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
 
   if (currentPage === 3 && dataKPTerbaru?.level_akses! >= 3) {
     isEditing = isEditingSuratBalasan;
-    if (dataKPTerbaru?.level_akses === 3) {
-      if (dataKPTerbaru.document[2].status === "Ditolak") {
-        statusValidasi.style = "bg-red-600";
-        statusValidasi.message = dataKPTerbaru.document[2].catatan;
-      } else {
-        statusValidasi.style = "bg-gray-400";
-        statusValidasi.message = "Belum mengirimkan berkas";
-      }
-    } else if (dataKPTerbaru?.level_akses === 4) {
+    if (dataKPTerbaru.document[2].status === "Ditolak") {
+      statusValidasi.style = "bg-red-600";
+      statusValidasi.message =
+        dataKPTerbaru.document[2].catatan || "Periksa kembali dokumen anda";
+    } else if (dataKPTerbaru.document[2].status === "Terkirim") {
       statusValidasi.style = "bg-blue-400";
       statusValidasi.message = "menunggu divalidasi oleh Koordinator KP";
-    } else {
+    } else if (dataKPTerbaru.document[2].status === "Divalidasi") {
       statusValidasi.style = "bg-green-600";
       statusValidasi.message =
         "Berkas KP berhasil divalidasi oleh Koordinator KP";
+    } else {
+      statusValidasi.style = "bg-gray-400";
+      statusValidasi.message = "Belum mengirimkan berkas";
     }
     setIsEditing = setIsEditingSuratBalasan;
     key = "linkSuratBalasanKP";
@@ -333,7 +340,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
               <Input
                 required
                 key="surat-balasan"
-                className={"mt-1 text-black p-2 border-[1px] border-slate-300"}
+                className={"mt-1 p-2 border-[1px] border-slate-300"}
                 type="text"
                 placeholder="Masukkan Link Berkas..."
                 id="surat-balasan-kp"
@@ -351,21 +358,20 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
     );
   } else if (currentPage === 5 && dataKPTerbaru?.level_akses! >= 5) {
     isEditing = isEditingIdPengajuanDospem;
-    if (dataKPTerbaru?.level_akses === 5) {
-      if (dataKPTerbaru?.document[3].status === "Ditolak") {
-        statusValidasi.style = "bg-red-600";
-        statusValidasi.message = dataKPTerbaru?.document[3].catatan;
-      } else {
-        statusValidasi.style = "bg-gray-400";
-        statusValidasi.message = "Belum mengirimkan berkas";
-      }
-    } else if (dataKPTerbaru?.level_akses === 6) {
+    if (dataKPTerbaru.document[3].status === "Ditolak") {
+      statusValidasi.style = "bg-red-600";
+      statusValidasi.message =
+        dataKPTerbaru.document[3].catatan || "Periksa kembali dokumen anda";
+    } else if (dataKPTerbaru.document[3].status === "Terkirim") {
       statusValidasi.style = "bg-blue-400";
       statusValidasi.message = "menunggu divalidasi oleh Koordinator KP";
-    } else {
+    } else if (dataKPTerbaru.document[3].status === "Divalidasi") {
       statusValidasi.style = "bg-green-600";
       statusValidasi.message =
         "Berkas KP berhasil divalidasi oleh Koordinator KP";
+    } else {
+      statusValidasi.style = "bg-gray-400";
+      statusValidasi.message = "Belum mengirimkan berkas";
     }
     setIsEditing = setIsEditingIdPengajuanDospem;
     key = "IdPengajuanDosenPembimbingKP";
@@ -406,7 +412,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
               <Input
                 required
                 key="id-pengajuan-dospem"
-                className={"mt-1 text-black p-2 border-[1px] border-slate-300"}
+                className={"mt-1 p-2 border-[1px] border-slate-300"}
                 type="text"
                 placeholder="Masukkan Id Pengajuan..."
                 id="id-pengajuan-dosen-pembimbing"
@@ -421,21 +427,20 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
     );
   } else if (currentPage === 7 && dataKPTerbaru?.level_akses! >= 7) {
     isEditing = isEditingSuratPenunjukkanDospem;
-    if (dataKPTerbaru?.level_akses === 7) {
-      if (dataKPTerbaru?.document[4].status === "Ditolak") {
-        statusValidasi.style = "bg-red-600";
-        statusValidasi.message = dataKPTerbaru?.document[4].catatan;
-      } else {
-        statusValidasi.style = "bg-gray-400";
-        statusValidasi.message = "Belum mengirimkan berkas";
-      }
-    } else if (dataKPTerbaru?.level_akses === 8) {
+    if (dataKPTerbaru.document[4].status === "Ditolak") {
+      statusValidasi.style = "bg-red-600";
+      statusValidasi.message =
+        dataKPTerbaru.document[4].catatan || "Periksa kembali dokumen anda";
+    } else if (dataKPTerbaru.document[4].status === "Terkirim") {
       statusValidasi.style = "bg-blue-400";
       statusValidasi.message = "menunggu divalidasi oleh Koordinator KP";
-    } else {
+    } else if (dataKPTerbaru.document[4].status === "Divalidasi") {
       statusValidasi.style = "bg-green-600";
       statusValidasi.message =
         "Berkas KP berhasil divalidasi oleh Koordinator KP";
+    } else {
+      statusValidasi.style = "bg-gray-400";
+      statusValidasi.message = "Belum mengirimkan berkas";
     }
     setIsEditing = setIsEditingSuratPenunjukkanDospem;
     key = "linkSuratPenunjukkanDosenPembimbingKP";
@@ -462,7 +467,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
               <Input
                 required
                 key="surat-penunjukkan-dospem"
-                className={"mt-1 text-black p-2 border-[1px] border-slate-300"}
+                className={"mt-1 p-2 border-[1px] border-slate-300"}
                 type="text"
                 placeholder="Masukkan Link Berkas..."
                 id="surat-penunjukkan-dosen-pembimbing"
@@ -477,21 +482,20 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
     );
   } else if (currentPage === 9 && dataKPTerbaru?.level_akses! >= 9) {
     isEditing = isEditingSuratPerpanjanganKP;
-    if (dataKPTerbaru?.level_akses === 9) {
-      if (dataKPTerbaru?.document[5].status === "Ditolak") {
-        statusValidasi.style = "bg-red-600";
-        statusValidasi.message = dataKPTerbaru?.document[5].catatan;
-      } else {
-        statusValidasi.style = "bg-gray-400";
-        statusValidasi.message = "Belum mengirimkan berkas";
-      }
-    } else if (dataKPTerbaru?.level_akses === 10) {
+    if (dataKPTerbaru.document[5].status === "Ditolak") {
+      statusValidasi.style = "bg-red-600";
+      statusValidasi.message =
+        dataKPTerbaru.document[5].catatan || "Periksa kembali dokumen anda";
+    } else if (dataKPTerbaru.document[5].status === "Terkirim") {
       statusValidasi.style = "bg-blue-400";
       statusValidasi.message = "menunggu divalidasi oleh Koordinator KP";
-    } else {
+    } else if (dataKPTerbaru.document[5].status === "Divalidasi") {
       statusValidasi.style = "bg-green-600";
       statusValidasi.message =
         "Berkas KP berhasil divalidasi oleh Koordinator KP";
+    } else {
+      statusValidasi.style = "bg-gray-400";
+      statusValidasi.message = "Belum mengirimkan berkas";
     }
     setIsEditing = setIsEditingSuratPerpanjanganKP;
     key = "linkSuratPerpanjanganKP";
@@ -521,13 +525,11 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
                 >
                   Link :
                 </Label>
-                {isEditing ? (
+                {isEditing || currentPage === dataKPTerbaru?.level_akses! ? (
                   <Input
                     required
                     key="surat-perpanjangan-kp"
-                    className={
-                      "mt-1 text-black p-2 border-[1px] border-slate-300"
-                    }
+                    className={"mt-1 p-2 border-[1px] border-slate-300"}
                     type="text"
                     placeholder="Masukkan Link Berkas..."
                     id="surat-perpanjangan-kp"
@@ -543,7 +545,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
                 >
                   Alasan Lanjut KP :
                 </Label>
-                {isEditing ? (
+                {isEditing || currentPage === dataKPTerbaru?.level_akses! ? (
                   <Textarea
                     className="w-full  border-[1px] border-gray-300"
                     name="alasan_lanjut_kp"
@@ -578,6 +580,22 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
             </>
           )}
         </div>
+      </Card>
+    );
+  }
+
+  if (!dataKPTerbaru && isErrorDataKPTerbaru) {
+    return (
+      <Card className="p-2 absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2">
+        Data Tidak Ditemukan
+      </Card>
+    );
+  }
+
+  if (!dataKPTerbaru) {
+    return (
+      <Card className="p-2 absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2">
+        Loading...
       </Card>
     );
   }
@@ -626,14 +644,14 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
                   <CardTitle className="font-medium text-lg tracking-wide">
                     Status Validasi Surat Jawaban
                   </CardTitle>
-                  <CardDescription className="mt-2 text-sm text-black">
+                  <CardDescription className="mt-2 text-sm dark:text-white text-black">
                     {":"} {statusValidasi.message}
                   </CardDescription>
                 </CardHeader>
               </Card>
             )}
             <Card className="mt-2">
-              <CardDescription className="p-3 font-bold text-black rounded-lg bg-green-200 dark:bg-black ">
+              <CardDescription className="p-3 font-bold rounded-lg bg-green-200 dark:bg-black ">
                 Silakan Isi Form di Bawah ini untuk Divalidasi!
               </CardDescription>
               <form onSubmit={(e) => handleOnSubmitForm(e, mutation, key)}>
@@ -731,97 +749,3 @@ function handleOnSubmitForm(
     mutation.mutate(data);
   } else mutation.mutate(data[key]);
 }
-
-// function handleOnSubmitForm(
-//   url: string,
-//   setIsLoading: Dispatch<SetStateAction<boolean>>,
-//   setResponse: Dispatch<SetStateAction<CommonResponse | null>>,
-//   setDataKPTerbaru: Dispatch<SetStateAction<KPInterface>>
-// ) {
-//   return async function handleOnSubmit(e: FormEvent<HTMLFormElement>) {
-//     e.preventDefault();
-//     setIsLoading((prev) => !prev);
-//     const formData = new FormData(e.currentTarget);
-//     const objectFormData = Object.fromEntries(formData.entries());
-//     const axios = api();
-//     axios
-//       .post(url, {
-//         ...objectFormData,
-//       })
-//       .then((response) => {
-//         setIsLoading((prev) => !prev);
-//         setResponse(response.data);
-//         setDataKPTerbaru((prev) => {
-//           return { ...prev, level_akses: prev.level_akses + 1 };
-//         });
-//         const pointer = setTimeout(() => {
-//           setResponse(null);
-//           clearTimeout(pointer);
-//         }, 1000);
-//       })
-//       .catch((error) => {
-//         console.log(error);
-//       });
-//   };
-// }
-
-// function FormSuratPengantar({url, isLoading, setIsLoading} : {isLoading : boolean, setIsLoading : Dispatch<SetStateAction<boolean>>, url : string}) {
-
-//   return <form onSubmit={handleOnSubmitForm(url, setIsLoading)}>
-//     <div className="bg-green-100 p-3">
-//         <h4 className="font-bold text-sm tracking-wide my-2">< ClipboardList /> Validasi Berkas</h4>
-//         <div className="border-[1px] border-slate-300 p-3 bg-white ">
-//           <div className="flex flex-col">
-//           <h3 className="font-bold text-lg">Dokumen Surat Pengantar dari Dekan</h3>
-//           <p className="text-xs text-slate-500">Silakan inputkan Link Gdrive dengan file harus berformat pdf.</p>
-//           <label className="font-bold text-sm mt-1" htmlFor="nama-pembimbing-instansi">Link : </label>
-//           <input className="mt-1 p-2 border-[1px] border-slate-300  " type="text" placeholder="Masukkan Link Berkas..." id="nama-pembimbing-instansi" name="linkSuratPengantarKP"/>
-//           </div>
-//         </div>
-//       </div>
-//       <div className="flex justify-end items-center mt-2">
-//       <Button disabled={isLoading} type="reset" className=" px-16 tracking-wide py-1 font-semibold  hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Kosongkan Formulir</Button>
-//       <button disabled={isLoading} type="submit" className=" px-24 py-1 tracking-wide text-white font-medium  bg-green-950 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Kirim</button>
-//       </div>
-//   </form>
-// }
-
-// function FormSuratBalasanInstansi({url} : {url : string}) {
-
-//   return <form onSubmit={handleOnSubmitForm(url, setIsLoading)}>
-//     <div className="bg-green-100 p-3">
-//         <h4 className="font-bold text-sm tracking-wide my-2">< ClipboardList /> Validasi Berkas</h4>
-//         <div className="border-[1px] border-slate-300 p-3 bg-white ">
-//           <div className="flex flex-col">
-//           <h3 className="font-bold text-lg">Dokumen Surat Pengantar dari Dekan</h3>
-//           <p className="text-xs text-slate-500">Silakan inputkan Link Gdrive dengan file harus berformat pdf.</p>
-//           <label className="font-bold text-sm mt-1" htmlFor="nama-pembimbing-instansi">Link : </label>
-//           <input className="mt-1 p-2 border-[1px] border-slate-300 " type="text" placeholder="Masukkan Link Berkas..." id="nama-pembimbing-instansi" name="linkSuratPengantarKP"/>
-//           </div>
-//         </div>
-//       </div>
-//       <div className="flex justify-end items-center mt-2">
-//       <button disabled={isLoading} type="reset" className=" px-16 tracking-wide py-1 font-semibold  hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Kosongkan Formulir</button>
-//       <button disabled={isLoading} type="submit" className=" px-24 py-1 tracking-wide text-white font-medium  bg-green-950 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Kirim</button>
-//       </div>
-//   </form>
-// }
-
-// function FormSuratBalasanInstansi1(url : string) {
-
-//   return <form>
-//     <div className="bg-green-100 p-3">
-//         <h4 className="font-bold text-sm tracking-wide my-2">< ClipboardList /> Kontak Pembimbing Instansi</h4>
-//         <div className="border-[1px] border-slate-300 p-3 bg-white ">
-//           <div className="flex flex-col mt-2">
-//           <label className="font-bold text-sm" htmlFor="nama-pembimbing-instansi">Nama Pembimbing Instansi</label>
-//           <input className="p-1 border-[1px] border-slate-300 " type="text" placeholder="Nama Penanggung Jawab Instansi..." id="nama-pembimbing-instansi"/>
-//           </div>
-//           <div className="flex flex-col mt-2">
-//           <label className="font-bold text-sm" htmlFor="email-resmi-pembimbing-instansi">Email Resmi Pembimbing Instansi</label>
-//           <input className="p-1 border-[1px] border-slate-300 " type="text" placeholder="Nama Penanggung Jawab Instansi..." id="email-resmi-pembimbing-instansi"/>
-//           </div>
-//         </div>
-//       </div>
-//     </form>
-// }

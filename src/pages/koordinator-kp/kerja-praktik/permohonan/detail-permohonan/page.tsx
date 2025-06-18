@@ -3,7 +3,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -17,21 +16,49 @@ import {
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect, FormEvent } from "react";
-import { KPDetailsInterface } from "@/interfaces/pages/mahasiswa/pendaftaran-kp.interface";
+import { useState, FormEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { api } from "@/lib/axios-instance";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import APIDaftarKP from "@/services/api/mahasiswa/daftar-kp.service";
 import { toast } from "@/hooks/use-toast";
+import {
+  CommonResponse,
+  PutMahasiswaParamsInterface,
+} from "@/interfaces/service/api/daftar-kp/koordinator-kp-service.interface";
+
+import { Calendar as Calendar1 } from "@/components/ui/calendar";
 
 const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
-  const [isRejectButtonClicked, setIsRejectButtonClicked] =
-    useState<boolean>(false);
+  const [isRejectButtonClicked, setIsRejectButtonClicked] = useState<number>(0);
   const [rejectMessage, setRejectMessage] = useState<string>("");
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [
+    is_status_link_surat_penolakan_instansi_ditolak,
+    set_is_status_link_surat_penolakan_instansi_ditolak,
+  ] = useState<boolean>(false);
+  const [
+    is_status_link_surat_pengantar_ditolak,
+    set_is_status_link_surat_pengantar_ditolak,
+  ] = useState<boolean>(false);
+  const [
+    is_status_link_surat_balasan_ditolak,
+    set_is_status_link_surat_balasan_ditolak,
+  ] = useState<boolean>(false);
+  const [
+    is_status_id_surat_pengajuan_dospem_ditolak,
+    set_is_status_id_surat_pengajuan_dospem_ditolak,
+  ] = useState<boolean>(false);
+  const [
+    is_status_link_surat_penunjukkan_dospem_ditolak,
+    set_is_status_link_surat_penunjukkan_dospem_ditolak,
+  ] = useState<boolean>(false);
+  const [
+    is_status_link_surat_perpanjangan_kp_ditolak,
+    set_is_status_link_surat_perpanjangan_kp_ditolak,
+  ] = useState<boolean>(false);
+  const [dateEnd, setDateEnd] = useState<Date | null | undefined>(null);
   const { id } = useParams();
 
   const queryClient = useQueryClient();
@@ -41,115 +68,184 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
     queryFn: () => APIDaftarKP.getAllDataInstansi().then((res) => res.data),
   });
 
-  const { data: biodataMahasiswa } = useQuery({
+  const { data: biodataMahasiswa, isError } = useQuery({
     queryKey: ["koordinator-kp-data-detail-mahasiswa"],
     queryFn: () => APIDaftarKP.getDataKPMahasiswa(id).then((res) => res.data),
   });
 
-  const accMutation = useMutation({
-    mutationFn: (data: any) => APIDaftarKP.postACCBerkasMahasiswa(data),
-    onSuccess: (data: any) => {
+  const editMutation = useMutation({
+    mutationFn: (data: PutMahasiswaParamsInterface) =>
+      APIDaftarKP.editDataMahasiswa(data),
+    onSuccess: () => {
       toast({
         title: "Sukses",
-        description:
-          data.message || "Berhasil mengirimkan surat pengantar kerja praktek",
+        description: "Berhasil mengubah data mahasiswa",
         duration: 3000,
       });
       queryClient.invalidateQueries({
         queryKey: ["koordinator-kp-data-detail-mahasiswa"],
         exact: true,
       });
+      setIsEditing(false);
+      setIsRejectButtonClicked(0);
+      set_is_status_link_surat_penolakan_instansi_ditolak(false);
+      set_is_status_link_surat_pengantar_ditolak(false);
+      set_is_status_link_surat_balasan_ditolak(false);
+      set_is_status_id_surat_pengajuan_dospem_ditolak(false);
+      set_is_status_link_surat_penunjukkan_dospem_ditolak(false);
+      set_is_status_link_surat_perpanjangan_kp_ditolak(false);
     },
-    onError: (data: any) => {
+    onError: (data: CommonResponse) => {
       toast({
         title: "Gagal",
-        description:
-          data.message || "Gagal mengirimkan surat pengantar kerja praktek",
+        description: data.message || "Gagal mengubah data mahasiswa",
         duration: 3000,
       });
     },
   });
 
-  const { data: dataKPMahasiswa } = useQuery({
-    queryKey: ["kp-terbaru-mahasiswa-detail-koordinator-kp"],
-    queryFn: () => APIDaftarKP.getDataKPMahasiswa(id),
-  });
-
-  const tolakMutation = useMutation({
-    mutationFn: (data: any) => APIDaftarKP.postTolakBerkasMahasiswa(data),
-    onSuccess: (data: any) => {
-      toast({
-        title: "Sukses",
-        description:
-          data.message || "Berhasil mengirimkan surat pengantar kerja praktek",
-        duration: 3000,
+  function handleOnAccept(i: number) {
+    if (i === 6) {
+      editMutation.mutate({
+        id,
+        status_link_surat_penolakan_instansi: "Divalidasi",
       });
-      queryClient.invalidateQueries({
-        queryKey: ["koordinator-kp-data-detail-mahasiswa"],
-        exact: true,
+    } else if (i === 1) {
+      editMutation.mutate({
+        id,
+        status_link_surat_pengantar: "Divalidasi",
       });
-      setIsRejectButtonClicked(false);
-    },
-    onError: (data: any) => {
-      toast({
-        title: "Gagal",
-        description:
-          data.message || "Gagal mengirimkan surat pengantar kerja praktek",
-        duration: 3000,
+    } else if (i === 2) {
+      editMutation.mutate({
+        id,
+        status_link_surat_balasan: "Divalidasi",
       });
-    },
-  });
-
-  function handleOnAccept(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    accMutation.mutate({ id, message: "Berhasil" });
+    } else if (i === 3) {
+      editMutation.mutate({
+        id,
+        status_id_surat_pengajuan_dospem: "Divalidasi",
+      });
+    } else if (i === 4) {
+      editMutation.mutate({
+        id,
+        status_link_surat_penunjukkan_dospem: "Divalidasi",
+      });
+    } else if (i === 5) {
+      editMutation.mutate({
+        id,
+        status_link_surat_perpanjangan_kp: "Divalidasi",
+      });
+    }
   }
 
-  function handleOnReject(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    tolakMutation.mutate({ id, message: rejectMessage });
+  function handleOnReject(i: number) {
+    if (i === 6) {
+      editMutation.mutate({
+        id,
+        catatan_link_surat_penolakan_instansi: rejectMessage,
+        status_link_surat_penolakan_instansi: "Ditolak",
+      });
+    } else if (i === 1) {
+      editMutation.mutate({
+        id,
+        catatan_link_surat_pengantar: rejectMessage,
+        status_link_surat_pengantar: "Ditolak",
+      });
+    } else if (i === 2) {
+      editMutation.mutate({
+        id,
+        catatan_link_surat_balasan: rejectMessage,
+        status_link_surat_balasan: "Ditolak",
+      });
+    } else if (i === 3) {
+      editMutation.mutate({
+        id,
+        catatan_id_surat_pengajuan_dospem: rejectMessage,
+        status_id_surat_pengajuan_dospem: "Ditolak",
+      });
+    } else if (i === 4) {
+      editMutation.mutate({
+        id,
+        catatan_link_surat_penunjukkan_dospem: rejectMessage,
+        status_link_surat_penunjukkan_dospem: "Ditolak",
+      });
+    } else if (i === 5) {
+      editMutation.mutate({
+        id,
+        catatan_link_surat_perpanjangan_kp: rejectMessage,
+        status_link_surat_perpanjangan_kp: "Ditolak",
+      });
+    }
   }
 
-  // async function handleOnEdit(e: FormEvent<HTMLFormElement>) {
-  //   e.preventDefault();
-  //   setIsLoading((prev) => !prev);
-  //   try {
-  //     const axios = api();
-  //     const response = await axios.post(
-  //       `${
-  //         import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
-  //       }/koordinator-kp/daftar-kp/berkas-mahasiswa`,
-  //       {
-  //         id,
-  //         status,
-  //         kelas_kp,
-  //         tujuan_surat_instansi,
-  //         link_surat_pengantar,
-  //         link_surat_balasan,
-  //         link_surat_penunjukan_dospem,
-  //         link_surat_perpanjangan_kp,
-  //         id_surat_pengajuan_dospem,
-  //         level_akses,
-  //         judul_kp,
-  //         alasan_lanjut_kp,
-  //         id_instansi,
-  //       }
-  //     );
+  function handleOnSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(
+      formData.entries()
+    ) as unknown as PutMahasiswaParamsInterface;
+    console.log(data);
+    data.level_akses =
+      data.level_akses === -10
+        ? null
+        : parseInt(data.level_akses as unknown as string);
+    data.status = data.status === "Pilih Status" ? null : data.status;
+    data.status_link_surat_penolakan_instansi =
+      data.status_link_surat_penolakan_instansi === "Pilih Status"
+        ? null
+        : data.status_link_surat_penolakan_instansi;
+    data.status_link_surat_pengantar =
+      data.status_link_surat_pengantar === "Pilih Status"
+        ? null
+        : data.status_link_surat_pengantar;
+    data.status_link_surat_balasan =
+      data.status_link_surat_balasan === "Pilih Status"
+        ? null
+        : data.status_link_surat_balasan;
+    data.status_id_surat_pengajuan_dospem =
+      data.status_id_surat_pengajuan_dospem === "Pilih Status"
+        ? null
+        : data.status_id_surat_pengajuan_dospem;
+    data.status_link_surat_penunjukkan_dospem =
+      data.status_link_surat_penunjukkan_dospem === "Pilih Status"
+        ? null
+        : data.status_link_surat_penunjukkan_dospem;
+    data.status_link_surat_perpanjangan_kp =
+      data.status_link_surat_perpanjangan_kp === "Pilih Status"
+        ? null
+        : data.status_link_surat_perpanjangan_kp;
+    editMutation.mutate({
+      ...data,
+      id,
+    });
+  }
 
-  //     setResponse(response.data.message);
-  //     const pointer = setTimeout(() => {
-  //       setResponse(null);
-  //       clearTimeout(pointer);
-  //     }, 1000);
+  function handleOnBatal() {
+    setIsEditing(false);
+    set_is_status_link_surat_penolakan_instansi_ditolak(false);
+    set_is_status_link_surat_pengantar_ditolak(false);
+    set_is_status_link_surat_balasan_ditolak(false);
+    set_is_status_id_surat_pengajuan_dospem_ditolak(false);
+    set_is_status_link_surat_penunjukkan_dospem_ditolak(false);
+    set_is_status_link_surat_perpanjangan_kp_ditolak(false);
+  }
 
-  //     setIsEditing((prev) => !prev);
-  //     setIsLoading((prev) => !prev);
-  //   } catch (e) {
-  //     throw new Error("Terjadi kesalahan pada sistem");
-  //   }
-  // }
+  if (!biodataMahasiswa && isError) {
+    return (
+      <Card className="p-2 absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2">
+        Data Tidak Ditemukan
+      </Card>
+    );
+  }
 
-  // Render different content based on status
+  if (!biodataMahasiswa) {
+    return (
+      <Card className="p-2 absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2">
+        Loading...
+      </Card>
+    );
+  }
+
   const renderStatusContent = (
     <>
       {/* Riwayat Permohonan Kerja Praktik Section */}
@@ -162,7 +258,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
           </CardHeader>
 
           {/* Periode Kerja Praktik */}
-          <Card className="mb-6 bg-white dark:bg-gray-800/50 rounded-lg p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+          <Card className="mb-6 bg-white dark:border-gray-700 dark:bg-gray-800/50 rounded-lg p-5 border border-gray-100 shadow-sm">
             <CardHeader>
               <CardTitle className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-4 flex items-center">
                 <Calendar className="h-5 w-5 mr-2" />
@@ -170,34 +266,38 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+              <div className="mb-4 flex">
+                <Label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                   Tanggal Mulai
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                  </div>
-                  <Input
-                    readOnly={!isEditing}
-                    value={
-                      biodataMahasiswa?.tanggal_mulai
-                        ?.slice(0, 10)
-                        .replaceAll("-", "/") || ""
-                    }
-                    key="tanggal-mulai"
-                    type="Input"
-                    className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-md block w-full pl-10 p-2.5 
-                        dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:placeholder-gray-400 
-                        focus:ring-primary focus:border-primary focus:outline-none"
-                  />
-                </div>
+                </Label>
               </div>
+              <p>{new Date(biodataMahasiswa.tanggal_mulai).toDateString()}</p>
+            </CardContent>
+            <CardContent>
+              <div className="mb-4 flex">
+                <Label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                  Tanggal Selesai
+                </Label>
+              </div>
+              {isEditing ? (
+                <Calendar1
+                  onDayClick={(e) => setDateEnd(e)}
+                  selected={dateEnd || new Date()}
+                />
+              ) : (
+                <p>
+                  {(biodataMahasiswa.tanggal_selesai &&
+                    new Date(
+                      biodataMahasiswa.tanggal_selesai
+                    ).toDateString()) ||
+                    "Tanggal Selesai Belum Tersedia"}
+                </p>
+              )}
             </CardContent>
           </Card>
 
           {/* Instansi/Perusahaan */}
-          <Card className="mb-6 bg-white dark:bg-gray-800/50 rounded-lg p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+          <Card className="mb-6 bg-white dark:border-gray-700 dark:bg-gray-800/50 rounded-lg p-5 border shadow-sm">
             <CardHeader>
               <CardTitle className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-4 flex items-center">
                 <Building2 className="h-5 w-5 mr-2" />
@@ -212,36 +312,37 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                 >
                   Nama Instansi / Perusahaan
                 </Label>
-                {!isEditing && (
-                  <Input
-                    readOnly
-                    key="nama-instansi"
-                    id="nama-instansi"
-                    value={biodataMahasiswa?.instansi?.nama || "Tidak tersedia"}
-                    type="text"
-                    className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-md block w-full p-2.5 
-                      dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:placeholder-gray-400 
-                      focus:ring-primary focus:border-primary focus:outline-none"
-                    placeholder="Masukkan nama instansi"
-                  />
-                )}
-                {isEditing && (
+                {isEditing ? (
                   <select
-                    className="bg-white block w-[100%] p-2"
-                    name="idInstansi"
+                    className="bg-white dark:bg-gray-800/50 dark:border-gray-700 block w-[100%] p-2 border rounded-lg"
+                    name="id_instansi"
                     id="instansi"
+                    defaultValue={biodataMahasiswa?.instansi?.id}
                   >
                     <option value="">Pilih Instansi</option>
                     {dataInstansi?.map(({ id, nama }: any) => (
-                      <option
-                        selected={biodataMahasiswa?.instansi?.id === id}
-                        key={id}
-                        value={id}
-                      >
+                      <option key={id} value={id}>
                         {nama}
                       </option>
                     ))}
                   </select>
+                ) : (
+                  <div className="mt-2 py-1 px-2 border border-gray-300 rounded-lg dark:bg-gray-800/50 dark:border-gray-700  flex items-center justify-between">
+                    <p>
+                      {biodataMahasiswa.instansi?.nama ||
+                        "Instansi Belum Tersedia"}
+                    </p>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="bg-white text-black dark:bg-gray-800/50 dark:text-white"
+                      onClick={() =>
+                        copyTextFn(biodataMahasiswa.instansi?.nama)
+                      }
+                    >
+                      Copy 📝
+                    </Button>
+                  </div>
                 )}
               </div>
 
@@ -252,155 +353,316 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                 >
                   Tujuan Surat Instansi/ Perusahaan
                 </Label>
-                <Textarea
-                  id="tujuan-surat-instansi"
-                  key="tujuan_surat_instansi"
-                  className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-md block w-full p-2.5 
+                {isEditing ? (
+                  <Textarea
+                    id="tujuan-surat-instansi"
+                    key="tujuan_surat_instansi"
+                    className="bg-white border border-gray-200 text-gray-700 text-sm rounded-md block w-full p-2.5 
                       dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:placeholder-gray-400 
                       focus:ring-primary focus:border-primary focus:outline-none min-h-24 resize-none"
-                  placeholder="Masukkan tujuan surat"
-                ></Textarea>
+                    placeholder="Masukkan tujuan surat"
+                    name="tujuan_surat_instansi"
+                  ></Textarea>
+                ) : (
+                  <div className="mt-2 py-1 px-2 border border-gray-300 dark:bg-gray-800/50 dark:border-gray-700 rounded-lg  flex items-center justify-between">
+                    <p>
+                      {biodataMahasiswa.tujuan_surat_instansi ||
+                        "Data belum tersedia"}
+                    </p>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="bg-white text-black dark:bg-gray-800/50 dark:text-white"
+                      onClick={() =>
+                        copyTextFn(biodataMahasiswa.tujuan_surat_instansi)
+                      }
+                    >
+                      Copy 📝
+                    </Button>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
 
-          <Card className="rounded-lg border border-gray-100 shadow-sm p-4 mb-6">
+          <Card className="p-4 mb-6 dark:border-gray-700 dark:bg-gray-800/50">
             <CardHeader>
-              <CardTitle className="font-bold tracking-wide text-md text-gray-600">
-                Berkas Mahasiswa
+              <CardTitle className="text-gray-600">
+                📓 Judul dan Kelas Kerja Praktek
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div
-                className={`mb-3 p-2 rounded-lg flex flex-col ${
-                  biodataMahasiswa?.level_akses === 2 ? "bg-green-600" : ""
-                }`}
-              >
-                <Label htmlFor="surat-pengantar">Surat Pengantar : </Label>
-                <Input
-                  readOnly={!isEditing}
-                  className="p-2 border border-gray-300 rounded-lg bg-gray-100"
-                  type="text"
-                  id="surat-pengantar"
-                />
-              </div>
-
-              <div
-                className={`mb-3 p-2 rounded-lg flex flex-col ${
-                  biodataMahasiswa?.level_akses === 4 ? "bg-green-600" : ""
-                }`}
-              >
-                <Label htmlFor="surat-balasan">Surat Balasan Instansi : </Label>
-                <Input
-                  readOnly={!isEditing}
-                  className="p-2 border border-gray-300 rounded-lg bg-gray-100"
-                  type="text"
-                  id="surat-balasan"
-                />
-              </div>
-
-              <div
-                className={`mb-3 p-2 rounded-lg flex flex-col ${
-                  biodataMahasiswa?.level_akses === 6 ? "bg-green-600" : ""
-                }`}
-              >
-                <Label htmlFor="id-pengajuan">
-                  Id Pengajuan Dosen Pembimbing :{" "}
-                </Label>
-                <Input
-                  readOnly={!isEditing}
-                  className="p-2 border border-gray-300 rounded-lg bg-gray-100"
-                  type="text"
-                  id="id-pengajuan"
-                />
-              </div>
-
-              <div
-                className={`mb-3 p-2 rounded-lg flex flex-col ${
-                  biodataMahasiswa?.level_akses === 8 ? "bg-green-600" : ""
-                }`}
-              >
-                <Label htmlFor="surat-penunjukkan">
-                  Surat Penunjukkan Dosen Pembimbing :{" "}
-                </Label>
-                <Input
-                  readOnly={!isEditing}
-                  className="p-2 border border-gray-300 rounded-lg bg-gray-100"
-                  type="text"
-                  id="surat-penunjukkan"
-                />
-              </div>
-              <div
-                className={`mb-3 p-2 rounded-lg flex flex-col ${
-                  biodataMahasiswa?.level_akses === 10 ? "bg-green-600" : ""
-                }`}
-              >
-                <div>
-                  <Label htmlFor="surat-lanjut">Surat Perpanjangan KP : </Label>
+              <div className={`mb-3 p-2 rounded-lg flex flex-col`}>
+                <Label htmlFor="judul_kp">Judul Laporan Kerja Praktek : </Label>
+                {isEditing ? (
                   <Input
-                    readOnly={!isEditing}
-                    className="p-2 border border-gray-300 rounded-lg bg-gray-100"
+                    className="mt-2 p-2 border border-gray-300 dark:bg-gray-800/50 dark:border-gray-700 rounded-lg bg-white"
                     type="text"
-                    id="surat-lanjut"
+                    id="judul-kp"
+                    name="judul_kp"
+                    defaultValue={biodataMahasiswa.judul_kp}
                   />
-                </div>
-                <div>
-                  <Label htmlFor="alasan-lanjut-kp">
-                    Alasan Lanjut Kerja Praktek :
-                  </Label>
-                  <Textarea
-                    readOnly={!isEditing}
-                    className="p-2 border border-gray-300 rounded-lg bg-gray-100"
-                    id="alasan-lanjut-kp"
+                ) : (
+                  <div className="mt-2 py-1 px-2 border border-gray-300 rounded-lg  flex items-center justify-between">
+                    <p>{biodataMahasiswa.judul_kp}</p>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="bg-white text-black dark:bg-gray-800/50 dark:text-white"
+                      onClick={() => copyTextFn(biodataMahasiswa.judul_kp)}
+                    >
+                      Copy 📝
+                    </Button>
+                  </div>
+                )}
+              </div>
+              <div className={`mb-3 p-2 rounded-lg flex flex-col`}>
+                <Label htmlFor="surat-pengantar">Kelas Kerja Praktek : </Label>
+                {isEditing ? (
+                  <Input
+                    className="mt-2 p-2 border dark:bg-gray-800/50 dark:border-gray-700 border-gray-300 rounded-lg bg-white"
+                    type="text"
+                    id="kelas-kp"
+                    name="kelas_kp"
+                    defaultValue={biodataMahasiswa.kelas_kp}
                   />
-                </div>
+                ) : (
+                  <div className="mt-2 py-1 px-2 border border-gray-300 rounded-lg  flex items-center justify-between">
+                    <p>{biodataMahasiswa.kelas_kp}</p>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="bg-white text-black dark:bg-gray-800/50 dark:text-white"
+                      onClick={() => copyTextFn(biodataMahasiswa.kelas_kp)}
+                    >
+                      Copy 📝
+                    </Button>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
 
+          <Card className="rounded-lg border border-gray-100 shadow-sm p-4 mb-6 dark:bg-gray-800/50">
+            <CardHeader>
+              <CardTitle className="font-bold tracking-wide text-md text-gray-600">
+                📝 Berkas Mahasiswa
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <InputField
+                handleOnReject={() => setIsRejectButtonClicked(6)}
+                key="surat-penolakan-instansi"
+                labelName="Surat Penolakan Instansi"
+                document={biodataMahasiswa.document[0].data}
+                isEditing={isEditing}
+                handleOnAccept={() => handleOnAccept(6)}
+                isBerkasSended={
+                  biodataMahasiswa.document[0].status === "Terkirim"
+                }
+                idCatatanStatus="catatan-link-surat-penolakan-instansi"
+                nameCatatanStatus="catatan_link_surat_penolakan_instansi"
+                idInput="link-surat-penolakan-instansi"
+                nameInput="link_surat_penolakan_instansi"
+                idStatus="status-link-surat-penolakan-instansi"
+                nameStatus="status_link_surat_penolakan_instansi"
+                status={is_status_link_surat_penolakan_instansi_ditolak}
+                setStatus={set_is_status_link_surat_penolakan_instansi_ditolak}
+              />
+              <InputField
+                handleOnReject={() => setIsRejectButtonClicked(1)}
+                key="surat-pengantar"
+                labelName="Surat Pengantar"
+                document={biodataMahasiswa.document[1].data}
+                isEditing={isEditing}
+                handleOnAccept={() => handleOnAccept(1)}
+                isBerkasSended={
+                  biodataMahasiswa.document[1].status === "Terkirim"
+                }
+                idCatatanStatus="catatan-link-surat-pengantar"
+                nameCatatanStatus="catatan_link_surat_pengantar"
+                idInput="link-surat-pengantar"
+                nameInput="link_surat_pengantar"
+                idStatus="status-link-surat-pengantar"
+                nameStatus="status_link_surat_pengantar"
+                status={is_status_link_surat_pengantar_ditolak}
+                setStatus={set_is_status_link_surat_pengantar_ditolak}
+              />
+
+              <InputField
+                handleOnReject={() => setIsRejectButtonClicked(2)}
+                key="surat-balasan"
+                labelName="Surat Balasan"
+                document={biodataMahasiswa.document[2].data}
+                isEditing={isEditing}
+                handleOnAccept={() => handleOnAccept(2)}
+                isBerkasSended={
+                  biodataMahasiswa.document[2].status === "Terkirim"
+                }
+                idCatatanStatus="catatan-link-surat-balasan"
+                nameCatatanStatus="catatan_link_surat_balasan"
+                idInput="link-surat-balasan"
+                nameInput="link_surat_balasan"
+                idStatus="status-link-surat-balasan"
+                nameStatus="status_link_surat_balasan"
+                status={is_status_link_surat_balasan_ditolak}
+                setStatus={set_is_status_link_surat_balasan_ditolak}
+              />
+              <InputField
+                handleOnReject={() => setIsRejectButtonClicked(3)}
+                key="id-pengajuan-dospem"
+                labelName="ID Pengajuan Dosen Pembimbing"
+                document={biodataMahasiswa.document[3].data}
+                isEditing={isEditing}
+                handleOnAccept={() => handleOnAccept(3)}
+                isBerkasSended={
+                  biodataMahasiswa.document[3].status === "Terkirim"
+                }
+                idCatatanStatus="catatan-id-surat-pengajuan-dospem"
+                nameCatatanStatus="catatan_id_surat_pengajuan_dospem"
+                idInput="id-surat-pengajuan-dospem"
+                nameInput="id_surat_pengajuan_dospem"
+                idStatus="status-id-surat-pengajuan-dospem"
+                nameStatus="status_id_surat_pengajuan_dospem"
+                status={is_status_id_surat_pengajuan_dospem_ditolak}
+                setStatus={set_is_status_id_surat_pengajuan_dospem_ditolak}
+              />
+              <InputField
+                handleOnReject={() => setIsRejectButtonClicked(4)}
+                key="surat-penunjukkan-dospem"
+                labelName="Surat Penunjukkan Dosen Pembimbing"
+                document={biodataMahasiswa.document[4].data}
+                isEditing={isEditing}
+                handleOnAccept={() => handleOnAccept(4)}
+                isBerkasSended={
+                  biodataMahasiswa.document[4].status === "Terkirim"
+                }
+                idCatatanStatus="catatan-link-surat-penunjukkan-dospem"
+                nameCatatanStatus="catatan_link_surat_penunjukkan_dospem"
+                idInput="link-surat-penunjukkan-dospem"
+                nameInput="link_surat_penunjukkan_dospem"
+                idStatus="status-link-surat-penunjukkan-dospem"
+                nameStatus="status_link_surat_penunjukkan_dospem"
+                status={is_status_link_surat_penunjukkan_dospem_ditolak}
+                setStatus={set_is_status_link_surat_penunjukkan_dospem_ditolak}
+              />
+              <div
+                className={`mb-3 rounded-lg flex flex-col ${
+                  biodataMahasiswa?.document[5].status === "Terkirim"
+                    ? "bg-yellow-500"
+                    : ""
+                }`}
+              >
+                <InputField
+                  handleOnReject={() => setIsRejectButtonClicked(5)}
+                  key="surat-perpanjangan-kp"
+                  labelName="Surat Perpanjangan Kerja Praktek"
+                  document={biodataMahasiswa.document[5].data}
+                  isEditing={isEditing}
+                  handleOnAccept={() => handleOnAccept(5)}
+                  isBerkasSended={
+                    biodataMahasiswa.document[5].status === "Terkirim"
+                  }
+                  idCatatanStatus="catatan-link-surat-perpanjangan-kp"
+                  nameCatatanStatus="catatan_link_surat_perpanjangan_kp"
+                  idInput="link-surat-perpanjangan-kp"
+                  nameInput="link_surat_perpanjangan_kp"
+                  idStatus="status-link-surat-perpanjangan-kp"
+                  nameStatus="status_link_surat_perpanjangan_kp"
+                  status={is_status_link_surat_perpanjangan_kp_ditolak}
+                  setStatus={set_is_status_link_surat_perpanjangan_kp_ditolak}
+                  alasan_lanjut_kp={biodataMahasiswa.alasan_lanjut_kp}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="p-4 mb-6 dark:border-gray-700 dark:bg-gray-800/50">
+            <CardHeader>
+              <CardTitle className="text-gray-600">
+                📓 Status Pendaftaran Kerja Praktek & Level Akses
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className={`mb-3 p-2 rounded-lg flex flex-col`}>
+                <Label htmlFor="status-pendaftaran-kerja-praktek">
+                  Status Pendaftaran Kerja Praktek
+                </Label>
+                {isEditing ? (
+                  <select
+                    name="status"
+                    id="status-pendaftaran-kerja-praktek"
+                    className="p-2 rounded-lg dark:bg-gray-800/50 dark:border-gray-700 border-[1px] mt-1 mb-2"
+                  >
+                    <option value={undefined}>Pilih Status</option>
+                    <option value="Lanjut">Lanjut</option>
+                    <option value="Baru">Baru</option>
+                    <option value="Gagal">Gagal</option>
+                  </select>
+                ) : (
+                  <div className="mt-2 py-1 px-2 border border-gray-300 rounded-lg  flex items-center justify-between">
+                    <p>{biodataMahasiswa.status}</p>
+                  </div>
+                )}
+              </div>
+              <div className={`mb-3 p-2 rounded-lg flex flex-col`}>
+                <Label htmlFor="level-akses">
+                  Level Akses Pendaftaran Kerja Praktek :{" "}
+                </Label>
+                {isEditing ? (
+                  <select
+                    name="level_akses"
+                    id="level-akses"
+                    className="p-2 rounded-lg dark:bg-gray-800/50 dark:border-gray-700 border-[1px] mt-1 mb-2"
+                  >
+                    <option value={-10}>Tidak berubah</option>
+                    <option value={0}>Reset Instansi</option>
+                    <option value={1}>1 - Akses Unggah Surat Pengantar </option>
+                    <option value={3}>2 - Akses Unggah Surat Balasan</option>
+                    <option value={5}>
+                      3 - Akses Unggah ID Pengajuan Dosen Pembimbing
+                    </option>
+                    <option value={7}>
+                      4 - Akses Unggah Surat Penunjukkan Dosen Pembimbing
+                    </option>
+                    <option value={9}>
+                      5 - Akses Daily Report & Unggah Surat Perpanjangan Kerja
+                      Praktek
+                    </option>
+                  </select>
+                ) : (
+                  <div className="mt-2 py-1 px-2 border border-gray-300 rounded-lg  flex items-center justify-between">
+                    <p>{biodataMahasiswa.level_akses}</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
           {/* Action Buttons */}
 
-          {biodataMahasiswa?.level_akses !== 0 &&
-            biodataMahasiswa?.level_akses % 2 === 0 && (
-              <div className="flex justify-end gap-3 mt-6">
-                <Button
-                  onClick={() => setIsRejectButtonClicked(true)}
-                  disabled={accMutation.isPending || tolakMutation.isPending}
-                  className={
-                    "px-4 py-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-md shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
-                  }
-                >
-                  Tolak Permohonan
-                </Button>
-                <form onSubmit={handleOnAccept}>
-                  <Button
-                    disabled={accMutation.isPending || tolakMutation.isPending}
-                    className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-md shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Validasi Permohonan
-                  </Button>
-                </form>
-              </div>
-            )}
-          {biodataMahasiswa?.level_akses % 2 === 1 && isEditing && (
+          {isEditing && (
             <div className="flex justify-end gap-3 mt-6">
               <Button
-                onClick={() => setIsEditing((prev) => !prev)}
-                disabled={accMutation.isPending || tolakMutation.isPending}
+                type="reset"
+                onClick={handleOnBatal}
+                disabled={editMutation.isPending}
                 className={
                   "px-4 py-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-md shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
                 }
               >
                 Batal
               </Button>
-              <form onSubmit={handleOnAccept}>
-                <Button
-                  disabled={accMutation.isPending || tolakMutation.isPending}
-                  className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-md shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Perbarui
-                </Button>
-              </form>
+              <Button
+                disabled={editMutation.isPending}
+                className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-md shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Perbarui
+              </Button>
+            </div>
+          )}
+          {!isEditing && (
+            <div className="flex justify-end">
+              <Button onClick={() => setIsEditing(true)}>Edit</Button>
             </div>
           )}
         </div>
@@ -413,15 +675,13 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
         <div
           className={`${isRejectButtonClicked ? "z-[49]" : ""}`}
           onClick={() =>
-            isRejectButtonClicked
-              ? setIsRejectButtonClicked((prev) => !prev)
-              : ""
+            isRejectButtonClicked ? setIsRejectButtonClicked(0) : ""
           }
         >
-          {isRejectButtonClicked && (
+          {isRejectButtonClicked !== 0 && (
             <Card
-              onClick={(e: any) => e.stopPropagation()}
-              className="fixed flex flex-col justify-between h-[30%] gap-2 z-50 p-2 border-[1px] border-black bg-white rounded-lg left-[50%] top-[50%] -translate-x-[50%] -translate-y-[50%]"
+              onClick={(e) => e.stopPropagation()}
+              className="fixed justify-around h-[30%] gap-2 z-50 p-2 border-[1px] darkborder-gray-700 dark:bg-gray-800 rounded-lg left-[50%] top-[50%] -translate-x-[50%] -translate-y-[50%]"
             >
               <CardHeader>
                 <CardTitle className="font-bold tracking-wide text-lg">
@@ -429,33 +689,34 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-4 justify-start">
                   <Label htmlFor="alasan-penolakan">
                     Alasan Penolakan Berkas :{" "}
                   </Label>
                   <Input
-                    readOnly={isEditing}
                     value={rejectMessage}
                     onChange={(e) => setRejectMessage(e.currentTarget.value)}
                     type="text"
                     id="alasan-penolakan"
                     className="rounded-lg border-[1px] border-slate-300 p-2"
                   />
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      onClick={() => setIsRejectButtonClicked(0)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={() => handleOnReject(isRejectButtonClicked)}
+                    >
+                      Reject
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-end gap-2">
-                <Button
-                  onClick={() => setIsRejectButtonClicked((prev) => !prev)}
-                  className="rounded-lg p-2"
-                >
-                  Batal
-                </Button>
-                <form onClick={handleOnReject}>
-                  <Button className="rounded-lg text-white bg-red-500 p-2">
-                    Tolak Berkas
-                  </Button>
-                </form>
-              </CardFooter>
             </Card>
           )}
           {/* Biodata Section */}
@@ -550,7 +811,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
               </div>
             </Card>
           </Card>
-          {renderStatusContent}
+          <form onSubmit={handleOnSubmit}>{renderStatusContent}</form>
         </div>
       </DashboardLayout>
     </>
@@ -558,3 +819,169 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
 };
 
 export default KoordinatorKerjaPraktikPermohonanDetailPage;
+
+function copyTextFn(data: string = "") {
+  navigator.clipboard.writeText(data);
+
+  toast({
+    title: "Sukses",
+    description: "Text Copied Successfully",
+    duration: 3000,
+  });
+}
+
+interface InputFieldInterface {
+  isEditing: boolean;
+  handleOnAccept: () => void;
+  handleOnReject: () => void;
+  document: string;
+  status: boolean;
+  setStatus: React.Dispatch<React.SetStateAction<boolean>>;
+  nameStatus: string;
+  idStatus: string;
+  nameCatatanStatus: string;
+  idCatatanStatus: string;
+  nameInput: string;
+  idInput: string;
+  isBerkasSended: boolean;
+  labelName: string;
+  alasan_lanjut_kp?: string;
+}
+
+function InputField({
+  isEditing,
+  handleOnAccept,
+  handleOnReject,
+  document,
+  status,
+  setStatus,
+  nameStatus,
+  idStatus,
+  nameCatatanStatus,
+  idCatatanStatus,
+  nameInput,
+  idInput,
+  isBerkasSended,
+  labelName,
+  alasan_lanjut_kp,
+}: InputFieldInterface) {
+  return (
+    <div
+      className={`mb-3 p-2 rounded-lg flex flex-col ${
+        isBerkasSended ? "bg-yellow-500" : ""
+      }`}
+    >
+      <Label htmlFor={idInput}>{labelName} : </Label>
+      {isEditing ? (
+        <>
+          <Input
+            className="mt-2 p-2 border border-gray-300 rounded-lg "
+            type="text"
+            id={idInput}
+            name={nameInput}
+            defaultValue={document}
+          />
+          {alasan_lanjut_kp && (
+            <>
+              <Label htmlFor="alasan-lanjut-kp" className="mt-2">
+                Alasan Lanjut Kerja Praktek :
+              </Label>
+              <Textarea
+                placeholder="Masukkan alasan lanjut kerja praktek..."
+                className="mt-2 p-2 border border-gray-300 rounded-lg "
+                id="alasan-lanjut-kp"
+                name="alasan_lanjut_kp"
+              />
+            </>
+          )}
+          <Label htmlFor={idStatus} className="text-sm my-1">
+            Status :{" "}
+          </Label>
+          <select
+            onClick={(e) => {
+              if (e.currentTarget.value === "Ditolak") {
+                setStatus(true);
+              } else {
+                setStatus(false);
+              }
+            }}
+            name={nameStatus}
+            id={idStatus}
+            className="p-2 rounded-lg dark:bg-gray-800/50 dark:border-gray-700 border-[1px] mt-1 mb-2"
+          >
+            <option value={undefined}>Pilih Status</option>
+            <option value="Divalidasi">Divalidasi</option>
+            <option value="Ditolak">Ditolak</option>
+          </select>
+          {status && (
+            <>
+              <Label htmlFor={idCatatanStatus} className="text-sm my-1">
+                Catatan Penolakan :{" "}
+              </Label>
+              <Textarea
+                className="p-2 border border-gray-300 rounded-lg dark:bg-gray-800/50"
+                id={idCatatanStatus}
+                name={nameCatatanStatus}
+                placeholder={`Alasan Penolakan ${labelName} ... (Optional)`}
+              ></Textarea>
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          <div className="mt-2 py-1 px-2 border border-gray-300 rounded-lg dark:bg-gray-800/50 flex items-center justify-between">
+            <p>{document}</p>
+            <Button
+              variant="secondary"
+              size="sm"
+              type="button"
+              className="bg-white text-black dark:bg-gray-800/50 dark:text-white"
+              onClick={() => copyTextFn(document)}
+            >
+              Copy 📝
+            </Button>
+          </div>
+          {alasan_lanjut_kp && (
+            <>
+              <Label htmlFor="alasan-lanjut-kp" className="mt-3">
+                Alasan Lanjut Kerja Praktek :
+              </Label>
+              <div className="mt-2 py-1 px-2 border border-gray-300 rounded-lg dark:bg-gray-800/50 flex items-center justify-between">
+                <p>{alasan_lanjut_kp}</p>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  type="button"
+                  className="bg-white text-black dark:bg-gray-800/50 dark:text-white"
+                  onClick={() => copyTextFn(alasan_lanjut_kp)}
+                >
+                  Copy 📝
+                </Button>
+              </div>
+            </>
+          )}
+        </>
+      )}
+      {!isEditing && isBerkasSended && (
+        <div className="flex gap-2 p-2">
+          <Button
+            type="button"
+            variant="destructive"
+            size="sm"
+            onClick={() => handleOnReject()}
+          >
+            Reject
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={() => handleOnAccept()}
+          >
+            Accept
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}

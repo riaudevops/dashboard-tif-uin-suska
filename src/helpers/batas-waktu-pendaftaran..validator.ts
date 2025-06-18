@@ -12,11 +12,13 @@ export async function IsPendaftaranKPClosed(): Promise<boolean | null> {
   const response = await axios.get(
     `${
       import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
-    }/koordinator-kp/daftar-kp/get-tanggal-daftar-kp`
+    }/koordinator-kp/daftar-kp/tanggal-daftar-kp`
   );
 
   const tanggalKP = response.data as tanggalKPInterface;
-
+  if (!tanggalKP) {
+    return true;
+  }
   if (
     tanggalKP.tanggal_mulai_pendaftaran_kp === null ||
     tanggalKP.tanggal_mulai_pendaftaran_kp === undefined ||
@@ -34,6 +36,9 @@ export async function IsPendaftaranKPClosed(): Promise<boolean | null> {
 }
 
 export function IsPendaftaranKPClosedSync(data: tanggalKPInterface): boolean {
+  if (!data) {
+    return true;
+  }
   if (
     data.tanggal_mulai_pendaftaran_kp === null ||
     data.tanggal_mulai_pendaftaran_kp === undefined ||
@@ -53,6 +58,9 @@ export function IsPendaftaranKPClosedSync(data: tanggalKPInterface): boolean {
 export function IsPendaftaranKPLanjutClosedSync(
   data: tanggalKPInterface
 ): boolean {
+  if (!data) {
+    return true;
+  }
   if (
     data.tanggal_mulai_pendaftaran_kp_lanjut === null ||
     data.tanggal_mulai_pendaftaran_kp_lanjut === undefined ||
@@ -71,13 +79,18 @@ export function IsPendaftaranKPLanjutClosedSync(
 
 export async function IsPendaftaranKPLanjutClosed(): Promise<boolean | null> {
   const axios = api();
+
   const response = await axios.get(
     `${
       import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
-    }/koordinator-kp/daftar-kp/get-tanggal-daftar-kp`
+    }/koordinator-kp/daftar-kp/tanggal-daftar-kp-lanjut`
   );
 
   const tanggalKP = response.data.data;
+
+  if (!tanggalKP) {
+    return true;
+  }
 
   if (
     tanggalKP.tanggal_mulai_pendaftaran_kp_lanjut === null ||

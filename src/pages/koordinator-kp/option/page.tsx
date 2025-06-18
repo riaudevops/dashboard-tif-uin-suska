@@ -3,15 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/lib/axios-instance";
-import { FormEvent, useEffect, useState } from "react";
-
-interface tanggalDaftarKPInterface {
-  tanggal_mulai_pendaftaran_kp: string;
-  tanggal_akhir_pendaftaran_kp: string;
-  tanggal_mulai_pendaftaran_kp_lanjut: string;
-  tanggal_akhir_pendaftaran_kp_lanjut: string;
-}
+import { toast } from "@/hooks/use-toast";
+import { TanggalDaftarKPInterface } from "@/interfaces/pages/koordinator-kp/kerja-praktik/daftar-kp/tanggal.interface";
+import APIDaftarKP from "@/services/api/mahasiswa/daftar-kp.service";
+import { useMutation } from "@tanstack/react-query";
+import { FormEvent, useState } from "react";
 
 function OptionPage() {
   const [tanggalMulaiPendaftaran, setTanggalMulaiPendaftaran] =
@@ -22,22 +18,44 @@ function OptionPage() {
     useState<string>("");
   const [tanggalAkhirPendaftaranLanjut, setTanggalAkhirPendaftaranLanjut] =
     useState<string>("");
-  const [response, setResponse] = useState<any>();
 
-  // useEffect(() => {
-  //     (async function() {
-  //         const response = await fetch("http://localhost:5000/koordinator-kp/daftar-kp/get-tanggal-daftar-kp");
-  //         if (!response.ok) {
-  //             throw new Error("Gagal mendapatkan data Tanggal Daftar KP");
-  //         }
+  const tanggalKPMutation = useMutation({
+    mutationFn: (data: TanggalDaftarKPInterface) =>
+      APIDaftarKP.postTanggalDaftarKP(data).then((res) => res.data),
+    onSuccess: () => {
+      toast({
+        title: "Sukses",
+        description: "Berhasil mengirim tanggal daftar kerja praktek",
+        duration: 2000,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Gagal",
+        description: "Gagal mengirim tanggal daftar kerja praktek",
+        duration: 2000,
+      });
+    },
+  });
 
-  //         const data = (await response.json()).data as tanggalDaftarKPInterface;
-
-  //         setTanggalMulaiPendaftaran(data.tanggal_mulai_pendaftaran_kp)
-  //     })()
-  // }, [])
-
-  // console.log(new Date((tanggalMulaiPendaftaran as Date)?.toISOString()))
+  const tanggalKPLanjutMutation = useMutation({
+    mutationFn: (data: TanggalDaftarKPInterface) =>
+      APIDaftarKP.postTanggalDaftarKPLanjut(data).then((res) => res.data),
+    onSuccess: () => {
+      toast({
+        title: "Sukses",
+        description: "Berhasil mengirim tanggal daftar kerja praktek lanjut",
+        duration: 2000,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Gagal",
+        description: "Gagal mengirim tanggal daftar kerja praktek lanjut",
+        duration: 2000,
+      });
+    },
+  });
 
   async function handleOnSubmitTanggalPendaftaranKP(
     e: FormEvent<HTMLFormElement>
@@ -45,28 +63,16 @@ function OptionPage() {
     e.preventDefault();
     const object = new FormData(e.currentTarget);
     const data = Object.fromEntries(object.entries());
-    const axios = api();
     const tanggalMulaiPendaftaranKp = new Date(
       data.tanggalMulaiPendaftaranKp as string
     ).toISOString();
     const tanggalTerakhirPendaftaranKp = new Date(
       data.tanggalTerakhirPendaftaranKp as string
     ).toISOString();
-    const response = await axios.post(
-      `${
-        import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
-      }/koordinator-kp/daftar-kp/post-tanggal-daftar-kp`,
-      {
-        tanggalMulai: tanggalMulaiPendaftaranKp,
-        tanggalTerakhir: tanggalTerakhirPendaftaranKp,
-      }
-    );
-    setResponse(response.data);
-
-    const pointer = setTimeout(() => {
-      setResponse(null);
-      clearTimeout(pointer);
-    }, 1000);
+    tanggalKPMutation.mutate({
+      tanggalMulai: tanggalMulaiPendaftaranKp,
+      tanggalTerakhir: tanggalTerakhirPendaftaranKp,
+    });
   }
 
   async function handleOnSubmitTanggalPendaftaranLanjutKP(
@@ -75,46 +81,20 @@ function OptionPage() {
     e.preventDefault();
     const object = new FormData(e.currentTarget);
     const data = Object.fromEntries(object.entries());
-    const axios = api();
     const tanggalMulaiPendaftaranLanjutKp = new Date(
       data.tanggalMulaiPendaftaranLanjutKp as string
     ).toISOString();
     const tanggalTerakhirPendaftaranLanjutKp = new Date(
       data.tanggalTerakhirPendaftaranLanjutKp as string
     ).toISOString();
-    const response = await axios.post(
-      `${
-        import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
-      }/koordinator-kp/daftar-kp/post-tanggal-daftar-kp-lanjut`,
-      {
-        tanggalMulai: tanggalMulaiPendaftaranLanjutKp,
-        tanggalTerakhir: tanggalTerakhirPendaftaranLanjutKp,
-      }
-    );
-    setResponse(response.data);
-
-    const pointer = setTimeout(() => {
-      setResponse(null);
-      clearTimeout(pointer);
-    }, 1000);
+    tanggalKPLanjutMutation.mutate({
+      tanggalMulai: tanggalMulaiPendaftaranLanjutKp,
+      tanggalTerakhir: tanggalTerakhirPendaftaranLanjutKp,
+    });
   }
 
   return (
     <DashboardLayout>
-      {response && response.response && (
-        <Card className="absolute left-1/2 py-2 -translate-x-1/2  w-80 bg-green-600 text-white">
-          <p className="text-center text-white font-semibold tracking-wide">
-            {response.message}
-          </p>
-        </Card>
-      )}
-      {response && !response.response && (
-        <Card className="absolute left-1/2 -translate-x-1/2  w-80 py-2 bg-green-600">
-          <p className="text-center text-white font-semibold tracking-wide">
-            {response.message}
-          </p>
-        </Card>
-      )}
       <Card className="shadow-lg p-2">
         <CardHeader>
           <CardTitle className="font-bold text-lg tracking-wide">
@@ -122,8 +102,13 @@ function OptionPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p>Tanggal Pendaftaran</p>
-          <form onSubmit={handleOnSubmitTanggalPendaftaranKP} className="mb-4">
+          <h3 className="mt-1 mb-3 font-bold tracking-wide">
+            Tanggal Pendaftaran Kerja Praktek Reguler
+          </h3>
+          <form
+            className="flex flex-col gap-2 mb-4"
+            onSubmit={handleOnSubmitTanggalPendaftaranKP}
+          >
             <Label htmlFor="tanggal-mulai-pendaftaran-kp">
               Tanggal Mulai :{" "}
             </Label>
@@ -151,10 +136,16 @@ function OptionPage() {
               name="tanggalTerakhirPendaftaranKp"
             />
             <Button className="rounded-lg border-[1px] border-gray-300 p-2">
-              submit
+              Submit
             </Button>
           </form>
-          <form onSubmit={handleOnSubmitTanggalPendaftaranLanjutKP}>
+          <h3 className="mt-1 mb-3 font-bold tracking-wide">
+            Tanggal Pendaftaran Kerja Praktek Lanjut
+          </h3>
+          <form
+            className="flex flex-col gap-2"
+            onSubmit={handleOnSubmitTanggalPendaftaranLanjutKP}
+          >
             <Label htmlFor="tanggal-mulai-pendaftaran-lanjut-kp">
               Tanggal Mulai :{" "}
             </Label>
@@ -186,7 +177,7 @@ function OptionPage() {
               name="tanggalTerakhirPendaftaranLanjutKp"
             />
             <Button className="rounded-lg border-[1px] border-gray-300 p-2">
-              submit
+              Submit
             </Button>
           </form>
         </CardContent>

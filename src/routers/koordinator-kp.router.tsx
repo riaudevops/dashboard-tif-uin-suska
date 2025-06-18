@@ -15,10 +15,9 @@ export const koordinatorKPRouter = [
   {
     path: "/koordinator-kp/kerja-praktik/permohonan",
     element: (
-      <ProtectedRoute roles={["koordinator-kp"]}>
-        <KoordinatorKerjaPraktikPermohonanPage />
-        //{" "}
-      </ProtectedRoute>
+      // <ProtectedRoute roles={["koordinator-kp"]}>
+      <KoordinatorKerjaPraktikPermohonanPage />
+      // </ProtectedRoute>
     ),
   },
   {
@@ -28,17 +27,17 @@ export const koordinatorKPRouter = [
   {
     path: "/koordinator-kp/kerja-praktik/permohonan/detail-permohonan/:id",
     element: (
-      <ProtectedRoute roles={["koordinator-kp"]}>
-        <KoordinatorKerjaPraktikPermohonanDetailPage />
-      </ProtectedRoute>
+      // <ProtectedRoute roles={["koordinator-kp"]}>
+      <KoordinatorKerjaPraktikPermohonanDetailPage />
+      // </ProtectedRoute>
     ),
   },
   {
     path: "/koordinator-kp/kerja-praktik/instansi",
     element: (
-      <ProtectedRoute roles={["koordinator-kp"]}>
-        <KoordinatorKerjaPraktikInstansiPage />
-      </ProtectedRoute>
+      // <ProtectedRoute roles={["koordinator-kp"]}>
+      <KoordinatorKerjaPraktikInstansiPage />
+      // </ProtectedRoute>
     ),
   },
   {
@@ -48,25 +47,25 @@ export const koordinatorKPRouter = [
   {
     path: "/koordinator-kp/kerja-praktik/instansi/detail-instansi/:id",
     element: (
-      <ProtectedRoute roles={["koordinator-kp"]}>
-        <KoordinatorKerjaPraktikDetailInstansiPage />
-      </ProtectedRoute>
+      // <ProtectedRoute roles={["koordinator-kp"]}>
+      <KoordinatorKerjaPraktikDetailInstansiPage />
+      // </ProtectedRoute>
     ),
   },
   {
     path: "/koordinator-kp/option",
     element: (
-      <ProtectedRoute roles={["koordinator-kp"]}>
-        <OptionPage />
-      </ProtectedRoute>
+      // <ProtectedRoute roles={["koordinator-kp"]}>
+      <OptionPage />
+      // </ProtectedRoute>
     ),
   },
   {
     path: "/koordinator-kp/kerja-praktik/permohonan/instansi",
     element: (
-      <ProtectedRoute roles={["koordinator-kp"]}>
-        <KoordinatorKerjaPraktikPermohonanDetailPage />
-      </ProtectedRoute>
+      // <ProtectedRoute roles={["koordinator-kp"]}>
+      <KoordinatorKerjaPraktikPermohonanDetailPage />
+      // </ProtectedRoute>
     ),
   },
   {

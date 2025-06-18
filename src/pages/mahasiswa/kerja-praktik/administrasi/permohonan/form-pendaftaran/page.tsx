@@ -89,12 +89,12 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
             <Label className="text-sm font-bold mt-6" htmlFor="instansi">
               Nama Instansi / Perusahaan
             </Label>
-            <CardContent className="text-black bg-white p-0 rounded-md border-black border-[1px]">
+            <CardContent className="p-0 rounded-md border-black border-[1px]">
               <select
                 required
                 name="idInstansi"
                 id="instansi"
-                className="bg-white block w-[100%] p-2"
+                className="dark:bg-black dark:border-white dark:border-[1px] rounded-lg block w-[100%] p-2"
               >
                 <option value="">Pilih Instansi</option>
                 {dataInstansi?.map(({ id, nama }: any) => (
@@ -125,7 +125,7 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
             </Label>
             <Textarea
               required
-              className="text-black block bg-white w-full p-2 border-slate-300 border-[1px] h-42"
+              className="block w-full p-2 border-slate-300 border-[1px] h-42"
               name="tujuanSuratInstansi"
               id="tujuan-surat"
               placeholder="Masukkan tujuan instansi disini..."
@@ -139,11 +139,11 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
             <Label className="text-sm font-bold mt-6" htmlFor="kelas">
               Kelas
             </Label>
-            <CardContent className="text-black bg-white p-0 rounded-md border-black border-[1px]">
+            <CardContent className="p-0 rounded-md border-black border-[1px]">
               <select
                 name="kelas_kp"
                 id="kelas"
-                className="bg-white block w-[100%] p-2"
+                className="dark:bg-black dark:border-white dark:border-[1px] rounded-lg block w-[100%] p-2"
               >
                 <option value="">Pilih Kelas</option>
                 <option value="A">A</option>
@@ -182,7 +182,7 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
             </Label>
             <Textarea
               required
-              className="text-black block bg-white w-full p-2 border-slate-300 border-[1px] h-42"
+              className="block w-full p-2 border-slate-300 border-[1px] h-42"
               name="judul_kp"
               id="judul"
               placeholder="Masukkan judul laporan kerja praktek disini..."
@@ -195,7 +195,7 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
             </Label>
             <Calendar
               required
-              className="text-black bg-white w-full p-2 border-slate-300 border-[1px]"
+              className="w-full p-2 border-slate-300 border-[1px]"
               id="tanggal-mulai"
               onDayClick={(e) => setDate(e)}
               selected={date}
@@ -214,7 +214,7 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
             <Button
               type="submit"
               disabled={mutation.isPending}
-              className="bg-green-600 py-1 md:w-[198px] font-bold hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+              className="bg-green-600 py-1 md:w-[198px] font-bold text-white hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
             >
               Ajukan Permohonan
             </Button>

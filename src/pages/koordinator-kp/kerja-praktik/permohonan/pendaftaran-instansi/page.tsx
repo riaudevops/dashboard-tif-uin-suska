@@ -19,13 +19,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import APIDaftarKP from "@/services/api/mahasiswa/daftar-kp.service";
+import { Input } from "@/components/ui/input";
 
-interface InstansiInterface {
-  id: string;
-  status: "Semua Instansi" | "Aktif" | "Pending" | "Tidak_Aktif";
-  nama: string;
-  jenis: "Swasta" | "UMKM" | "Pemerintahan" | "Pendidikan";
-}
+// interface InstansiInterface {
+//   id: string;
+//   status: "Semua Instansi" | "Aktif" | "Pending" | "Tidak_Aktif";
+//   nama: string;
+//   jenis: "Swasta" | "UMKM" | "Pemerintahan" | "Pendidikan";
+// }
 
 type Tab = "Semua Instansi" | "Aktif" | "Pending" | "Tidak_Aktif";
 
@@ -45,6 +46,7 @@ const buttonData = [
 
 function KoordinatorKerjaPraktikInstansiPage() {
   const [currentTab, setCurrentTab] = useState<Tab>("Semua Instansi");
+  const [searchInput, setSearchInput] = useState<string>("");
   const navigate = useNavigate();
 
   const { data: dataInstansi, isLoading } = useQuery({
@@ -81,25 +83,33 @@ function KoordinatorKerjaPraktikInstansiPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-auto">
               {cardData.map((item, i) => (
                 <Card1 key={i} text={item.text} count={item.count} />
               ))}
             </div>
-            <div className="w-fit rounded-lg flex gap-2 my-2">
-              {buttonData.map((item, i) => (
-                <Button
-                  key={i}
-                  onClick={() => setCurrentTab(item.text as Tab)}
-                  className={`p-2 rounded-lg ${
-                    currentTab === item.text
-                      ? "bg-green-600 text-white"
-                      : "bg-gray-200 text-gray-500"
-                  } text-sm font-semibold tracking-wide`}
-                >
-                  {item.text.replace("_", " ")}
-                </Button>
-              ))}
+            <div className="flex justify-between my-2">
+              <div className="w-fit rounded-lg flex gap-2">
+                {buttonData.map((item, i) => (
+                  <Button
+                    key={i}
+                    onClick={() => setCurrentTab(item.text as Tab)}
+                    className={`p-2 rounded-lg ${
+                      currentTab === item.text
+                        ? "bg-green-600 text-white"
+                        : "bg-gray-200 text-gray-500"
+                    } text-sm font-semibold tracking-wide`}
+                  >
+                    {item.text.replace("_", " ")}
+                  </Button>
+                ))}
+              </div>
+              <Input
+                className="max-w-[25%] border dark:border-gray-700 dark:bg-gray-800/50"
+                placeholder="Cari berdasarkan nama"
+                onChange={(e) => setSearchInput(e.currentTarget.value)}
+                value={searchInput}
+              />
             </div>
             <div className="rounded-lg overflow-hidden border-[1px] border-gray-300">
               <Table className="w-full">
@@ -110,9 +120,6 @@ function KoordinatorKerjaPraktikInstansiPage() {
                     <TableHead>Jenis Instansi</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Aksi</TableHead>
-                    <TableHead className="text-transparent text-4xl">
-                      l
-                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -123,8 +130,9 @@ function KoordinatorKerjaPraktikInstansiPage() {
                           currentTab === "Semua Instansi" ||
                           item.status === currentTab
                       )
+                      .filter((item: any) => item.nama.includes(searchInput))
                       .map((item: any, i: number) => (
-                        <TableRow key={i} className="text-center">
+                        <TableRow key={i}>
                           <TableCell>{i + 1}</TableCell>
                           <TableCell>{item.nama}</TableCell>
                           <TableCell>{item.jenis}</TableCell>
@@ -141,9 +149,6 @@ function KoordinatorKerjaPraktikInstansiPage() {
                               Lihat Detail
                             </Button>
                           </TableCell>
-                          <TableHead className="text-transparent text-5xl">
-                            l
-                          </TableHead>
                         </TableRow>
                       ))}
                 </TableBody>
@@ -164,7 +169,7 @@ interface CardProps {
 
 function Card1({ text, count }: CardProps) {
   return (
-    <Card className="flex rounded-lg border-2 border-green-600 w-[20%]">
+    <Card className="flex rounded-lg border-2 border-green-600 w-[25%]">
       <div className="h-full w-1 bg-green-600"></div>
       <CardContent className="p-3">
         <CardDescription>{text}</CardDescription>

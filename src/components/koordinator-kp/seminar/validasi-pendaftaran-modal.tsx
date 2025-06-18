@@ -197,6 +197,9 @@ const ValidasiPendaftaranSeminarModal: FC<
       queryClient.invalidateQueries({
         queryKey: ["koordinator-seminar-kp-detail", student?.nim],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["koordinator-seminar-kp-dokumen"],
+      });
       onClose(); // Tutup modal setelah berhasil
     } catch (error) {
       toast({

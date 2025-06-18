@@ -44,7 +44,13 @@ interface IDInputCardProps {
 
 // Komponen CardHeaderGradient
 const CardHeaderGradient: FC<CardHeaderProps> = ({ title, status }) => (
-  <div className={`bg-gradient-to-r ${status === "Ditolak" ? "from-red-600 to-rose-500" : "from-emerald-600 to-green-500"} px-6 py-4`}>
+  <div
+    className={`bg-gradient-to-r ${
+      status === "Ditolak"
+        ? "from-red-600 to-rose-500"
+        : "from-emerald-600 to-green-500"
+    } px-6 py-4`}
+  >
     <CardTitle className="text-white text-lg font-medium">{title}</CardTitle>
   </div>
 );
@@ -113,7 +119,10 @@ const IDInputCard: FC<IDInputCardProps> = ({
 
   return (
     <Card className="h-full overflow-hidden rounded-xl border shadow-none dark:border-none dark:bg-gray-900">
-      <CardHeaderGradient status={status} title="Silahkan Masukkan ID Pengajuan" />
+      <CardHeaderGradient
+        status={status}
+        title="Silahkan Masukkan ID Pengajuan"
+      />
       <CardContent className="flex flex-col h-[calc(100%-4rem)] gap-4 p-6">
         <div className="space-y-2">
           <Label
@@ -132,7 +141,13 @@ const IDInputCard: FC<IDInputCardProps> = ({
               }
               value={inputValue}
               onChange={handleInputChange}
-              className={`border-gray-200 dark:border-gray-700 ${status == "Terkirim" ? 'focus:border-yellow-500 focus:ring-yellow-500 dark:focus:border-yellow-400 dark:focus:ring-yellow-400' : status == "Ditolak" ? 'focus:border-red-500 focus:ring-red-500 dark:focus:border-red-400 dark:focus:ring-red-400' : 'focus:border-blue-500 focus:ring-blue-500 dark:focus:border-blue-400 dark:focus:ring-blue-400'} pl-3 pr-3 py-2`}
+              className={`border-gray-200 dark:border-gray-700 ${
+                status == "Terkirim"
+                  ? "focus:border-yellow-500 focus:ring-yellow-500 dark:focus:border-yellow-400 dark:focus:ring-yellow-400"
+                  : status == "Ditolak"
+                  ? "focus:border-red-500 focus:ring-red-500 dark:focus:border-red-400 dark:focus:ring-red-400"
+                  : "focus:border-blue-500 focus:ring-blue-500 dark:focus:border-blue-400 dark:focus:ring-blue-400"
+              } pl-3 pr-3 py-2`}
               readOnly={readOnly}
             />
           </div>
@@ -165,7 +180,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
 
   // Fetch data menggunakan TanStack Query
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["seminar-kp-dokumen-step2"],
+    queryKey: ["seminar-kp-step2"],
     queryFn: APISeminarKP.getDataMydokumen,
     staleTime: Infinity,
   });
@@ -193,7 +208,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
       });
       setLastSubmittedId(newIdPengajuan); // Simpan ID yang dikirim
       setIdPengajuan(newIdPengajuan); // Perbarui idPengajuan
-      queryClient.invalidateQueries({ queryKey: ["seminar-kp-dokumen-step2"] });
+      queryClient.invalidateQueries({ queryKey: ["seminar-kp-step2"] });
     },
     onError: (error: any) => {
       toast({
@@ -251,7 +266,8 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
                   year: "numeric",
                 })
               : "Belum diisi"
-          } - ${data.data.pendaftaran_kp[0]?.tanggal_selesai
+          } - ${
+            data.data.pendaftaran_kp[0]?.tanggal_selesai
               ? new Date(
                   data.data.pendaftaran_kp[0].tanggal_selesai
                 ).toLocaleDateString("id-ID", {
@@ -378,7 +394,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
             className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
           />
           <LayoutGridIcon className="w-4 h-4 mr-1.5" />
-          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa            
+          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa
         </span>
       </div>
 

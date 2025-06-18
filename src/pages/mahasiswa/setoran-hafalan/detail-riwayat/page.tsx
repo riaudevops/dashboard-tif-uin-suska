@@ -1,5 +1,6 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import {
+  BookOpenIcon,
   Calendar,
   DownloadIcon,
   FileDigit,
@@ -28,12 +29,38 @@ import { useFilteringSetoranSurat } from "@/hooks/use-filtering-setor-surat";
 import { colourLabelingCategory } from "@/helpers/colour-labeling-category";
 import { Skeleton } from "@/components/ui/skeleton";
 import ModalBoxDetailSetoran from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/ModalBoxDetailSetoran";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ModalBoxLogsMahasiswa from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/ModalBoxLogsMahasiswa";
 import TableLoadingSkeleton from "@/components/globals/table-loading-skeleton";
 import { Input } from "@/components/ui/input";
+import { ModalBoxQuran, SurahData } from "@/components/dosen/setoran-hafalan/ModalBoxQuran";
 
 export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
+
+  // Connect to External e-Quran API
+  const [nomorSurah, setNomorSurah] = useState<string | undefined>();
+  const [namaSurah, setNamaSurah] = useState<string | undefined>(); 
+  const [dataSurah, setDataSurah] = useState<SurahData | undefined>();
+  const [openModalQuran, setOpenModalQuran] = useState(false);
+  const [openModalQuranIsLoading, setOpenModalQuranIsLoading] = useState<{ [key: string]: boolean }>({});
+  const [modalQuranRefresh, setModalQuranRefresh] = useState(false);
+  useEffect(() => {
+    if (!nomorSurah) return;
+    setOpenModalQuranIsLoading(prevState => ({ ...prevState, [nomorSurah]: true }));
+    fetch(`https://equran.id/api/v2/surat/${nomorSurah}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setOpenModalQuranIsLoading(prevState => ({ ...prevState, [nomorSurah]: false }));
+        setDataSurah({...data.data, namaLatin: namaSurah})
+        setOpenModalQuran(true);
+      });
+  }, [nomorSurah, modalQuranRefresh])
+  const handleNomorSurahChange = (nomorSurah: string, namaSurah: string) => {
+    setNomorSurah(nomorSurah);
+    setNamaSurah(namaSurah);
+    setModalQuranRefresh(prev => !prev);
+  }
+
   const [openDialog, setOpenDialog] = useState(false);
   const [dataModal, setDataModal] = useState({
     nama_komponen_setoran: "",
@@ -142,6 +169,10 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
       )}
 
       <DashboardLayout>
+        {
+          openModalQuran &&
+          <ModalBoxQuran isOpen={openModalQuran} setIsOpen={setOpenModalQuran} dataSurah={dataSurah} />
+        }
         <ModalBoxDetailSetoran
           openDialog={openDialog}
           setOpenDialog={() => {
@@ -409,7 +440,19 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                     <TableCell className="text-center">
                       {index + 1}.
                     </TableCell>
-                    <TableCell className="text-center">{surah.nama} {surah.nama_arab && ` - ${surah.nama_arab}`}</TableCell>
+                    <TableCell className="flex gap-2 justify-center items-center text-center">
+                      <span>
+                        {surah.nama}{" "}
+                        {surah.nama_arab && ` - ${surah.nama_arab}`}
+                      </span>
+                      <div onClick={(e) => {
+                        e.stopPropagation();
+                        handleNomorSurahChange(surah.external_id, surah.nama);
+                      }} className="rounded-full hover:scale-110 active:scale-100 hover:bg-orange-400/25 flex justify-center items-center duration-300 cursor-pointer p-1 bg-orange-400/20 text-orange-600">
+                        {openModalQuranIsLoading[surah.external_id] && <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />}
+                        <BookOpenIcon className="w-3.5 h-3.5" />
+                      </div>
+                    </TableCell>
                     <TableCell className="text-center">
                       {surah.sudah_setor ? (
                         <div>

@@ -11,6 +11,7 @@ import {
   FileText,
   Star,
   Info,
+  XCircleIcon,
 } from "lucide-react";
 
 interface CheckItems {
@@ -98,7 +99,7 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
           {isComplete ? (
             <CheckCircle2 className="w-3 h-3" />
           ) : (
-            <Circle className="w-3 h-3" />
+            <XCircleIcon className="w-3 h-3" />
           )}
         </div>
         <IconComponent
@@ -196,7 +197,7 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
             </h3>
 
             <div className="grid grid-cols-1 gap-3">
-              {renderCheckItem(checkmarks.hapalan, "Muroja'ah 1-16", "hapalan")}
+              {renderCheckItem(checkmarks.hapalan, "Telah Muroja'ah Juz 30 (dari An-Naba' sampai Adh-Dhuha)", "hapalan")}
               {renderCheckItem(
                 checkmarks.kerja_praktik,
                 "Terdaftar Melaksanakan Kerja Praktik",
@@ -204,17 +205,17 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
               )}
               {renderCheckItem(
                 checkmarks.bimbingan,
-                "Minimal 5x Bimbingan Dengan Dosen Pembimbing",
+                "Minimal 5x Bimbingan dengan Dosen Pembimbing KP",
                 "bimbingan"
               )}
               {renderCheckItem(
                 checkmarks.dailyReport,
-                "Daily Report Di-Approve",
+                "Daily Report KP Telah di-Approve",
                 "dailyReport"
               )}
               {renderCheckItem(
                 checkmarks.nilaiInstansi,
-                "Nilai Pembimbing Instansi",
+                "Telah Mendapatkan Nilai dari Pembimbing Instansi",
                 "nilaiInstansi"
               )}
             </div>
@@ -222,7 +223,7 @@ const PendaftaranCard: React.FC<PendaftaranCardProps> = ({
 
           {/* Status Section - Only show when requirements are not met */}
           {!semuaSyaratTerpenuhi && (
-            <div className="rounded-xl p-4 border-2 shadow-md transform transition-all duration-300 bg-gradient-to-r from-amber-500 to-orange-500 border-amber-400 text-white shadow-amber-200 dark:shadow-amber-900/50">
+            <div className="rounded-xl p-4 border-2 shadow-md transform transition-all duration-300 bg-gradient-to-r from-yellow-600/80 via-orange-600/80 to-pink-600/80 dark:from-yellow-600/30 dark:via-orange-400/30 dark:to-pink-500/30 dark:border-amber-400/20 border-amber-400/40 text-white shadow-amber-200 dark:shadow-amber-900/50">
               <div className="flex items-center gap-4">
                 <div className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center bg-white/20 backdrop-blur-sm">
                   <Info className="w-6 h-6 text-white" />

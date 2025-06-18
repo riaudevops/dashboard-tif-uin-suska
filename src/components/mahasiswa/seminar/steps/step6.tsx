@@ -249,7 +249,7 @@ const InfoCard: FC<InfoCardProps> = React.memo(
                       </p>
                     </div>
                     <button
-                      className="flex gap-1 justify-center items-center mt-4 bg-gradient-to-r from-violet-700/85 via-orange-700/85 to-pink-700/85 dark:from-violet-700 dark:via-orange-700 dark:to-pink-700 text-white px-4 py-2 rounded-md hover:bg-gradient-to-br transition-colors text-xs font-medium w-full"
+                      className="flex active:scale-95 gap-1 justify-center items-center mt-4 bg-gradient-to-r from-violet-700/85 via-orange-700/85 to-pink-700/85 dark:from-violet-700 dark:via-orange-700 dark:to-pink-700 text-white px-4 py-2 rounded-md hover:bg-gradient-to-br transition-colors text-xs font-medium w-full"
                       onClick={() => setIsModalOpen(true)}
                     >
                       <EyeIcon className="w-4 h-4" />
@@ -557,16 +557,16 @@ export default function Step6({ activeStep }: Step6Props) {
           : "-",
         nilai_penguji: apiData.data.nilai[0]?.nilai_penguji
           ? String(apiData.data.nilai[0].nilai_penguji)
-          : "Belum diisi",
+          : "-",
         nilai_instansi: apiData.data.nilai[0]?.nilai_instansi
           ? String(apiData.data.nilai[0].nilai_instansi)
-          : "Belum diisi",
+          : "-",
         nilai_pembimbing: apiData.data.nilai[0]?.nilai_pembimbing
           ? String(apiData.data.nilai[0].nilai_pembimbing)
-          : "Belum diisi",
+          : "-",
         nilai_huruf: apiData.data.nilai[0]?.nilai_huruf
           ? String(apiData.data.nilai[0].nilai_huruf)
-          : "Belum diisi",
+          : "-",
         scoreDetails: {
           komponen_penilaian_pembimbing:
             apiData.data.nilai[0]?.komponen_penilaian_pembimbing,

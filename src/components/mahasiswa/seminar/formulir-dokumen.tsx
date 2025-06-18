@@ -78,10 +78,7 @@ const DocumentCard = ({
                 <Input
                   type="text"
                   id={`link-${judulDokumen.replace(/\s+/g, "-").toLowerCase()}`}
-                  value={
-                    inputValue ||
-                    "https://drive.google.com/drive/folders/file.pdf"
-                  }
+                  value={inputValue}
                   readOnly={isReadOnly}
                   className="pl-9 bg-gray-50 dark:bg-gray-800 cursor-text select-all border-green-200 dark:border-green-800/40"
                 />
@@ -128,10 +125,7 @@ const DocumentCard = ({
                 <Input
                   type="text"
                   id={`link-${judulDokumen.replace(/\s+/g, "-").toLowerCase()}`}
-                  value={
-                    inputValue ||
-                    "https://drive.google.com/drive/folders/file.pdf"
-                  }
+                  value={inputValue}
                   readOnly={isReadOnly}
                   className="pl-9 bg-gray-50 dark:bg-gray-800 cursor-text select-all"
                 />
@@ -178,7 +172,7 @@ const DocumentCard = ({
                 <Input
                   type="text"
                   id={`link-${judulDokumen.replace(/\s+/g, "-").toLowerCase()}`}
-                  placeholder="https://drive.google.com/drive/folders/file.pdf"
+                  placeholder="https://drive.google.com/file/d/zzz/view?usp=sharing"
                   value={inputValue}
                   onChange={handleInputChange}
                   className="pl-9 border-gray-200 dark:border-gray-700 focus:border-red-500 focus:ring-1 focus:ring-red-500 dark:focus:border-red-500 dark:focus:ring-red-500/50"
@@ -233,7 +227,7 @@ const DocumentCard = ({
               <Input
                 type="text"
                 id={`link-${judulDokumen.replace(/\s+/g, "-").toLowerCase()}`}
-                placeholder="https://drive.google.com/drive/folders/file.pdf"
+                placeholder="https://drive.google.com/file/d/zzz/view?usp=sharing"
                 value={inputValue}
                 onChange={handleInputChange}
                 readOnly={isReadOnly}

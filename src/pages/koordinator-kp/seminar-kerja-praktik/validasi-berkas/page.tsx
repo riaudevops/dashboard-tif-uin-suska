@@ -464,6 +464,82 @@ const KoordinatorValidasiBerkasPage: FC = () => {
     }
   };
 
+  const SkeletonCard: FC = () => {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div
+            key={index}
+            className="bg-white dark:bg-gray-800 border-none shadow-md rounded-lg p-4 animate-pulse"
+          >
+            <div className="flex justify-between items-center mb-2">
+              <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded" />
+              <div className="h-6 w-6 bg-gray-200 dark:bg-gray-700 rounded-full" />
+            </div>
+            <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded mb-1" />
+            <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+            <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded" />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const SkeletonTable: FC = () => {
+    return (
+      <div className="bg-white dark:bg-gray-900 shadow-none rounded-none animate-pulse">
+        <Table>
+          <TableHeader className="bg-gray-200 dark:bg-gray-700">
+            <TableRow>
+              <TableHead className="text-center">
+                <div className="h-4 w-8 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+              </TableHead>
+              <TableHead className="text-center">
+                <div className="h-4 w-24 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+              </TableHead>
+              <TableHead className="text-center">
+                <div className="h-4 w-20 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+              </TableHead>
+              <TableHead className="text-center">
+                <div className="h-4 w-16 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+              </TableHead>
+              <TableHead className="text-center">
+                <div className="h-4 w-24 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+              </TableHead>
+              <TableHead className="text-center">
+                <div className="h-4 w-16 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <TableRow key={index} className="dark:border-gray-700">
+                <TableCell className="text-center">
+                  <div className="h-4 w-8 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+                </TableCell>
+                <TableCell className="text-center">
+                  <div className="h-4 w-24 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+                </TableCell>
+                <TableCell className="text-center">
+                  <div className="h-4 w-20 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+                </TableCell>
+                <TableCell className="text-center">
+                  <div className="h-4 w-16 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+                </TableCell>
+                <TableCell className="text-center">
+                  <div className="h-4 w-24 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+                </TableCell>
+                <TableCell className="text-center">
+                  <div className="h-6 w-16 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  };
+
   if (isTahunAjaranError) {
     toast({
       title: "❌ Gagal",
@@ -541,8 +617,8 @@ const KoordinatorValidasiBerkasPage: FC = () => {
           </div>
 
           {isLoading || isTahunAjaranLoading ? (
-            <div className="text-center text-gray-600 dark:text-gray-300">
-              Memuat data...
+            <div className="space-y-6">
+              <SkeletonCard />
             </div>
           ) : (
             <motion.div
@@ -579,9 +655,12 @@ const KoordinatorValidasiBerkasPage: FC = () => {
                     <div className="h-1.5 w-full bg-blue-100 dark:bg-blue-900 rounded-full mt-2">
                       <motion.div
                         initial={{ width: "0%" }}
-                        animate={{ width: "100%" }}
+                        animate={{
+                          width: totalMahasiswa > 0 ? "100%" : "0%",
+                        }}
                         transition={{ duration: 1.5, ease: "easeOut" }}
                         className="h-1.5 bg-blue-500 rounded-full"
+                        style={{ maxWidth: "100%" }}
                       />
                     </div>
                   </CardContent>
@@ -721,13 +800,17 @@ const KoordinatorValidasiBerkasPage: FC = () => {
               {["pendaftaran", "idSurat", "suratUndangan", "pascaSeminar"].map(
                 (tab) => (
                   <TabsContent key={tab} value={tab} className="mt-4">
-                    <StudentTable
-                      students={filteredStudents}
-                      validatedStudents={validatedStudents}
-                      onViewDetail={handleOpenDialog}
-                      onViewDetailRiwayat={handleOpenDialogRiwayat}
-                      activeTab={activeTab}
-                    />
+                    {isLoading || isTahunAjaranLoading ? (
+                      <SkeletonTable />
+                    ) : (
+                      <StudentTable
+                        students={filteredStudents}
+                        validatedStudents={validatedStudents}
+                        onViewDetail={handleOpenDialog}
+                        onViewDetailRiwayat={handleOpenDialogRiwayat}
+                        activeTab={activeTab}
+                      />
+                    )}
                   </TabsContent>
                 )
               )}

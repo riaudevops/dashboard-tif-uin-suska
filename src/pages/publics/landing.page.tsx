@@ -40,7 +40,6 @@ import Particles from "@/components/react-bits/particles";
 import { WarpBackground } from "@/components/magic-ui/warp-background";
 import { BentoCard, BentoGrid } from "@/components/magic-ui/bento-grid";
 import { HashLink } from "react-router-hash-link";
-import CustomGradientText from "@/components/react-bits/custom-gradient-text";
 import GradientText from "@/components/react-bits/gradient-text";
 import Ballpit from "@/components/react-bits/ballpit";
 import {
@@ -402,98 +401,69 @@ const LandingPage = () => {
               />
             </AnimatedContent>
 
-            {theme === "dark" ? (
-              <AnimatedContent
-                distance={50}
-                direction="vertical"
-                reverse={false}
-                config={{ tension: 80, friction: 20 }}
-                animateOpacity
-                threshold={0.2}
-                delay={1750}
-              >
-                <div className="flex items-center justify-center transition duration-300 hover:-translate-y-1">
-                  <CustomGradientText
-                    colors={[
-                      "#5C3C8A",
-                      "#C5597E",
-                      "#FF8C3A",
-                      "#5C3C8A",
-                      "#C5597E",
-                    ]}
-                    animationSpeed={6}
-                    showBorder={true}
-                    className="px-5 py-3 text-xl"
-                    isAuthenticated={auth.isAuthenticated}
-                    onContinueWithKeycloakClicked={handleKeycloakAuth}
-                    dashboardURL={dashboardURL}
-                  />
-                </div>
-              </AnimatedContent>
-            ) : (
-              <AnimatedContent
-                distance={50}
-                direction="vertical"
-                reverse={false}
-                config={{ tension: 80, friction: 20 }}
-                animateOpacity
-                threshold={0.2}
-                delay={1750}
-              >
-                <div className="flex text-white text-md md:text-2xl tracking-tighter items-center justify-center transition duration-300 hover:-translate-y-1">
-                  {!auth.isAuthenticated ? (
-                    <div
-                      onClick={handleKeycloakAuth}
-                      className="flex items-center justify-center px-6 py-2 gap-3 bg-gradient-to-bl hover:bg-gradient-to-tl from-pink-600 to-orange-600 cursor-pointer border border-black rounded-3xl"
-                    >
-                      <FingerprintIcon color="white" />
-                      <span>Mulai Sekarang</span>
-                    </div>
-                  ) : (
-                    <NavLink
-                      to={dashboardURL}
-                      className="flex items-center justify-center px-6 py-2 gap-3 bg-gradient-to-bl hover:bg-gradient-to-tl from-pink-600 to-orange-600 cursor-pointer border border-black rounded-3xl"
-                    >
-                      <CircleArrowOutUpRight color="white" />
-                      <span>Pergi Ke Dashboard</span>
-                    </NavLink>
-                  )}
-                </div>
-              </AnimatedContent>
-            )}
-          </div>
-        </div>
-        <div
-          id="fitur-kami"
-          className="flex items-center justify-center w-screen h-auto py-16 text-center"
-        >
-          <Particles
-            particleColors={[
-              "#A07CFE",
-              "#FE8FB5",
-              "#FFBE7B",
-              "#40ffaa",
-              "#4079ff",
-            ]}
-            particleCount={250}
-            particleSpread={10}
-            speed={0.2}
-            particleBaseSize={100}
-            moveParticlesOnHover={false}
-            alphaParticles={false}
-            disableRotation={false}
-          />
-          <div className="relative">
-            <div className="w-full text-foreground flex flex-col items-center pb-10 bg-background leading-8 sm:leading-10">
-              <span className="lg:inline flex flex-col tracking-tighter text-3xl md:text-5xl font-semibold px-6 md:px-16 leading-8 sm:leading-6">
-                <span>Apa saja sih </span>
-                <div className="relative -left-1.5 sm:left-0 text-center inline px-1.5">
-                  <div className="relative z-10 inline">
-                    Fitur Unggulan Kami?
-                  </div>
-                  <div className="absolute bottom-0 left-0 w-full bg-chart-5/50 mb-0.5 h-1/3"></div>
-                </div>
-              </span>
+						<AnimatedContent
+							distance={50}
+							direction="vertical"
+							reverse={false}
+							config={{ tension: 80, friction: 20 }}
+							animateOpacity
+							threshold={0.2}
+							delay={1750}
+						>
+							<div className="flex text-white dark:text-pink-200 text-md md:text-2xl tracking-tighter items-center justify-center transition duration-300 hover:-translate-y-1">
+								{!auth.isAuthenticated ? (
+									<div
+										onClick={handleKeycloakAuth}
+										className="flex items-center justify-center px-6 py-2 gap-3 bg-gradient-to-bl hover:bg-gradient-to-tl from-pink-600 dark:from-violet-800 to-orange-600 dark:to-pink-800 cursor-pointer border border-black rounded-3xl"
+									>
+										<FingerprintIcon />
+										<span>Mulai Sekarang</span>
+									</div>
+								) : (
+									<NavLink
+										to={dashboardURL}
+										className="flex items-center justify-center px-6 py-2 gap-3 bg-gradient-to-bl hover:bg-gradient-to-tl from-pink-600 dark:from-violet-800 to-orange-600 dark:to-pink-800 cursor-pointer border border-black rounded-3xl"
+									>
+										<CircleArrowOutUpRight />
+										<span>Pergi Ke Dashboard</span>
+									</NavLink>
+								)}
+							</div>
+						</AnimatedContent>
+
+					</div>
+				</div>
+				<div
+					id="fitur-kami"
+					className="flex items-center justify-center w-screen h-auto py-16 text-center"
+				>
+					<Particles
+						particleColors={[
+							"#A07CFE",
+							"#FE8FB5",
+							"#FFBE7B",
+							"#40ffaa",
+							"#4079ff",
+						]}
+						particleCount={250}
+						particleSpread={10}
+						speed={0.2}
+						particleBaseSize={100}
+						moveParticlesOnHover={false}
+						alphaParticles={false}
+						disableRotation={false}
+					/>
+					<div className="relative">
+						<div className="w-full text-foreground flex flex-col items-center pb-10 bg-background leading-8 sm:leading-10">
+							<span className="lg:inline flex flex-col tracking-tighter text-3xl md:text-5xl font-semibold px-6 md:px-16 leading-8 sm:leading-6">
+								<span>Apa saja sih </span>
+								<div className="relative -left-1.5 sm:left-0 text-center inline px-1.5">
+									<div className="relative z-10 inline">
+										Fitur Unggulan Kami?
+									</div>
+									<div className="absolute bottom-0 left-0 w-full bg-chart-5/50 mb-0.5 h-1/3"></div>
+								</div>
+							</span>
 
               <span className="text-sm tracking-tight text-foreground/70 sm:text-lg pt-2 leading-6 sm:leading-8">
                 Dari kemudahan akses sampai efisiensi administrasi, semua

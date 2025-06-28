@@ -268,7 +268,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
   const { data: detailData, isLoading: isDetailLoading } =
     useQuery<MahasiswaDetailResponse>({
       queryKey: ["koordinator-seminar-kp-detail", selectedNim],
-      queryFn: () => APISeminarKP.getDataMahasiswaByEmail(selectedNim!),
+      queryFn: () => APISeminarKP.getDataMahasiswaByNIM(selectedNim!),
       enabled: !!selectedNim,
     });
 

@@ -75,7 +75,7 @@ function DetailMahasiswaSetoran() {
   const { data: dataInfoSetoran, isLoading } = useQuery({
     queryKey: ["info-mahasiswa-by-email"],
     queryFn: () =>
-      APISetoran.getDataMahasiswaByEmail(nim!).then((res) => res.data),
+      APISetoran.getDataMahasiswaByNIM(nim!).then((res) => res.data),
   });
 
   useEffect(() => {
@@ -206,7 +206,6 @@ function DetailMahasiswaSetoran() {
                 data_setoran: dataBatalkan,
               })
               .then((data) => {
-                console.log(data);
                 if (data.response) {
                   queryclient.invalidateQueries({
                     queryKey: ["info-mahasiswa-by-email"],
@@ -268,7 +267,6 @@ function DetailMahasiswaSetoran() {
                 id_komponen_setoran: item.id_komponen_setoran,
               }));
 
-            console.log("mulai");
             mutationAccept
               .mutateAsync({
                 nim: dataInfoSetoran?.info.nim,
@@ -276,7 +274,6 @@ function DetailMahasiswaSetoran() {
                 tgl_setoran: dateSetoran,
               })
               .then((data) => {
-                console.log("masuk api");
                 if (data.response) {
                   queryclient.invalidateQueries({
                     queryKey: ["info-mahasiswa-by-email"],

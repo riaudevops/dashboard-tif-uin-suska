@@ -22,7 +22,7 @@ export default class APISeminarKP {
     return data;
   }
 
-  public static async getDataMahasiswaByEmail(nim: string) {
+  public static async getDataMahasiswaByNIM(nim: string) {
     const axios = api();
     const response = await axios.get(
       `${import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK}/seminar-kp/dokumen/${nim}`

@@ -73,14 +73,14 @@ function DetailMahasiswaSetoran() {
   }
 
   const { data: dataInfoSetoran, isLoading } = useQuery({
-    queryKey: ["info-mahasiswa-by-email"],
+    queryKey: ["info-mahasiswa-by-nim"],
     queryFn: () =>
       APISetoran.getDataMahasiswaByNIM(nim!).then((res) => res.data),
   });
 
   useEffect(() => {
     return () => {
-      queryclient.removeQueries({ queryKey: ["info-mahasiswa-by-email"] });
+      queryclient.removeQueries({ queryKey: ["info-mahasiswa-by-nim"] });
     };
   }, []);
   const { dataCurrent, setTabState, tabState, setSearch, search } =
@@ -208,7 +208,7 @@ function DetailMahasiswaSetoran() {
               .then((data) => {
                 if (data.response) {
                   queryclient.invalidateQueries({
-                    queryKey: ["info-mahasiswa-by-email"],
+                    queryKey: ["info-mahasiswa-by-nim"],
                   });
 
                   setTempDataCheck([]);
@@ -276,7 +276,7 @@ function DetailMahasiswaSetoran() {
               .then((data) => {
                 if (data.response) {
                   queryclient.invalidateQueries({
-                    queryKey: ["info-mahasiswa-by-email"],
+                    queryKey: ["info-mahasiswa-by-nim"],
                   });
 
                   setTempDataCheck([]);

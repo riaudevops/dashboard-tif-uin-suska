@@ -1,10 +1,13 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import {
+  BackpackIcon,
   BookOpenIcon,
   Calendar,
+  Clock,
   DownloadIcon,
   FileDigit,
   GraduationCap,
+  Hash,
   History,
   Loader2,
   Printer,
@@ -14,7 +17,6 @@ import {
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import ProgressStatistik from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/ProgressStatistik";
 import {
   Table,
   TableBody,
@@ -34,6 +36,7 @@ import TableLoadingSkeleton from "@/components/globals/table-loading-skeleton";
 import { Input } from "@/components/ui/input";
 import { ModalBoxQuran, SurahData } from "@/components/dosen/setoran-hafalan/ModalBoxQuran";
 import ModalBoxLogs from "@/components/dosen/setoran-hafalan/ModalBoxLogs";
+import ShinyProgressChart from "@/components/mahasiswa/setoran-hafalan/kartu-murojaah/shiny-progress-chart";
 
 export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 
@@ -71,7 +74,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 
   const [modalLogs, setModalLogs] = useState(false);
 
-  const { data: dataRingkasan, isLoading } = useQuery({
+  const { data: dataRingkasan, isLoading, isFetching } = useQuery({
     queryKey: ["setoran-saya-detail"],
     queryFn: () => APISetoran.getDataMysetoran().then((data) => data.data),
     staleTime: Infinity,
@@ -200,27 +203,30 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
         <div className="flex flex-col gap-4">
           {/* judul */}
           <div className="flex flex-col gap-1.5 -mb-2.5">
-            <div className="text-lg md:text-3xl font-bold select-none -ml-1">
-              ✨ Detail Riwayat Muroja'ah-mu...
-            </div>
-            <div className="select-none ml-1 md:text-base text-sm">
-              Berikut detail riwayat muroja'ah kamu untuk persyaratan akademik
-              di UIN Suska Riau, semangat terus ya... 💙❤️
+            <div className="mb-4 flex gap-5">
+              <div className="flex">
+                  <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
+                    <span
+                      className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
+                    />
+                    <BackpackIcon className="w-4 h-4 mr-1.5" />
+                    <span>Detail Muroja'ah Juz 30 Mahasiswa</span>
+                  </span>
+                </div>
             </div>
           </div>
 
-          {/* statistik && user info */}
-          <div className="flex gap-2 -mb-5">
-            <ProgressStatistik
-              uploadedDocs={
-                dataRingkasan?.setoran.info_dasar.total_sudah_setor || 0
-              }
-              totalDocs={
-                dataRingkasan?.setoran.info_dasar.total_wajib_setor || 1
-              }
-            />
+{/* statistik && user info desktop */}
+          <div className="md:flex hidden gap-4 rounded-lg">
+            
+            <div className="bg-muted/40 rounded-xl p-2">
+              <ShinyProgressChart
+                loading={isFetching}
+                targetProgress={dataRingkasan?.setoran.info_dasar.persentase_progres_setor}
+              />
+            </div>
 
-            <div className="md:-ml-36 ml-3 flex flex-col gap-1 h-full justify-center py-9 md:py-14">
+            <div className="flex bg-muted/40 rounded-xl py-2 px-8 flex-col gap-2 h-full justify-center">
               <div className="flex items-center">
                 {/* Bagian kiri */}
                 <div className="flex items-center gap-1 min-w-44">
@@ -292,6 +298,80 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                     {dataRingkasan?.setoran.info_dasar.terakhir_setor}
                   </span>
                 </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* For Mobile View User Info */}
+          <div className="-mt-1.5 -mb-2 md:hidden w-full h-full flex flex-col bg-transparent dark:bg-gradient-to-br dark:from-violet-800/10 dark:to-slate-900/5 border border-slate-300 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/80 transition-colors duration-300 py-3 px-4 rounded-xl items-center">
+            <div className="flex items-center gap-[0.9rem] w-full rounded-xl">
+              {/* AREA KIRI: AVATAR */}
+              {isLoading ? (
+                <Skeleton className="w-[4.5rem] h-[4.5rem] rounded-full flex-shrink-0" />
+              ) : (
+                <div 
+                  className="flex-shrink-0 h-[4.5rem] w-[4.5rem] rounded-full overflow-hidden"
+                  title={dataRingkasan?.info.nama}
+                >
+                  <img 
+                    src={`https://api.dicebear.com/8.x/micah/svg?seed=${encodeURIComponent(dataRingkasan?.info.nama || 'default')}&radius=50&backgroundType=gradientLinear&backgroundColor=b6e3f4,c0aede,d1d4f9`}
+                    alt={`Avatar of ${dataRingkasan?.info.nama}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+
+              {/* AREA KANAN: IDENTITAS UTAMA (Layout Simetris) */}
+              <div className="flex flex-col justify-center h-full w-full">
+                {isLoading ? (
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-4/5" />
+                    <Skeleton className="h-3 w-3/5 mt-1.5" />
+                    <div className="flex gap-1.5 pt-2">
+                      <Skeleton className="h-8 w-4/5 rounded-lg" />
+                      <Skeleton className="h-8 w-4/5 rounded-lg" />
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {/* Baris Atas: Nama dan NIM */}
+                    <div className="overflow-hidden max-w-[13.5rem]">
+                      <h2 className="text-lg font-semibold tracking-tight text-gray-800 dark:text-white text-ellipsis whitespace-nowrap overflow-hidden">
+                        {dataRingkasan?.info.nama}
+                      </h2>
+                      <p className="text-sm text-gray-500 font-mono -mt-1">
+                        {dataRingkasan?.info.nim}
+                      </p>
+                    </div>
+
+                    {/* Baris Bawah: Tag/Pill */}
+                    <div className="flex items-center gap-[0.32rem] mt-2">
+                      <div className="flex items-center gap-1 border bg-indigo-700/15 dark:bg-indigo-700/30 dark:text-indigo-200 text-indigo-700 text-xs px-1.5 py-0 rounded-lg">
+                        <Rocket size={10} />
+                        <span>Semester {dataRingkasan?.info.semester}</span>
+                      </div>
+                      <div className="flex items-center gap-1 border bg-teal-700/15 dark:bg-teal-700/30 dark:text-teal-200 text-teal-700 text-xs px-2 py-0 rounded-lg">
+                        <Hash size={10} />
+                        <span>Akt. {dataRingkasan?.info.angkatan}</span>
+                      </div>
+                    </div>
+
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="w-full mt-4 pt-3 border-t flex justify-between border-slate-300 dark:border-slate-700/50">
+              <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <Clock className="w-3 h-3" />
+                <span>
+                  Terakhir Muroja'ah {" "}
+                  {isFetching ? (
+                    "-"
+                  ) : (
+                    dataRingkasan?.setoran.info_dasar.terakhir_setor
+                  )}
+                </span>
               </div>
             </div>
           </div>

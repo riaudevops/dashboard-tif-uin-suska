@@ -215,7 +215,7 @@ function DetailMahasiswaSetoran() {
                   setSelectAll(false);
                   setModalBatalkanSetoran(false);
                   setButtonLoading(false);
-                  toast({
+                  toast({                    
                     title: "✨ Sukses",
                     description: data.message,
                     // className: "dark:bg-green-600 bg-green-300",
@@ -428,9 +428,49 @@ function DetailMahasiswaSetoran() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-1.5 sticky top-[51.3px] bg-background pt-2.5 -mb-4 pb-3.5 z-50">
-          <div className="flex justify-between gap-4">
-            <div className="overflow-x-auto max-w-28 md:max-w-full">
+        <div className="flex flex-col gap-1.5 sticky top-[51.3px] bg-background pt-2.5 -mb-4 pb-3.5 z-50">          
+          {/* For Mobile */}
+          <div className="md:hidden overflow-x-auto max-w-full mb-2">
+            <Tabs defaultValue="tab1" className="w-full">
+              <TabsList className="gap-1.5 w-full">
+                <TabsTrigger
+                  value="tab1"
+                  onClick={() => setTabState("default")}
+                  className={`w-full data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+                    tabState !== "default" &&
+                    "hover:bg-blue-100 dark:hover:bg-background/20"
+                  }`}
+                >
+                  Semua
+                </TabsTrigger>
+                <TabsTrigger
+                  value="tab2"
+                  onClick={() => setTabState("sudah_setor")}
+                  className={`w-full data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+                    tabState !== "sudah_setor" &&
+                    "hover:bg-blue-100 dark:hover:bg-background/20"
+                  }`}
+                >
+                  Selesai
+                </TabsTrigger>
+                <TabsTrigger
+                  value="tab3"
+                  onClick={() => setTabState("belum_setor")}
+                  className={`w-full data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+                    tabState !== "belum_setor" &&
+                    "hover:bg-blue-100 dark:hover:bg-background/20"
+                  }`}
+                >
+                  Belum
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
+          <div className="flex justify-between gap-2.5">
+
+            {/* Hide at Mobile */}
+            <div className="hidden md:block overflow-x-auto max-w-28 md:max-w-full">
               <Tabs defaultValue="tab1" className="w-full">
                 <TabsList className="gap-1.5">
                   <TabsTrigger
@@ -466,6 +506,16 @@ function DetailMahasiswaSetoran() {
                 </TabsList>
               </Tabs>
             </div>
+
+            {/* Display at Mobile */}
+            <Input
+              placeholder="Cari surah..."
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
+              className="w-full md:hidden"
+            />
+
             <div className="flex gap-1.5 justify-center items-center">
               <Button
                 variant={"default"}
@@ -549,7 +599,7 @@ function DetailMahasiswaSetoran() {
             </div>
           </div>
 
-          <div className="mt-1">
+          <div className="mt-1 md:block hidden">
             <Input
               placeholder="Cari surah yang mau di-muroja'ah berdasarkan nama surah-nya..."
               onChange={(e) => {
@@ -593,7 +643,7 @@ function DetailMahasiswaSetoran() {
               <TableBody className="border border-solid border-secondary">
                 {dataCurrent?.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center">
+                    <TableCell colSpan={7} className="text-center">
                       {search
                         ? "❌ Maaf, surah yang anda cari tidak ditemukan nih!"
                         : tabState === "sudah_setor"

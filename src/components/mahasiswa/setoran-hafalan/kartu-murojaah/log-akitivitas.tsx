@@ -349,7 +349,7 @@ export default function LogAktivitas({ logData }: { logData: LogDataProps[] }) {
 					{/* The sleek, solid, and modern timeline */}
 					<div className="absolute top-0 left-[20px] md:left-[24px] -translate-x-1/2 w-px h-full z-0 bg-gray-300 dark:bg-gray-700"></div>
 
-					{logData.map((item) => (
+					{logData?.map((item) => (
 						<TimelineItem key={item.id} item={item} />
 					))}
 				</div>

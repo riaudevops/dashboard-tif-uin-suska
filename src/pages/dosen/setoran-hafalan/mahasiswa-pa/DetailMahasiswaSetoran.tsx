@@ -32,7 +32,7 @@ import {
 import ProgressStatistik from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/ProgressStatistik";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import ModalBoxLogsDosen from "@/components/dosen/setoran-hafalan/ModalBoxLogsDosen";
+import ModalBoxLogs from "@/components/dosen/setoran-hafalan/ModalBoxLogs";
 import ModalBoxValidasiSetoran from "@/components/dosen/setoran-hafalan/ModalBoxValidasiSetoran";
 import ModalBoxBatalSetoran from "@/components/dosen/setoran-hafalan/ModalBoxBatalSetoran";
 import {
@@ -72,7 +72,7 @@ function DetailMahasiswaSetoran() {
     setModalQuranRefresh(prev => !prev);
   }
 
-  const { data: dataInfoSetoran, isLoading } = useQuery({
+  const { data: dataInfoSetoran, isLoading, isFetching } = useQuery({
     queryKey: ["info-mahasiswa-by-nim"],
     queryFn: () =>
       APISetoran.getDataMahasiswaByNIM(nim!).then((res) => res.data),
@@ -161,7 +161,6 @@ function DetailMahasiswaSetoran() {
       );
     }
   };
-  // console.log(dataInfoSetoran?.setoran.log);
   return (
     <DashboardLayout>
       {
@@ -169,11 +168,12 @@ function DetailMahasiswaSetoran() {
         <ModalBoxQuran isOpen={openModalQuran} setIsOpen={setOpenModalQuran} dataSurah={dataSurah} />
       }
       <ModalBoxStatistik
+        isFetching={isFetching}
         isOpen={openModalStatistik}
         dataRingkasan={dataInfoSetoran?.setoran.ringkasan}
         setIsOpen={setModalStatistik}
       />
-      <ModalBoxLogsDosen
+      <ModalBoxLogs
         isOpen={openModalLogs}
         setIsOpen={setModalLogs}
         dataLogs={dataInfoSetoran?.setoran.log}

@@ -199,7 +199,7 @@ const AyatItem = React.forwardRef<HTMLDivElement, AyatItemProps>(
 					className={`flex font-["Amiri"] justify-between items-center text-right text-3xl md:text-4xl mt-0 text-gray-800 dark:text-gray-100 mb-3`}
 					dir="rtl"
 				>
-					<span className="flex-grow max-w-2xl leading-[2.3]">{ayat.teksArab}</span>
+					<span className="flex-grow md:max-w-2xl max-w-[16rem] leading-[2.3] tracking-wider">{ayat.teksArab}</span>
 					<AyatNumberIcon number={ayat.nomorAyat} />
 				</div>
 				<p className="text-purple-600 dark:text-purple-400 text-xl mb-2">
@@ -296,6 +296,7 @@ const QuranReader = ({ surahData }: QuranReaderProps) => {
 							{surahData.tempatTurun}
 						</p>
 					</div>
+					<div className="md:hidden w-full h-px bg-gray-800/30 dark:bg-gray-100/30"></div>
 					<div className="flex mt-3 items-center gap-6 w-full md:w-auto">
 						<AyatSelector
 							jumlahAyat={surahData.jumlahAyat}
@@ -342,7 +343,7 @@ export function ModalBoxQuran({
 		isOpen && (
 			<div
 				onClick={() => setIsOpen(false)}
-				className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center"
+				className="fixed inset-0 z-[9999] md:p-5 p-4 bg-black/60 backdrop-blur-sm flex items-center justify-center"
 			>
 				<div
 					className="max-w-4xl bg-card w-full rounded-xl h-[80vh] p-0 border-0"

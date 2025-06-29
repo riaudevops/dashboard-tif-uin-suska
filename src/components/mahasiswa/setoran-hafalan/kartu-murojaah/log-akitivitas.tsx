@@ -270,7 +270,7 @@ const TimelineItem = ({ item }: { item: LogDataProps }) => {
 							</span>
 						</div>
 					</div>
-					<p className="text-sm md:text-lg font-medium text-gray-900 dark:text-gray-100">
+					<p className="text-sm md:text-lg text-gray-900 dark:text-gray-100">
 						{item.keterangan}
 					</p>
 				</div>

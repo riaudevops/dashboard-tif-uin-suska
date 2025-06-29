@@ -51,25 +51,30 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
               </span>
             </div>
             <div className="flex bg-[#86A7FC] px-4 py-2 relative rounded-lg">
-              <div className="flex flex-col text-black gap-1 py-10 w-[70%]">
-                <div className="font-bold text-3xl">Halo, Dosen PA!</div>
-                <div className="z-10">
+              <div className="flex flex-col text-black gap-1 py-10 w-[72%]">
+                <div className="font-bold md:text-3xl text-2xl">Halo, Dosen PA!</div>
+                <div className="z-10 hidden md:block">
                   Semangat bertugas! 🎉 Tahun ini kamu membimbing{" "}
                   {dataMahasiswa?.info_mahasiswa_pa.daftar_mahasiswa.length}{" "}
-                  mahasiswa PA. Berikut adalah daftar mahasiswa yang sedang kamu
+                  mahasiswa. Berikut adalah daftar mahasiswa yang sedang kamu
                   dampingi. Ayo, mari kita mulai bekerja.
+                </div>
+                <div className="z-10 md:hidden text-xs">
+                  Semangat bertugas membimbing{" "}
+                  {dataMahasiswa?.info_mahasiswa_pa.daftar_mahasiswa.length}{" "}
+                  mahasiswa, mangats! 🎉
                 </div>
               </div>
 
               <div>
                 <div className="absolute bottom-0 right-0">
-                  <img src={icon_dosenpa_page} alt="" />
+                  <img className="md:w-auto w-[145px]" src={icon_dosenpa_page} alt="" />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-1 sticky top-[44.3px] z-50 bg-background pt-2.5 pb-3.5">
+          <div className="w-0 min-w-full flex flex-col gap-1 sticky top-[44.3px] z-50 bg-background pt-2.5 pb-3.5">
             <div className="max-w-[22rem] md:max-w-full">
               <Tabs defaultValue="tab1" className="w-full h-full">
                 <ScrollArea className="h-full py-2">
@@ -117,25 +122,33 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                 onChange={(e) => {
                   setSearch(e.target.value);
                 }}
-                className="w-full"
+                className="w-full md:block hidden"
+              />
+              <Input
+                placeholder="Cari berdasar nama ataupun NIM..."
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                className="w-full md:hidden"
               />
             </div>
           </div>
-          <div className="flex flex-col gap-3 w-full overflow-x-auto max-w-[22rem] md:max-w-full">
+
+          <div className="w-0 min-w-full flex flex-col gap-3 overflow-x-auto max-w-[22rem] md:max-w-full">
             <Table>
               <TableHeader>
                 <TableRow className="border border-solid border-secondary bg-muted">
                   <TableHead className="text-center">No.</TableHead>
-                  <TableHead className="text-center">Nama Mahasiswa</TableHead>
-                  <TableHead className="text-center">NIM</TableHead>
-                  <TableHead className="text-center">Semester</TableHead>
-                  <TableHead className="text-center">
+                  <TableHead className="text-center whitespace-nowrap">Nama Mahasiswa</TableHead>
+                  <TableHead className="text-center whitespace-nowrap">NIM</TableHead>
+                  <TableHead className="text-center whitespace-nowrap">Semester</TableHead>
+                  <TableHead className="text-center whitespace-nowrap">
                     Progres Muroja'ah
                   </TableHead>
-                  <TableHead className="text-center">
+                  <TableHead className="text-center px-10 whitespace-nowrap">
                     Terakhir Muroja'ah
                   </TableHead>
-                  <TableHead className="text-center">Aksi</TableHead>
+                  <TableHead className="text-center whitespace-nowrap">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className="border border-solid border-secondary">
@@ -157,12 +170,12 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                     }
                   >
                     <TableCell className="text-center">{index + 1}.</TableCell>
-                    <TableCell className="text-center">{item.nama}</TableCell>
-                    <TableCell className="text-center">{item.nim}</TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="text-center whitespace-nowrap">{item.nama}</TableCell>
+                    <TableCell className="text-center whitespace-nowrap">{item.nim}</TableCell>
+                    <TableCell className="text-center whitespace-nowrap">
                       {item.semester}
                     </TableCell>
-                    <TableCell className="text-center px-4">
+                    <TableCell className="text-center px-4 whitespace-nowrap">
                       <div className="flex gap-1.5 items-center w-full">
                         <div className="w-[90%]">
                           <Progress
@@ -181,10 +194,10 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="text-center whitespace-nowrap">
                       {item.info_setoran.terakhir_setor || "-"}
                     </TableCell>
-                    <TableCell className="text-center w-40">
+                    <TableCell className="text-center w-40 whitespace-nowrap">
                       <Button
                         variant={"outline"}
                         className="border-secondary border-2 rounded-xl text-foreground hover:scale-105 active:scale-95"

@@ -85,20 +85,22 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
   const [showModal, setShowModal] = useState(false);
 
   const handleCetakKartuMurojaahMobile = async () => {
+    setIsLoadingCetakKartuMurojaah(true);
     const response = await APISetoran.getKartuMurojaahSaya();
-
+    
     const pdfName = response.headers["content-disposition"]
-      .split("filename=")[1]
-      .replaceAll('"', "");
+    .split("filename=")[1]
+    .replaceAll('"', "");
     const blob = new Blob([response.data], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
-
+    
     const link = document.createElement("a");
     link.href = url || "";
     link.download = pdfName || "";
     link.click();
     link.remove();
     URL.revokeObjectURL(link.href);
+    setIsLoadingCetakKartuMurojaah(false);
   };
 
   const [isLoadingCetakKartuMurojaah, setIsLoadingCetakKartuMurojaah] =
@@ -296,8 +298,47 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 
           {/* table and button  */}
           <div className="flex flex-col gap-1.5 sticky top-[51.3px] bg-background pt-2.5 -mb-4 pb-3.5 z-50">
-            <div className="flex justify-between gap-3">
-              <div className="overflow-x-auto max-w-52 md:max-w-full">
+            {/* For Mobile */}
+            <div className="md:hidden overflow-x-auto max-w-full mb-2">
+              <Tabs defaultValue="tab1" className="w-full">
+                <TabsList className="gap-1.5 w-full">
+                  <TabsTrigger
+                    value="tab1"
+                    onClick={() => setTabState("default")}
+                    className={`w-full data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+                      tabState !== "default" &&
+                      "hover:bg-blue-100 dark:hover:bg-background/20"
+                    }`}
+                  >
+                    Semua
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="tab2"
+                    onClick={() => setTabState("sudah_setor")}
+                    className={`w-full data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+                      tabState !== "sudah_setor" &&
+                      "hover:bg-blue-100 dark:hover:bg-background/20"
+                    }`}
+                  >
+                    Selesai
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="tab3"
+                    onClick={() => setTabState("belum_setor")}
+                    className={`w-full data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:font-semibold ${
+                      tabState !== "belum_setor" &&
+                      "hover:bg-blue-100 dark:hover:bg-background/20"
+                    }`}
+                  >
+                    Belum
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+            
+            <div className="flex justify-between gap-2.5">
+
+              <div className="hidden md:block overflow-x-auto max-w-52 md:max-w-full">
                 <Tabs defaultValue="tab1" className="w-full">
                   <TabsList className="gap-1.5">
                     <TabsTrigger
@@ -333,6 +374,16 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                   </TabsList>
                 </Tabs>
               </div>
+
+              {/* Display at Mobile */}
+              <Input
+                placeholder="Cari nama surah-nya..."
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                className="w-full md:hidden"
+              />
+
               <div className="flex gap-1.5">
                 <Button
                   variant={"default"}
@@ -360,12 +411,17 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                   variant={"default"}
                   className="md:hidden flex bg-blue-500 text-white hover:bg-blue-700 active:scale-95"
                   onClick={handleCetakKartuMurojaahMobile}
+                  disabled={isLoadingCetakKartuMurojaah}
                 >
+                  {isLoadingCetakKartuMurojaah && (
+                    <Loader2 className="mr-1 animate-spin" />
+                  )}
                   <Printer />
                 </Button>
               </div>
             </div>
-            <div className="mt-1">
+
+            <div className="mt-1 md:block hidden">
               <Input
                 placeholder="Cari surah yang mau di-muroja'ah berdasarkan nama surah-nya..."
                 onChange={(e) => {

@@ -34,7 +34,7 @@ import { useTheme } from "@/components/themes/theme-provider";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import APISetoran from "@/services/api/public/setoran-hafalan.service";
-import ProgressChart from "../../components/mahasiswa/setoran-hafalan/kartu-murojaah/progress-bar";
+import ShinyProgressChart from "@/components/mahasiswa/setoran-hafalan/kartu-murojaah/shiny-progress-chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import TableLoadingSkeleton from "@/components/globals/table-loading-skeleton";
 import { ModeToggle } from "@/components/themes/mode-toggle";
@@ -259,7 +259,7 @@ const KartuMurojaahPage = () => {
 														{displayNames[item.label] || item.label}
 													</div>
 													{/* progress bar */}
-													<ProgressChart
+													<ShinyProgressChart
 														targetProgress={item.persentase_progres_setor}
 														loading={isFetching}
 													/>

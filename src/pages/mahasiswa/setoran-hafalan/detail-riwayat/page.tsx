@@ -381,17 +381,17 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                 <TableHeader>
                   <TableRow className="border hover:bg-muted border-solid border-secondary bg-muted">
                     <TableHead className="text-center">No</TableHead>
-                    <TableHead className="text-center">Nama Surah</TableHead>
-                    <TableHead className="text-center">
+                    <TableHead className="text-center whitespace-nowrap">Nama Surah</TableHead>
+                    <TableHead className="text-center whitespace-nowrap">
                       Tanggal Muroja'ah
                     </TableHead>
-                    <TableHead className="text-center">
+                    <TableHead className="text-center whitespace-nowrap">
                       Persyaratan Muroja'ah
                     </TableHead>
-                    <TableHead className="text-center">
+                    <TableHead className="text-center whitespace-nowrap">
                       Dosen Yang Mengesahkan
                     </TableHead>
-                    <TableHead className="text-center">
+                    <TableHead className="text-center whitespace-nowrap">
                       Status Muroja'ah
                     </TableHead>
                   </TableRow>
@@ -440,7 +440,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                     <TableCell className="text-center">
                       {index + 1}.
                     </TableCell>
-                    <TableCell className="flex gap-2 justify-center items-center text-center">
+                    <TableCell className="flex gap-2 justify-center items-center text-center whitespace-nowrap">
                       <span>
                         {surah.nama}{" "}
                         {surah.nama_arab && ` - ${surah.nama_arab}`}
@@ -470,7 +470,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                         <p>-</p>
                       )}
                     </TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="text-center whitespace-nowrap">
                       <div
                         className={`py-1 px-3 rounded-2xl text-center text-white inline-block ${
                           colourLabelingCategory(surah.label)[1]
@@ -479,7 +479,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                         {colourLabelingCategory(surah.label)[0]}
                       </div>
                     </TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="text-center whitespace-nowrap">
                       {surah.sudah_setor
                         ? surah.info_setoran.dosen_yang_mengesahkan.nama
                         : "-"}

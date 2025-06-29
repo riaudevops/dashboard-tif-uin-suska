@@ -30,10 +30,10 @@ import { colourLabelingCategory } from "@/helpers/colour-labeling-category";
 import { Skeleton } from "@/components/ui/skeleton";
 import ModalBoxDetailSetoran from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/ModalBoxDetailSetoran";
 import { useEffect, useState } from "react";
-import ModalBoxLogsMahasiswa from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/ModalBoxLogsMahasiswa";
 import TableLoadingSkeleton from "@/components/globals/table-loading-skeleton";
 import { Input } from "@/components/ui/input";
 import { ModalBoxQuran, SurahData } from "@/components/dosen/setoran-hafalan/ModalBoxQuran";
+import ModalBoxLogs from "@/components/dosen/setoran-hafalan/ModalBoxLogs";
 
 export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 
@@ -192,7 +192,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
           sudah_setor={dataModal.sudah_setoran}
         />
 
-        <ModalBoxLogsMahasiswa
+        <ModalBoxLogs
           isOpen={modalLogs}
           setIsOpen={setModalLogs}
           dataLogs={dataRingkasan?.setoran.log}

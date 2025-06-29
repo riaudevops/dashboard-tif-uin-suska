@@ -12,8 +12,6 @@ import { colourLabelingCategory } from "@/helpers/colour-labeling-category";
 import { Button } from "@/components/ui/button";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import APISetoran from "@/services/api/dosen/setoran-hafalan.service";
-import { useToast } from "@/hooks/use-toast";
-import { ToastAction } from "@/components/ui/toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import ModalBoxStatistik from "@/components/dosen/setoran-hafalan/ModalBoxStatistik";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -42,10 +40,10 @@ import {
 import { useParams } from "react-router-dom";
 import TableLoadingSkeleton from "@/components/globals/table-loading-skeleton";
 import { ModalBoxQuran, SurahData } from "@/components/dosen/setoran-hafalan/ModalBoxQuran";
+import { toast } from "sonner";
 
 function DetailMahasiswaSetoran() {
   const { nim } = useParams<{ nim: string }>();
-  const { toast } = useToast();
   const queryclient = useQueryClient();
 
   // Connect to External e-Quran API
@@ -193,11 +191,7 @@ function DetailMahasiswaSetoran() {
               }));
             if (dataBatalkan.length === 0) {
               setLoading(false);
-              return toast({
-                title: "ℹ️ Info",
-                description: "Tidak ada surah yang dibatalkan",
-                className: "dark:bg-blue-500 bg-blue-300",
-              });
+              return toast.info("Tidak ada surah yang dibatalkan");
             }
 
             mutationDelete
@@ -215,28 +209,16 @@ function DetailMahasiswaSetoran() {
                   setSelectAll(false);
                   setModalBatalkanSetoran(false);
                   setButtonLoading(false);
-                  toast({                    
-                    title: "✨ Sukses",
-                    description: data.message,
-                    // className: "dark:bg-green-600 bg-green-300",
-                  });
-
+                  toast.success(data.message);
                   setLoading(false);
                 }
               });
           } catch (error) {
-            toast({
-              title: "❌ Error",
-              description: "Pembatalan Muroja'ah Gagal",
-              variant: "destructive",
-              action: (
-                <ToastAction
-                  altText="Refreh"
-                  onClick={() => window.location.reload()}
-                >
-                  Refresh
-                </ToastAction>
-              ),
+            toast.error("Pembatalan Muroja'ah Gagal!", {
+              action: {
+                label: "Refresh",
+                onClick: () => window.location.reload()                
+              },
             });
             console.log(error);
           }
@@ -252,11 +234,7 @@ function DetailMahasiswaSetoran() {
         buttonLoading={buttonLoading}
         validasiSetoran={(dateSetoran: string) => {
           if (dateSetoran === "") {
-            return toast({
-              title: "📢 Peringatan",
-              description: "Tanggal muroja'ah tidak boleh kosong",
-              // className: "dark:bg-blue-500 bg-blue-300",
-            });
+            return toast.warning("Tanggal muroja'ah tidak boleh kosong!");
           }
           setButtonLoading(true);
           try {
@@ -283,44 +261,25 @@ function DetailMahasiswaSetoran() {
                   setSelectAll(false);
                   setModalValidasiSetoran(false);
                   setButtonLoading(false);
-                  toast({
-                    title: "✨ Sukses",
-                    description: data.message,
-                    // className: "dark:bg-green-600 bg-green-300",
-                  });
+                  toast.success(data.message);
 
                   setLoading(false);
                 } else {
-                  return toast({
-                    title: "❌ Error",
-                    description: data.message,
-                    variant: "destructive",
-                    action: (
-                      <ToastAction
-                        altText="Refreh"
-                        onClick={() => window.location.reload()}
-                      >
-                        Refresh
-                      </ToastAction>
-                    ),
-                    // className: "dark:bg-blue-500 bg-blue-300"
+                  return toast.error(data.message, {
+                    action: {
+                      label: "Refresh",
+                      onClick: () => window.location.reload()                
+                    },
                   });
                 }
               });
           } catch (error) {
-            toast({
-              title: "❌ Error",
-              description: "Validasi Muroja'ah Gagal",
-              variant: "destructive",
-              action: (
-                <ToastAction
-                  altText="Refreh"
-                  onClick={() => window.location.reload()}
-                >
-                  Refresh
-                </ToastAction>
-              ),
-            });
+              toast.error("Validasi Muroja'ah Gagal!", {
+                action: {
+                  label: "Refresh",
+                  onClick: () => window.location.reload()                
+                },
+              });
           }
         }}
         info={dataInfoSetoran?.info}
@@ -554,12 +513,7 @@ function DetailMahasiswaSetoran() {
                     }));
                   if (dataBatalkan.length === 0) {
                     setModalBatalkanSetoran(false);
-                    return toast({
-                      title: "📢 Peringatan",
-                      description:
-                        "Surah yang anda pilih belum di-muroja'ah sebelumnya.",
-                      // className: "dark:bg-orange-400 bg-orange-300",
-                    });
+                    return toast.warning("Surah yang anda pilih belum di-muroja'ah sebelumnya!");
                   }
 
                   setModalBatalkanSetoran(true);
@@ -583,12 +537,7 @@ function DetailMahasiswaSetoran() {
                   if (dataAcc.length === 0) {
                     setLoading(false);
                     setModalValidasiSetoran(false);
-                    return toast({
-                      title: "📢 Peringatan",
-                      description:
-                        "Surah yang anda pilih sudah di-muroja'ah sebelumnya.",
-                      // className: "dark:bg-orange-400 bg-orange-300",
-                    });
+                    return toast.warning("Surah yang anda pilih sudah di-muroja'ah sebelumnya!");
                   }
 
                   setModalValidasiSetoran(true);

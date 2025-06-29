@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Pause } from "lucide-react";
+import { CogIcon, Pause } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 // --- TYPESCRIPT INTERFACES ---
 interface AyatAudio {
@@ -225,6 +226,30 @@ const AyatItem = React.forwardRef<HTMLDivElement, AyatItemProps>(
 	}
 );
 
+// Definisikan varian animasi
+const containerVariants = {
+	hidden: {
+		opacity: 0,
+		y: -50 // Mulai dari 50px di atas posisi aslinya
+	},
+	visible: {
+		opacity: 1,
+		y: 0, // Kembali ke posisi asli
+		transition: {
+		duration: 0.5,
+		ease: "easeInOut"
+		}
+	},
+	exit: {
+		opacity: 0,
+		y: -50, // Kembali ke atas saat keluar
+		transition: {
+		duration: 0.3,
+		ease: "easeInOut"
+		}
+	}
+};
+
 interface QuranReaderProps {
 	surahData: SurahData | undefined;
 }
@@ -283,21 +308,29 @@ const QuranReader = ({ surahData }: QuranReaderProps) => {
 			</div>
 		);
 
+	const [isSelectorVisible, setIsSelectorVisible] = useState(false);
+
 	return (
 		<div className="bg-gray-50 rounded-xl dark:bg-gray-900/50 h-full text-gray-800 dark:text-gray-100 font-sans transition-colors duration-300 flex flex-col">
 			<header className="rounded-t-xl flex-shrink-0 z-10 bg-gradient-to-l from-violet-300/30 to-pink-300/30 dark:from-violet-900/40 dark:to-pink-900/40 backdrop-blur-sm py-7 border-b border-gray-200 dark:border-gray-800 px-4 md:px-8">
 				<div className="rounded-xl max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-					<div className="flex-1">
-						<h1 className="text-xl md:text-2xl font-bold text-purple-700 dark:text-purple-300">
-                            {surahData.namaLatin} - <span className="font-[Amiri]">{surahData.nama}</span> <span className="text-base italic font-medium">(QS.{surahData.nomor})</span>
-						</h1>
-						<p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
-							{surahData.arti} &bull; {surahData.jumlahAyat} Ayat &bull;{" "}
-							{surahData.tempatTurun}
-						</p>
+					<div className="w-full md:w-auto flex justify-between">						
+						<div className="flex-1">
+							<h1 className="text-xl md:text-2xl font-bold text-purple-700 dark:text-purple-300">
+								{surahData.namaLatin} - <span className="font-[Amiri]">{surahData.nama}</span> <span className="text-base italic font-medium">(QS.{surahData.nomor})</span>
+							</h1>
+							<p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
+								{surahData.arti} &bull; {surahData.jumlahAyat} Ayat &bull;{" "}
+								{surahData.tempatTurun}
+							</p>
+						</div>
+						<div className="pt-1 duration-200 md:hidden flex justify-center hover:scale-95 active:scale-100 items-center" onClick={() => setIsSelectorVisible(!isSelectorVisible)}>
+							<div className="active:rotate-90 flex justify-center items-center w-9 h-9 rounded-full text-foreground/60 bg-purple-700/30 dark:bg-purple-300/30">
+								<CogIcon className="w-7 h-7" />
+							</div>
+						</div>
 					</div>
-					<div className="md:hidden w-full h-px bg-gray-800/30 dark:bg-gray-100/30"></div>
-					<div className="flex mt-3 items-center gap-6 w-full md:w-auto">
+					<div className="hidden md:flex mt-3 items-center gap-6 w-full md:w-auto">
 						<AyatSelector
 							jumlahAyat={surahData.jumlahAyat}
 							onAyatSelect={handleScrollToAyat}
@@ -307,6 +340,29 @@ const QuranReader = ({ surahData }: QuranReaderProps) => {
 							setSelectedQari={setSelectedQari}
 						/>
 					</div>
+					<AnimatePresence>
+						{isSelectorVisible && (
+						<motion.div
+							className="flex flex-col items-center gap-6 w-full md:w-auto -mb-1"
+							variants={containerVariants}
+							initial="hidden"  // State awal saat pertama kali muncul
+							animate="visible" // State saat sudah muncul di layar
+							exit="exit"      // State saat akan menghilang
+						>
+							<div className="w-full h-px bg-gray-800/30 dark:bg-gray-100/30"></div>
+							<div className="flex gap-6 mt-3">
+								<AyatSelector
+									jumlahAyat={surahData.jumlahAyat}
+									onAyatSelect={handleScrollToAyat}
+								/>
+								<QariSelector
+									selectedQari={selectedQari}
+									setSelectedQari={setSelectedQari}
+								/>
+							</div>
+						</motion.div>
+						)}
+					</AnimatePresence>
 				</div>
 			</header>
 			<div ref={mainContentRef} className="flex-grow overflow-y-auto">

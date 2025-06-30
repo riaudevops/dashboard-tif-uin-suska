@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import ProtectedRoute from "./protected.router";
-import MahasiswaSetoranHafalanStatistikPage from "@/pages/mahasiswa/setoran-hafalan/statistik/page";
+// import MahasiswaSetoranHafalanStatistikPage from "@/pages/mahasiswa/setoran-hafalan/statistik/page";
 import MahasiswaSetoranHafalanDetailRiwayatPage from "@/pages/mahasiswa/setoran-hafalan/detail-riwayat/page";
 import MahasiswaKerjaPraktekDaftarKpPermohonanPage from "@/pages/mahasiswa/kerja-praktik/administrasi/permohonan/page";
 import MahasiswaKerjaPraktekDaftarKpPermohonanFormPendaftaranPage from "@/pages/mahasiswa/kerja-praktik/administrasi/permohonan/form-pendaftaran/page";
@@ -13,14 +13,14 @@ import MahasiswaKerjaPraktikDailyReportDetailPage from "@/pages/mahasiswa/kerja-
 import MahasiswaKerjaPraktikBimbinganPage from "@/pages/mahasiswa/kerja-praktik/bimbingan/page";
 
 export const mahasiswaRouter = [
-  {
-    path: "/mahasiswa/murojaah/statistik",
-    element: (
-      <ProtectedRoute roles={["mahasiswa"]}>
-        <MahasiswaSetoranHafalanStatistikPage />
-      </ProtectedRoute>
-    ),
-  },
+  // {
+  //   path: "/mahasiswa/murojaah/statistik",
+  //   element: (
+  //     <ProtectedRoute roles={["mahasiswa"]}>
+  //       <MahasiswaSetoranHafalanStatistikPage />
+  //     </ProtectedRoute>
+  //   ),
+  // },
   {
     path: "/mahasiswa/murojaah/detail-riwayat",
     element: (

@@ -156,7 +156,11 @@ const ScheduleTable: FC<{
       setIsAddRoomModalOpen(false);
     },
     onError: (error, _, toastId) => {
-      toast.error(`Gagal menambahkan ruangan: ${error.message}`, {
+      const message =
+        (error as any)?.response?.data?.message ||
+        (error as Error).message ||
+        "Terjadi kesalahan saat menambahkan ruangan";
+      toast.error(`${message}`, {
         id: toastId,
         duration: 3000,
       });
@@ -469,133 +473,137 @@ const ScheduleTable: FC<{
         {/* Header */}
         <div className="mb-6">
           <DashboardJadwalCard selectedTahunAjaranId={selectedTahunAjaranId} />
-          {/* Filter and Search */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-4">
-            <Tabs
-              value={activeTab}
-              onValueChange={(value) =>
-                setActiveTab(value as "semua" | "hari_ini" | "minggu_ini")
-              }
-              className="w-full"
-            >
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                <TabsList className="dark:bg-gray-700">
-                  <TabsTrigger
-                    value="semua"
-                    className="dark:data-[state=active]:bg-gray-800"
-                  >
-                    Semua
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="hari_ini"
-                    className="dark:data-[state=active]:bg-gray-800"
-                  >
-                    Hari Ini
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="minggu_ini"
-                    className="dark:data-[state=active]:bg-gray-800"
-                  >
-                    Minggu Ini
-                  </TabsTrigger>
-                </TabsList>
-                <div className="relative flex items-center w-full md:w-auto gap-2">
-                  <Search className="absolute w-4 h-4 text-gray-400 left-3" />
-                  <Input
-                    type="text"
-                    placeholder="Cari nama mahasiswa..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full md:w-64 pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200"
-                  />
-                  <button
-                    className="rounded-sm flex dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 py-[10px] text-white text-xs px-5 transition-colors"
-                    onClick={handleOpenLogModal}
-                  >
-                    <History className="h-4 w-4 mr-2" />
-                    Log Jadwal
-                  </button>
-                  <button
-                    className="rounded-sm flex dark:from-green-600 dark:to-green-700 dark:hover:from-green-700 dark:hover:to-green-800 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 py-[10px] text-white text-xs px-5 transition-colors"
-                    onClick={() => setIsAddRoomModalOpen(true)}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Tambah Ruangan
-                  </button>
-                  <button
-                    className="rounded-sm flex dark:from-red-600 dark:to-red-700 dark:hover:from-red-700 dark:hover:to-red-800 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 py-[10px] text-white text-xs px-5 transition-colors"
-                    onClick={() => setIsDeleteRoomModalOpen(true)}
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Hapus Ruangan
-                  </button>
-                </div>
+
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) =>
+              setActiveTab(value as "semua" | "hari_ini" | "minggu_ini")
+            }
+            className="w-full mt-4"
+          >
+            {/* Tab dan Tombol-tombol */}
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
+              <TabsList className="dark:bg-gray-700">
+                <TabsTrigger
+                  value="semua"
+                  className="dark:data-[state=active]:bg-gray-800"
+                >
+                  Semua
+                </TabsTrigger>
+                <TabsTrigger
+                  value="hari_ini"
+                  className="dark:data-[state=active]:bg-gray-800"
+                >
+                  Hari Ini
+                </TabsTrigger>
+                <TabsTrigger
+                  value="minggu_ini"
+                  className="dark:data-[state=active]:bg-gray-800"
+                >
+                  Minggu Ini
+                </TabsTrigger>
+              </TabsList>
+
+              <div className="flex items-center gap-2">
+                <button
+                  className="rounded-sm flex dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 py-[10px] text-white text-xs px-5 transition-colors"
+                  onClick={handleOpenLogModal}
+                >
+                  <History className="h-4 w-4 mr-2" />
+                  Log Jadwal
+                </button>
+                <button
+                  className="rounded-sm flex dark:from-green-600 dark:to-green-700 dark:hover:from-green-700 dark:hover:to-green-800 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 py-[10px] text-white text-xs px-5 transition-colors"
+                  onClick={() => setIsAddRoomModalOpen(true)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Tambah Ruangan
+                </button>
+                <button
+                  className="rounded-sm flex dark:from-red-600 dark:to-red-700 dark:hover:from-red-700 dark:hover:to-red-800 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 py-[10px] text-white text-xs px-5 transition-colors"
+                  onClick={() => setIsDeleteRoomModalOpen(true)}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Hapus Ruangan
+                </button>
               </div>
+            </div>
 
-              <TabsContent value="semua" className="mt-4">
-                <ScheduleTableContent
-                  rooms={rooms}
-                  headerSlots={headerSlots}
-                  currentData={currentData}
-                  activeTab={activeTab}
-                  getRowHeight={getRowHeight}
-                  roomColumnWidth={roomColumnWidth}
-                  getStatusColor={getStatusColor}
-                  handleMouseEnter={handleMouseEnter}
-                  handleMouseLeave={handleMouseLeave}
-                  formatHeaderDate={formatHeaderDate}
-                  getSchedulesByDate={getSchedulesByDate}
-                  getSchedulesByDay={getSchedulesByDay}
-                  getSchedulesByTime={getSchedulesByTime}
-                  sortSchedulesByTime={sortSchedulesByTime}
-                  isToday={isToday}
-                  onEdit={onEdit}
-                />
-              </TabsContent>
-              <TabsContent value="hari_ini" className="mt-4">
-                <ScheduleTableContent
-                  rooms={rooms}
-                  headerSlots={headerSlots}
-                  currentData={currentData}
-                  activeTab={activeTab}
-                  getRowHeight={getRowHeight}
-                  roomColumnWidth={roomColumnWidth}
-                  getStatusColor={getStatusColor}
-                  handleMouseEnter={handleMouseEnter}
-                  handleMouseLeave={handleMouseLeave}
-                  formatHeaderDate={formatHeaderDate}
-                  getSchedulesByDate={getSchedulesByDate}
-                  getSchedulesByDay={getSchedulesByDay}
-                  getSchedulesByTime={getSchedulesByTime}
-                  sortSchedulesByTime={sortSchedulesByTime}
-                  isToday={isToday}
-                  onEdit={onEdit}
-                />
-              </TabsContent>
-              <TabsContent value="minggu_ini" className="mt-4">
-                <ScheduleTableContent
-                  rooms={rooms}
-                  headerSlots={headerSlots}
-                  currentData={currentData}
-                  activeTab={activeTab}
-                  getRowHeight={getRowHeight}
-                  roomColumnWidth={roomColumnWidth}
-                  getStatusColor={getStatusColor}
-                  handleMouseEnter={handleMouseEnter}
-                  handleMouseLeave={handleMouseLeave}
-                  formatHeaderDate={formatHeaderDate}
-                  getSchedulesByDate={getSchedulesByDate}
-                  getSchedulesByDay={getSchedulesByDay}
-                  getSchedulesByTime={getSchedulesByTime}
-                  sortSchedulesByTime={sortSchedulesByTime}
-                  isToday={isToday}
-                  onEdit={onEdit}
-                />
-              </TabsContent>
-            </Tabs>
-          </div>
+            {/* Searchbar */}
+            <div className="relative flex items-center w-full md:w-auto mb-4">
+              <Search className="absolute w-4 h-4 text-gray-400 left-3" />
+              <Input
+                type="text"
+                placeholder="Cari mahasiswa berdasarkan nama atau NIM..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full  pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200"
+              />
+            </div>
+
+            {/* Tab Content */}
+            <TabsContent value="semua">
+              <ScheduleTableContent
+                rooms={rooms}
+                headerSlots={headerSlots}
+                currentData={currentData}
+                activeTab={activeTab}
+                getRowHeight={getRowHeight}
+                roomColumnWidth={roomColumnWidth}
+                getStatusColor={getStatusColor}
+                handleMouseEnter={handleMouseEnter}
+                handleMouseLeave={handleMouseLeave}
+                formatHeaderDate={formatHeaderDate}
+                getSchedulesByDate={getSchedulesByDate}
+                getSchedulesByDay={getSchedulesByDay}
+                getSchedulesByTime={getSchedulesByTime}
+                sortSchedulesByTime={sortSchedulesByTime}
+                isToday={isToday}
+                onEdit={onEdit}
+              />
+            </TabsContent>
+            <TabsContent value="hari_ini">
+              <ScheduleTableContent
+                rooms={rooms}
+                headerSlots={headerSlots}
+                currentData={currentData}
+                activeTab={activeTab}
+                getRowHeight={getRowHeight}
+                roomColumnWidth={roomColumnWidth}
+                getStatusColor={getStatusColor}
+                handleMouseEnter={handleMouseEnter}
+                handleMouseLeave={handleMouseLeave}
+                formatHeaderDate={formatHeaderDate}
+                getSchedulesByDate={getSchedulesByDate}
+                getSchedulesByDay={getSchedulesByDay}
+                getSchedulesByTime={getSchedulesByTime}
+                sortSchedulesByTime={sortSchedulesByTime}
+                isToday={isToday}
+                onEdit={onEdit}
+              />
+            </TabsContent>
+            <TabsContent value="minggu_ini">
+              <ScheduleTableContent
+                rooms={rooms}
+                headerSlots={headerSlots}
+                currentData={currentData}
+                activeTab={activeTab}
+                getRowHeight={getRowHeight}
+                roomColumnWidth={roomColumnWidth}
+                getStatusColor={getStatusColor}
+                handleMouseEnter={handleMouseEnter}
+                handleMouseLeave={handleMouseLeave}
+                formatHeaderDate={formatHeaderDate}
+                getSchedulesByDate={getSchedulesByDate}
+                getSchedulesByDay={getSchedulesByDay}
+                getSchedulesByTime={getSchedulesByTime}
+                sortSchedulesByTime={sortSchedulesByTime}
+                isToday={isToday}
+                onEdit={onEdit}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
-
         {/* Add Room Dialog */}
         <Dialog open={isAddRoomModalOpen} onOpenChange={setIsAddRoomModalOpen}>
           <DialogContent>

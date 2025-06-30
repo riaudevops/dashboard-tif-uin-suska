@@ -485,7 +485,7 @@ const KoordinatorJadwalSeminarPage: FC = () => {
                 <Search className="absolute w-4 h-4 text-gray-400 left-3" />
                 <Input
                   type="text"
-                  placeholder="Cari nama mahasiswa..."
+                  placeholder="Cari mahasiswa berdasarkan nama atau NIM..."
                   value=""
                   className="w-full md:w-64 pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200 animate-pulse"
                   disabled

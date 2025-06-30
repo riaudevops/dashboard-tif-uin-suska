@@ -8,6 +8,7 @@ import {
   CalendarCheck2Icon,
   ChevronRight,
   Plus,
+  Trash2,
 } from "lucide-react";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 import { Toaster } from "react-hot-toast";
@@ -500,33 +501,49 @@ const KoordinatorJadwalSeminarPage: FC = () => {
         {isLoading || isTahunAjaranLoading || isRuanganLoading ? (
           <>
             <SkeletonCard />
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+
+            {/* Tab dan Tombol-tombol */}
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4 mt-4">
               <SkeletonTabs />
-              <div className="relative flex items-center w-full md:w-auto">
-                <Search className="absolute w-4 h-4 text-gray-400 left-3" />
-                <Input
-                  type="text"
-                  placeholder="Cari mahasiswa berdasarkan nama atau NIM..."
-                  value=""
-                  className="w-full md:w-64 pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200 animate-pulse"
-                  disabled
-                />
+
+              <div className="flex items-center gap-2">
                 <button
-                  className="ml-2 rounded-sm flex bg-gradient-to-r from-blue-500 to-blue-600 py-[10px] text-white text-xs px-5 opacity-50 cursor-not-allowed"
+                  className="rounded-sm flex bg-gradient-to-r from-blue-500 to-blue-600 py-[10px] text-white text-xs px-5 opacity-50 cursor-not-allowed"
                   disabled
                 >
                   <History className="h-4 w-4 mr-2" />
                   Log Jadwal
                 </button>
                 <button
-                  className="ml-2 rounded-sm flex bg-gradient-to-r from-green-500 to-green-600 py-[10px] text-white text-xs px-5 opacity-50 cursor-not-allowed"
+                  className="rounded-sm flex bg-gradient-to-r from-green-500 to-green-600 py-[10px] text-white text-xs px-5 opacity-50 cursor-not-allowed"
                   disabled
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Tambah Ruangan
                 </button>
+                <button
+                  className="rounded-sm flex bg-gradient-to-r from-red-500 to-red-600 py-[10px] text-white text-xs px-5 opacity-50 cursor-not-allowed"
+                  disabled
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Hapus Ruangan
+                </button>
               </div>
             </div>
+
+            {/* Searchbar */}
+            <div className="relative flex items-center w-full md:w-auto mb-4">
+              <Search className="absolute w-4 h-4 text-gray-400 left-3" />
+              <Input
+                type="text"
+                placeholder="Cari mahasiswa berdasarkan nama atau NIM..."
+                value=""
+                className="w-full pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200 animate-pulse"
+                disabled
+              />
+            </div>
+
+            {/* Tabel Jadwal */}
             <SkeletonTable />
           </>
         ) : (

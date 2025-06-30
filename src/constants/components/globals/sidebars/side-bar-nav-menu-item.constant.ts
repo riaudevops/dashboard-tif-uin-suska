@@ -7,7 +7,7 @@ import {
   GraduationCapIcon,
   LayoutGridIcon,
   LucideHistory,
-  PieChart,
+  // PieChart,
   UserRoundPenIcon,
 } from "lucide-react";
 
@@ -16,11 +16,11 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
     {
       label: "Muroja'ah",
       menus: [
-        {
-          title: "Statistik",
-          url: "/mahasiswa/murojaah/statistik",
-          icon: PieChart,
-        },
+        // {
+        //   title: "Statistik",
+        //   url: "/mahasiswa/murojaah/statistik",
+        //   icon: PieChart,
+        // },
         {
           title: "Detail Riwayat",
           url: "/mahasiswa/murojaah/detail-riwayat",

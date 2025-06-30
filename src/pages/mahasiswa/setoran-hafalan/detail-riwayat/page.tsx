@@ -379,79 +379,82 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                   )}
                   {isLoading && <TableLoadingSkeleton columns={6} rows={7} />}
                   {dataCurrent?.map((surah, index) => (
-                  <TableRow
-                    key={surah.id}
-                    className={
-                      index % 2 !== 0
-                        ? "bg-secondary cursor-pointer"
-                        : "bg-background cursor-pointer"
-                    }
-                    onClick={() => {
-                      setDataModal({
-                        nama_komponen_setoran: surah.nama,
-                        tanggal_setoran:
-                          new Date(surah.info_setoran?.tgl_setoran)
-                            .toLocaleDateString("id-ID", {
-                              day: "2-digit",
-                              month: "long",
-                              year: "numeric",
-                            })
-                            .replace(/^(\d+)\s(\w+)\s(\d+)$/, "$1 $2, $3") ||
-                          "-",
-                        dosen_mengesahkan:
-                          surah.info_setoran?.dosen_yang_mengesahkan.nama ||
-                          "-",
-                        sudah_setoran: surah.sudah_setor,
-                      });
-                      setOpenDialog(true);
-                    }}
-                  >
-                    <TableCell className="text-center">
-                      {index + 1}.
-                    </TableCell>
-                    <TableCell className="text-center">{surah.nama} {surah.nama_arab && ` - ${surah.nama_arab}`}</TableCell>
-                    <TableCell className="text-center">
-                      {surah.sudah_setor ? (
-                        <div>
-                          <p>
-                            {new Date(surah.info_setoran.tgl_setoran)
+                    <TableRow
+                      key={surah.id}
+                      className={
+                        index % 2 !== 0
+                          ? "bg-secondary cursor-pointer"
+                          : "bg-background cursor-pointer"
+                      }
+                      onClick={() => {
+                        setDataModal({
+                          nama_komponen_setoran: surah.nama,
+                          tanggal_setoran:
+                            new Date(surah.info_setoran?.tgl_setoran)
                               .toLocaleDateString("id-ID", {
                                 day: "2-digit",
                                 month: "long",
                                 year: "numeric",
                               })
-                              .replace(/^(\d+)\s(\w+)\s(\d+)$/, "$1 $2, $3")}
-                          </p>
+                              .replace(/^(\d+)\s(\w+)\s(\d+)$/, "$1 $2, $3") ||
+                            "-",
+                          dosen_mengesahkan:
+                            surah.info_setoran?.dosen_yang_mengesahkan.nama ||
+                            "-",
+                          sudah_setoran: surah.sudah_setor,
+                        });
+                        setOpenDialog(true);
+                      }}
+                    >
+                      <TableCell className="text-center">
+                        {index + 1}.
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {surah.nama}{" "}
+                        {surah.nama_arab && ` - ${surah.nama_arab}`}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {surah.sudah_setor ? (
+                          <div>
+                            <p>
+                              {new Date(surah.info_setoran.tgl_setoran)
+                                .toLocaleDateString("id-ID", {
+                                  day: "2-digit",
+                                  month: "long",
+                                  year: "numeric",
+                                })
+                                .replace(/^(\d+)\s(\w+)\s(\d+)$/, "$1 $2, $3")}
+                            </p>
+                          </div>
+                        ) : (
+                          <p>-</p>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <div
+                          className={`py-1 px-3 rounded-2xl text-center text-white inline-block ${
+                            colourLabelingCategory(surah.label)[1]
+                          }`}
+                        >
+                          {colourLabelingCategory(surah.label)[0]}
                         </div>
-                      ) : (
-                        <p>-</p>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <div
-                        className={`py-1 px-3 rounded-2xl text-center text-white inline-block ${
-                          colourLabelingCategory(surah.label)[1]
-                        }`}
-                      >
-                        {colourLabelingCategory(surah.label)[0]}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {surah.sudah_setor
-                        ? surah.info_setoran.dosen_yang_mengesahkan.nama
-                        : "-"}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {surah.sudah_setor ? (
-                        <div className="bg-green-600 px-3 py-1 text-white rounded-2xl inline-block">
-                          Selesai
-                        </div>
-                      ) : (
-                        <div>-</div>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {surah.sudah_setor
+                          ? surah.info_setoran.dosen_yang_mengesahkan.nama
+                          : "-"}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {surah.sudah_setor ? (
+                          <div className="bg-green-600 px-3 py-1 text-white rounded-2xl inline-block">
+                            Selesai
+                          </div>
+                        ) : (
+                          <div>-</div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </div>

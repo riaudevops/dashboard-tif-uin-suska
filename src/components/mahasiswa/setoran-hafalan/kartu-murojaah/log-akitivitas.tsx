@@ -254,91 +254,91 @@ const TimelineItem = ({ item }: { item: LogDataProps }) => {
         className={`absolute left-7 md:left-8 top-9 h-px w-9 md:w-12 bg-gradient-to-r ${actionDetails.gradientConnector} to-transparent z-10`}
       ></div>
 
-      <div
-        className={`relative z-10 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border ${actionDetails.borderColor} rounded-2xl shadow-lg dark:shadow-black/20 overflow-hidden transition-all duration-300 hover:bg-white dark:hover:bg-gray-700/60 hover:shadow-2xl`}
-      >
-        <div className={`p-4 bg-gradient-to-r ${actionDetails.gradientFrom}`}>
-          <div className="flex items-center justify-between mb-3">
-            <span
-              className={`px-3 py-1 text-xs md:text-sm ${actionDetails.badgeText} ${actionDetails.badgeBg} rounded-full shadow-lg`}
-            >
-              {item.aksi}
-            </span>
-            <div className="ml-5 flex overflow-hidden items-center space-x-2 text-gray-500 dark:text-gray-400">
-              <ActionIcon aksi={item.aksi} />
-              <span className="truncate font-mono text-xs md:text-sm font-semibold text-gray-800 dark:text-gray-200">
-                ID: {item.id}
-              </span>
-            </div>
-          </div>
-          <p className="text-sm md:text-lg font-medium text-gray-900 dark:text-gray-100">
-            {item.keterangan}
-          </p>
-        </div>
-        <div className="p-4 bg-black/5 dark:bg-black/20">
-          <div className="flex items-center space-x-1.5 md:space-x-2 text-gray-500 dark:text-gray-400 mb-3">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="md:h-4 md:w-4 h-3 w-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-            <span className="text-[0.65rem] md:text-sm">
-              {formatTimestamp(item.timestamp)}
-            </span>
-          </div>
-          <div className="border-t border-black/10 dark:border-white/10 pt-3">
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-              Disahkan oleh:
-            </p>
-            <div className="flex items-center md:space-x-3 space-x-2 mt-2">
-              <img
-                src={`https://placehold.co/40x40/7c3aed/ffffff?text=${item.dosen_yang_mengesahkan.nama.charAt(
-                  0
-                )}`}
-                className="rounded-full md:h-10 md:w-10 h-7 w-7 border-2 border-indigo-500"
-                alt="Avatar"
-                onError={(e: any) => {
-                  e.target.onerror = null;
-                  e.target.src =
-                    "https://placehold.co/40x40/1f2937/ffffff?text=?";
-                }}
-              />
-              <div className="overflow-hidden">
-                <p className="truncate text-sm md:text-base font-semibold text-gray-900 dark:text-white">
-                  {item.dosen_yang_mengesahkan.nama}
-                </p>
-                <p className="truncate text-xs text-gray-500 dark:text-gray-400">
-                  {item.dosen_yang_mengesahkan.email}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-black/10 dark:border-white/10 pt-3 mt-3 flex flex-col sm:flex-row items-start sm:items-center justify-between text-gray-500 dark:text-gray-400 text-xs space-y-2 sm:space-y-0">
-            <div className="flex items-center space-x-2">
-              <NetworkIcon className="h-3.5 w-3.5" />
-              <span className="font-mono">{item.ip}</span>
-            </div>
-            <div className="relative group flex items-center space-x-2">
-              <DeviceIcon Icon={actionDetails.device.Icon} />
-              <span>{actionDetails.device.name}</span>
-              <div className="absolute bottom-full left-1 sm:left-auto sm:right-0 mb-2 w-max md:max-w-xs max-w-[12rem] p-2 bg-gray-900 text-white md:text-xs text-[0.65rem] rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-30 break-all">
-                {item.user_agent}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+			<div
+				className={`relative z-10 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border ${actionDetails.borderColor} rounded-2xl shadow-lg dark:shadow-black/20 overflow-hidden transition-all duration-300 hover:bg-white dark:hover:bg-gray-700/60 hover:shadow-2xl`}
+			>
+				<div className={`p-4 bg-gradient-to-r ${actionDetails.gradientFrom}`}>
+					<div className="flex items-center justify-between mb-3">
+						<span
+							className={`px-3 py-1 text-xs md:text-sm ${actionDetails.badgeText} ${actionDetails.badgeBg} rounded-full shadow-lg`}
+						>
+							{item.aksi}
+						</span>
+						<div className="ml-5 flex overflow-hidden items-center space-x-2 text-gray-500 dark:text-gray-400">
+							<ActionIcon aksi={item.aksi} />
+							<span className="truncate font-mono text-xs md:text-sm font-semibold text-gray-800 dark:text-gray-200">
+								ID: {item.id}
+							</span>
+						</div>
+					</div>
+					<p className="text-sm md:text-lg text-gray-900 dark:text-gray-100">
+						{item.keterangan}
+					</p>
+				</div>
+				<div className="p-4 bg-black/5 dark:bg-black/20">
+					<div className="flex items-center space-x-1.5 md:space-x-2 text-gray-500 dark:text-gray-400 mb-3">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							className="md:h-4 md:w-4 h-3 w-3"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							strokeWidth={2}
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+							/>
+						</svg>
+						<span className="text-[0.65rem] md:text-sm">
+							{formatTimestamp(item.timestamp)}
+						</span>
+					</div>
+					<div className="border-t border-black/10 dark:border-white/10 pt-3">
+						<p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+							Disahkan oleh:
+						</p>
+						<div className="flex items-center md:space-x-3 space-x-2 mt-2">
+							<img
+								src={`https://placehold.co/40x40/7c3aed/ffffff?text=${item.dosen_yang_mengesahkan.nama.charAt(
+									0
+								)}`}
+								className="rounded-full md:h-10 md:w-10 h-7 w-7 border-2 border-indigo-500"
+								alt="Avatar"
+								onError={(e: any) => {
+									e.target.onerror = null;
+									e.target.src =
+										"https://placehold.co/40x40/1f2937/ffffff?text=?";
+								}}
+							/>
+							<div className="overflow-hidden">
+								<p className="truncate text-sm md:text-base font-semibold text-gray-900 dark:text-white">
+									{item.dosen_yang_mengesahkan.nama}
+								</p>
+								<p className="truncate text-xs text-gray-500 dark:text-gray-400">
+									{item.dosen_yang_mengesahkan.email}
+								</p>
+							</div>
+						</div>
+					</div>
+					<div className="border-t border-black/10 dark:border-white/10 pt-3 mt-3 flex flex-col sm:flex-row items-start sm:items-center justify-between text-gray-500 dark:text-gray-400 text-xs space-y-2 sm:space-y-0">
+						<div className="flex items-center space-x-2">
+							<NetworkIcon className="h-3.5 w-3.5" />
+							<span className="font-mono">{item.ip}</span>
+						</div>
+						<div className="relative group flex items-center space-x-2">
+							<DeviceIcon Icon={actionDetails.device.Icon} />
+							<span>{actionDetails.device.name}</span>
+							<div className="absolute bottom-full left-1 sm:left-auto sm:right-0 mb-2 w-max md:max-w-xs max-w-[12rem] p-2 bg-gray-900 text-white md:text-xs text-[0.65rem] rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-30 break-all">
+								{item.user_agent}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 };
 
 const EmptyLogState = () => (
@@ -379,13 +379,11 @@ export default function LogAktivitas({ logData }: { logData: LogDataProps[] }) {
           {/* The sleek, solid, and modern timeline */}
           <div className="absolute top-0 left-[20px] md:left-[24px] -translate-x-1/2 w-px h-full z-0 bg-gray-300 dark:bg-gray-700"></div>
 
-          {logData.length === 0 ? (
-            <EmptyLogState />
-          ) : (
-            logData.map((item) => <TimelineItem key={item.id} item={item} />)
-          )}
-        </div>
-      </div>
+					{logData?.map((item) => (
+						<TimelineItem key={item.id} item={item} />
+					))}
+				</div>
+			</div>
 
       <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 6px; }

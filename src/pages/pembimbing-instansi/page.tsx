@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import APIKerjaPraktik from "@/services/api/pembimbing-instansi/daily-report.service";
 import { MahasiswaInstansiSayaResponse } from "@/interfaces/pages/mahasiswa/kerja-praktik/daily-report/daily-report.interface";
 import {
@@ -42,8 +42,8 @@ import {
 } from "@/components/ui/card";
 
 const PembimbingInstansiKerjaPraktikMahasiswaPage = () => {
-  const [searchParams] = useSearchParams();
-  const email = searchParams.get("email");
+  const { id } = useParams<{ id: string }>();
+  
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -55,11 +55,11 @@ const PembimbingInstansiKerjaPraktikMahasiswaPage = () => {
     MahasiswaInstansiSayaResponse,
     Error
   >({
-    queryKey: ["mahasiswa-instansi-saya", email],
+    queryKey: ["mahasiswa-instansi-saya", id],
     queryFn: () =>
-      APIKerjaPraktik.getMahasiswaInstansiSaya(email!).then((res) => res.data),
+      APIKerjaPraktik.getMahasiswaInstansiSaya(id!).then((res) => res.data),
     staleTime: Infinity,
-    enabled: !!email,
+    enabled: !!id,
   });
 
   const formatDate = (date: string): string => {

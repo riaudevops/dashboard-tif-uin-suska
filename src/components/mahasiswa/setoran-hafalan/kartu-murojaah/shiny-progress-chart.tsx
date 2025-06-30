@@ -49,17 +49,6 @@ const ShinyProgressChart = ({
 		? circumference
 		: circumference - (currentProgress / 100) * circumference;
 
-	const Skeleton = () => (
-		<div
-			className="relative flex items-center justify-center"
-			style={{ width: size, height: size }}
-		>
-			<div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
-		</div>
-	);
-
-	if (loading) return <Skeleton />;
-
 	return (
 		<div
 			className="relative flex items-center justify-center my-4 mx-3"

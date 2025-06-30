@@ -268,7 +268,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
   const { data: detailData, isLoading: isDetailLoading } =
     useQuery<MahasiswaDetailResponse>({
       queryKey: ["koordinator-seminar-kp-detail", selectedNim],
-      queryFn: () => APISeminarKP.getDataMahasiswaByEmail(selectedNim!),
+      queryFn: () => APISeminarKP.getDataMahasiswaByNIM(selectedNim!),
       enabled: !!selectedNim,
     });
 
@@ -361,9 +361,9 @@ const KoordinatorValidasiBerkasPage: FC = () => {
 
   const filteredStudents = useMemo(() => {
     return students.filter((student) => {
-      const matchesSearch = student.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
+      const matchesSearch =
+        student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        student.nim.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesTab = student.stage === activeTab;
       const isPending = ["Terkirim", "Ditolak"].includes(student.last_status);
 
@@ -789,7 +789,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
                   <Search className="h-4 w-4 absolute left-3 text-gray-400" />
                   <Input
                     type="text"
-                    placeholder="Cari nama mahasiswa..."
+                    placeholder="Cari mahasiswa berdasarkan nama atau NIM..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200 dark:placeholder:text-gray-400"

@@ -1,12 +1,12 @@
 import { api } from "@/lib/axios-instance";
 
 export default class APIKerjaPraktik {
-  public static async getMahasiswaInstansiSaya(email: string) {
+  public static async getMahasiswaInstansiSaya(id: string) {
     const axios = api();
     const response = await axios.get(
       `${
         import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
-      }/pembimbing-instansi/mahasiswa-saya/${email}`
+      }/pembimbing-instansi/mahasiswa-saya/${id}`
     );
     return response.data;
   }

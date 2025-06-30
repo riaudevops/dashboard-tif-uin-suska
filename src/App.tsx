@@ -6,7 +6,7 @@ import { queryClient } from "./lib/query-client";
 import { ThemeProvider } from "@/components/themes/theme-provider";
 import router from "./routers/app.router";
 import { AlertDialog } from "./components/ui/alert-dialog";
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/sonner"
 const App = () => {
 	return (
 		<AuthProvider userManager={userManager} onSigninCallback={onSigninCallback}>
@@ -14,7 +14,12 @@ const App = () => {
 				<ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
 					<AlertDialog>
 						<RouterProvider router={router} />
-						<Toaster />
+						<Toaster
+							position="bottom-right" 
+							richColors 
+							closeButton 
+							expand
+						/>
 					</AlertDialog>
 				</ThemeProvider>
 			</QueryClientProvider>

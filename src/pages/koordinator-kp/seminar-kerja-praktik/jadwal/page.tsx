@@ -314,14 +314,26 @@ const KoordinatorJadwalSeminarPage: FC = () => {
 
   // Filter seminars based on search query
   const filteredData: JadwalResponse["jadwal"] = {
-    semua: (data?.jadwal.semua || []).filter((seminar) =>
-      seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
+    semua: (data?.jadwal.semua || []).filter(
+      (seminar) =>
+        seminar.mahasiswa.nama
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        seminar.mahasiswa.nim.toLowerCase().includes(searchQuery.toLowerCase())
     ),
-    hari_ini: (data?.jadwal.hari_ini || []).filter((seminar) =>
-      seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
+    hari_ini: (data?.jadwal.hari_ini || []).filter(
+      (seminar) =>
+        seminar.mahasiswa.nama
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        seminar.mahasiswa.nim.toLowerCase().includes(searchQuery.toLowerCase())
     ),
-    minggu_ini: (data?.jadwal.minggu_ini || []).filter((seminar) =>
-      seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
+    minggu_ini: (data?.jadwal.minggu_ini || []).filter(
+      (seminar) =>
+        seminar.mahasiswa.nama
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        seminar.mahasiswa.nim.toLowerCase().includes(searchQuery.toLowerCase())
     ),
     by_ruangan: {
       semua: Object.keys(data?.jadwal.by_ruangan.semua || {}).reduce(
@@ -330,6 +342,9 @@ const KoordinatorJadwalSeminarPage: FC = () => {
           [room]: (data?.jadwal.by_ruangan.semua[room] || []).filter(
             (seminar) =>
               seminar.mahasiswa.nama
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase()) ||
+              seminar.mahasiswa.nim
                 .toLowerCase()
                 .includes(searchQuery.toLowerCase())
           ),
@@ -343,6 +358,9 @@ const KoordinatorJadwalSeminarPage: FC = () => {
             (seminar) =>
               seminar.mahasiswa.nama
                 .toLowerCase()
+                .includes(searchQuery.toLowerCase()) ||
+              seminar.mahasiswa.nim
+                .toLowerCase()
                 .includes(searchQuery.toLowerCase())
           ),
         }),
@@ -354,6 +372,9 @@ const KoordinatorJadwalSeminarPage: FC = () => {
           [room]: (data?.jadwal.by_ruangan.minggu_ini[room] || []).filter(
             (seminar) =>
               seminar.mahasiswa.nama
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase()) ||
+              seminar.mahasiswa.nim
                 .toLowerCase()
                 .includes(searchQuery.toLowerCase())
           ),

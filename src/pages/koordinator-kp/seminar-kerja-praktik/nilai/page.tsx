@@ -974,9 +974,6 @@ const StudentTable: FC<{
               Status Nilai
             </TableHead>
             <TableHead className="text-center font-semibold dark:text-gray-200">
-              Status Konfirmasi
-            </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
               Aksi
             </TableHead>
           </TableRow>
@@ -998,24 +995,26 @@ const StudentTable: FC<{
                 className="dark:border-gray-700 dark:hover:bg-gray-700"
               >
                 <TableCell className="text-center">
-                  {student.status_nilai === "Nilai Approve" ? (
-                    student.validasi_nilai_is_approve === true ? (
-                      <span className="text-xs text-green-500 dark:text-green-400">
-                        ✓
-                      </span>
-                    ) : (
+                  {student.status_nilai === "Nilai Valid" ? (
+                    
                       <Checkbox
                         checked={selectedStudents.includes(student.nim)}
                         onCheckedChange={() => onCheckboxChange(student.nim)}
                         className="h-4 w-4"
                       />
-                    )
+                    
                   ) : (
-                    <Checkbox
+                    student.validasi_nilai_is_approve ? (
+                      <span className="text-xs text-green-500 dark:text-green-400">
+                        ✓
+                      </span>
+                    ) : (
+                      <Checkbox
                       disabled
                       className="h-4 w-4 opacity-100"
-                      title="Hanya nilai dengan status 'Nilai Approve' yang dapat dikonfirmasi"
+                      title="Hanya nilai dengan status 'Nilai Valid' yang dapat dikonfirmasi"
                     />
+                    )
                   )}
                 </TableCell>
                 <TableCell className="text-center dark:text-gray-300 text-xs font-semibold">
@@ -1084,16 +1083,6 @@ const StudentTable: FC<{
                   >
                     {student.status_nilai}
                   </span>
-                </TableCell>
-                <TableCell className="text-center">
-                  {student.status_nilai === "Nilai Approve" &&
-                  student.validasi_nilai_is_approve === true ? (
-                    <div className="inline-block px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/50">
-                      Selesai
-                    </div>
-                  ) : (
-                    <span className="text-gray-600 dark:text-gray-400">-</span>
-                  )}
                 </TableCell>
                 <TableCell className="text-center">
                   <Button

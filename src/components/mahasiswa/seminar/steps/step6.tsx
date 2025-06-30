@@ -495,7 +495,7 @@ export default function Step6({ activeStep }: Step6Props) {
     toast.error(errorMessage);
   }
 
-  const status = apiData?.data?.nilai[0]?.validasi_nilai ? "validasi" : "belum";
+  const status = apiData?.data?.nilai[0]?.validasi_nilai.is_approve ? "validasi" : "belum";
 
   const infoData: InfoData = apiData?.data
     ? {

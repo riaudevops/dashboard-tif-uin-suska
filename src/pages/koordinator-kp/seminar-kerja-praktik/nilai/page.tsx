@@ -355,9 +355,9 @@ const KoordinatorNilaiPage: FC = () => {
     })) || [];
 
   const filteredStudents = students.filter((student) => {
-    const matchesSearch = student.nama
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
+    const matchesSearch =
+      student.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.nim.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus =
       statusFilter === "semua" ||
       (statusFilter === "nilaiBelumValid" &&
@@ -870,7 +870,7 @@ const KoordinatorNilaiPage: FC = () => {
                 <Search className="h-4 w-4 absolute left-3 text-gray-400" />
                 <Input
                   type="text"
-                  placeholder="Cari nama mahasiswa..."
+                  placeholder="Cari mahasiswa berdasarkan nama atau NIM..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200 dark:placeholder:text-gray-400"

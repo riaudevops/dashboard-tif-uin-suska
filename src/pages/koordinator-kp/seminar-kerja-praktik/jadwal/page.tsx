@@ -7,6 +7,7 @@ import {
   History,
   CalendarCheck2Icon,
   ChevronRight,
+  Plus,
 } from "lucide-react";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 import { Toaster } from "react-hot-toast";
@@ -73,6 +74,10 @@ interface LogEntry {
   id_jadwal?: string;
 }
 
+interface Ruangan {
+  nama: string;
+}
+
 // Skeleton Components
 const SkeletonCard: FC = () => {
   return (
@@ -102,7 +107,6 @@ const SkeletonTable: FC = () => {
       aria-busy="true"
     >
       <div className="flex">
-        {/* Room Column */}
         <div className="flex-shrink-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 w-[90px]">
           <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
             <div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded mx-auto" />
@@ -116,7 +120,6 @@ const SkeletonTable: FC = () => {
             </div>
           ))}
         </div>
-        {/* Schedule Columns */}
         <div className="flex-1">
           <div className="flex border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
             {Array.from({ length: 6 }).map((_, index) => (
@@ -191,6 +194,16 @@ const KoordinatorJadwalSeminarPage: FC = () => {
   } = useQuery<TahunAjaran[]>({
     queryKey: ["tahun-ajaran"],
     queryFn: APISeminarKP.getTahunAjaran,
+  });
+
+  // Fetch rooms
+  const {
+    data: ruanganData,
+    isLoading: isRuanganLoading,
+    isError: isRuanganError,
+  } = useQuery<Ruangan[]>({
+    queryKey: ["ruangan"],
+    queryFn: APISeminarKP.getAllRuangan,
   });
 
   // Fetch seminar schedule
@@ -301,14 +314,26 @@ const KoordinatorJadwalSeminarPage: FC = () => {
 
   // Filter seminars based on search query
   const filteredData: JadwalResponse["jadwal"] = {
-    semua: (data?.jadwal.semua || []).filter((seminar) =>
-      seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
+    semua: (data?.jadwal.semua || []).filter(
+      (seminar) =>
+        seminar.mahasiswa.nama
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        seminar.mahasiswa.nim.toLowerCase().includes(searchQuery.toLowerCase())
     ),
-    hari_ini: (data?.jadwal.hari_ini || []).filter((seminar) =>
-      seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
+    hari_ini: (data?.jadwal.hari_ini || []).filter(
+      (seminar) =>
+        seminar.mahasiswa.nama
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        seminar.mahasiswa.nim.toLowerCase().includes(searchQuery.toLowerCase())
     ),
-    minggu_ini: (data?.jadwal.minggu_ini || []).filter((seminar) =>
-      seminar.mahasiswa.nama.toLowerCase().includes(searchQuery.toLowerCase())
+    minggu_ini: (data?.jadwal.minggu_ini || []).filter(
+      (seminar) =>
+        seminar.mahasiswa.nama
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        seminar.mahasiswa.nim.toLowerCase().includes(searchQuery.toLowerCase())
     ),
     by_ruangan: {
       semua: Object.keys(data?.jadwal.by_ruangan.semua || {}).reduce(
@@ -317,6 +342,9 @@ const KoordinatorJadwalSeminarPage: FC = () => {
           [room]: (data?.jadwal.by_ruangan.semua[room] || []).filter(
             (seminar) =>
               seminar.mahasiswa.nama
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase()) ||
+              seminar.mahasiswa.nim
                 .toLowerCase()
                 .includes(searchQuery.toLowerCase())
           ),
@@ -330,6 +358,9 @@ const KoordinatorJadwalSeminarPage: FC = () => {
             (seminar) =>
               seminar.mahasiswa.nama
                 .toLowerCase()
+                .includes(searchQuery.toLowerCase()) ||
+              seminar.mahasiswa.nim
+                .toLowerCase()
                 .includes(searchQuery.toLowerCase())
           ),
         }),
@@ -341,6 +372,9 @@ const KoordinatorJadwalSeminarPage: FC = () => {
           [room]: (data?.jadwal.by_ruangan.minggu_ini[room] || []).filter(
             (seminar) =>
               seminar.mahasiswa.nama
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase()) ||
+              seminar.mahasiswa.nim
                 .toLowerCase()
                 .includes(searchQuery.toLowerCase())
           ),
@@ -387,11 +421,11 @@ const KoordinatorJadwalSeminarPage: FC = () => {
     setSelectedSeminarId(null);
   };
 
-  if (isTahunAjaranError) {
+  if (isTahunAjaranError || isRuanganError) {
     return (
       <DashboardLayout>
         <div className="text-center text-gray-600 dark:text-gray-300 py-10">
-          Gagal memuat daftar tahun ajaran. Silakan coba lagi nanti.
+          Gagal memuat data. Silakan coba lagi nanti.
         </div>
       </DashboardLayout>
     );
@@ -412,6 +446,8 @@ const KoordinatorJadwalSeminarPage: FC = () => {
     );
   }
 
+  const rooms = ruanganData?.map((r) => r.nama) || [];
+
   return (
     <DashboardLayout>
       <Toaster position="top-right" />
@@ -426,7 +462,7 @@ const KoordinatorJadwalSeminarPage: FC = () => {
           </div>
           <div className="flex items-center gap-2 dark:text-gray-200">
             <div className="relative">
-              {isLoading || isTahunAjaranLoading ? (
+              {isLoading || isTahunAjaranLoading || isRuanganLoading ? (
                 <div className="px-3 py-1 pr-8 text-sm bg-white border rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 h-8 w-32 animate-pulse" />
               ) : (
                 <>
@@ -436,7 +472,11 @@ const KoordinatorJadwalSeminarPage: FC = () => {
                     onChange={(e) =>
                       setSelectedTahunAjaranId(Number(e.target.value))
                     }
-                    disabled={isTahunAjaranLoading || !tahunAjaranData}
+                    disabled={
+                      isTahunAjaranLoading ||
+                      !tahunAjaranData ||
+                      isRuanganLoading
+                    }
                   >
                     {tahunAjaranData && tahunAjaranData.length > 0 ? (
                       tahunAjaranData.map((year) => (
@@ -457,7 +497,7 @@ const KoordinatorJadwalSeminarPage: FC = () => {
           </div>
         </div>
 
-        {isLoading || isTahunAjaranLoading ? (
+        {isLoading || isTahunAjaranLoading || isRuanganLoading ? (
           <>
             <SkeletonCard />
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
@@ -466,7 +506,7 @@ const KoordinatorJadwalSeminarPage: FC = () => {
                 <Search className="absolute w-4 h-4 text-gray-400 left-3" />
                 <Input
                   type="text"
-                  placeholder="Cari nama mahasiswa..."
+                  placeholder="Cari mahasiswa berdasarkan nama atau NIM..."
                   value=""
                   className="w-full md:w-64 pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200 animate-pulse"
                   disabled
@@ -478,6 +518,13 @@ const KoordinatorJadwalSeminarPage: FC = () => {
                   <History className="h-4 w-4 mr-2" />
                   Log Jadwal
                 </button>
+                <button
+                  className="ml-2 rounded-sm flex bg-gradient-to-r from-green-500 to-green-600 py-[10px] text-white text-xs px-5 opacity-50 cursor-not-allowed"
+                  disabled
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Tambah Ruangan
+                </button>
               </div>
             </div>
             <SkeletonTable />
@@ -485,6 +532,7 @@ const KoordinatorJadwalSeminarPage: FC = () => {
         ) : (
           <ScheduleTable
             data={filteredData}
+            rooms={rooms}
             onEdit={handleOpenModal}
             selectedTahunAjaranId={selectedTahunAjaranId}
             setSelectedTahunAjaranId={setSelectedTahunAjaranId}

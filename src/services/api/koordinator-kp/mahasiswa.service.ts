@@ -139,6 +139,28 @@ export default class APISeminarKP {
     return data;
   }
 
+  public static async tambahRuangan({ nama }: { nama: string }) {
+    const axios = api();
+    const request = await axios.post(
+      `${import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK}/seminar-kp/ruangan`,
+      {
+        nama,
+      }
+    );
+    return request.data;
+  }
+
+  public static async hapusRuangan({ nama }: { nama: string }) {
+    const axios = api();
+    const request = await axios.delete(
+      `${import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK}/seminar-kp/ruangan`,
+      {
+        data: { nama },
+      }
+    );
+    return request.data;
+  }
+
   public static async putJadwal({
     id,
     tanggal,

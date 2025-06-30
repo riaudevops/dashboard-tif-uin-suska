@@ -786,12 +786,6 @@ const ScheduleTable: FC<{
               Menunggu
             </span>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 rounded bg-blue-100 border-2 border-blue-200"></div>
-            <span className="text-sm text-gray-700 dark:text-gray-300">
-              Jadwal Ulang
-            </span>
-          </div>
         </div>
       </div>
     </div>

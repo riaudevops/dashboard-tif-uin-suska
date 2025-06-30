@@ -228,14 +228,23 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 {/* statistik && user info desktop */}
           <div className="md:flex hidden gap-4 rounded-lg">
             
-            <div className="bg-muted/40 rounded-xl p-2">
+            <div className="dark:bg-muted/40 bg-yellow-300/10 border rounded-xl p-2 flex justify-center items-center flex-col">
+              <div className="text-base text-orange-700 dark:text-orange-200 inline-block tracking-tight dark:bg-orange-700/20 bg-orange-800/10 rounded-md whitespace-nowrap px-2 font-medium">
+                Progres Keseluruhan
+              </div>
               <ShinyProgressChart
                 loading={isFetching}
                 targetProgress={dataRingkasan?.setoran.info_dasar.persentase_progres_setor}
               />
+              <div className="dark:bg-pink-700/20 bg-pink-800/20 text-pink-800 dark:text-pink-200 text-sm tracking-tight inline-block opacity-75 rounded-md whitespace-nowrap px-2">
+                <div>
+                  {dataRingkasan?.setoran.info_dasar.total_sudah_setor} dari{" "}
+                  {dataRingkasan?.setoran.info_dasar.total_wajib_setor} selesai
+                </div>
+              </div>
             </div>
 
-            <div className="flex bg-muted/40 rounded-xl py-2 px-8 flex-col gap-2 h-full justify-center">
+            <div className="flex dark:bg-muted/40 bg-yellow-300/10 border rounded-xl py-2 px-8 flex-col gap-2 h-full justify-center">
               <div className="flex items-center">
                 {/* Bagian kiri */}
                 <div className="flex items-center gap-1 min-w-44">

@@ -3,6 +3,7 @@ import {
   BackpackIcon,
   BookOpenIcon,
   Calendar,
+  ChartSpline,
   Clock,
   DownloadIcon,
   FileDigit,
@@ -37,6 +38,7 @@ import { Input } from "@/components/ui/input";
 import { ModalBoxQuran, SurahData } from "@/components/dosen/setoran-hafalan/ModalBoxQuran";
 import ModalBoxLogs from "@/components/dosen/setoran-hafalan/ModalBoxLogs";
 import ShinyProgressChart from "@/components/mahasiswa/setoran-hafalan/kartu-murojaah/shiny-progress-chart";
+import ModalBoxStatistik from "@/components/dosen/setoran-hafalan/ModalBoxStatistik";
 
 export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 
@@ -73,6 +75,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
   });
 
   const [modalLogs, setModalLogs] = useState(false);
+  const [openModalStatistik, setModalStatistik] = useState(false);
 
   const { data: dataRingkasan, isLoading, isFetching } = useQuery({
     queryKey: ["setoran-saya-detail"],
@@ -195,6 +198,12 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
           sudah_setor={dataModal.sudah_setoran}
         />
 
+        <ModalBoxStatistik
+          isFetching={isFetching}
+          isOpen={openModalStatistik}
+          dataRingkasan={dataRingkasan?.setoran.ringkasan}
+          setIsOpen={setModalStatistik}
+        />
         <ModalBoxLogs
           isOpen={modalLogs}
           setIsOpen={setModalLogs}
@@ -465,6 +474,16 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
               />
 
               <div className="flex gap-1.5">
+                <Button
+                  variant={"default"}
+                  className="bg-purple-500 text-white hover:bg-purple-700 active:scale-95 flex justify-center items-center gap-1.5"
+                  onClick={() => {
+                    setModalStatistik(true);
+                  }}
+                >
+                  <ChartSpline size={20} />
+                  <span className="hidden md:block">Lihat Statistik</span>
+                </Button>
                 <Button
                   variant={"default"}
                   className="bg-orange-500 text-white hover:bg-orange-600 active:scale-95 flex justify-center items-center gap-1.5"

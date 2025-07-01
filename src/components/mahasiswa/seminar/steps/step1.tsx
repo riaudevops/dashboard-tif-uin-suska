@@ -235,7 +235,7 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
           kontakPembimbing:
             data.data.pendaftaran_kp[0]?.dosen_pembimbing?.no_hp ||
             "Belum diisi",
-          lamaKerjapraktik: `${
+          lamaKerjaPraktik: `${
             data.data.pendaftaran_kp[0]?.tanggal_mulai
               ? new Date(
                   data.data.pendaftaran_kp[0].tanggal_mulai
@@ -265,7 +265,7 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
     "lokasi",
     "dosenPembimbing",
     "kontakPembimbing",
-    "lamaKerjapraktik",
+    "lamaKerjaPraktik",
   ];
 
   const handleLinkChange = (index: number, value: string) => {

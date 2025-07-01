@@ -210,7 +210,7 @@ const Step3: FC<Step3Props> = ({ activeStep }) => {
             data.data.pendaftaran_kp[0]?.dosen_penguji?.nama || "Belum diisi",
           kontakPenguji:
             data.data.pendaftaran_kp[0]?.dosen_penguji?.no_hp || "Belum diisi",
-          lamaKerjapraktik: `${
+          lamaKerjaPraktik: `${
             data.data.pendaftaran_kp[0]?.tanggal_mulai
               ? new Date(
                   data.data.pendaftaran_kp[0].tanggal_mulai

@@ -4,5 +4,5 @@ export interface CommonResponse {
 }
 
 export interface getTahunAjaranService extends CommonResponse {
-  data: { id: number; name?: string | null; created_at: Date }[];
+  data: { id: number; nama?: string | null; created_at: Date }[];
 }

@@ -25,7 +25,7 @@ interface InfoData {
   lokasi?: string;
   dosenPembimbing?: string;
   dosenPenguji?: string;
-  lamaKerjaPraktek?: string;
+  lamaKerjapraktik?: string;
   kontakPembimbing?: string;
   kontakPenguji?: string;
   jadwal?: string;
@@ -50,7 +50,7 @@ const InfoCard: React.FC<InfoCardProps> = React.memo(
     const iconMap: Record<string, React.ReactNode> = {
       judul: <Book className="size-4 text-emerald-500 dark:text-emerald-400" />,
       lokasi: <Map className="size-4 text-emerald-500 dark:text-emerald-400" />,
-      lamaKerjaPraktek: (
+      lamaKerjapraktik: (
         <Clock className="size-4 text-emerald-500 dark:text-emerald-400" />
       ),
       dosenPembimbing: (
@@ -80,7 +80,7 @@ const InfoCard: React.FC<InfoCardProps> = React.memo(
     const titleMap: Record<string, string> = {
       judul: "Judul Laporan",
       lokasi: "Lokasi Kerja Praktik",
-      lamaKerjaPraktek: "Lama Kerja Praktik",
+      lamaKerjapraktik: "Lama Kerja Praktik",
       dosenPembimbing: "Dosen Pembimbing",
       kontakPembimbing: "Kontak Pembimbing",
       dosenPenguji: "Dosen Penguji",
@@ -118,7 +118,8 @@ const InfoCard: React.FC<InfoCardProps> = React.memo(
                   <p className="text-4xl font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
                     {typeof data[nilaiItem] === "string"
                       ? data[nilaiItem]
-                      : "-"} <span className="text-[1.35rem]">({data.nilai_huruf})</span>
+                      : "-"}{" "}
+                    <span className="text-[1.35rem]">({data.nilai_huruf})</span>
                   </p>
                   {/* Menampilkan nilai penguji, instansi, dan pembimbing */}
                   <div className="mt-3 text-left text-xs text-emerald-600 dark:text-emerald-300 w-full">
@@ -137,7 +138,9 @@ const InfoCard: React.FC<InfoCardProps> = React.memo(
                     </p>
                     <hr className="my-2 border-emerald-200 dark:border-emerald-700" />
                     <p className="flex justify-between items-center gap-2">
-                      <span className="font-medium">Nilai Pembimbing (20%)</span>
+                      <span className="font-medium">
+                        Nilai Pembimbing (20%)
+                      </span>
                       <span className="inline-flex items-center justify-end px-2 py-0.5  text-emerald-600 dark:text-emerald-300  text-xs font-medium">
                         {data.nilai_pembimbing || "-"}
                       </span>
@@ -220,7 +223,7 @@ export default function Step6({ activeStep }: Step6Props) {
     "judul",
     "nilai",
     "lokasi",
-    "lamaKerjaPraktek",
+    "lamaKerjapraktik",
     "dosenPembimbing",
     "dosenPenguji",
     "kontakPembimbing",
@@ -262,7 +265,7 @@ export default function Step6({ activeStep }: Step6Props) {
           "Belum diisi",
         kontakPenguji:
           apiData.data.pendaftaran_kp[0]?.dosen_penguji?.no_hp || "Belum diisi",
-        lamaKerjaPraktek: (() => {
+        lamaKerjapraktik: (() => {
           const start = apiData.data.pendaftaran_kp[0]?.tanggal_mulai
             ? new Date(apiData.data.pendaftaran_kp[0].tanggal_mulai)
             : null;
@@ -315,7 +318,9 @@ export default function Step6({ activeStep }: Step6Props) {
         nilai_pembimbing: apiData.data.nilai[0]?.nilai_pembimbing
           ? String(apiData.data.nilai[0].nilai_pembimbing)
           : "Belum diisi",
-        nilai_huruf: apiData.data.nilai[0]?.nilai_huruf ? String(apiData.data.nilai[0].nilai_huruf) : "Belum diisi",
+        nilai_huruf: apiData.data.nilai[0]?.nilai_huruf
+          ? String(apiData.data.nilai[0].nilai_huruf)
+          : "Belum diisi",
       }
     : {};
 

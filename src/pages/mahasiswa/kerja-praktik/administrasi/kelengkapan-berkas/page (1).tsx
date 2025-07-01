@@ -1,35 +1,35 @@
-  import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CalendarIcon } from "lucide-react";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 
-const MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage = () => {
+const MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage = () => {
   const steps = [
     {
       number: 0,
       title: "Surat Pengantar & Jawaban",
       status: "Upload Berkas",
-      action: "Not Action"
+      action: "Not Action",
     },
     {
       number: 1,
       title: "ID Pengajuan Dosen Pembimbing",
       status: "Input",
-      action: "Not Action"
+      action: "Not Action",
     },
     {
       number: 2,
       title: "Dokumen Penunjukan Pembimbing",
       status: "Upload Berkas",
-      action: "Not Action"
+      action: "Not Action",
     },
     {
       number: 3,
       title: "Selesai",
       status: "Status Kelengkapan KP",
-      action: "Not Action"
-    }
+      action: "Not Action",
+    },
   ];
 
   return (
@@ -41,8 +41,10 @@ const MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage = () => {
             <div className="flex justify-between items-center mb-8">
               {steps.map((step, index) => (
                 <div key={index} className="flex flex-col items-center flex-1">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white mb-2 
-                    ${index === 0 ? 'bg-purple-600' : 'bg-emerald-400'}`}>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-white mb-2 
+                    ${index === 0 ? "bg-purple-600" : "bg-emerald-400"}`}
+                  >
                     {step.number}
                   </div>
                   <div className="h-1 w-full bg-emerald-200" />
@@ -62,8 +64,14 @@ const MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage = () => {
                 Periode Kerja Praktik
               </h2>
               <div className="mt-4">
-                <label className="block text-sm font-medium mb-2">Tanggal Selesai</label>
-                <Input type="text" placeholder="dd/mm/yyy" className="max-w-xs" />
+                <label className="block text-sm font-medium mb-2">
+                  Tanggal Selesai
+                </label>
+                <Input
+                  type="text"
+                  placeholder="dd/mm/yyy"
+                  className="max-w-xs"
+                />
               </div>
             </div>
 
@@ -108,4 +116,4 @@ const MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage = () => {
   );
 };
 
-export default MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage;
+export default MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage;

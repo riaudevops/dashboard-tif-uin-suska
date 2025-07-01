@@ -20,7 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import APIDaftarKP from "@/services/api/mahasiswa/daftar-kp.service";
+import APIDaftarKP from "@/services/api/koordinator-kp/daftar-kp.service";
 import { tahunAjaranToStringInterface } from "@/interfaces/helpers/tahun-ajaran-to-string.interface";
 
 // Main component
@@ -31,11 +31,11 @@ export default function KoordinatorKerjaPraktikPermohonanPage() {
   const navigate = useNavigate();
 
   const stats = [
-    { title: "Total Bimbingan", count: 8, label: "Mahasiswa" },
-    { title: " Kerja Praktik", count: 1, label: "Mahasiswa" },
-    { title: " Seminar Kerja Praktik", count: 2, label: "Mahasiswa" },
+    { title: "Total Bimbingan", count: 0, label: "Mahasiswa" },
+    { title: " Kerja Praktik", count: 0, label: "Mahasiswa" },
+    { title: " Seminar Kerja Praktik", count: 0, label: "Mahasiswa" },
     { title: "Lanjut", count: 0, label: "Mahasiswa" },
-    { title: "Selesai", count: 5, label: "Mahasiswa" },
+    { title: "Selesai", count: 0, label: "Mahasiswa" },
   ];
 
   const { data: applicationData } = useQuery({

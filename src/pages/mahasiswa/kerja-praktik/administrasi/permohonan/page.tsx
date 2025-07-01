@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { IsPendaftaranKPClosedSync } from "@/helpers/batas-waktu-pendaftaran..validator";
 import { toast } from "@/hooks/use-toast";
 import { UpdatePendaftaranMahasiswaInterface } from "@/interfaces/pages/mahasiswa/kerja-praktik/daftar-kp/pendaftaran.interface";
+import { ErrorInterface } from "@/interfaces/pages/error.type";
 
 interface KPInterface {
   id: string;
@@ -30,7 +31,7 @@ interface KPInterface {
   };
 }
 
-export default function MahasiswaKerjaPraktekDaftarKpPermohonanPage() {
+export default function MahasiswaKerjapraktikDaftarKpPermohonanPage() {
   const [idLog, setIdLog] = useState<string | null>(null);
   const [isPenolakanInstansiModalOpen, setIsPenolakanInstansiModalOpen] =
     useState<boolean>(false);
@@ -61,22 +62,18 @@ export default function MahasiswaKerjaPraktekDaftarKpPermohonanPage() {
 
   const { data: activeKP } = useQuery({
     queryKey: ["kp-terbaru-mahasiswa"],
-    queryFn: () =>
-      APIDaftarKP.getKPAktifMahasiswa()
+    queryFn: () => {
+      return APIDaftarKP.getKPAktifMahasiswa()
         .then((res) => res.data)
         .catch((error) =>
           console.log(`Gagal mendapatkan tanggal KP, Error = ${error}`)
-        ),
+        );
+    },
   });
 
   const { data: log } = useQuery({
     queryKey: ["log-kp-terbaru-mahasiswa"],
-    queryFn: () =>
-      APIDaftarKP.getLOGMahasiswa(idLog!)
-        .then((res) => res.data)
-        .catch((error) =>
-          console.log(`Gagal mendapatkan tanggal KP, Error = ${error}`)
-        ),
+    queryFn: () => APIDaftarKP.getLOGMahasiswa(idLog!).then((res) => res.data),
     enabled: idLog !== null,
   });
 
@@ -92,16 +89,16 @@ export default function MahasiswaKerjaPraktekDaftarKpPermohonanPage() {
       <Card className="rounded-md border-green-500 border-2">
         <CardHeader>
           <CardTitle className="font-semibold text-lg">
-            Permohonan Pendaftaran Kerja Praktek
+            Permohonan Pendaftaran Kerja praktik
           </CardTitle>
           <CardDescription className="text-stone-500 my-2">
-            Silakan Lakukan Pendaftaran Kerja Praktek Pada Tombol di Bawah ini
+            Silakan Lakukan Pendaftaran Kerja praktik Pada Tombol di Bawah ini
             Jika Sudah Memenuhi Syarat:
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-2">
           <CardDescription className="rounded-md py-3 px-2">
-            <CardDescription>{"tif kerja-praktek@latest"}</CardDescription>
+            <CardDescription>{"tif kerja-praktik@latest"}</CardDescription>
             <CardDescription className="text-cyan-700">
               ✔ Setoran Hafalan 1-8
             </CardDescription>
@@ -124,13 +121,13 @@ export default function MahasiswaKerjaPraktekDaftarKpPermohonanPage() {
               ℹ Updated 1 file:
             </CardDescription>
             <CardDescription className="text-blue-800">
-              - lib/kerja-praktek.ts
+              - lib/kerja-praktik.ts
             </CardDescription>
             <CardDescription className="text-green-400">
               Success! Sistem siap digunakan.
             </CardDescription>
             <CardDescription>
-              Silakan mulai pendaftaran kerja praktek Anda.
+              Silakan mulai pendaftaran kerja praktik Anda.
             </CardDescription>
           </CardDescription>
         </CardContent>
@@ -152,17 +149,17 @@ export default function MahasiswaKerjaPraktekDaftarKpPermohonanPage() {
       <Card className="rounded-md border-green-500 border-2 py-2 px-4 bg-green-100 dark:bg-black">
         <CardHeader>
           <CardTitle className="font-semibold text-lg">
-            Permohonan Pendaftaran Kerja Praktek
+            Permohonan Pendaftaran Kerja praktik
           </CardTitle>
           <CardDescription className="text-stone-500 my-2">
-            Silakan Lakukan Pendaftaran Kerja Praktek Pada Tombol di Bawah ini
+            Silakan Lakukan Pendaftaran Kerja praktik Pada Tombol di Bawah ini
             Jika Sudah Memenuhi Syarat:
           </CardDescription>
         </CardHeader>
         <CardContent className="rounded-lg pt-4 flex justify-center gap-12 items-center">
           <div>
             <CardDescription className="text-lg font-bold">
-              Progress Terkini Pendaftaran Kerja Praktek :
+              Progress Terkini Pendaftaran Kerja praktik :
             </CardDescription>
             <ProgressBar currentStep={activeKP.level_akses} />
           </div>
@@ -194,8 +191,6 @@ export default function MahasiswaKerjaPraktekDaftarKpPermohonanPage() {
     );
   }
 
-  console.log(activeKP);
-
   return (
     <DashboardLayout>
       {isPenolakanInstansiModalOpen && (
@@ -224,7 +219,7 @@ export default function MahasiswaKerjaPraktekDaftarKpPermohonanPage() {
         <>
           <Card>
             <CardHeader className="text-center font-bold">
-              Saat ini Pendaftaran Kerja Praktek telah Ditutup
+              Saat ini Pendaftaran Kerja praktik telah Ditutup
             </CardHeader>
           </Card>
           <Card>
@@ -287,10 +282,10 @@ export default function MahasiswaKerjaPraktekDaftarKpPermohonanPage() {
           <Card className="mb-4">
             <CardHeader>
               <CardTitle className="font-bold text-xl">
-                Pendaftaran Kerja Praktek
+                Pendaftaran Kerja praktik
               </CardTitle>
               <CardDescription>
-                Berikut detail Progres Pendaftaran Kerja Praktek Anda, semangat
+                Berikut detail Progres Pendaftaran Kerja praktik Anda, semangat
                 terus ya...
               </CardDescription>
             </CardHeader>
@@ -383,7 +378,7 @@ function DetailDialog({
         title: "Sukses",
         description:
           data.message ||
-          "Berhasil mengubah judul laporan / kelas kerja praktek",
+          "Berhasil mengubah judul laporan / kelas kerja praktik",
         duration: 3000,
       });
       setIsEditing((prev) => !prev);
@@ -392,12 +387,12 @@ function DetailDialog({
         exact: true,
       });
     },
-    onError: (data) => {
+    onError: (data: ErrorInterface) => {
       toast({
         title: "Gagal",
         description:
-          data.message ||
-          "Berhasil mengubah judul laporan / kelas kerja praktek",
+          data?.response?.data?.message ||
+          "Gagal mengubah judul laporan / kelas kerja praktik",
         duration: 3000,
       });
     },
@@ -413,7 +408,7 @@ function DetailDialog({
     <Card className="flex flex-col gap-4 absolute left-[50%] -translate-x-1/2 top-[50%] -translate-y-1/2 min-w-[50%] h-[80%] overflow-scroll p-2">
       <CardHeader>
         <CardTitle className="text-center text-lg font-bold tracking-wide">
-          Informasi Kerja Praktek
+          Informasi Kerja praktik
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -442,19 +437,19 @@ function DetailDialog({
 
         <Card className="p-4">
           <form onSubmit={handleOnSubmitUpdateDetailKP}>
-            <CardTitle className="mb-2">Informasi Kerja Praktek</CardTitle>
+            <CardTitle className="mb-2">Informasi Kerja praktik</CardTitle>
             <Label>Tujuan Surat Instansi :</Label>
             <p>{activeKP.tujuan_surat_instansi}</p>
             <Label>Tanggal Mulai :</Label>
             <p>{new Date(activeKP.tanggal_mulai).toDateString()}</p>
             <Label>Tanggal Pengajuan :</Label>
             <p>{new Date(activeKP.tanggal_pengajuan).toDateString()}</p>
-            <Label htmlFor="kelas-kerja-praktek">Kelas Kerja Praktek :</Label>
+            <Label htmlFor="kelas-kerja-praktik">Kelas Kerja praktik :</Label>
             {isEditing ? (
               <CardContent className="text-black bg-white p-0 rounded-md border-black border-[1px]">
                 <select
                   name="kelas_kp"
-                  id="kelas-kerja-praktek"
+                  id="kelas-kerja-praktik"
                   className="bg-white block w-[100%] p-2 dark:bg-black dark:text-white dark:border-white"
                 >
                   <option value="">Pilih Kelas</option>
@@ -487,13 +482,13 @@ function DetailDialog({
                 </select>
               </CardContent>
             ) : (
-              <p>{activeKP.kelas_kp || "Kelas Kerja Praktek belum Tersedia"}</p>
+              <p>{activeKP.kelas_kp || "Kelas Kerja praktik belum Tersedia"}</p>
             )}
-            <Label htmlFor="laporan-kerja-praktek">
-              Judul Laporan Kerja Praktek :
+            <Label htmlFor="laporan-kerja-praktik">
+              Judul Laporan Kerja praktik :
             </Label>
             {isEditing ? (
-              <Input id="laporan-kerja-praktek" name="judul_kp" />
+              <Input id="laporan-kerja-praktik" name="judul_kp" />
             ) : (
               <p>{activeKP.judul_kp || "Judul belum tersedia"} </p>
             )}
@@ -547,8 +542,7 @@ function PenolakanInstansiDialog({
 }: PenolakanInstansiDialogInterface) {
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: (link_surat_penolakan_instansi: string) =>
-      APIDaftarKP.postSuratPenolakanInstansi(link_surat_penolakan_instansi),
+    mutationFn: (data: any) => APIDaftarKP.unggahBerkasPendafataranKP(data),
     onSuccess: (data) => {
       toast({
         title: "Sukses",
@@ -562,11 +556,12 @@ function PenolakanInstansiDialog({
       });
       setIsPenolakanInstansiModalOpen();
     },
-    onError: (data) => {
+    onError: (data: ErrorInterface) => {
       toast({
         title: "Gagal",
         description:
-          data.message || "Gagal mengajukan surat penolakan instansi",
+          data?.response?.data?.message ||
+          "Gagal mengajukan surat penolakan instansi",
         duration: 3000,
       });
     },
@@ -579,7 +574,7 @@ function PenolakanInstansiDialog({
 
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
-    mutation.mutate(data.link_surat_penolakan_instansi as string);
+    mutation.mutate(data);
   }
   return (
     <Card className="flex flex-col gap-4 absolute left-[50%] -translate-x-1/2 top-[50%] -translate-y-1/2 w-[50%] p-2">
@@ -595,11 +590,8 @@ function PenolakanInstansiDialog({
           <Label htmlFor="link-surat-penolakan-instansi">
             Masukkan Link Surat Penolakan Instansi
           </Label>
-          <Input
-            id="link-surat-penolakan-instansi"
-            name="link_surat_penolakan_instansi"
-            required
-          />
+          <Input id="link-surat-penolakan-instansi" name="data" required />
+          <Input className="hidden" name="nomorBerkas" readOnly value={0} />
           <div className="mt-2 flex flex-col gap-2">
             <Button disabled={mutation.isPending} type="submit">
               Kirim
@@ -624,7 +616,7 @@ function LogComponent({ data, setIdLog }: LogInterface) {
     <Card className="flex flex-col gap-4 absolute left-[50%] -translate-x-1/2 top-[50%] -translate-y-1/2 min-w-[50%] h-[50%] p-2 overflow-y-scroll">
       <CardHeader>
         <CardTitle className="text-center text-lg font-bold tracking-wide">
-          Logs Kerja Praktek #1
+          Logs Kerja praktik #1
         </CardTitle>
       </CardHeader>
       <CardContent>

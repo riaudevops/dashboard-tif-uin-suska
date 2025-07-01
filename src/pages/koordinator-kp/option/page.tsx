@@ -4,8 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { TanggalDaftarKPInterface } from "@/interfaces/pages/koordinator-kp/kerja-praktik/daftar-kp/tanggal.interface";
-import APIDaftarKP from "@/services/api/mahasiswa/daftar-kp.service";
+import { UbahTanggalPendaftaranKPInterface } from "@/interfaces/service/api/daftar-kp/koordinator-kp-service.interface";
+import APIDaftarKP from "@/services/api/koordinator-kp/daftar-kp.service";
 import { useMutation } from "@tanstack/react-query";
 import { FormEvent, useState } from "react";
 
@@ -20,45 +20,27 @@ function OptionPage() {
     useState<string>("");
 
   const tanggalKPMutation = useMutation({
-    mutationFn: (data: TanggalDaftarKPInterface) =>
-      APIDaftarKP.postTanggalDaftarKP(data).then((res) => res.data),
+    mutationFn: (data: UbahTanggalPendaftaranKPInterface) =>
+      APIDaftarKP.ubahTanggalPendaftaranKP(data).then((res) => res.data),
     onSuccess: () => {
       toast({
         title: "Sukses",
-        description: "Berhasil mengirim tanggal daftar kerja praktek",
+        description: "Berhasil mengirim tanggal daftar kerja praktik",
         duration: 2000,
       });
     },
     onError: () => {
       toast({
         title: "Gagal",
-        description: "Gagal mengirim tanggal daftar kerja praktek",
-        duration: 2000,
-      });
-    },
-  });
-
-  const tanggalKPLanjutMutation = useMutation({
-    mutationFn: (data: TanggalDaftarKPInterface) =>
-      APIDaftarKP.postTanggalDaftarKPLanjut(data).then((res) => res.data),
-    onSuccess: () => {
-      toast({
-        title: "Sukses",
-        description: "Berhasil mengirim tanggal daftar kerja praktek lanjut",
-        duration: 2000,
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Gagal",
-        description: "Gagal mengirim tanggal daftar kerja praktek lanjut",
+        description: "Gagal mengirim tanggal daftar kerja praktik",
         duration: 2000,
       });
     },
   });
 
   async function handleOnSubmitTanggalPendaftaranKP(
-    e: FormEvent<HTMLFormElement>
+    e: FormEvent<HTMLFormElement>,
+    type: "Regular" | "Lanjut"
   ) {
     e.preventDefault();
     const object = new FormData(e.currentTarget);
@@ -72,24 +54,7 @@ function OptionPage() {
     tanggalKPMutation.mutate({
       tanggalMulai: tanggalMulaiPendaftaranKp,
       tanggalTerakhir: tanggalTerakhirPendaftaranKp,
-    });
-  }
-
-  async function handleOnSubmitTanggalPendaftaranLanjutKP(
-    e: FormEvent<HTMLFormElement>
-  ) {
-    e.preventDefault();
-    const object = new FormData(e.currentTarget);
-    const data = Object.fromEntries(object.entries());
-    const tanggalMulaiPendaftaranLanjutKp = new Date(
-      data.tanggalMulaiPendaftaranLanjutKp as string
-    ).toISOString();
-    const tanggalTerakhirPendaftaranLanjutKp = new Date(
-      data.tanggalTerakhirPendaftaranLanjutKp as string
-    ).toISOString();
-    tanggalKPLanjutMutation.mutate({
-      tanggalMulai: tanggalMulaiPendaftaranLanjutKp,
-      tanggalTerakhir: tanggalTerakhirPendaftaranLanjutKp,
+      type,
     });
   }
 
@@ -98,16 +63,16 @@ function OptionPage() {
       <Card className="shadow-lg p-2">
         <CardHeader>
           <CardTitle className="font-bold text-lg tracking-wide">
-            Pendaftaran Kerja Praktek
+            Pendaftaran Kerja praktik
           </CardTitle>
         </CardHeader>
         <CardContent>
           <h3 className="mt-1 mb-3 font-bold tracking-wide">
-            Tanggal Pendaftaran Kerja Praktek Reguler
+            Tanggal Pendaftaran Kerja praktik Reguler
           </h3>
           <form
             className="flex flex-col gap-2 mb-4"
-            onSubmit={handleOnSubmitTanggalPendaftaranKP}
+            onSubmit={(e) => handleOnSubmitTanggalPendaftaranKP(e, "Regular")}
           >
             <Label htmlFor="tanggal-mulai-pendaftaran-kp">
               Tanggal Mulai :{" "}
@@ -140,11 +105,11 @@ function OptionPage() {
             </Button>
           </form>
           <h3 className="mt-1 mb-3 font-bold tracking-wide">
-            Tanggal Pendaftaran Kerja Praktek Lanjut
+            Tanggal Pendaftaran Kerja praktik Lanjut
           </h3>
           <form
             className="flex flex-col gap-2"
-            onSubmit={handleOnSubmitTanggalPendaftaranLanjutKP}
+            onSubmit={(e) => handleOnSubmitTanggalPendaftaranKP(e, "Lanjut")}
           >
             <Label htmlFor="tanggal-mulai-pendaftaran-lanjut-kp">
               Tanggal Mulai :{" "}

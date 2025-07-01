@@ -210,7 +210,7 @@ const Step3: FC<Step3Props> = ({ activeStep }) => {
             data.data.pendaftaran_kp[0]?.dosen_penguji?.nama || "Belum diisi",
           kontakPenguji:
             data.data.pendaftaran_kp[0]?.dosen_penguji?.no_hp || "Belum diisi",
-          lamaKerjaPraktek: `${
+          lamaKerjapraktik: `${
             data.data.pendaftaran_kp[0]?.tanggal_mulai
               ? new Date(
                   data.data.pendaftaran_kp[0].tanggal_mulai
@@ -441,7 +441,7 @@ const Step3: FC<Step3Props> = ({ activeStep }) => {
             className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
           />
           <LayoutGridIcon className="w-4 h-4 mr-1.5" />
-          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa            
+          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa
         </span>
       </div>
 

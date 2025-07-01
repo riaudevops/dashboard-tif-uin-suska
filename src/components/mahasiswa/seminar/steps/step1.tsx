@@ -235,7 +235,7 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
           kontakPembimbing:
             data.data.pendaftaran_kp[0]?.dosen_pembimbing?.no_hp ||
             "Belum diisi",
-          lamaKerjaPraktek: `${
+          lamaKerjapraktik: `${
             data.data.pendaftaran_kp[0]?.tanggal_mulai
               ? new Date(
                   data.data.pendaftaran_kp[0].tanggal_mulai
@@ -245,7 +245,8 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
                   year: "numeric",
                 })
               : "Belum diisi"
-          } - ${data.data.pendaftaran_kp[0]?.tanggal_selesai
+          } - ${
+            data.data.pendaftaran_kp[0]?.tanggal_selesai
               ? new Date(
                   data.data.pendaftaran_kp[0].tanggal_selesai
                 ).toLocaleDateString("id-ID", {
@@ -264,7 +265,7 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
     "lokasi",
     "dosenPembimbing",
     "kontakPembimbing",
-    "lamaKerjaPraktek",
+    "lamaKerjapraktik",
   ];
 
   const handleLinkChange = (index: number, value: string) => {
@@ -469,7 +470,7 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
             className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
           />
           <LayoutGridIcon className="w-4 h-4 mr-1.5" />
-          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa            
+          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa
         </span>
       </div>
 

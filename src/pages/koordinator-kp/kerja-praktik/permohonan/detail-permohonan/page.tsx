@@ -21,14 +21,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import APIDaftarKP from "@/services/api/mahasiswa/daftar-kp.service";
+import APIDaftarKP from "@/services/api/koordinator-kp/daftar-kp.service";
 import { toast } from "@/hooks/use-toast";
 import {
-  CommonResponse,
+  AccTolakBerkasMahasiswaInterface,
   PutMahasiswaParamsInterface,
 } from "@/interfaces/service/api/daftar-kp/koordinator-kp-service.interface";
 
 import { Calendar as Calendar1 } from "@/components/ui/calendar";
+import { ErrorInterface } from "@/interfaces/pages/error.type";
 
 const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
   const [isRejectButtonClicked, setIsRejectButtonClicked] = useState<number>(0);
@@ -59,18 +60,43 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
     set_is_status_link_surat_perpanjangan_kp_ditolak,
   ] = useState<boolean>(false);
   const [dateEnd, setDateEnd] = useState<Date | null | undefined>(null);
-  const { id } = useParams();
+  const { id = "" } = useParams();
 
   const queryClient = useQueryClient();
 
   const { data: dataInstansi } = useQuery({
-    queryKey: ["koordinator-kp-data-instansi-mahasiswa"],
+    queryKey: ["halaman-detail-permohonan-data-instansi-mahasiswa"],
     queryFn: () => APIDaftarKP.getAllDataInstansi().then((res) => res.data),
   });
 
   const { data: biodataMahasiswa, isError } = useQuery({
-    queryKey: ["koordinator-kp-data-detail-mahasiswa"],
+    queryKey: ["halaman-detail-permohonan-data-detail-mahasiswa"],
     queryFn: () => APIDaftarKP.getDataKPMahasiswa(id).then((res) => res.data),
+  });
+
+  const accTolakMutation = useMutation({
+    mutationFn: (data: AccTolakBerkasMahasiswaInterface) =>
+      APIDaftarKP.accTolakBerkasMahasiswa(data).then((res) => res.data),
+    onSuccess: () => {
+      toast({
+        title: "Sukses",
+        description: "Berhasil mengubah data mahasiswa",
+        duration: 3000,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["halaman-detail-permohonan-data-detail-mahasiswa"],
+        exact: true,
+      });
+      setIsRejectButtonClicked(0);
+    },
+    onError: (data: ErrorInterface) => {
+      toast({
+        title: "Gagal",
+        description:
+          data?.response?.data?.message || "Gagal mengubah data mahasiswa",
+        duration: 3000,
+      });
+    },
   });
 
   const editMutation = useMutation({
@@ -83,7 +109,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
         duration: 3000,
       });
       queryClient.invalidateQueries({
-        queryKey: ["koordinator-kp-data-detail-mahasiswa"],
+        queryKey: ["halaman-detail-permohonan-data-detail-mahasiswa"],
         exact: true,
       });
       setIsEditing(false);
@@ -95,10 +121,11 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
       set_is_status_link_surat_penunjukkan_dospem_ditolak(false);
       set_is_status_link_surat_perpanjangan_kp_ditolak(false);
     },
-    onError: (data: CommonResponse) => {
+    onError: (data: ErrorInterface) => {
       toast({
         title: "Gagal",
-        description: data.message || "Gagal mengubah data mahasiswa",
+        description:
+          data?.response?.data?.message || "Gagal mengubah data mahasiswa",
         duration: 3000,
       });
     },
@@ -106,74 +133,86 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
 
   function handleOnAccept(i: number) {
     if (i === 6) {
-      editMutation.mutate({
+      accTolakMutation.mutate({
         id,
-        status_link_surat_penolakan_instansi: "Divalidasi",
+        nomorBerkas: 0,
+        status: "Divalidasi",
       });
     } else if (i === 1) {
-      editMutation.mutate({
+      accTolakMutation.mutate({
         id,
-        status_link_surat_pengantar: "Divalidasi",
+        nomorBerkas: i,
+        status: "Divalidasi",
       });
     } else if (i === 2) {
-      editMutation.mutate({
+      accTolakMutation.mutate({
         id,
-        status_link_surat_balasan: "Divalidasi",
+        nomorBerkas: i,
+        status: "Divalidasi",
       });
     } else if (i === 3) {
-      editMutation.mutate({
+      accTolakMutation.mutate({
         id,
-        status_id_surat_pengajuan_dospem: "Divalidasi",
+        nomorBerkas: i,
+        status: "Divalidasi",
       });
     } else if (i === 4) {
-      editMutation.mutate({
+      accTolakMutation.mutate({
         id,
-        status_link_surat_penunjukkan_dospem: "Divalidasi",
+        nomorBerkas: i,
+        status: "Divalidasi",
       });
     } else if (i === 5) {
-      editMutation.mutate({
+      accTolakMutation.mutate({
         id,
-        status_link_surat_perpanjangan_kp: "Divalidasi",
+        nomorBerkas: i,
+        status: "Divalidasi",
       });
     }
   }
 
   function handleOnReject(i: number) {
     if (i === 6) {
-      editMutation.mutate({
+      accTolakMutation.mutate({
         id,
-        catatan_link_surat_penolakan_instansi: rejectMessage,
-        status_link_surat_penolakan_instansi: "Ditolak",
+        nomorBerkas: 0,
+        catatan: rejectMessage,
+        status: "Ditolak",
       });
     } else if (i === 1) {
-      editMutation.mutate({
+      accTolakMutation.mutate({
         id,
-        catatan_link_surat_pengantar: rejectMessage,
-        status_link_surat_pengantar: "Ditolak",
+        nomorBerkas: i,
+        catatan: rejectMessage,
+        status: "Ditolak",
       });
     } else if (i === 2) {
-      editMutation.mutate({
+      accTolakMutation.mutate({
         id,
-        catatan_link_surat_balasan: rejectMessage,
-        status_link_surat_balasan: "Ditolak",
+        nomorBerkas: i,
+        catatan: rejectMessage,
+        status: "Ditolak",
       });
     } else if (i === 3) {
-      editMutation.mutate({
+      accTolakMutation.mutate({
         id,
-        catatan_id_surat_pengajuan_dospem: rejectMessage,
-        status_id_surat_pengajuan_dospem: "Ditolak",
+        nomorBerkas: i,
+        catatan: rejectMessage,
+        status: "Ditolak",
       });
     } else if (i === 4) {
-      editMutation.mutate({
+      accTolakMutation.mutate({
         id,
-        catatan_link_surat_penunjukkan_dospem: rejectMessage,
-        status_link_surat_penunjukkan_dospem: "Ditolak",
+        nomorBerkas: i,
+        catatan: rejectMessage,
+        status: "Ditolak",
       });
     } else if (i === 5) {
-      editMutation.mutate({
+      accTolakMutation.mutate({
         id,
-        catatan_link_surat_perpanjangan_kp: rejectMessage,
-        status_link_surat_perpanjangan_kp: "Ditolak",
+        nomorBerkas: i,
+        catatan: rejectMessage,
+        status: "Ditolak",
       });
     }
   }
@@ -184,9 +223,8 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
     const data = Object.fromEntries(
       formData.entries()
     ) as unknown as PutMahasiswaParamsInterface;
-    console.log(data);
     data.level_akses =
-      data.level_akses === -10
+      (data.level_akses as unknown as string) === "-10"
         ? null
         : parseInt(data.level_akses as unknown as string);
     data.status = data.status === "Pilih Status" ? null : data.status;
@@ -388,12 +426,12 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
           <Card className="p-4 mb-6 dark:border-gray-700 dark:bg-gray-800/50">
             <CardHeader>
               <CardTitle className="text-gray-600">
-                📓 Judul dan Kelas Kerja Praktek
+                📓 Judul dan Kelas Kerja praktik
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className={`mb-3 p-2 rounded-lg flex flex-col`}>
-                <Label htmlFor="judul_kp">Judul Laporan Kerja Praktek : </Label>
+                <Label htmlFor="judul_kp">Judul Laporan Kerja praktik : </Label>
                 {isEditing ? (
                   <Input
                     className="mt-2 p-2 border border-gray-300 dark:bg-gray-800/50 dark:border-gray-700 rounded-lg bg-white"
@@ -417,7 +455,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                 )}
               </div>
               <div className={`mb-3 p-2 rounded-lg flex flex-col`}>
-                <Label htmlFor="surat-pengantar">Kelas Kerja Praktek : </Label>
+                <Label htmlFor="surat-pengantar">Kelas Kerja praktik : </Label>
                 {isEditing ? (
                   <Input
                     className="mt-2 p-2 border dark:bg-gray-800/50 dark:border-gray-700 border-gray-300 rounded-lg bg-white"
@@ -451,6 +489,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
             </CardHeader>
             <CardContent>
               <InputField
+                statusBerkas={biodataMahasiswa.document[0].status}
                 handleOnReject={() => setIsRejectButtonClicked(6)}
                 key="surat-penolakan-instansi"
                 labelName="Surat Penolakan Instansi"
@@ -470,6 +509,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                 setStatus={set_is_status_link_surat_penolakan_instansi_ditolak}
               />
               <InputField
+                statusBerkas={biodataMahasiswa.document[1].status}
                 handleOnReject={() => setIsRejectButtonClicked(1)}
                 key="surat-pengantar"
                 labelName="Surat Pengantar"
@@ -490,6 +530,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
               />
 
               <InputField
+                statusBerkas={biodataMahasiswa.document[2].status}
                 handleOnReject={() => setIsRejectButtonClicked(2)}
                 key="surat-balasan"
                 labelName="Surat Balasan"
@@ -509,6 +550,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                 setStatus={set_is_status_link_surat_balasan_ditolak}
               />
               <InputField
+                statusBerkas={biodataMahasiswa.document[3].status}
                 handleOnReject={() => setIsRejectButtonClicked(3)}
                 key="id-pengajuan-dospem"
                 labelName="ID Pengajuan Dosen Pembimbing"
@@ -528,6 +570,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                 setStatus={set_is_status_id_surat_pengajuan_dospem_ditolak}
               />
               <InputField
+                statusBerkas={biodataMahasiswa.document[4].status}
                 handleOnReject={() => setIsRejectButtonClicked(4)}
                 key="surat-penunjukkan-dospem"
                 labelName="Surat Penunjukkan Dosen Pembimbing"
@@ -554,9 +597,10 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                 }`}
               >
                 <InputField
+                  statusBerkas={biodataMahasiswa.document[5].status}
                   handleOnReject={() => setIsRejectButtonClicked(5)}
                   key="surat-perpanjangan-kp"
-                  labelName="Surat Perpanjangan Kerja Praktek"
+                  labelName="Surat Perpanjangan Kerja praktik"
                   document={biodataMahasiswa.document[5].data}
                   isEditing={isEditing}
                   handleOnAccept={() => handleOnAccept(5)}
@@ -580,18 +624,18 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
           <Card className="p-4 mb-6 dark:border-gray-700 dark:bg-gray-800/50">
             <CardHeader>
               <CardTitle className="text-gray-600">
-                📓 Status Pendaftaran Kerja Praktek & Level Akses
+                📓 Status Pendaftaran Kerja praktik & Level Akses
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className={`mb-3 p-2 rounded-lg flex flex-col`}>
-                <Label htmlFor="status-pendaftaran-kerja-praktek">
-                  Status Pendaftaran Kerja Praktek
+                <Label htmlFor="status-pendaftaran-kerja-praktik">
+                  Status Pendaftaran Kerja praktik
                 </Label>
                 {isEditing ? (
                   <select
                     name="status"
-                    id="status-pendaftaran-kerja-praktek"
+                    id="status-pendaftaran-kerja-praktik"
                     className="p-2 rounded-lg dark:bg-gray-800/50 dark:border-gray-700 border-[1px] mt-1 mb-2"
                   >
                     <option value={undefined}>Pilih Status</option>
@@ -607,7 +651,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
               </div>
               <div className={`mb-3 p-2 rounded-lg flex flex-col`}>
                 <Label htmlFor="level-akses">
-                  Level Akses Pendaftaran Kerja Praktek :{" "}
+                  Level Akses Pendaftaran Kerja praktik :{" "}
                 </Label>
                 {isEditing ? (
                   <select
@@ -627,7 +671,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
                     </option>
                     <option value={9}>
                       5 - Akses Daily Report & Unggah Surat Perpanjangan Kerja
-                      Praktek
+                      praktik
                     </option>
                   </select>
                 ) : (
@@ -846,6 +890,7 @@ interface InputFieldInterface {
   isBerkasSended: boolean;
   labelName: string;
   alasan_lanjut_kp?: string;
+  statusBerkas?: string;
 }
 
 function InputField({
@@ -854,6 +899,7 @@ function InputField({
   handleOnReject,
   document,
   status,
+  statusBerkas,
   setStatus,
   nameStatus,
   idStatus,
@@ -884,10 +930,10 @@ function InputField({
           {alasan_lanjut_kp && (
             <>
               <Label htmlFor="alasan-lanjut-kp" className="mt-2">
-                Alasan Lanjut Kerja Praktek :
+                Alasan Lanjut Kerja praktik :
               </Label>
               <Textarea
-                placeholder="Masukkan alasan lanjut kerja praktek..."
+                placeholder="Masukkan alasan lanjut kerja praktik..."
                 className="mt-2 p-2 border border-gray-300 rounded-lg "
                 id="alasan-lanjut-kp"
                 name="alasan_lanjut_kp"
@@ -941,10 +987,21 @@ function InputField({
               Copy 📝
             </Button>
           </div>
+          <span
+            className={`my-1 p-1 rounded-lg ${
+              statusBerkas === "Divalidasi"
+                ? "bg-green-300 text-green-600"
+                : statusBerkas === "Ditolak"
+                ? "bg-red-300 text-red-600"
+                : ""
+            }`}
+          >
+            {statusBerkas || "Belum Dikirim"}
+          </span>
           {alasan_lanjut_kp && (
             <>
               <Label htmlFor="alasan-lanjut-kp" className="mt-3">
-                Alasan Lanjut Kerja Praktek :
+                Alasan Lanjut Kerja praktik :
               </Label>
               <div className="mt-2 py-1 px-2 border border-gray-300 rounded-lg dark:bg-gray-800/50 flex items-center justify-between">
                 <p>{alasan_lanjut_kp}</p>

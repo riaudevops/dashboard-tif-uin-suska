@@ -350,7 +350,7 @@ const Step4: FC<Step4Props> = ({ activeStep }) => {
       dosenPenguji:
         data.data.pendaftaran_kp?.[0]?.dosen_penguji?.nama || "Belum diisi",
       lokasi: data.data.pendaftaran_kp?.[0]?.instansi?.nama || "Belum diisi",
-      lamaKerjaPraktek: `${
+      lamaKerjapraktik: `${
         data.data.pendaftaran_kp?.[0]?.tanggal_mulai
           ? new Date(
               data.data.pendaftaran_kp[0].tanggal_mulai
@@ -387,7 +387,7 @@ const Step4: FC<Step4Props> = ({ activeStep }) => {
     "dosenPembimbing",
     "dosenPenguji",
     "lokasi",
-    "lamaKerjaPraktek",
+    "lamaKerjapraktik",
     "kontakPembimbing",
     "kontakPenguji",
   ];

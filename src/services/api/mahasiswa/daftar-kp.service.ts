@@ -298,13 +298,14 @@ export default class APIDaftarKP {
     tanggalTerakhir,
   }: TanggalDaftarKPInterface) {
     const axios = api();
-    const response = await axios.post(
+    const response = await axios.patch(
       `${
         import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
       }/koordinator-kp/daftar-kp/tanggal-daftar-kp`,
       {
         tanggalMulai,
         tanggalTerakhir,
+        type: "Regular"
       }
     );
     const data = response.data;
@@ -316,13 +317,14 @@ export default class APIDaftarKP {
     tanggalTerakhir,
   }: TanggalDaftarKPInterface) {
     const axios = api();
-    const response = await axios.post(
+    const response = await axios.patch(
       `${
         import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
-      }/koordinator-kp/daftar-kp/tanggal-daftar-kp-lanjut`,
+      }/koordinator-kp/daftar-kp/tanggal-daftar-kp`,
       {
         tanggalMulai,
         tanggalTerakhir,
+        type: "Lanjut",
       }
     );
     const data = response.data;

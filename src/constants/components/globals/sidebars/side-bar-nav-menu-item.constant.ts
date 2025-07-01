@@ -105,7 +105,7 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
           title: "Monitoring Progres",
           url: "/koordinator-kp/kerja-praktik/daily-report",
           isActive: true,
-          icon: LayoutGridIcon,          
+          icon: LayoutGridIcon,
         },
         {
           title: "Seminar",

@@ -60,6 +60,48 @@ export interface PutMahasiswaParamsInterface {
 }
 
 export interface CommonResponse {
+  data: any;
   response: boolean;
   message: string;
+}
+
+export interface AccTolakBerkasMahasiswaInterface {
+  id: string;
+  nomorBerkas: number;
+  status: "Divalidasi" | "Ditolak";
+  catatan?: string;
+}
+
+export interface UbahTanggalPendaftaranKPInterface {
+  tanggalMulai: string;
+  tanggalTerakhir: string;
+  type: "Regular" | "Lanjut";
+}
+
+export interface DataInstansiInterface {
+  id?: string | null;
+  status: "Aktif" | "Pending" | "Tidak_Aktif";
+  profil_singkat?: string | null;
+  nama: string;
+  jenis: "Pemerintahan" | "Swasta" | "Pendidikan" | "UMKM";
+  nama_pj: string;
+  no_hp_pj: string;
+  alamat: string;
+  longitude: number;
+  latitude: number;
+  radius: number;
+}
+
+export interface StatistikMahasiswaInterface extends CommonResponse {
+  data: {
+    pendaftaranTahunAjaran: { _count: number; id_tahun_ajaran: number }[];
+    pendaftaranPerAngkatan: {
+      [key: string]: number;
+    };
+  };
+}
+
+export interface ACCTolakInstansiPropsInterface {
+  id: string;
+  status: "Aktif";
 }

@@ -29,6 +29,7 @@ import {
 } from "@tanstack/react-query";
 import { ClipboardList } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { ErrorInterface } from "@/interfaces/pages/error.type";
 
 const DataCardProgressKelengkapanBerkas = [
   "Surat Pengantar",
@@ -43,7 +44,7 @@ interface StatusValidasiInterface {
   message: string;
 }
 
-export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
+export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
   const [isLanjutKPClicked, setIsLanjutKPClicked] = useState<boolean>(false);
   const [isEditingSuratPengantar, setIsEditingSuratPengantar] =
     useState<boolean>(false);
@@ -60,122 +61,14 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const suratPengantarMutation = useMutation({
-    mutationFn: (data: any) => APIDaftarKP.postSuratPengantarKP(data),
-    onSuccess: (data: any) => {
-      toast({
-        title: "Sukses",
-        description:
-          data.message || "Berhasil mengirimkan surat pengantar kerja praktek",
-        duration: 3000,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["kp-terbaru-kelengkapan-berkas"],
-        exact: true,
-      });
-      if (currentPage !== dataKPTerbaru?.level_akses)
-        setIsEditingSuratPengantar((prev) => !prev);
-    },
-    onError: (data: any) => {
-      toast({
-        title: "Gagal",
-        description:
-          data.message || "Gagal mengirimkan surat pengantar kerja praktek",
-        duration: 3000,
-      });
-    },
-  });
-
-  const suratBalasanMutation = useMutation({
-    mutationFn: (data: any) => APIDaftarKP.postSuratBalasanKP(data),
-    onSuccess: (data: any) => {
-      toast({
-        title: "Sukses",
-        description:
-          data.message || "Berhasil mengirimkan surat balasan kerja praktek",
-        duration: 3000,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["kp-terbaru-kelengkapan-berkas"],
-        exact: true,
-      });
-      if (currentPage !== dataKPTerbaru?.level_akses)
-        setIsEditingSuratBalasan((prev) => !prev);
-    },
-    onError: (data: any) => {
-      toast({
-        title: "Gagal",
-        description:
-          data.message || "Gagal mengirimkan surat balasan kerja praktek",
-        duration: 3000,
-      });
-    },
-  });
-
-  const idPengajuanDospemMutation = useMutation({
-    mutationFn: (data: any) => APIDaftarKP.postIdPengajuanDospem(data),
+  const unggahBerkasMutation = useMutation({
+    mutationFn: (data: any) => APIDaftarKP.unggahBerkasPendafataranKP(data),
     onSuccess: (data: any) => {
       toast({
         title: "Sukses",
         description:
           data.message ||
-          "Berhasil mengirimkan ID pengajuan dosen pembimbing kerja praktek",
-        duration: 3000,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["kp-terbaru-kelengkapan-berkas"],
-        exact: true,
-      });
-      if (currentPage !== dataKPTerbaru?.level_akses)
-        setIsEditingIdPengajuanDospem((prev) => !prev);
-    },
-    onError: (data: any) => {
-      toast({
-        title: "Gagal",
-        description:
-          data.message ||
-          "Gagal mengirimkan ID pengajuan dosen pembimbing kerja praktek",
-        duration: 3000,
-      });
-    },
-  });
-
-  const suratPenunjukkanDospemMutation = useMutation({
-    mutationFn: (data: any) => APIDaftarKP.postSuratPenunjukkanDospemKP(data),
-    onSuccess: (data: any) => {
-      toast({
-        title: "Sukses",
-        description:
-          data.message ||
-          "Berhasil mengirimkan surat Penunjukkan dosen pembimbing kerja praktek",
-        duration: 3000,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["kp-terbaru-kelengkapan-berkas"],
-        exact: true,
-      });
-      if (currentPage !== dataKPTerbaru?.level_akses)
-        setIsEditingSuratPenunjukkanDospem((prev) => !prev);
-    },
-    onError: (data: any) => {
-      toast({
-        title: "Gagal",
-        description:
-          data.message ||
-          "Gagal mengirimkan surat Penunjukkan dosen pembimbing kerja praktek",
-        duration: 3000,
-      });
-    },
-  });
-
-  const suratPerpanjanganKPMutation = useMutation({
-    mutationFn: (data: any) => APIDaftarKP.postSuratPerpanjanganKP(data),
-    onSuccess: (data: any) => {
-      toast({
-        title: "Sukses",
-        description:
-          data.message ||
-          "Berhasil mengirimkan surat perpanjangan kerja praktek",
+          "Berhasil mengirimkan surat perpanjangan kerja praktik",
         duration: 3000,
       });
       queryClient.invalidateQueries({
@@ -185,18 +78,17 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
       if (currentPage !== dataKPTerbaru?.level_akses)
         setIsEditingSuratPerpanjanganKP((prev) => !prev);
     },
-    onError: (data: any) => {
+    onError: (data: ErrorInterface) => {
       toast({
         title: "Gagal",
         description:
-          data.message || "Gagal mengirimkan surat perpanjangan kerja praktek",
+          data?.response?.data?.message ||
+          "Gagal mengirimkan surat perpanjangan kerja praktik",
         duration: 3000,
       });
     },
   });
 
-  let mutation = suratPengantarMutation;
-  let key = "linkSuratPengantarKP";
   let statusValidasi: StatusValidasiInterface = {
     style: "",
     message: "",
@@ -226,6 +118,13 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
     queryKey: ["tanggal-daftar-kelengkapan-berkas"],
     queryFn: () => APIDaftarKP.getTanggalDaftarKP().then((res) => res.data),
   });
+
+  const { data: dataDosen } = useQuery({
+    queryKey: ["halaman-kelengkapan-berkas-data-dosen"],
+    queryFn: () => APIDaftarKP.getDataDosen().then((res) => res.data),
+  });
+
+  console.log(dataDosen);
 
   let isPendaftaranKPClosed = true;
   let isPendaftaranKPLanjutClosed = true;
@@ -283,7 +182,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
               type="text"
               placeholder="Masukkan Link Berkas..."
               id="surat-pengantar-kp"
-              name="linkSuratPengantarKP"
+              name="data"
             />
           ) : (
             <p>
@@ -293,6 +192,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
                 "Data tidak tersedia"}
             </p>
           )}
+          <Input readOnly className="hidden" name="nomorBerkas" value={1} />
         </CardContent>
       </div>
     </Card>
@@ -316,8 +216,6 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
       statusValidasi.message = "Belum mengirimkan berkas";
     }
     setIsEditing = setIsEditingSuratBalasan;
-    key = "linkSuratBalasanKP";
-    mutation = suratBalasanMutation;
     InputField = (
       <Card className="border-[1px] border-slate-300 p-3 ">
         <div className="flex flex-col">
@@ -337,21 +235,48 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
               Link :{" "}
             </Label>
             {isEditing || currentPage === dataKPTerbaru?.level_akses! ? (
-              <Input
-                required
-                key="surat-balasan"
-                className={"mt-1 p-2 border-[1px] border-slate-300"}
-                type="text"
-                placeholder="Masukkan Link Berkas..."
-                id="surat-balasan-kp"
-                name="linkSuratBalasanKP"
-              />
+              <>
+                <Input
+                  required
+                  key="surat-balasan"
+                  className="mt-1 p-2 border-[1px] border-slate-300"
+                  type="text"
+                  placeholder="Masukkan Link Berkas..."
+                  id="surat-balasan-kp"
+                  name="data"
+                />
+                <Label
+                  className="font-bold text-sm mt-1"
+                  htmlFor="tanggal-mulai"
+                >
+                  Tanggal Mulai : {"(Optional)"}
+                </Label>
+                <Input
+                  type="date"
+                  name="tanggalMulai"
+                  id="tanggal-mulai"
+                  className="mt-1 p-2 border-[1px] border-slate-300"
+                />
+                <Label
+                  className="font-bold text-sm mt-1"
+                  htmlFor="tanggal-selesai"
+                >
+                  Tanggal Selesai : {"(Optional)"}
+                </Label>
+                <Input
+                  type="date"
+                  name="tanggalSelesai"
+                  id="tanggal-selesai"
+                  className="mt-1 p-2 border-[1px] border-slate-300"
+                />
+              </>
             ) : (
               <p>
                 {(dataKPTerbaru && dataKPTerbaru.document[2].data) ||
                   "Data tidak tersedia"}
               </p>
             )}
+            <Input readOnly className="hidden" name="nomorBerkas" value={2} />
           </CardContent>
         </div>
       </Card>
@@ -374,8 +299,6 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
       statusValidasi.message = "Belum mengirimkan berkas";
     }
     setIsEditing = setIsEditingIdPengajuanDospem;
-    key = "IdPengajuanDosenPembimbingKP";
-    mutation = idPengajuanDospemMutation;
     InputField = (
       <Card className="grid md:grid-cols-2 gap-4">
         <Card className="border-[1px] border-slate-300 p-3 ">
@@ -386,10 +309,15 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
             <CardDescription className="text-xs text-slate-500">
               Silakan kunjungi link di bawah ini :
             </CardDescription>
+            <CardDescription>
+              <a
+                target="_blank"
+                href="http://seminar-fst.uin-suska.ac.id/akademik/prosedur/pembimbing"
+              >
+                http://seminar-fst.uin-suska.ac.id/akademik/prosedur/pembimbing
+              </a>
+            </CardDescription>
           </CardHeader>
-          <CardDescription>
-            http://seminar-fst.uin-suska.ac.id/akademik/prosedur/pembimbing
-          </CardDescription>
         </Card>
         <Card className="border-[1px] border-slate-300 p-3 ">
           <CardHeader>
@@ -416,11 +344,12 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
                 type="text"
                 placeholder="Masukkan Id Pengajuan..."
                 id="id-pengajuan-dosen-pembimbing"
-                name="IdPengajuanDosenPembimbingKP"
+                name="data"
               />
             ) : (
               <p>{dataKPTerbaru?.document[3].data}</p>
             )}
+            <Input readOnly className="hidden" name="nomorBerkas" value={3} />
           </CardContent>
         </Card>
       </Card>
@@ -443,8 +372,6 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
       statusValidasi.message = "Belum mengirimkan berkas";
     }
     setIsEditing = setIsEditingSuratPenunjukkanDospem;
-    key = "linkSuratPenunjukkanDosenPembimbingKP";
-    mutation = suratPenunjukkanDospemMutation;
     InputField = (
       <Card className="border-[1px] border-slate-300 p-3 ">
         <div className="flex flex-col">
@@ -464,18 +391,40 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
               Link :{" "}
             </Label>
             {isEditing || currentPage === dataKPTerbaru?.level_akses! ? (
-              <Input
-                required
-                key="surat-penunjukkan-dospem"
-                className={"mt-1 p-2 border-[1px] border-slate-300"}
-                type="text"
-                placeholder="Masukkan Link Berkas..."
-                id="surat-penunjukkan-dosen-pembimbing"
-                name="linkSuratPenunjukkanDosenPembimbingKP"
-              />
+              <>
+                <Input
+                  required
+                  key="surat-penunjukkan-dospem"
+                  className={"mt-1 p-2 border-[1px] border-slate-300"}
+                  type="text"
+                  placeholder="Masukkan Link Berkas..."
+                  id="surat-penunjukkan-dosen-pembimbing"
+                  name="data"
+                />
+                <Label
+                  className="font-bold text-sm mt-1"
+                  htmlFor="dosen-pembimbing"
+                >
+                  Dosen Pembimbing Kerja Praktik :{" "}
+                </Label>
+                <select
+                  className="dark:bg-black dark:border-white dark:border-[1px] rounded-lg block w-[100%] p-2"
+                  name="nipDospem"
+                  id="dosen-pembimbing"
+                >
+                  <option value="">Pilih Dosen Pembimbing</option>
+                  {dataDosen &&
+                    dataDosen.map((item) => (
+                      <option value={item.nip}>
+                        {item.nip} - {item.nama}
+                      </option>
+                    ))}
+                </select>
+              </>
             ) : (
               <p>{dataKPTerbaru?.document[4].data}</p>
             )}
+            <Input readOnly className="hidden" name="nomorBerkas" value={4} />
           </CardContent>
         </div>
       </Card>
@@ -498,8 +447,6 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
       statusValidasi.message = "Belum mengirimkan berkas";
     }
     setIsEditing = setIsEditingSuratPerpanjanganKP;
-    key = "linkSuratPerpanjanganKP";
-    mutation = suratPerpanjanganKPMutation;
     InputField = (
       <Card className="border-[1px] border-slate-300 p-3 ">
         <div className="flex flex-col">
@@ -508,7 +455,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
               Pendaftaran KP Berhasil
             </CardTitle>
             <CardDescription className="text-sm text-slate-500">
-              Silakan mengisi Daily Report Kerja Praktek
+              Silakan mengisi Daily Report Kerja praktik
             </CardDescription>
           </CardHeader>
           {isPendaftaranKPLanjutClosed === false && isLanjutKPClicked && (
@@ -533,12 +480,17 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
                     type="text"
                     placeholder="Masukkan Link Berkas..."
                     id="surat-perpanjangan-kp"
-                    name="linkSuratPerpanjanganKP"
+                    name="data"
                   />
                 ) : (
                   <p>{dataKPTerbaru?.document[5].data}</p>
                 )}
-
+                <Input
+                  readOnly
+                  className="hidden"
+                  name="nomorBerkas"
+                  value={5}
+                />
                 <Label
                   className="font-bold text-sm mt-1"
                   htmlFor="alasan-lanjut-kp"
@@ -550,7 +502,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
                     className="w-full  border-[1px] border-gray-300"
                     name="alasan_lanjut_kp"
                     id="alasan-lanjut-kp"
-                    placeholder="Masukkan alasan lanjut kerja praktek anda..."
+                    placeholder="Masukkan alasan lanjut kerja praktik anda..."
                   ></Textarea>
                 ) : (
                   <p>
@@ -574,7 +526,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
                   onClick={() => setIsLanjutKPClicked((prev) => !prev)}
                   className="text-center hover:cursor-pointer rounded-md bg-green-950 py-1 text-white font-bold tracking-wide mt-2"
                 >
-                  Ajukan Perpanjangan Kerja Praktek
+                  Ajukan Perpanjangan Kerja praktik
                 </Button>
               )}
             </>
@@ -583,7 +535,6 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
       </Card>
     );
   }
-
   if (!dataKPTerbaru && isErrorDataKPTerbaru) {
     return (
       <Card className="p-2 absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2">
@@ -605,7 +556,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
       {isPendaftaranKPClosed && (
         <Card>
           <CardHeader>
-            Saat ini masa pendaftaran kerja praktek sudah ditutup
+            Saat ini masa pendaftaran kerja praktik sudah ditutup
           </CardHeader>
         </Card>
       )}
@@ -627,6 +578,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
 
                 return (
                   <CardProgressKelengkapanBerkas
+                    statusBerkas={dataKPTerbaru?.document[i + 1]?.status}
                     key={i}
                     onClick={() => {
                       if (status) setCurrentPage(i * 2 + 1);
@@ -654,7 +606,9 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
               <CardDescription className="p-3 font-bold rounded-lg bg-green-200 dark:bg-black ">
                 Silakan Isi Form di Bawah ini untuk Divalidasi!
               </CardDescription>
-              <form onSubmit={(e) => handleOnSubmitForm(e, mutation, key)}>
+              <form
+                onSubmit={(e) => handleOnSubmitForm(e, unggahBerkasMutation)}
+              >
                 <div className="dark:bg-black bg-green-100 p-3">
                   <CardTitle className="flex items-center gap-2 font-bold text-sm tracking-wide my-2">
                     <ClipboardList /> Validasi Berkas
@@ -669,13 +623,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
                     <CardFooter className="flex justify-end items-center gap-2 mt-2">
                       {currentPage !== dataKPTerbaru?.level_akses! && (
                         <Button
-                          disabled={
-                            suratPengantarMutation.isPending ||
-                            suratBalasanMutation.isPending ||
-                            idPengajuanDospemMutation.isPending ||
-                            suratPenunjukkanDospemMutation.isPending ||
-                            suratPerpanjanganKPMutation.isPending
-                          }
+                          disabled={unggahBerkasMutation.isPending}
                           type="reset"
                           onClick={() => setIsEditing((prev) => !prev)}
                           className=" px-16 tracking-wide py-1 font-semibold  hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
@@ -684,26 +632,14 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
                         </Button>
                       )}
                       <Button
-                        disabled={
-                          suratPengantarMutation.isPending ||
-                          suratBalasanMutation.isPending ||
-                          idPengajuanDospemMutation.isPending ||
-                          suratPenunjukkanDospemMutation.isPending ||
-                          suratPerpanjanganKPMutation.isPending
-                        }
+                        disabled={unggahBerkasMutation.isPending}
                         type="reset"
                         className=" px-16 tracking-wide py-1 font-semibold  hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Kosongkan Formulir
                       </Button>
                       <Button
-                        disabled={
-                          suratPengantarMutation.isPending ||
-                          suratBalasanMutation.isPending ||
-                          idPengajuanDospemMutation.isPending ||
-                          suratPenunjukkanDospemMutation.isPending ||
-                          suratPerpanjanganKPMutation.isPending
-                        }
+                        disabled={unggahBerkasMutation.isPending}
                         type="submit"
                         className=" px-24 py-1 tracking-wide text-white font-medium  bg-green-950 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
@@ -715,13 +651,7 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
               {!isEditing && currentPage !== dataKPTerbaru?.level_akses! && (
                 <CardFooter className="flex justify-end items-center gap-2 mt-2">
                   <Button
-                    disabled={
-                      suratPengantarMutation.isPending ||
-                      suratBalasanMutation.isPending ||
-                      idPengajuanDospemMutation.isPending ||
-                      suratPenunjukkanDospemMutation.isPending ||
-                      suratPerpanjanganKPMutation.isPending
-                    }
+                    disabled={unggahBerkasMutation.isPending}
                     onClick={() => setIsEditing((prev) => !prev)}
                     className=" px-24 py-1 tracking-wide text-white font-medium  bg-green-950 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -739,13 +669,10 @@ export default function MahasiswaKerjaPraktekDaftarKPKelengkapanBerkasPage() {
 
 function handleOnSubmitForm(
   e: any,
-  mutation: UseMutationResult<any, any, any, unknown>,
-  key: string
+  mutation: UseMutationResult<any, any, any, unknown>
 ) {
   e.preventDefault();
   const object = new FormData(e.currentTarget);
   const data = Object.fromEntries(object.entries());
-  if (data.alasan_lanjut_kp) {
-    mutation.mutate(data);
-  } else mutation.mutate(data[key]);
+  mutation.mutate(data);
 }

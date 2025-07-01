@@ -50,7 +50,7 @@ interface InfoData {
   lokasi?: string;
   dosenPembimbing?: string;
   dosenPenguji?: string;
-  lamaKerjaPraktek?: string;
+  lamaKerjapraktik?: string;
   kontakPembimbing?: string;
   kontakPenguji?: string;
   jadwal?: string;
@@ -78,7 +78,7 @@ const InfoCard: FC<InfoCardProps> = React.memo(
     const iconMap: Record<string, React.ReactNode> = {
       judul: <Book className="size-4 text-emerald-500 dark:text-emerald-400" />,
       lokasi: <Map className="size-4 text-emerald-500 dark:text-emerald-400" />,
-      lamaKerjaPraktek: (
+      lamaKerjapraktik: (
         <Clock className="size-4 text-emerald-500 dark:text-emerald-400" />
       ),
       dosenPembimbing: (
@@ -107,7 +107,7 @@ const InfoCard: FC<InfoCardProps> = React.memo(
     const titleMap: Record<string, string> = {
       judul: "Judul Laporan",
       lokasi: "Lokasi Kerja Praktik",
-      lamaKerjaPraktek: "Lama Kerja Praktik",
+      lamaKerjapraktik: "Lama Kerja Praktik",
       dosenPembimbing: "Dosen Pembimbing",
       kontakPembimbing: "Kontak Pembimbing",
       dosenPenguji: "Dosen Penguji",
@@ -469,7 +469,7 @@ export default function Step6({ activeStep }: Step6Props) {
     "judul",
     "nilai",
     "lokasi",
-    "lamaKerjaPraktek",
+    "lamaKerjapraktik",
     "dosenPembimbing",
     "dosenPenguji",
     "kontakPembimbing",
@@ -511,7 +511,7 @@ export default function Step6({ activeStep }: Step6Props) {
           "Belum diisi",
         kontakPenguji:
           apiData.data.pendaftaran_kp[0]?.dosen_penguji?.no_hp || "Belum diisi",
-        lamaKerjaPraktek: (() => {
+        lamaKerjapraktik: (() => {
           const start = apiData.data.pendaftaran_kp[0]?.tanggal_mulai
             ? new Date(apiData.data.pendaftaran_kp[0].tanggal_mulai)
             : null;

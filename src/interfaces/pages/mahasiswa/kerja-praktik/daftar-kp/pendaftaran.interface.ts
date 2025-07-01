@@ -7,6 +7,9 @@ export interface CreatePendaftaranMahasiswaInterface {
 }
 
 export interface UpdatePendaftaranMahasiswaInterface {
+  tanggalMulai?: string;
+  tujuanSuratInstansi?: string;
+  idInstansi?: string;
   kelas_kp?: string;
   judul_kp?: string;
 }

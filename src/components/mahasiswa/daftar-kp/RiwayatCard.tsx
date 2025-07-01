@@ -37,7 +37,7 @@ export default function RiwayatCard({
         <p className="text-xs">Progress Terkini : Pendaftaran KP</p>
       </div>
       <div className="flex justify-between items-center mt-2">
-        <h2 className="font-bold text-lg">Kerja Praktek #{count}</h2>
+        <h2 className="font-bold text-lg">Kerja praktik #{count}</h2>
         <div className="flex gap-2">
           {setIsDetailModalOpen && setIsPenolakanInstansiModalOpen && (
             <>

@@ -2,10 +2,10 @@ import { Navigate } from "react-router-dom";
 import ProtectedRoute from "./protected.router";
 // import MahasiswaSetoranHafalanStatistikPage from "@/pages/mahasiswa/setoran-hafalan/statistik/page";
 import MahasiswaSetoranHafalanDetailRiwayatPage from "@/pages/mahasiswa/setoran-hafalan/detail-riwayat/page";
-import MahasiswaKerjaPraktekDaftarKpPermohonanPage from "@/pages/mahasiswa/kerja-praktik/administrasi/permohonan/page";
-import MahasiswaKerjaPraktekDaftarKpPermohonanFormPendaftaranPage from "@/pages/mahasiswa/kerja-praktik/administrasi/permohonan/form-pendaftaran/page";
-import MahasiswaKerjaPraktekDaftarKpKelengkapanBerkasPage from "@/pages/mahasiswa/kerja-praktik/administrasi/kelengkapan-berkas/page";
-import MahasiswaKerjaPraktekDaftarKpPermohonanFormDaftarInstansiPage from "@/pages/mahasiswa/kerja-praktik/administrasi/permohonan/form-daftar-instansi/page";
+import MahasiswaKerjapraktikDaftarKpPermohonanPage from "@/pages/mahasiswa/kerja-praktik/administrasi/permohonan/page";
+import MahasiswaKerjapraktikDaftarKpPermohonanFormPendaftaranPage from "@/pages/mahasiswa/kerja-praktik/administrasi/permohonan/form-pendaftaran/page";
+import MahasiswaKerjapraktikDaftarKpKelengkapanBerkasPage from "@/pages/mahasiswa/kerja-praktik/administrasi/kelengkapan-berkas/page";
+import MahasiswaKerjapraktikDaftarKpPermohonanFormDaftarInstansiPage from "@/pages/mahasiswa/kerja-praktik/administrasi/permohonan/form-daftar-instansi/page";
 import MahasiswaSeminarDaftarPage from "@/pages/mahasiswa/seminar/daftar-sem-kp/page";
 import MahasiswaSeminarValidasiBerkasPage from "@/pages/mahasiswa/seminar/validasi-berkas/page";
 import MahasiswaKerjaPraktikDailyReportPage from "@/pages/mahasiswa/kerja-praktik/daily-report/page";
@@ -36,33 +36,33 @@ export const mahasiswaRouter = [
   {
     path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan",
     element: (
-      <ProtectedRoute roles={["mahasiswa"]}>
-        <MahasiswaKerjaPraktekDaftarKpPermohonanPage />
-      </ProtectedRoute>
+      // <ProtectedRoute roles={["mahasiswa"]}>
+      <MahasiswaKerjapraktikDaftarKpPermohonanPage />
+      // </ProtectedRoute>
     ),
   },
   {
     path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-pendaftaran",
     element: (
-      <ProtectedRoute roles={["mahasiswa"]}>
-        <MahasiswaKerjaPraktekDaftarKpPermohonanFormPendaftaranPage />
-      </ProtectedRoute>
+      // <ProtectedRoute roles={["mahasiswa"]}>
+      <MahasiswaKerjapraktikDaftarKpPermohonanFormPendaftaranPage />
+      // </ProtectedRoute>
     ),
   },
   {
     path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-daftar-instansi",
     element: (
-      <ProtectedRoute roles={["mahasiswa"]}>
-        <MahasiswaKerjaPraktekDaftarKpPermohonanFormDaftarInstansiPage />
-      </ProtectedRoute>
+      // <ProtectedRoute roles={["mahasiswa"]}>
+      <MahasiswaKerjapraktikDaftarKpPermohonanFormDaftarInstansiPage />
+      // </ProtectedRoute>
     ),
   },
   {
     path: "/mahasiswa/kerja-praktik/daftar-kp/kelengkapan-berkas",
     element: (
-      <ProtectedRoute roles={["mahasiswa"]}>
-        <MahasiswaKerjaPraktekDaftarKpKelengkapanBerkasPage />
-      </ProtectedRoute>
+      // <ProtectedRoute roles={["mahasiswa"]}>
+      <MahasiswaKerjapraktikDaftarKpKelengkapanBerkasPage />
+      // </ProtectedRoute>
     ),
   },
   {

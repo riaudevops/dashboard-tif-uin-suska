@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 
 interface CardProgressKelengkapanBerkasProps {
   status?: boolean;
+  statusBerkas?: "Divalidasi" | "Terkirim" | "Ditolak";
   text: string;
   number: number;
   onClick: () => void;
@@ -12,10 +13,19 @@ export default function CardProgressKelengkapanBerkas({
   status,
   text,
   number,
+  statusBerkas,
 }: CardProgressKelengkapanBerkasProps) {
   let style = "opacity-50";
+  let styleStatusBerkas = "text-black bg-gray-100";
   if (status || status === undefined) {
     style = "opacity-100";
+  }
+  if (statusBerkas === "Divalidasi") {
+    styleStatusBerkas = "bg-green-100 text-green-600";
+  } else if (statusBerkas === "Terkirim") {
+    styleStatusBerkas = "bg-blue-100 text-blue-600";
+  } else if (statusBerkas === "Ditolak") {
+    styleStatusBerkas = "bg-red-100 text-red-600";
   }
   return (
     <Card
@@ -34,8 +44,8 @@ export default function CardProgressKelengkapanBerkas({
         <p className="text-xs text-stone-400">Input Link</p>
         <p className="text-sm whitespace-normal">{text}</p>
       </div>
-      <div className="mt-2 bg-blue-100 text-blue-600 p-1 rounded-lg text-xs">
-        Not Action
+      <div className={`mt-2 ${styleStatusBerkas} p-1 rounded-lg text-xs`}>
+        {statusBerkas || "Belum Upload"}
       </div>
     </Card>
   );

@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
-import APIDaftarKP from "@/services/api/mahasiswa/daftar-kp.service";
+import APIDaftarKP from "@/services/api/koordinator-kp/daftar-kp.service";
 import { Input } from "@/components/ui/input";
 
 // interface InstansiInterface {
@@ -50,7 +50,7 @@ function KoordinatorKerjaPraktikInstansiPage() {
   const navigate = useNavigate();
 
   const { data: dataInstansi, isLoading } = useQuery({
-    queryKey: ["data-instansi"],
+    queryKey: ["halaman-detail-instansi-data-instansi"],
     queryFn: () =>
       APIDaftarKP.getAllDataInstansi().then((res) => {
         cardData[1].count = 0;
@@ -79,7 +79,7 @@ function KoordinatorKerjaPraktikInstansiPage() {
         <div className="flex flex-col gap-4">
           <CardHeader>
             <CardTitle className="font-bold tracking-wide text-2xl">
-              Daftar Instansi Kerja Praktek
+              Daftar Instansi Kerja praktik
             </CardTitle>
           </CardHeader>
           <CardContent>

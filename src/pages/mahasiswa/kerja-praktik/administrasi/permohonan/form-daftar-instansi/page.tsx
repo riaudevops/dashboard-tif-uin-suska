@@ -23,6 +23,7 @@ import {
   useMapEvents,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { ErrorInterface } from "@/interfaces/pages/error.type";
 
 function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
   const [position, setPosition] = useState<{ lat: number; lng: number }>({
@@ -42,10 +43,11 @@ function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
         duration: 3000,
       });
     },
-    onError: (data) => {
+    onError: (data: ErrorInterface) => {
       toast({
         title: "Gagal",
-        description: data.message || "Gagal mengirimkan data instansi",
+        description:
+          data?.response?.data?.message || "Gagal mengirimkan data instansi",
         duration: 3000,
       });
     },
@@ -77,7 +79,7 @@ function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
         <form onSubmit={handleOnSubmit}>
           <CardHeader>
             <CardTitle className="text-center font-bold text-2xl mb-6">
-              Form Pengajuan Instansi Kerja Praktek
+              Form Pengajuan Instansi Kerja praktik
             </CardTitle>
           </CardHeader>
           <CardContent className="grid md:grid-cols-2 md:gap-8 gap-10">

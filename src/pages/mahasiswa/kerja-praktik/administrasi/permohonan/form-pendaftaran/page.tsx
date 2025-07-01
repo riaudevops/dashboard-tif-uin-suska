@@ -2,7 +2,7 @@
 // import {useRouter} from "next/navigation"
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { FormEvent, useState } from "react";
+import { FormEvent } from "react";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import {
   Card,
@@ -12,17 +12,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import APIDaftarKP from "@/services/api/mahasiswa/daftar-kp.service";
-import { CreatePendaftaranMahasiswaInterface } from "@/interfaces/pages/mahasiswa/kerja-praktik/daftar-kp/pendaftaran.interface";
+import {
+  CreatePendaftaranMahasiswaInterface,
+  UpdatePendaftaranMahasiswaInterface,
+} from "@/interfaces/pages/mahasiswa/kerja-praktik/daftar-kp/pendaftaran.interface";
 import { toast } from "@/hooks/use-toast";
+import { ErrorInterface } from "@/interfaces/pages/error.type";
 
-function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
-  const [date, setDate] = useState<Date>(new Date());
+function MahasiswaKerjapraktikDaftarKpPermohonanFromPendaftaranPage() {
   const navigate = useNavigate();
 
   const { data: dataInstansi } = useQuery({
@@ -30,14 +32,19 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
     queryFn: () => APIDaftarKP.getDataInstansiAktif().then((res) => res.data),
   });
 
-  const mutation = useMutation({
-    mutationFn: (data: CreatePendaftaranMahasiswaInterface) =>
-      APIDaftarKP.createPendaftaranMahasiswa(data),
+  const { data: dataKPTerbaru } = useQuery({
+    queryKey: ["halaman-permohonan-kp-terbaru-mahasiswa"],
+    queryFn: () => APIDaftarKP.getKPAktifMahasiswa().then((res) => res.data),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (data: UpdatePendaftaranMahasiswaInterface) =>
+      APIDaftarKP.updatePendaftaranMahasiswa(data).then((res) => res.data),
     onSuccess: (data) => {
       toast({
         title: "Sukses",
         description:
-          data.message || "Berhasil melakukan pendaftaran kerja praktek",
+          data.message || "Berhasil melakukan pendaftaran kerja praktik",
         duration: 3000,
       });
       const pointer = setTimeout(function () {
@@ -45,15 +52,48 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
         clearTimeout(pointer);
       }, 1000);
     },
-    onError: (data) => {
+    onError: (data: ErrorInterface) => {
       toast({
         title: "Gagal",
         description:
-          data.message || "Gagal melakukan pendaftaran kerja praktek",
+          data?.response?.data?.message ||
+          "Gagal melakukan pendaftaran kerja praktik",
         duration: 3000,
       });
     },
   });
+
+  const createMutation = useMutation({
+    mutationFn: (data: CreatePendaftaranMahasiswaInterface) =>
+      APIDaftarKP.createPendaftaranMahasiswa(data),
+    onSuccess: (data) => {
+      toast({
+        title: "Sukses",
+        description:
+          data.message || "Berhasil melakukan pendaftaran kerja praktik",
+        duration: 3000,
+      });
+      const pointer = setTimeout(function () {
+        navigate("/mahasiswa/kerja-praktik/daftar-kp/permohonan");
+        clearTimeout(pointer);
+      }, 1000);
+    },
+    onError: (data: ErrorInterface) => {
+      toast({
+        title: "Gagal",
+        description:
+          data?.response?.data?.message ||
+          "Gagal melakukan pendaftaran kerja praktik",
+        duration: 3000,
+      });
+    },
+  });
+
+  let mutation: any = createMutation;
+
+  if (dataKPTerbaru) {
+    mutation = updateMutation;
+  }
 
   async function handleOnSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -61,7 +101,7 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
     const objectFormData = Object.fromEntries(formData.entries());
     console.log(objectFormData);
     mutation.mutate({
-      tanggalMulai: date.toISOString(),
+      tanggalMulai: new Date().toISOString(),
       tujuanSuratInstansi: objectFormData.tujuanSuratInstansi as string,
       idInstansi: objectFormData.idInstansi as string,
       kelas_kp: objectFormData.kelas_kp as string,
@@ -73,13 +113,17 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
     navigate("/mahasiswa/kerja-praktik/daftar-kp/permohonan");
   }
 
+  // if (!dataKPTerbaru) {
+  //   console.log("error");
+  // }
+
   return (
     <DashboardLayout>
       <Card>
         <form onSubmit={handleOnSubmit}>
           <CardHeader>
             <CardTitle className="text-center font-bold text-2xl">
-              Form Pendaftaran Kerja Praktek
+              Form Pendaftaran Kerja praktik
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -134,7 +178,7 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
 
           <CardContent>
             <CardTitle className="font-bold text-lg">
-              🪪 Informasi Kerja Praktek
+              🪪 Informasi Kerja praktik
             </CardTitle>
             <Label className="text-sm font-bold mt-6" htmlFor="kelas">
               Kelas
@@ -178,28 +222,14 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
 
           <CardContent>
             <Label className="text-sm font-bold" htmlFor="judul">
-              Judul Laporan Kerja Praktek
+              Judul Laporan Kerja praktik
             </Label>
             <Textarea
-              required
               className="block w-full p-2 border-slate-300 border-[1px] h-42"
               name="judul_kp"
               id="judul"
-              placeholder="Masukkan judul laporan kerja praktek disini..."
+              placeholder="Masukkan judul laporan kerja praktik disini..."
             ></Textarea>
-          </CardContent>
-
-          <CardContent className="w-fit">
-            <Label className="text-sm font-bold" htmlFor="tanggal-mulai">
-              Tanggal Mulai
-            </Label>
-            <Calendar
-              required
-              className="w-full p-2 border-slate-300 border-[1px]"
-              id="tanggal-mulai"
-              onDayClick={(e) => setDate(e)}
-              selected={date}
-            />
           </CardContent>
 
           <CardFooter className="text-end mt-4 sm:flex sm:flex-col sm:gap-2 md:block">
@@ -225,4 +255,4 @@ function MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage() {
   );
 }
 
-export default MahasiswaKerjaPraktekDaftarKpPermohonanFromPendaftaranPage;
+export default MahasiswaKerjapraktikDaftarKpPermohonanFromPendaftaranPage;

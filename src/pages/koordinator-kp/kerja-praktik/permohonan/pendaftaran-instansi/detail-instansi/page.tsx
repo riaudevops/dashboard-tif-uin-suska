@@ -22,10 +22,14 @@ import {
 } from "react-leaflet";
 import { Label } from "@/components/ui/label";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import APIDaftarKP from "@/services/api/mahasiswa/daftar-kp.service";
+import APIDaftarKP from "@/services/api/koordinator-kp/daftar-kp.service";
 import { toast } from "@/hooks/use-toast";
-import { DataInstansi } from "@/interfaces/pages/koordinator-kp/kerja-praktik/instansi.interface";
+import {
+  ACCTolakInstansiPropsInterface,
+  DataInstansiInterface,
+} from "@/interfaces/service/api/daftar-kp/koordinator-kp-service.interface";
 import { useQueryClient } from "@tanstack/react-query";
+import { ErrorInterface } from "@/interfaces/pages/error.type";
 
 function KoordinatorKerjaPraktikDetailInstansiPage() {
   const [isDeleteButtonClicked, setIsDeleteButtonClicked] =
@@ -88,21 +92,48 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
         clearTimeout(pointer);
       }, 3000);
     },
-    onError: (data) => {
+    onError: (data: ErrorInterface) => {
       toast({
         title: "Gagal",
-        description: data.message || "Berhasil menghapus data instansi",
+        description:
+          data?.response?.data?.message || "Gagal menghapus data instansi",
+        duration: 3000,
+      });
+    },
+  });
+
+  const accMutation = useMutation({
+    mutationFn: (data: ACCTolakInstansiPropsInterface) =>
+      APIDaftarKP.accTolakInstansi(data).then((res) => res.data),
+    onSuccess: (data) => {
+      toast({
+        title: "Sukses",
+        description: data.message || "Berhasil mengubah data instansi",
+        duration: 3000,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["detail-instansi-koordinator-kp"],
+        exact: true,
+      });
+      setIsEditing(false);
+    },
+    onError: (data: ErrorInterface) => {
+      toast({
+        title: "Gagal",
+        description:
+          data?.response?.data?.message || "Gagal mengubah data instansi",
         duration: 3000,
       });
     },
   });
 
   const editMutation = useMutation({
-    mutationFn: (data: DataInstansi) => APIDaftarKP.editDataInstansi(data),
+    mutationFn: (data: DataInstansiInterface) =>
+      APIDaftarKP.editDataInstansi(data),
     onSuccess: (data) => {
       toast({
         title: "Sukses",
-        description: data.message || "Berhasil menghapus data instansi",
+        description: data.message || "Berhasil mengubah data instansi",
         duration: 3000,
       });
       queryClient.invalidateQueries({
@@ -111,10 +142,11 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
       });
       setIsEditing((prev) => !prev);
     },
-    onError: (data) => {
+    onError: (data: ErrorInterface) => {
       toast({
         title: "Gagal",
-        description: data.message || "Berhasil menghapus data instansi",
+        description:
+          data?.response?.data?.message || "Gagal mengubah data instansi",
         duration: 3000,
       });
       setIsEditing((prev) => !prev);
@@ -123,6 +155,13 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
 
   async function handleOnRejectOrDelete() {
     deleteMutation.mutate();
+  }
+
+  async function handleOnACC() {
+    accMutation.mutate({
+      id,
+      status: "Aktif",
+    });
   }
 
   async function handleOnEdit() {
@@ -432,7 +471,7 @@ function KoordinatorKerjaPraktikDetailInstansiPage() {
                 </Button>
                 <Button
                   disabled={editMutation.isPending || deleteMutation.isPending}
-                  onClick={handleOnEdit}
+                  onClick={handleOnACC}
                   className="bg-green-600 p-2 rounded-lg text-white font-semibold tracking-wide"
                 >
                   Terima Pengajuan

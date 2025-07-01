@@ -256,7 +256,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
           kontakPembimbing:
             data.data.pendaftaran_kp[0]?.dosen_pembimbing?.no_hp ||
             "Belum diisi",
-          lamaKerjaPraktek: `${
+          lamaKerjapraktik: `${
             data.data.pendaftaran_kp[0]?.tanggal_mulai
               ? new Date(
                   data.data.pendaftaran_kp[0].tanggal_mulai
@@ -283,7 +283,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
 
   const informasiSeminarFields = [
     "lokasi",
-    "lamaKerjaPraktek",
+    "lamaKerjapraktik",
     "dosenPembimbing",
     "kontakPembimbing",
     "judul",

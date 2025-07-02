@@ -59,6 +59,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
 		is_status_link_surat_perpanjangan_kp_ditolak,
 		set_is_status_link_surat_perpanjangan_kp_ditolak,
 	] = useState<boolean>(false);
+	const [nipDospem, setNipDospem] = useState<string | null>(null)
 	const [dateEnd, setDateEnd] = useState<Date | null | undefined>(null);
 	const { id = "" } = useParams();
 
@@ -147,6 +148,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
 				id,
 				nomorBerkas: i,
 				status: "Divalidasi",
+				nipDospem,
 			});
 		} else if (i === 5) {
 			accTolakMutation.mutate({
@@ -496,6 +498,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
 								nameStatus="status_link_surat_penolakan_instansi"
 								status={is_status_link_surat_penolakan_instansi_ditolak}
 								setStatus={set_is_status_link_surat_penolakan_instansi_ditolak}
+								setNipDospem={setNipDospem}
 							/>
 							<InputField
 								statusBerkas={
@@ -519,6 +522,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
 								nameStatus="status_link_surat_pengantar"
 								status={is_status_link_surat_pengantar_ditolak}
 								setStatus={set_is_status_link_surat_pengantar_ditolak}
+								setNipDospem={setNipDospem}
 							/>
 
 							<InputField
@@ -543,6 +547,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
 								nameStatus="status_link_surat_balasan"
 								status={is_status_link_surat_balasan_ditolak}
 								setStatus={set_is_status_link_surat_balasan_ditolak}
+								setNipDospem={setNipDospem}
 							/>
 							<InputField
 								statusBerkas={
@@ -566,11 +571,13 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
 								nameStatus="status_id_surat_pengajuan_dospem"
 								status={is_status_id_surat_pengajuan_dospem_ditolak}
 								setStatus={set_is_status_id_surat_pengajuan_dospem_ditolak}
+								setNipDospem={setNipDospem}
 							/>
 							<InputField
 								statusBerkas={
 									biodataMahasiswa.dokumen_pendaftaran_kp[4]?.status
 								}
+								setNipDospem={setNipDospem}
 								handleOnReject={() => setIsRejectButtonClicked(4)}
 								key="surat-penunjukkan-dospem"
 								labelName="Surat Penunjukkan Dosen Pembimbing"
@@ -621,6 +628,7 @@ const KoordinatorKerjaPraktikPermohonanDetailPage = () => {
 									status={is_status_link_surat_perpanjangan_kp_ditolak}
 									setStatus={set_is_status_link_surat_perpanjangan_kp_ditolak}
 									alasan_lanjut_kp={biodataMahasiswa.alasan_lanjut_kp}
+									setNipDospem={setNipDospem}
 								/>
 							</div>
 						</CardContent>
@@ -882,6 +890,7 @@ interface InputFieldInterface {
 	document: string;
 	status: boolean;
 	setStatus: React.Dispatch<React.SetStateAction<boolean>>;
+	setNipDospem : React.Dispatch<React.SetStateAction<string | null>>;
 	nameStatus: string;
 	idStatus: string;
 	nameCatatanStatus: string;
@@ -911,7 +920,12 @@ function InputField({
 	isBerkasSended,
 	labelName,
 	alasan_lanjut_kp,
+	setNipDospem,
 }: InputFieldInterface) {
+	const { data: dataDosen } = useQuery({
+		queryKey: ["halaman-kelengkapan-berkas-data-dosen"],
+		queryFn: () => APIDaftarKP.getDataDosen().then((res) => res.data),
+	});
 	return (
 		<div
 			className={`mb-3 p-2 rounded-lg flex flex-col ${
@@ -928,6 +942,30 @@ function InputField({
 						name={nameInput}
 						defaultValue={document}
 					/>
+					{labelName === "Surat Penunjukkan Dosen Pembimbing" && (
+						<>
+							<Label
+								className="font-bold text-sm mt-1"
+								htmlFor="dosen-pembimbing"
+							>
+								Dosen Pembimbing Kerja Praktik :{" "}
+							</Label>
+							<select
+							onChange={(e) => setNipDospem(e.target.value)}
+								className="dark:bg-black dark:border-white dark:border-[1px] rounded-lg block w-[100%] p-2"
+								name="nipDospem"
+								id="dosen-pembimbing"
+							>
+								<option value="">Pilih Dosen Pembimbing</option>
+								{dataDosen &&
+									dataDosen.map((item: any) => (
+										<option value={item.nip}>
+											{item.nip} - {item.nama}
+										</option>
+									))}
+							</select>
+						</>
+					)}
 					{alasan_lanjut_kp && (
 						<>
 							<Label htmlFor="alasan-lanjut-kp" className="mt-2">

@@ -7,7 +7,7 @@ import { LayoutGridIcon, RefreshCw } from "lucide-react";
 import Status from "@/components/mahasiswa/seminar/status";
 import InfoCard from "../informasi-seminar";
 import DocumentCard from "../formulir-dokumen";
-import { toast } from "@/hooks/use-toast";
+import toast, { Toaster } from "react-hot-toast";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
 import {
   AlertDialog,
@@ -96,9 +96,6 @@ const DOCUMENT_URLS: Record<string, string> = {
   "Laporan Tambahan Tugas Kerja Praktik":
     "/seminar-kp/dokumen/laporan-tambahan-kp",
 };
-
-const gdriveLinkRegex =
-  /^https:\/\/drive\.google\.com\/(file\/d\/|drive\/folders\/|open\?id=)([a-zA-Z0-9_-]+)(\/?|\?usp=sharing|\&authuser=0)/;
 
 const CardHeaderGradient: FC<CardHeaderProps> = ({ title }) => (
   <div className="bg-gradient-to-r from-emerald-600 to-green-500 px-6 py-4">
@@ -194,12 +191,19 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: APISeminarKP.postLinkDokumen,
-    onError: (error: any) => {
-      toast({
-        title: "❌ Gagal",
-        description: `Gagal mengirim dokumen: ${error.message}`,
-        duration: 3000,
-      });
+    onError: (error: any, variables) => {
+      toast.error(
+        `Gagal mengirim link dokumen "${
+          variables?.url
+            ? Object.keys(DOCUMENT_URLS).find(
+                (key) => DOCUMENT_URLS[key] === variables.url
+              )
+            : ""
+        }". ${error.response.data.message}`,
+        {
+          duration: 3000,
+        }
+      );
     },
   });
 
@@ -282,9 +286,7 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
       return doc;
     });
     setFormDocuments(resetDocs);
-    toast({
-      title: "✅ Berhasil",
-      description: "Formulir berhasil dikosongkan",
+    toast.success("Formulir berhasil dikosongkan", {
       duration: 3000,
     });
   };
@@ -299,9 +301,7 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
     const id_pendaftaran_kp = data?.data.pendaftaran_kp[0]?.id;
 
     if (!nim || !id_pendaftaran_kp) {
-      toast({
-        title: "❌ Gagal",
-        description: "Data mahasiswa atau pendaftaran tidak lengkap",
+      toast.error("Data mahasiswa atau pendaftaran tidak lengkap", {
         duration: 3000,
       });
       return;
@@ -314,24 +314,8 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
     );
 
     if (documentsToSubmit.length === 0) {
-      toast({
-        title: "⚠️ Peringatan",
-        description: "Harap isi setidaknya satu link dokumen",
+      toast.error("Formulir belum diisi", {
         duration: 3000,
-      });
-      return;
-    }
-
-    const invalidDocs = documentsToSubmit.filter(
-      (doc) => !gdriveLinkRegex.test(doc.link)
-    );
-
-    if (invalidDocs.length > 0) {
-      const invalidDocTitles = invalidDocs.map((doc) => doc.title).join(", ");
-      toast({
-        title: "❌ Gagal Mengirim",
-        description: `Link dokumen berikut bukan Google Drive yang valid: ${invalidDocTitles}`,
-        duration: 5000,
       });
       return;
     }
@@ -340,14 +324,6 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
 
     const submissionPromises = documentsToSubmit.map((doc) => {
       const url = DOCUMENT_URLS[doc.title];
-      if (!url) {
-        toast({
-          title: "⚠️ Peringatan",
-          description: `URL untuk dokumen "${doc.title}" tidak ditemukan!`,
-          duration: 3000,
-        });
-        return Promise.resolve(null);
-      }
 
       console.log(`Mengirim link untuk "${doc.title}": ${doc.link}`);
       return mutation
@@ -370,11 +346,11 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
 
     if (successfullySubmittedDocs.length > 0) {
       const docList = successfullySubmittedDocs.join(", ");
-      toast({
-        title: "✅ Berhasil",
-        description: `Berhasil mengirim link dokumen: ${docList}`,
+
+      toast.success(`Berhasil mengirim link dokumen: ${docList}`, {
         duration: 3000,
       });
+
       queryClient.invalidateQueries({ queryKey: ["seminar-kp-dokumen"] });
     }
   };
@@ -412,9 +388,7 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
       return <div>Loading...</div>;
     }
     if (isError) {
-      toast({
-        title: "❌ Gagal",
-        description: `Gagal mengambil data: ${error.message}`,
+      toast.error(`Gagal mengambil data: ${error.message}`, {
         duration: 3000,
       });
       return <div>Error: {error.message}</div>;
@@ -464,6 +438,7 @@ const Step1: FC<Step1Props> = ({ activeStep }) => {
 
   return (
     <div className="space-y-4">
+      <Toaster position="top-right" />
       <div className="flex mb-5">
         <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
           <span

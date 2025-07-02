@@ -313,7 +313,6 @@ const KoordinatorNilaiPage: FC = () => {
         `Gagal memvalidasi nilai: ${error.message || "Terjadi kesalahan"}`,
         {
           duration: 4000,
-          position: "top-right",
         }
       );
     },
@@ -410,8 +409,7 @@ const KoordinatorNilaiPage: FC = () => {
       setSelectedStudents([]);
       setIsConfirmModalOpen(false);
       toast.success(`Berhasil memvalidasi ${idNilaiList.length} mahasiswa!`, {
-        duration: 4000,
-        position: "top-right",
+        duration: 3000,
       });
     } catch (error) {
       // Error handling is managed in onError of useMutation
@@ -670,7 +668,7 @@ const KoordinatorNilaiPage: FC = () => {
 
   return (
     <DashboardLayout>
-      <Toaster />
+      <Toaster position="top-right" />
       <div className="transition-colors duration-300">
         <div className="space-y-4">
           <div className="flex justify-between items-center">
@@ -996,25 +994,21 @@ const StudentTable: FC<{
               >
                 <TableCell className="text-center">
                   {student.status_nilai === "Nilai Valid" ? (
-                    
-                      <Checkbox
-                        checked={selectedStudents.includes(student.nim)}
-                        onCheckedChange={() => onCheckboxChange(student.nim)}
-                        className="h-4 w-4"
-                      />
-                    
+                    <Checkbox
+                      checked={selectedStudents.includes(student.nim)}
+                      onCheckedChange={() => onCheckboxChange(student.nim)}
+                      className="h-4 w-4"
+                    />
+                  ) : student.validasi_nilai_is_approve ? (
+                    <span className="text-xs text-green-500 dark:text-green-400">
+                      ✓
+                    </span>
                   ) : (
-                    student.validasi_nilai_is_approve ? (
-                      <span className="text-xs text-green-500 dark:text-green-400">
-                        ✓
-                      </span>
-                    ) : (
-                      <Checkbox
+                    <Checkbox
                       disabled
                       className="h-4 w-4 opacity-100"
                       title="Hanya nilai dengan status 'Nilai Valid' yang dapat dikonfirmasi"
                     />
-                    )
                   )}
                 </TableCell>
                 <TableCell className="text-center dark:text-gray-300 text-xs font-semibold">

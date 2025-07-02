@@ -11,7 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 import EditJadwalSeminarModal from "@/components/koordinator-kp/seminar/edit-jadwal-modal";
 import LogJadwalModal from "@/components/koordinator-kp/seminar/log-jadwal-modal";
 import ScheduleTable from "@/components/koordinator-kp/seminar/ScheduleTable";
@@ -446,7 +446,6 @@ const KoordinatorJadwalSeminarPage: FC = () => {
 
   return (
     <DashboardLayout>
-      <Toaster position="top-right" />
       <div className="space-y-4">
         <div className="flex justify-between items-center mb-3.5">
           <div className="flex">

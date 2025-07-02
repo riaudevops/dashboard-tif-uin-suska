@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 import { useSearchParams } from "react-router-dom";
 import { Textarea } from "@/components/ui/textarea";
 import APIKerjaPraktik from "@/services/api/dosen/bimbingan-kp.service";
@@ -756,7 +756,6 @@ const DosenKerjaPraktikMahasiswaBimbingDetailPage = () => {
   return (
     <DashboardLayout>
       <div className="min-h-screen">
-        <Toaster />
         {/* Page Title */}
         <div className="flex items-center gap-4 mb-3">
           <div className="flex">

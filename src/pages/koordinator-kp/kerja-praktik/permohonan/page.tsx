@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, ChevronRight, ArrowUpRight } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -21,11 +21,10 @@ import {
 } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import APIDaftarKP from "@/services/api/koordinator-kp/daftar-kp.service";
-import { tahunAjaranToStringInterface } from "@/interfaces/helpers/tahun-ajaran-to-string.interface";
 
 // Main component
 export default function KoordinatorKerjaPraktikPermohonanPage() {
-  const [academicYear, setAcademicYear] = useState(202420251);
+  const [academicYear, setAcademicYear] = useState<number>(1);
   const [activeTab, setActiveTab] = useState("Semua Riwayat");
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
@@ -49,61 +48,27 @@ export default function KoordinatorKerjaPraktikPermohonanPage() {
     queryFn: () => APIDaftarKP.getTahunAjaran().then((res) => res.data),
   });
 
-  // Data from the image
-  // const applicationData = [
-  //   {
-  //     id: 1,
-  //     name: "Gilang Ramadhan",
-  //     nim: "12251112",
-  //     status: "Baru",
-  //     time: "20 Menit yang lalu",
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Farhan Fadilla",
-  //     nim: "1225111212",
-  //     status: "Baru",
-  //     time: "2 Hari yang lalu",
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Ahmad Kurniawan",
-  //     nim: "1225111212",
-  //     status: "Lanjut",
-  //     time: "1 Bulan yang lalu",
-  //   },
-  //   {
-  //     id: 4,
-  //     name: "Muh Zaki Erbay",
-  //     nim: "1225111212",
-  //     status: "Baru",
-  //     time: "7 Hari yang lalu",
-  //   },
-  //   {
-  //     id: 5,
-  //     name: "M. Rafly Wirayudha",
-  //     nim: "1225111212",
-  //     status: "Lanjut",
-  //     time: "9 Hari yang lalu",
-  //   },
-  // ];
+  const [filteredData, setFilteredData] = useState(applicationData);
 
   // Filter data based on active tab and search query
-  const filteredData =
-    applicationData &&
-    applicationData
-      .filter(
-        (item: any) =>
-          // Filter by active tab
-          activeTab === "Semua Riwayat" || item.status === activeTab
-      )
-      .filter((item: any) => item.id_tahun_ajaran === academicYear)
-      .filter(
-        (item: any) =>
-          // Filter by search query (case insensitive)
-          searchTerm === "" ||
-          item?.mahasiswa?.nama.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  useEffect(() => {
+    const fd =
+      applicationData &&
+      applicationData
+        .filter(
+          (item: any) =>
+            // Filter by active tab
+            activeTab === "Semua Riwayat" || item.status === activeTab
+        )
+        .filter((item: any) => item.id_tahun_ajaran == academicYear)
+        .filter(
+          (item: any) =>
+            // Filter by search query (case insensitive)
+            searchTerm === "" ||
+            item?.mahasiswa?.nama.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      setFilteredData(fd);
+  }, [activeTab, applicationData, academicYear, searchTerm]);
 
   return (
     <DashboardLayout>
@@ -123,11 +88,12 @@ export default function KoordinatorKerjaPraktikPermohonanPage() {
                 <select
                   className="border rounded-md px-3 py-1 pr-8 text-sm appearance-none dark:bg-gray-800 shadow-sm"
                   value={academicYear}
+                  defaultValue={tahunAjaran?.[0]?.id}
                   onChange={(e) => setAcademicYear(parseInt(e.target.value))}
                 >
-                  {tahunAjaran?.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {tahunAjaranToStringInterface(item.id)}
+                  {tahunAjaran?.map((item, index) => (
+                    <option selected={index === 0} key={item.id} value={item.id}>
+                      {item.nama}
                     </option>
                   ))}
                 </select>

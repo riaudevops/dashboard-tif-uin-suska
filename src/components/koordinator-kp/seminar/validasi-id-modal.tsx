@@ -2,7 +2,7 @@ import { type FC, useState, useEffect, useMemo } from "react";
 import {
   Check,
   X,
-  Eye,
+  Copy,
   User,
   Award,
   Building,
@@ -118,20 +118,12 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
   const validateMutation = useMutation({
     mutationFn: (id: string) => APISeminarKP.postValidasiDokumen({ id }),
     onSuccess: () => {
-      toast.success("Dokumen berhasil divalidasi.");
       queryClient.invalidateQueries({
         queryKey: ["koordinator-seminar-kp-detail", student?.nim],
       });
       queryClient.invalidateQueries({
         queryKey: ["koordinator-seminar-kp-dokumen"],
       });
-    },
-    onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof AxiosError && error.response?.data?.message
-          ? error.response.data.message
-          : "Gagal memvalidasi dokumen.";
-      toast.error(errorMessage);
     },
   });
 
@@ -139,20 +131,12 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
     mutationFn: ({ id, komentar }: { id: string; komentar: string }) =>
       APISeminarKP.postTolakDokumen({ id, komentar }),
     onSuccess: () => {
-      toast.success("Dokumen berhasil ditolak.");
       queryClient.invalidateQueries({
         queryKey: ["koordinator-seminar-kp-detail", student?.nim],
       });
       queryClient.invalidateQueries({
         queryKey: ["koordinator-seminar-kp-dokumen"],
       });
-    },
-    onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof AxiosError && error.response?.data?.message
-          ? error.response.data.message
-          : "Gagal menolak dokumen.";
-      toast.error(errorMessage);
     },
   });
 
@@ -178,17 +162,18 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
       queryClient.invalidateQueries({
         queryKey: ["koordinator-seminar-kp-dokumen"],
       });
-      onClose();
+      // onClose() dipindahkan ke handleConfirm setelah semua operasi selesai
     },
-    onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof AxiosError && error.response?.data?.message
-          ? error.response.data.message
-          : error instanceof Error
-          ? error.message
-          : "Gagal menyimpan jadwal.";
-      toast.error(errorMessage);
-    },
+    // onError: (error: unknown) => {
+    //   const errorMessage =
+    //     error instanceof AxiosError && error.response?.data?.message
+    //       ? error.response.data.message
+    //       : error instanceof Error
+    //       ? error.message
+    //       : "Gagal menyimpan jadwal.";
+    //   toast.error(errorMessage);
+    //   setShowSection(true);
+    // },
   });
 
   useEffect(() => {
@@ -214,7 +199,8 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
           };
         }) || [];
       setDocuments(initialDocs);
-      setShowSection(false);
+      // Set showSection berdasarkan apakah ada dokumen yang diterima
+      setShowSection(initialDocs.some((doc) => doc.isAccepted));
       setFormData({
         nama_ruangan: "",
         tanggal: "",
@@ -249,7 +235,11 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
           : doc
       )
     );
-    setShowSection(false);
+    // Periksa apakah masih ada dokumen yang diterima
+    const hasAccepted = documents.some(
+      (doc) => doc.id !== docId && doc.isAccepted
+    );
+    setShowSection(hasAccepted);
   };
 
   const handleAccept = (docId: string) => {
@@ -265,10 +255,7 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
           : doc
       )
     );
-    const acceptedDoc = documents.find((d) => d.id === docId);
-    if (acceptedDoc && !acceptedDoc.isAccepted) {
-      setShowSection(true);
-    }
+    setShowSection(true); // Selalu tampilkan section pilih jadwal jika ada dokumen yang diterima
   };
 
   const handleReasonChange = (docId: string, reason: string) => {
@@ -277,10 +264,6 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
         doc.id === docId ? { ...doc, rejectionReason: reason } : doc
       )
     );
-  };
-
-  const handleViewDocument = (link: string) => {
-    window.open(link, "_blank");
   };
 
   const handleFormChange = (field: keyof typeof formData, value: string) => {
@@ -293,6 +276,17 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
     } else {
       setFormData((prev) => ({ ...prev, [field]: value }));
     }
+  };
+
+  const handleCopyId = (id: string) => {
+    navigator.clipboard
+      .writeText(id)
+      .then(() => {
+        toast.success("ID Surat Undangan berhasil disalin!");
+      })
+      .catch(() => {
+        toast.error("Gagal menyalin ID Surat Undangan.");
+      });
   };
 
   const handleConfirm = async () => {
@@ -308,6 +302,7 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
         !formData.nip_penguji
       ) {
         toast.error("Semua field jadwal harus diisi.");
+        setShowSection(true);
         return;
       }
 
@@ -315,6 +310,17 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
       const endTime = new Date(`1970-01-01T${formData.waktu_selesai}:00`);
       if (endTime <= startTime) {
         toast.error("Waktu selesai harus lebih besar dari waktu mulai.");
+        setShowSection(true);
+        return;
+      }
+
+      const selectedDateTime = new Date(
+        `${formData.tanggal} ${formData.waktu_mulai}`
+      );
+      const currentDateTime = getCurrentDateTime();
+      if (selectedDateTime <= currentDateTime) {
+        toast.error("Tanggal dan waktu mulai harus lebih dari waktu saat ini.");
+        setShowSection(true);
         return;
       }
     }
@@ -326,44 +332,53 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
       toast.error(
         "Alasan penolakan harus diisi untuk semua dokumen yang ditolak."
       );
+      setShowSection(hasAccepted);
       return;
     }
 
-    const validationPromises = documents
-      .filter((doc) => doc.isAccepted)
-      .map((doc) => validateMutation.mutateAsync(doc.id));
+    try {
+      // Lakukan penolakan dokumen terlebih dahulu (jika ada)
+      const rejectionPromises = documents
+        .filter((doc) => doc.isRejected && doc.rejectionReason)
+        .map((doc) =>
+          rejectMutation.mutateAsync({
+            id: doc.id,
+            komentar: doc.rejectionReason,
+          })
+        );
 
-    const rejectionPromises = documents
-      .filter((doc) => doc.isRejected && doc.rejectionReason)
-      .map((doc) =>
-        rejectMutation.mutateAsync({
-          id: doc.id,
-          komentar: doc.rejectionReason,
-        })
+      await Promise.all(rejectionPromises);
+
+      // Jika ada dokumen yang diterima, lakukan pembuatan jadwal terlebih dahulu
+      if (hasAccepted && showSection) {
+        await scheduleMutation.mutateAsync(); // Jalankan pembuatan jadwal
+      }
+
+      // Jika jadwal berhasil dibuat (atau tidak perlu jadwal), lakukan validasi dokumen
+      const validationPromises = documents
+        .filter((doc) => doc.isAccepted)
+        .map((doc) => validateMutation.mutateAsync(doc.id));
+
+      await Promise.all(validationPromises);
+
+      // Tampilkan toast sukses hanya jika semua operasi berhasil
+      toast(
+        <span>
+          Permohonan <b>{student?.name}</b> berhasil dikonfirmasi
+        </span>,
+        {
+          duration: 3000,
+        }
       );
 
-    try {
-      await Promise.all([...validationPromises, ...rejectionPromises]);
-      if (hasAccepted && showSection) {
-        const selectedDateTime = new Date(
-          `${formData.tanggal} ${formData.waktu_mulai}`
-        );
-        const currentDateTime = getCurrentDateTime();
-        if (selectedDateTime <= currentDateTime) {
-          toast.error(
-            "Tanggal dan waktu mulai harus lebih dari waktu saat ini."
-          );
-          return;
-        }
-        await scheduleMutation.mutateAsync();
-      }
-      toast.success("Semua perubahan telah dikonfirmasi.");
+      // Invalidasi query setelah semua operasi berhasil
       queryClient.invalidateQueries({
         queryKey: ["koordinator-seminar-kp-detail", student?.nim],
       });
       queryClient.invalidateQueries({
         queryKey: ["koordinator-seminar-kp-dokumen"],
       });
+
       onClose();
       setShowSection(false);
     } catch (error) {
@@ -372,6 +387,7 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
           ? error.response.data.message
           : "Terjadi kesalahan saat mengonfirmasi perubahan.";
       toast.error(errorMessage);
+      setShowSection(hasAccepted); // Pastikan section tetap terlihat jika ada dokumen diterima
     }
   };
 
@@ -519,9 +535,9 @@ const ValidasiIDModal: FC<ValidasiIDModalProps> = ({
                               size="sm"
                               variant="ghost"
                               className="h-6 w-6 rounded-full p-0 text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30"
-                              onClick={() => handleViewDocument(doc.link_path)}
+                              onClick={() => handleCopyId(doc.id)}
                             >
-                              <Eye className="h-3.5 w-3.5" />
+                              <Copy className="h-3.5 w-3.5" />
                             </Button>
                             <Button
                               size="sm"

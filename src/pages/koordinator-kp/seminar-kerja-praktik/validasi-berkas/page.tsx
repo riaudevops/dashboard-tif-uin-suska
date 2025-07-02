@@ -11,7 +11,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { toast } from "@/hooks/use-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -541,13 +541,14 @@ const KoordinatorValidasiBerkasPage: FC = () => {
   };
 
   if (isTahunAjaranError) {
-    toast({
-      title: "❌ Gagal",
-      description: `Gagal mengambil daftar tahun ajaran: ${
+    toast.error(
+      `Gagal mengambil daftar tahun ajaran: ${
         (tahunAjaranError as Error).message
       }`,
-      duration: 3000,
-    });
+      {
+        duration: 3000,
+      }
+    );
     return (
       <DashboardLayout>
         <div className="text-center text-gray-600 dark:text-gray-300 py-10">
@@ -558,11 +559,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
   }
 
   if (isError) {
-    toast({
-      title: "❌ Gagal",
-      description: `Gagal mengambil data mahasiswa: ${
-        (error as Error).message
-      }`,
+    toast.error(`Gagal mengambil data mahasiswa: ${(error as Error).message}`, {
       duration: 3000,
     });
     return (
@@ -576,6 +573,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
 
   return (
     <DashboardLayout>
+      <Toaster position="top-right" />
       <div className="transition-colors duration-300">
         <div className="space-y-4">
           <div>

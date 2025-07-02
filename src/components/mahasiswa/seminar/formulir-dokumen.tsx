@@ -10,6 +10,17 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 
+const MANDATORY_DOCUMENTS = [
+  "Dokumen Surat Keterangan Selesai Kerja Praktik Dari Instansi",
+  "Menghadiri Seminar Kerja Praktik Mahasiswa Lain Minimal 5 Kali",
+  "Laporan Tambahan Tugas Kerja Praktik",
+  "Dokumen Surat Undangan Seminar Kerja Praktik",
+
+  "Berita Acara Seminar KP",
+  "Lembar Pengesahan KP",
+  "Daftar Hadir Seminar KP",
+];
+
 const DocumentCard = ({
   judulDokumen,
   status,
@@ -42,6 +53,9 @@ const DocumentCard = ({
 
   const isReadOnly = status === "Terkirim" || status === "Divalidasi";
 
+  // Cek apakah dokumen wajib
+  const isMandatory = MANDATORY_DOCUMENTS.includes(judulDokumen);
+
   const renderCard = () => {
     // Status "Divalidasi" → Badge "Diterima"
     if (status === "Divalidasi") {
@@ -72,7 +86,8 @@ const DocumentCard = ({
                   .toLowerCase()}`}
                 className="font-medium text-xs text-gray-700 dark:text-gray-300"
               >
-                Link GDrive
+                Link GDrive{" "}
+                {isMandatory && <span className="text-red-500">*</span>}
               </Label>
               <div className="relative">
                 <Input
@@ -119,7 +134,8 @@ const DocumentCard = ({
                   .toLowerCase()}`}
                 className="font-medium text-xs text-gray-700 dark:text-gray-300"
               >
-                Link GDrive
+                Link GDrive{" "}
+                {isMandatory && <span className="text-red-500">*</span>}
               </Label>
               <div className="relative">
                 <Input
@@ -166,7 +182,8 @@ const DocumentCard = ({
                   .toLowerCase()}`}
                 className="flex items-center gap-1 font-medium text-xs text-gray-700 dark:text-gray-300"
               >
-                Link GDrive <span className="text-red-500">*</span>
+                Link GDrive{" "}
+                {isMandatory && <span className="text-red-500">*</span>}
               </Label>
               <div className="relative">
                 <Input
@@ -221,7 +238,8 @@ const DocumentCard = ({
                 .toLowerCase()}`}
               className="flex items-center gap-1 font-medium text-xs text-gray-700 dark:text-gray-300"
             >
-              Link GDrive <span className="text-red-500">*</span>
+              Link GDrive{" "}
+              {isMandatory && <span className="text-red-500">*</span>}
             </Label>
             <div className="relative">
               <Input

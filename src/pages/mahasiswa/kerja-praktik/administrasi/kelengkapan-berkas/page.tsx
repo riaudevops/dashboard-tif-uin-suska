@@ -111,13 +111,6 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
     queryFn: () => APIDaftarKP.getTanggalDaftarKP().then((res) => res.data),
   });
 
-  const { data: dataDosen } = useQuery({
-    queryKey: ["halaman-kelengkapan-berkas-data-dosen"],
-    queryFn: () => APIDaftarKP.getDataDosen().then((res) => res.data),
-  });
-
-  console.log(dataDosen);
-
   let isPendaftaranKPClosed = true;
   let isPendaftaranKPLanjutClosed = true;
 
@@ -180,7 +173,7 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
             <p>
               {(dataKPTerbaru &&
                 dataKPTerbaru &&
-                dataKPTerbaru?.dokumen_pendaftaran_kp[1].data) ||
+                dataKPTerbaru?.dokumen_pendaftaran_kp[1]?.data) ||
                 "Data tidak tersedia"}
             </p>
           )}
@@ -264,7 +257,7 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
               </>
             ) : (
               <p>
-                {(dataKPTerbaru && dataKPTerbaru.dokumen_pendaftaran_kp[2].data) ||
+                {(dataKPTerbaru && dataKPTerbaru.dokumen_pendaftaran_kp[2]?.data) ||
                   "Data tidak tersedia"}
               </p>
             )}
@@ -339,7 +332,7 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
                 name="data"
               />
             ) : (
-              <p>{dataKPTerbaru?.dokumen_pendaftaran_kp[3].data}</p>
+              <p>{dataKPTerbaru?.dokumen_pendaftaran_kp[3]?.data}</p>
             )}
             <Input readOnly className="hidden" name="nomorBerkas" value={3} />
           </CardContent>
@@ -393,28 +386,9 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
                   id="surat-penunjukkan-dosen-pembimbing"
                   name="data"
                 />
-                <Label
-                  className="font-bold text-sm mt-1"
-                  htmlFor="dosen-pembimbing"
-                >
-                  Dosen Pembimbing Kerja Praktik :{" "}
-                </Label>
-                <select
-                  className="dark:bg-black dark:border-white dark:border-[1px] rounded-lg block w-[100%] p-2"
-                  name="nipDospem"
-                  id="dosen-pembimbing"
-                >
-                  <option value="">Pilih Dosen Pembimbing</option>
-                  {dataDosen &&
-                    dataDosen.map((item) => (
-                      <option value={item.nip}>
-                        {item.nip} - {item.nama}
-                      </option>
-                    ))}
-                </select>
               </>
             ) : (
-              <p>{dataKPTerbaru?.dokumen_pendaftaran_kp[4].data}</p>
+              <p>{dataKPTerbaru?.dokumen_pendaftaran_kp[4]?.data}</p>
             )}
             <Input readOnly className="hidden" name="nomorBerkas" value={4} />
           </CardContent>
@@ -475,7 +449,7 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
                     name="data"
                   />
                 ) : (
-                  <p>{dataKPTerbaru?.dokumen_pendaftaran_kp[5].data}</p>
+                  <p>{dataKPTerbaru?.dokumen_pendaftaran_kp[5]?.data}</p>
                 )}
                 <Input
                   readOnly

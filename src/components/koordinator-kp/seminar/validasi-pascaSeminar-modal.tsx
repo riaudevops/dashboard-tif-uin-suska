@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 
 interface Dokumen {
@@ -200,7 +200,6 @@ const ValidasiPascaSeminarModal: FC<ValidasiPascaSeminarModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <Toaster position="top-right" />
       <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col p-0 rounded-xl bg-white dark:bg-gray-900">
         <div className="px-4 pt-12">
           <DialogHeader>

@@ -6,7 +6,7 @@ import autoTable from "jspdf-autotable";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import uinSuskaLogo from "@/assets/uin_suska_logo.jpg";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -501,18 +501,7 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
 				latitude: mahasiswaLocation.lat,
 				longitude: mahasiswaLocation.lng,
 			});
-			toast.success("Presensi berhasil!", {
-				style: {
-					background: "#10B981",
-					color: "#fff",
-					padding: "16px",
-					borderRadius: "8px",
-				},
-				iconTheme: {
-					primary: "#fff",
-					secondary: "#10B981",
-				},
-			});
+			toast.success("Presensi berhasil!");
 			queryClient.invalidateQueries({ queryKey: ["daily-report-saya"] });
 			setIsModalPresensiOpen(false);
 			setMahasiswaLocation(null);
@@ -520,18 +509,7 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
 		} catch (err) {
 			const errorMessage =
 				err instanceof Error ? err.message : "Presensi gagal!";
-			toast.error(errorMessage, {
-				style: {
-					background: "#EF4444",
-					color: "#fff",
-					padding: "16px",
-					borderRadius: "8px",
-				},
-				iconTheme: {
-					primary: "#fff",
-					secondary: "#EF4444",
-				},
-			});
+			toast.error(errorMessage);
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -928,7 +906,6 @@ const MahasiswaKerjaPraktikDailyReportPage = () => {
 
 	return (
 		<DashboardLayout>
-			<Toaster position="top-right" />
 			<CardHeader className="p-0 pt-0 pb-2 sm:pb-3 sm:pt-0">
 				<div className="flex">
 					<span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">

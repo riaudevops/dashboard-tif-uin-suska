@@ -8,7 +8,7 @@ import { CheckCircle2, ExternalLink, LayoutGridIcon } from "lucide-react";
 import Status from "../status";
 import { Label } from "@/components/ui/label";
 import InfoCard from "../informasi-seminar";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
 import {
   AlertDialog,
@@ -381,7 +381,6 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
 
   return (
     <div className="space-y-4">
-      <Toaster position="top-right" />
       <div className="flex mb-5">
         <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
           <span

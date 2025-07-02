@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 import { AxiosError } from "axios";
 

@@ -12,7 +12,7 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import APISeminarKP from "@/services/api/dosen/seminar-kp.service";
 import { useMutation } from "@tanstack/react-query";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 
 interface Student {
   id: string;
@@ -389,7 +389,6 @@ const NilaiSeminarPenguji: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <Toaster position="top-right" />
       <div className="">
         <div className="mb-4 flex gap-5">
           <button

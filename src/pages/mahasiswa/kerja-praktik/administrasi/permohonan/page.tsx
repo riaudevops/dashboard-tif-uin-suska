@@ -271,7 +271,7 @@ export default function MahasiswaKerjapraktikDaftarKpPermohonanPage() {
 										)
 									)}
 							{idLog && (
-								<LogComponent data={log.data} setIdLog={() => setIdLog("")} />
+								<LogComponent data={log?.data} setIdLog={() => setIdLog("")} />
 							)}
 						</CardContent>
 					</Card>

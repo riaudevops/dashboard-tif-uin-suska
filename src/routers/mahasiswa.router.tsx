@@ -13,96 +13,96 @@ import MahasiswaKerjaPraktikDailyReportDetailPage from "@/pages/mahasiswa/kerja-
 import MahasiswaKerjaPraktikBimbinganPage from "@/pages/mahasiswa/kerja-praktik/bimbingan/page";
 
 export const mahasiswaRouter = [
-  // {
-  //   path: "/mahasiswa/murojaah/statistik",
-  //   element: (
-  //     <ProtectedRoute roles={["mahasiswa"]}>
-  //       <MahasiswaSetoranHafalanStatistikPage />
-  //     </ProtectedRoute>
-  //   ),
-  // },
-  {
-    path: "/mahasiswa/murojaah/detail-riwayat",
-    element: (
-      <ProtectedRoute roles={["mahasiswa"]}>
-        <MahasiswaSetoranHafalanDetailRiwayatPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/mahasiswa/kerja-praktik/daftar-kp",
-    element: <Navigate to="/mahasiswa/kerja-praktik/daftar-kp/permohonan" />,
-  },
-  {
-    path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan",
-    element: (
-      // <ProtectedRoute roles={["mahasiswa"]}>
-      <MahasiswaKerjapraktikDaftarKpPermohonanPage />
-      // </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-pendaftaran",
-    element: (
-      // <ProtectedRoute roles={["mahasiswa"]}>
-      <MahasiswaKerjapraktikDaftarKpPermohonanFormPendaftaranPage />
-      // </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-daftar-instansi",
-    element: (
-      // <ProtectedRoute roles={["mahasiswa"]}>
-      <MahasiswaKerjapraktikDaftarKpPermohonanFormDaftarInstansiPage />
-      // </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/mahasiswa/kerja-praktik/daftar-kp/kelengkapan-berkas",
-    element: (
-      // <ProtectedRoute roles={["mahasiswa"]}>
-      <MahasiswaKerjapraktikDaftarKpKelengkapanBerkasPage />
-      // </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/mahasiswa/kerja-praktik/daily-report",
-    element: (
-      <ProtectedRoute roles={["mahasiswa"]}>
-        <MahasiswaKerjaPraktikDailyReportPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/mahasiswa/kerja-praktik/daily-report/detail",
-    element: (
-      <ProtectedRoute roles={["mahasiswa"]}>
-        <MahasiswaKerjaPraktikDailyReportDetailPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/mahasiswa/kerja-praktik/bimbingan",
-    element: (
-      <ProtectedRoute roles={["mahasiswa"]}>
-        <MahasiswaKerjaPraktikBimbinganPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/mahasiswa/kerja-praktik/seminar",
-    element: (
-      <ProtectedRoute roles={["mahasiswa"]}>
-        <MahasiswaSeminarDaftarPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/mahasiswa/kerja-praktik/seminar/validasi-berkas",
-    element: (
-      <ProtectedRoute roles={["mahasiswa"]}>
-        <MahasiswaSeminarValidasiBerkasPage />
-      </ProtectedRoute>
-    ),
-  },
+	// {
+	//   path: "/mahasiswa/murojaah/statistik",
+	//   element: (
+	//     <ProtectedRoute roles={["mahasiswa"]}>
+	//       <MahasiswaSetoranHafalanStatistikPage />
+	//     </ProtectedRoute>
+	//   ),
+	// },
+	{
+		path: "/mahasiswa/murojaah/detail-riwayat",
+		element: (
+			<ProtectedRoute roles={["mahasiswa"]}>
+				<MahasiswaSetoranHafalanDetailRiwayatPage />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: "/mahasiswa/kerja-praktik/daftar-kp",
+		element: <Navigate to="/mahasiswa/kerja-praktik/daftar-kp/permohonan" />,
+	},
+	{
+		path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan",
+		element: (
+			<ProtectedRoute roles={["mahasiswa"]}>
+				<MahasiswaKerjapraktikDaftarKpPermohonanPage />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-pendaftaran",
+		element: (
+			<ProtectedRoute roles={["mahasiswa"]}>
+				<MahasiswaKerjapraktikDaftarKpPermohonanFormPendaftaranPage />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-daftar-instansi",
+		element: (
+			<ProtectedRoute roles={["mahasiswa"]}>
+				<MahasiswaKerjapraktikDaftarKpPermohonanFormDaftarInstansiPage />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: "/mahasiswa/kerja-praktik/daftar-kp/kelengkapan-berkas",
+		element: (
+			<ProtectedRoute roles={["mahasiswa"]}>
+				<MahasiswaKerjapraktikDaftarKpKelengkapanBerkasPage />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: "/mahasiswa/kerja-praktik/daily-report",
+		element: (
+			<ProtectedRoute roles={["mahasiswa"]}>
+				<MahasiswaKerjaPraktikDailyReportPage />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: "/mahasiswa/kerja-praktik/daily-report/detail",
+		element: (
+			<ProtectedRoute roles={["mahasiswa"]}>
+				<MahasiswaKerjaPraktikDailyReportDetailPage />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: "/mahasiswa/kerja-praktik/bimbingan",
+		element: (
+			<ProtectedRoute roles={["mahasiswa"]}>
+				<MahasiswaKerjaPraktikBimbinganPage />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: "/mahasiswa/kerja-praktik/seminar",
+		element: (
+			<ProtectedRoute roles={["mahasiswa"]}>
+				<MahasiswaSeminarDaftarPage />
+			</ProtectedRoute>
+		),
+	},
+	{
+		path: "/mahasiswa/kerja-praktik/seminar/validasi-berkas",
+		element: (
+			<ProtectedRoute roles={["mahasiswa"]}>
+				<MahasiswaSeminarValidasiBerkasPage />
+			</ProtectedRoute>
+		),
+	},
 ];

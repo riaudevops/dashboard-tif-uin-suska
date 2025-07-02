@@ -1,5 +1,4 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import icon_dosenpa_page from "@/assets/svgs/dosen/setoran-hafalan/mahasiswa/icon_dosenpa_page.svg";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,17 +17,37 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { BackpackIcon, SquareArrowOutUpRightIcon } from "lucide-react";
+import {
+  BackpackIcon,
+  ClipboardList,
+  DownloadIcon,
+  Loader2,
+  SquareArrowOutUpRightIcon,
+  X,
+} from "lucide-react";
 import { tabListStateProps } from "@/interfaces/pages/dosen/setoran-hafalan/mahasiswa-pa/mahasiswa-pa.interface";
 import TableLoadingSkeleton from "@/components/globals/table-loading-skeleton";
+import ModalBoxRekap from "@/components/dosen/setoran-hafalan/ModalBoxRekapMuroja'ah";
+import { useState } from "react";
+import Icon_Dosenpa_Page from "@/assets/svgs/dosen/setoran-hafalan/mahasiswa/icon_dosenpa_page";
 
 export default function DosenSetoranHafalanMahasiswaPAPage() {
   const navigate = useNavigate();
+
+  const [openModalRekapMurojaah, setOpenModalRekapMurojaah] =
+    useState<boolean>(false);
 
   const { data: dataMahasiswa, isLoading } = useQuery({
     queryKey: ["mahasiswa-pa-saya"],
     queryFn: () => APISetoran.getDataMyMahasiswa().then((res) => res.data),
   });
+
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfName, setPdfName] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const [isLoadingCetakKartuMurojaah, setIsLoadingCetakKartuMurojaah] =
+    useState<boolean>(false);
 
   const { dataCurrent, setSearch, setTabState, tabState } =
     useFilteredMahasiswa(
@@ -36,12 +55,87 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
       "semua"
     );
 
+  const handleCetakRekapanMurojaah = async (bulan: string, tahun: string) => {
+    setIsLoadingCetakKartuMurojaah(true);
+    const response = await APISetoran.getKartuRekapanMurojaahPASaya(
+      bulan,
+      tahun
+    );
+    setIsLoadingCetakKartuMurojaah(false);
+    const pdfName = response.headers["content-disposition"]
+      .split("filename=")[1]
+      .replaceAll('"', "");
+    const blob = new Blob([response.data], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+
+    setPdfUrl(url);
+    setPdfName(pdfName);
+    setShowModal(true);
+    setOpenModalRekapMurojaah(false);
+  };
+
+  const handeDownloadPDF = async () => {
+    const link = document.createElement("a");
+    link.href = pdfUrl || "";
+    link.download = pdfName || "";
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
+
+    setShowModal(false);
+    setPdfUrl(null);
+    setPdfName(null);
+  };
+
   return (
     <>
+      {showModal && pdfUrl && (
+        <div className="fixed z-[999] w-screen h-screen flex items-center justify-center bg-black bg-opacity-70">
+          <div className="w-[80%] h-[90%] flex flex-col justify-center items-end gap-1">
+            <div className="flex gap-1 h-10 w-full">
+              <div className="w-full h-full rounded-md bg-green-800 flex justify-start items-center px-4">
+                <p className="text-white text-center font-medium">{pdfName}</p>
+              </div>
+              <Button
+                variant={"default"}
+                className="bg-yellow-700 active:bg-yellow-700 hover:bg-yellow-800 justify-center flex h-full hover:scale-95 active:scale-100"
+                onClick={handeDownloadPDF}
+              >
+                <DownloadIcon width={50} height={50} color="white" />
+              </Button>
+              <Button
+                variant={"destructive"}
+                className="justify-center flex h-full hover:scale-95 active:scale-100"
+                onClick={() => {
+                  setShowModal(false);
+                  setPdfUrl(null);
+                }}
+              >
+                <X width={50} height={50} color="white" />
+              </Button>
+            </div>
+            <iframe
+              src={pdfUrl}
+              title={pdfName || ""}
+              className="border rounded w-full h-full"
+            ></iframe>
+          </div>
+        </div>
+      )}
       <DashboardLayout>
+        <ModalBoxRekap
+          isOpen={openModalRekapMurojaah}
+          setIsOpen={setOpenModalRekapMurojaah}
+          handleButtonNext={(bulan: string, tahun: string) => {
+            handleCetakRekapanMurojaah(bulan, tahun);
+            setOpenModalRekapMurojaah(false);
+          }}
+          buttonLoading={isLoadingCetakKartuMurojaah}
+        />
+
         <div className="flex flex-col w-full">
           <div className="flex flex-col gap-3">
-            <div className="flex">
+            <div className="flex justify-between items-center">
               <span className="bg-white flex justify-center items-center shadow-sm text-gray-800 dark:text-gray-200 dark:bg-gray-900 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700 text-md font-medium tracking-tight">
                 <span
                   className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
@@ -49,10 +143,28 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                 <BackpackIcon className="w-4 h-4 mr-1.5" />
                 Mahasiswa PA Muroja'ah
               </span>
+
+              <div>
+                <Button
+                  variant="default"
+                  className="rounded-md text-white hover:bg-[#0B2B55] hover:active:scale-95 bg-[#0B2B55] dark:bg-[#16509d] flex items-center justify-center gap-1.5"
+                  onClick={() => {
+                    setOpenModalRekapMurojaah(true);
+                  }}
+                >
+                  {isLoadingCetakKartuMurojaah && (
+                    <Loader2 className="mr-1 animate-spin" />
+                  )}
+                  <ClipboardList className="w-4 h-4 mr-1.5" />
+                  Rekap Muroja'ah
+                </Button>
+              </div>
             </div>
             <div className="flex bg-[#86A7FC] px-4 py-2 relative rounded-lg">
               <div className="flex flex-col text-black gap-1 py-10 w-[72%]">
-                <div className="font-bold md:text-3xl text-2xl">Halo, Dosen PA!</div>
+                <div className="font-bold md:text-3xl text-2xl">
+                  Halo, Dosen PA!
+                </div>
                 <div className="z-10 hidden md:block">
                   Semangat bertugas! 🎉 Tahun ini kamu membimbing{" "}
                   {dataMahasiswa?.info_mahasiswa_pa.daftar_mahasiswa.length}{" "}
@@ -68,7 +180,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
 
               <div>
                 <div className="absolute bottom-0 right-0">
-                  <img className="md:w-auto w-[145px]" src={icon_dosenpa_page} alt="" />
+                  <Icon_Dosenpa_Page />
                 </div>
               </div>
             </div>
@@ -139,16 +251,24 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
               <TableHeader>
                 <TableRow className="border border-solid border-secondary bg-muted">
                   <TableHead className="text-center">No.</TableHead>
-                  <TableHead className="text-center whitespace-nowrap">Nama Mahasiswa</TableHead>
-                  <TableHead className="text-center whitespace-nowrap">NIM</TableHead>
-                  <TableHead className="text-center whitespace-nowrap">Semester</TableHead>
+                  <TableHead className="text-center whitespace-nowrap">
+                    Nama Mahasiswa
+                  </TableHead>
+                  <TableHead className="text-center whitespace-nowrap">
+                    NIM
+                  </TableHead>
+                  <TableHead className="text-center whitespace-nowrap">
+                    Semester
+                  </TableHead>
                   <TableHead className="text-center whitespace-nowrap">
                     Progres Muroja'ah
                   </TableHead>
                   <TableHead className="text-center px-10 whitespace-nowrap">
                     Terakhir Muroja'ah
                   </TableHead>
-                  <TableHead className="text-center whitespace-nowrap">Aksi</TableHead>
+                  <TableHead className="text-center whitespace-nowrap">
+                    Aksi
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className="border border-solid border-secondary">
@@ -170,8 +290,12 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                     }
                   >
                     <TableCell className="text-center">{index + 1}.</TableCell>
-                    <TableCell className="text-center whitespace-nowrap">{item.nama}</TableCell>
-                    <TableCell className="text-center whitespace-nowrap">{item.nim}</TableCell>
+                    <TableCell className="text-center whitespace-nowrap">
+                      {item.nama}
+                    </TableCell>
+                    <TableCell className="text-center whitespace-nowrap">
+                      {item.nim}
+                    </TableCell>
                     <TableCell className="text-center whitespace-nowrap">
                       {item.semester}
                     </TableCell>

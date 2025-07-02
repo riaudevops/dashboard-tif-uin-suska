@@ -1,8 +1,7 @@
-export default function Icon_Dosenpa_Page() {
+export default function Icon_Dosenpa_Page({ className }: { className: string }) {
   return (
     <svg
-      width="200"
-      height="200"
+      className={className}
       viewBox="0 0 244 226"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

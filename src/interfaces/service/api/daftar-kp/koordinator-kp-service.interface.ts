@@ -70,6 +70,7 @@ export interface AccTolakBerkasMahasiswaInterface {
   nomorBerkas: number;
   status: "Divalidasi" | "Ditolak";
   catatan?: string;
+  nipDospem? : string | null
 }
 
 export interface UbahTanggalPendaftaranKPInterface {

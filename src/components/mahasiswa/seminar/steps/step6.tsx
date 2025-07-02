@@ -17,7 +17,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Stepper from "@/components/mahasiswa/seminar/stepper";
 import Status from "../status";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 // Define the detailed score components
 interface ScoreDetails {

@@ -231,21 +231,6 @@ function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
                   id="no-telp-penanggung-jawab-instansi"
                   name="telpPenanggungJawabInstansi"
                 />
-
-                <Label
-                  className="text-sm font-bold"
-                  htmlFor="email-penanggung-jawab-instansi"
-                >
-                  Email Penanggung Jawab Instansi
-                </Label>
-                <Input
-                  required
-                  className=" block w-full border-[1px] border-slate-300 rounded-md p-1"
-                  placeholder="example@email.com"
-                  type="text"
-                  id="email-penanggung-jawab-instansi"
-                  name="emailPenanggungJawabInstansi"
-                />
               </Card>
             </Card>
           </CardContent>

@@ -5,7 +5,7 @@ export default class APISetoran {
   public static async getKartuRekapanMurojaahPASaya(bulan: string, tahun: string) {
     const axios = api();
     const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL_SETORAN_HAFALAN}/dosen/kartu-murojaah-saya?bulan=${bulan}&tahun=${tahun}`,
+      `${import.meta.env.VITE_BASE_URL_SETORAN_HAFALAN}/dosen/kartu-rekapan-murojaah-pa-saya?bulan=${bulan}&tahun=${tahun}`,
       { responseType: "arraybuffer" }
     );
     return response;
@@ -85,20 +85,4 @@ export default class APISetoran {
     return request.data;
   }
 
-  public static async getKartuRekapanMurojaahPASaya({
-    bulan,
-    tahun,
-  }: {
-    bulan: string;
-    tahun: string;
-  }) {
-    const axios = api();
-    const response = await axios.get(
-      `${
-        import.meta.env.VITE_BASE_URL_SETORAN_HAFALAN
-      }/dosen/kartu-rekapan-murojaah-saya?bulan=${bulan}&tahun=${tahun}`,
-      { responseType: "arraybuffer" }
-    );
-    return response;
-  }
 }

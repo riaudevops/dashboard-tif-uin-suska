@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
 	BookCheckIcon,
 	BookOpen,
@@ -454,7 +455,7 @@ const KartuMurojaahPage = () => {
 															{infoDataMahasiswa?.nama
 																.split(" ")
 																.slice(0, 2)
-																.map((word: any) => word.charAt(0))
+																.map((word: string) => word.charAt(0))
 																.join("")}
 														</span>
 													)}

@@ -15,15 +15,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ClipboardList } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import { ClipboardList, Loader2 } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
 
 export default function ModalBoxRekap({
   isOpen,
   setIsOpen,
+  handleButtonNext,
+  buttonLoading,
 }: {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  handleButtonNext: (bulan: string, tahun: string) => void;
+  buttonLoading?: boolean;
 }) {
   const [selectedMonth, setSelectedMonth] = useState<string>("");
   const [selectedYear, setSelectedYear] = useState<string>("");
@@ -58,30 +62,32 @@ export default function ModalBoxRekap({
       console.error("Bulan dan tahun wajib dipilih.");
       return;
     }
+
+    // Panggil fungsi handleButtonNext dengan bulan dan tahun yang dipilih
+    handleButtonNext(selectedMonth, selectedYear);
     console.log("Mencari rekapan untuk:", {
       bulan: selectedMonth,
       tahun: selectedYear,
     });
-    setIsOpen(false);
   };
+  useEffect(() => {
+    // Efek ini akan berjalan setiap kali nilai `isOpen` berubah.
+    if (isOpen) {
+      // Jika modal dibuka, reset state bulan dan tahun.
+      setSelectedMonth("");
+      setSelectedYear("");
+      console.log("Modal dibuka, state di-reset.");
+    }
+  }, [isOpen]);
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        setIsOpen(open);
-        if (!open) {
-          setSelectedMonth("");
-          setSelectedYear("");
-        }
-      }}
-    >
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-center">
             <div className="flex items-center justify-center gap-2">
               <ClipboardList className="h-5 w-5" />
               <span className="text-lg font-semibold">
-                Rekap Setoran Bulanan
+                Rekap Muroja'ah Juz 30
               </span>
             </div>
           </DialogTitle>
@@ -94,10 +100,10 @@ export default function ModalBoxRekap({
           {/* Grid responsif: 1 kolom di mobile, 2 kolom di layar lebih besar */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Select onValueChange={setSelectedMonth} value={selectedMonth}>
-              <SelectTrigger>
+              <SelectTrigger className="border border-gray-300">
                 <SelectValue placeholder="Pilih Bulan" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-[200px] overflow-y-auto">
                 <SelectGroup>
                   <SelectLabel>Bulan</SelectLabel>
                   {months.map((month) => (
@@ -110,7 +116,7 @@ export default function ModalBoxRekap({
             </Select>
 
             <Select onValueChange={setSelectedYear} value={selectedYear}>
-              <SelectTrigger>
+              <SelectTrigger className="border border-gray-300">
                 <SelectValue placeholder="Pilih Tahun" />
               </SelectTrigger>
               <SelectContent>
@@ -129,8 +135,11 @@ export default function ModalBoxRekap({
           <Button
             onClick={handleNext}
             disabled={!selectedMonth || !selectedYear}
-            className="w-full bg-green-600 hover:bg-green-700"
+            className="w-full bg-green-600 hover:bg-green-700 text-white dark:bg-green-500"
           >
+            {buttonLoading && (
+              <Loader2 className="mr-1 animate-spin" />
+            )}
             Selanjutnya
           </Button>
         </div>

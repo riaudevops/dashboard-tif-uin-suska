@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 import { useState, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { motion, AnimatePresence } from "framer-motion";
@@ -165,7 +165,6 @@ const TambahAgendaModal = ({
     <AnimatePresence>
       {isOpen && (
         <>
-          <Toaster position="top-right" />
           <motion.div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
             initial="hidden"

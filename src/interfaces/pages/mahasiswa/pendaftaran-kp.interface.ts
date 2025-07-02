@@ -7,7 +7,7 @@ export interface KPDetailsInterface {
   level_akses: number;
   judul_kp?: string;
   kelas_kp?: string;
-  document: {
+  dokumen_pendaftaran_kp: {
     idKriteria: number;
     status: "Terkirim" | "Divalidasi" | "Ditolak";
     message: string;
@@ -26,7 +26,7 @@ export interface KPDetailsInterface {
     nama: string;
     pembimbing_instansi: {
       nama: string;
-    };
+    }[];
   } | null;
   dosen_pembimbing?: {
     nama: string;

@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -36,20 +36,11 @@ function MahasiswaKerjaPraktikDaftarKPPermohonanFormDaftarInstansiPage() {
   const { mutate, isPending } = useMutation({
     mutationFn: (data: any) => APIDaftarKP.postDataInstansi(data),
     onSuccess: (data) => {
-      console.log(data);
-      toast({
-        title: "Sukses",
-        description: data.message || "Berhasil mengirimkan data instansi",
-        duration: 3000,
-      });
+      toast.success(data.message || "Berhasil mengirimkan data instansi");
     },
     onError: (data: ErrorInterface) => {
-      toast({
-        title: "Gagal",
-        description:
-          data?.response?.data?.message || "Gagal mengirimkan data instansi",
-        duration: 3000,
-      });
+      toast.error(
+          data?.response?.data?.message || "Gagal mengirimkan data instansi");
     },
   });
 

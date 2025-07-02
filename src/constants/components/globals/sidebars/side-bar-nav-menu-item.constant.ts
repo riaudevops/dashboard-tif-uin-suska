@@ -86,11 +86,21 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
       label: "Koordinator KP",
       menus: [
         {
+          title: "Monitoring Progres",
+          url: "/koordinator-kp/kerja-praktik/daily-report",
+          isActive: true,
+          icon: LayoutGridIcon,
+        },
+        {
           title: "Pengajuan",
           url: "/koordinator-kp/kerja-praktik/permohonan",
           isActive: true,
           icon: CalendarCheck2Icon,
           items: [
+            {
+              title: "Setup Tanggal",
+              url: "/koordinator-kp/option",
+            },
             {
               title: "Validasi Pemberkasan",
               url: "/koordinator-kp/kerja-praktik/permohonan",
@@ -100,12 +110,6 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
               url: "/koordinator-kp/kerja-praktik/instansi",
             },
           ]
-        },
-        {
-          title: "Monitoring Progres",
-          url: "/koordinator-kp/kerja-praktik/daily-report",
-          isActive: true,
-          icon: LayoutGridIcon,
         },
         {
           title: "Seminar",

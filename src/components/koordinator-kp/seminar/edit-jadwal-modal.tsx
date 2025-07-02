@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 
 const ConvertToStringDateFormat = (dateStr: string) => {

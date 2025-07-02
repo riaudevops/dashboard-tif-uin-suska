@@ -5,7 +5,7 @@ export interface KPDetailsInterface {
   tanggal_mulai: string;
   tanggal_selesai: string;
   level_akses: number;
-  document: any[];
+  dokumen_pendaftaran_kp: any[];
   catatan_penolakan?: string | null;
   alasan_lanjut_kp: string;
   mahasiswa: {

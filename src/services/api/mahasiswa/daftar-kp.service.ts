@@ -59,7 +59,6 @@ export default class APIDaftarKP {
     data,
     tanggalMulai,
     tanggalSelesai,
-    nipDospem,
   }: unggahBerkasPendafataranKPInterface): Promise<CommonResponse> {
     const axios = api();
     console.log(tanggalMulai);
@@ -73,7 +72,6 @@ export default class APIDaftarKP {
         data,
         tanggalMulai: new Date(tanggalMulai as unknown as string),
         tanggalSelesai: new Date(tanggalSelesai as unknown as string),
-        nipDospem,
       }
     );
 
@@ -99,8 +97,6 @@ export default class APIDaftarKP {
         namaInstansi: objectFormData.namaInstansi,
         alamatInstansi: objectFormData.alamatInstansi,
         jenisInstansi: objectFormData.jenisInstansi,
-        emailPenanggungJawabInstansi:
-          objectFormData.emailPenanggungJawabInstansi,
         namaPenanggungJawabInstansi: objectFormData.namaPenanggungJawabInstansi,
         telpPenanggungJawabInstansi: objectFormData.telpPenanggungJawabInstansi,
         profilInstansi: objectFormData.profilInstansi,

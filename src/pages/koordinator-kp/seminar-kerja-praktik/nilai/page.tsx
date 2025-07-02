@@ -1,6 +1,6 @@
 import { useState, useEffect, type FC } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import {
   Search,
@@ -668,7 +668,6 @@ const KoordinatorNilaiPage: FC = () => {
 
   return (
     <DashboardLayout>
-      <Toaster position="top-right" />
       <div className="transition-colors duration-300">
         <div className="space-y-4">
           <div className="flex justify-between items-center">

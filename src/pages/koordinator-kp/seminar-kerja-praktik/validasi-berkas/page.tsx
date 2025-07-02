@@ -11,7 +11,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -573,7 +573,6 @@ const KoordinatorValidasiBerkasPage: FC = () => {
 
   return (
     <DashboardLayout>
-      <Toaster position="top-right" />
       <div className="transition-colors duration-300">
         <div className="space-y-4">
           <div>

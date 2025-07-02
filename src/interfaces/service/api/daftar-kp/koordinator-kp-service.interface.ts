@@ -3,6 +3,7 @@ export interface PutMahasiswaParamsInterface {
   status?: "Gagal" | "Baru" | "Lanjut" | "Pilih Status" | null;
   tanggal_selesai?: Date;
   kelas_kp?: string;
+  nipDospem?: string | null;
   tujuan_surat_instansi?: string;
   link_surat_penolakan_instansi?: string;
   link_surat_pengantar?: string;
@@ -70,7 +71,7 @@ export interface AccTolakBerkasMahasiswaInterface {
   nomorBerkas: number;
   status: "Divalidasi" | "Ditolak";
   catatan?: string;
-  nipDospem? : string | null
+  nipDospem?: string | null;
 }
 
 export interface UbahTanggalPendaftaranKPInterface {

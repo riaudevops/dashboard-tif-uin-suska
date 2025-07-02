@@ -65,8 +65,8 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
     mutationFn: (data: any) => APIDaftarKP.unggahBerkasPendafataranKP(data),
     onSuccess: (data: any) => {
       toast.success(
-          data.message ||
-          "Berhasil mengirimkan surat perpanjangan kerja praktik");
+        data.message || "Berhasil mengirimkan surat perpanjangan kerja praktik"
+      );
       queryClient.invalidateQueries({
         queryKey: ["kp-terbaru-kelengkapan-berkas"],
         exact: true,
@@ -76,8 +76,9 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
     },
     onError: (data: ErrorInterface) => {
       toast.error(
-          data?.response?.data?.message ||
-          "Gagal mengirimkan surat perpanjangan kerja praktik");
+        data?.response?.data?.message ||
+          "Gagal mengirimkan surat perpanjangan kerja praktik"
+      );
     },
   });
 
@@ -106,6 +107,15 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
       }),
   });
 
+  const { data: dataPembimbingInstansi, isError: isErrorPembimbingInstansi } =
+    useQuery({
+      queryKey: ["halaman-kelengkapan-berkas-data-pembimbing-instansi"],
+      queryFn: () =>
+        APIDaftarKP.getPembimbingInstansi().then((res) => res.data),
+    });
+
+  console.log(dataPembimbingInstansi);
+
   const { data: tanggalKP } = useQuery({
     queryKey: ["tanggal-daftar-kelengkapan-berkas"],
     queryFn: () => APIDaftarKP.getTanggalDaftarKP().then((res) => res.data),
@@ -119,7 +129,10 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
     isPendaftaranKPLanjutClosed = IsPendaftaranKPLanjutClosedSync(tanggalKP);
   }
 
-  if (dataKPTerbaru && dataKPTerbaru?.dokumen_pendaftaran_kp[1]?.status === "Ditolak") {
+  if (
+    dataKPTerbaru &&
+    dataKPTerbaru?.dokumen_pendaftaran_kp[1]?.status === "Ditolak"
+  ) {
     statusValidasi.style = "bg-red-600";
     statusValidasi.message =
       (dataKPTerbaru && dataKPTerbaru?.dokumen_pendaftaran_kp[1]?.catatan) ||
@@ -188,11 +201,14 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
     if (dataKPTerbaru.dokumen_pendaftaran_kp[2]?.status === "Ditolak") {
       statusValidasi.style = "bg-red-600";
       statusValidasi.message =
-        dataKPTerbaru.dokumen_pendaftaran_kp[2]?.catatan || "Periksa kembali dokumen anda";
+        dataKPTerbaru.dokumen_pendaftaran_kp[2]?.catatan ||
+        "Periksa kembali dokumen anda";
     } else if (dataKPTerbaru.dokumen_pendaftaran_kp[2]?.status === "Terkirim") {
       statusValidasi.style = "bg-blue-400";
       statusValidasi.message = "menunggu divalidasi oleh Koordinator KP";
-    } else if (dataKPTerbaru.dokumen_pendaftaran_kp[2]?.status === "Divalidasi") {
+    } else if (
+      dataKPTerbaru.dokumen_pendaftaran_kp[2]?.status === "Divalidasi"
+    ) {
       statusValidasi.style = "bg-green-600";
       statusValidasi.message =
         "Berkas KP berhasil divalidasi oleh Koordinator KP";
@@ -231,6 +247,42 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
                   name="data"
                 />
                 <Label
+                  className="text-sm font-bold mt-6"
+                  htmlFor="pembimbing-instansi"
+                >
+                  Nama Pembimbing Instansi / Perusahaan
+                </Label>
+                <CardContent className="p-0 rounded-md border-black border-[1px]">
+                  <select
+                    required
+                    name="email_pembimbing_instansi"
+                    id="pembimbing-instansi"
+                    className="dark:bg-black dark:border-white dark:border-[1px] rounded-lg block w-[100%] p-2"
+                  >
+                    <option value="">Pilih Pembimbing Instansi</option>
+                    {dataPembimbingInstansi &&
+                      dataPembimbingInstansi.map(({ email, nama }: any) => (
+                        <option key={email} value={email}>
+                          {nama}
+                        </option>
+                      ))}
+                  </select>
+                </CardContent>
+
+                <CardDescription className="text-sm text-slate-500">
+                  Pembimbing Instansi belum terdaftar? Daftarkan segera{" "}
+                  <Link
+                    className="text-blue-500"
+                    to={{
+                      pathname:
+                        "/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-daftar-pembimbing-instansi",
+                    }}
+                  >
+                    Disini
+                  </Link>
+                </CardDescription>
+
+                <Label
                   className="font-bold text-sm mt-1"
                   htmlFor="tanggal-mulai"
                 >
@@ -257,7 +309,8 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
               </>
             ) : (
               <p>
-                {(dataKPTerbaru && dataKPTerbaru.dokumen_pendaftaran_kp[2]?.data) ||
+                {(dataKPTerbaru &&
+                  dataKPTerbaru.dokumen_pendaftaran_kp[2]?.data) ||
                   "Data tidak tersedia"}
               </p>
             )}
@@ -271,11 +324,14 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
     if (dataKPTerbaru.dokumen_pendaftaran_kp[3]?.status === "Ditolak") {
       statusValidasi.style = "bg-red-600";
       statusValidasi.message =
-        dataKPTerbaru.dokumen_pendaftaran_kp[3]?.catatan || "Periksa kembali dokumen anda";
+        dataKPTerbaru.dokumen_pendaftaran_kp[3]?.catatan ||
+        "Periksa kembali dokumen anda";
     } else if (dataKPTerbaru.dokumen_pendaftaran_kp[3]?.status === "Terkirim") {
       statusValidasi.style = "bg-blue-400";
       statusValidasi.message = "menunggu divalidasi oleh Koordinator KP";
-    } else if (dataKPTerbaru.dokumen_pendaftaran_kp[3]?.status === "Divalidasi") {
+    } else if (
+      dataKPTerbaru.dokumen_pendaftaran_kp[3]?.status === "Divalidasi"
+    ) {
       statusValidasi.style = "bg-green-600";
       statusValidasi.message =
         "Berkas KP berhasil divalidasi oleh Koordinator KP";
@@ -344,11 +400,14 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
     if (dataKPTerbaru.dokumen_pendaftaran_kp[4]?.status === "Ditolak") {
       statusValidasi.style = "bg-red-600";
       statusValidasi.message =
-        dataKPTerbaru.dokumen_pendaftaran_kp[4]?.catatan || "Periksa kembali dokumen anda";
+        dataKPTerbaru.dokumen_pendaftaran_kp[4]?.catatan ||
+        "Periksa kembali dokumen anda";
     } else if (dataKPTerbaru.dokumen_pendaftaran_kp[4]?.status === "Terkirim") {
       statusValidasi.style = "bg-blue-400";
       statusValidasi.message = "menunggu divalidasi oleh Koordinator KP";
-    } else if (dataKPTerbaru.dokumen_pendaftaran_kp[4]?.status === "Divalidasi") {
+    } else if (
+      dataKPTerbaru.dokumen_pendaftaran_kp[4]?.status === "Divalidasi"
+    ) {
       statusValidasi.style = "bg-green-600";
       statusValidasi.message =
         "Berkas KP berhasil divalidasi oleh Koordinator KP";
@@ -400,11 +459,14 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
     if (dataKPTerbaru.dokumen_pendaftaran_kp[5]?.status === "Ditolak") {
       statusValidasi.style = "bg-red-600";
       statusValidasi.message =
-        dataKPTerbaru.dokumen_pendaftaran_kp[5]?.catatan || "Periksa kembali dokumen anda";
+        dataKPTerbaru.dokumen_pendaftaran_kp[5]?.catatan ||
+        "Periksa kembali dokumen anda";
     } else if (dataKPTerbaru.dokumen_pendaftaran_kp[5]?.status === "Terkirim") {
       statusValidasi.style = "bg-blue-400";
       statusValidasi.message = "menunggu divalidasi oleh Koordinator KP";
-    } else if (dataKPTerbaru.dokumen_pendaftaran_kp[5]?.status === "Divalidasi") {
+    } else if (
+      dataKPTerbaru.dokumen_pendaftaran_kp[5]?.status === "Divalidasi"
+    ) {
       statusValidasi.style = "bg-green-600";
       statusValidasi.message =
         "Berkas KP berhasil divalidasi oleh Koordinator KP";
@@ -501,7 +563,7 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
       </Card>
     );
   }
-  if (!dataKPTerbaru && isErrorDataKPTerbaru) {
+  if (!dataKPTerbaru || isErrorDataKPTerbaru || isErrorPembimbingInstansi) {
     return (
       <Card className="p-2 absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2">
         Data Tidak Ditemukan
@@ -544,7 +606,9 @@ export default function MahasiswaKerjapraktikDaftarKPKelengkapanBerkasPage() {
 
                 return (
                   <CardProgressKelengkapanBerkas
-                    statusBerkas={dataKPTerbaru?.dokumen_pendaftaran_kp[i + 1]?.status}
+                    statusBerkas={
+                      dataKPTerbaru?.dokumen_pendaftaran_kp[i + 1]?.status
+                    }
                     key={i}
                     onClick={() => {
                       if (status) setCurrentPage(i * 2 + 1);

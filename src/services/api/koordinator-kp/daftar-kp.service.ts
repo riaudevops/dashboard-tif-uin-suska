@@ -61,6 +61,7 @@ export default class APIDaftarKP {
     nomorBerkas,
     status,
     catatan,
+    nipDospem
   }: AccTolakBerkasMahasiswaInterface) {
     const axios = api();
     const response = await axios.patch(
@@ -71,6 +72,7 @@ export default class APIDaftarKP {
         nomorBerkas,
         status,
         catatan,
+        nipDospem
       }
     );
     const data = response.data;

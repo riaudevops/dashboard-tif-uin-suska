@@ -3,18 +3,11 @@ export interface KPDetailsInterface {
   status: string;
   tujuan_surat_instansi: string;
   tanggal_mulai: string;
-  tanggal_selesai?: string;
+  tanggal_selesai: string;
   level_akses: number;
-  judul_kp?: string;
-  kelas_kp?: string;
-  dokumen_pendaftaran_kp: {
-    idKriteria: number;
-    status: "Terkirim" | "Divalidasi" | "Ditolak";
-    message: string;
-    data: string;
-  }[];
+  dokumen_pendaftaran_kp: any[];
   catatan_penolakan?: string | null;
-  alasan_lanjut_kp?: string;
+  alasan_lanjut_kp: string;
   mahasiswa: {
     nim: string;
     nama: string;
@@ -26,7 +19,7 @@ export interface KPDetailsInterface {
     nama: string;
     pembimbing_instansi: {
       nama: string;
-    }[];
+    };
   } | null;
   dosen_pembimbing?: {
     nama: string;

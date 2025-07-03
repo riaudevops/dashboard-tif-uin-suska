@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm, Controller } from "react-hook-form";
@@ -426,18 +426,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
 
   const handleBulkEvaluation = async (data: EvaluationFormData) => {
     if (selectedRows.length === 0) {
-      toast.error("Pilih setidaknya satu laporan untuk evaluasi", {
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-          padding: "16px",
-          borderRadius: "8px",
-        },
-        iconTheme: {
-          primary: "#fff",
-          secondary: "#EF4444",
-        },
-      });
+      toast.error("Pilih setidaknya satu laporan untuk evaluasi");
       return;
     }
     try {
@@ -456,33 +445,10 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
         (result) => result.status === "rejected"
       ).length;
       if (failedCount === 0) {
-        toast.success(`Berhasil mengevaluasi ${selectedRows.length} laporan`, {
-          style: {
-            background: "#10B981",
-            color: "#fff",
-            padding: "16px",
-            borderRadius: "8px",
-          },
-          iconTheme: {
-            primary: "#fff",
-            secondary: "#10B981",
-          },
-        });
+        toast.success(`Berhasil mengevaluasi ${selectedRows.length} laporan`);
       } else {
         toast.error(
-          `Gagal mengevaluasi ${failedCount} dari ${selectedRows.length} laporan`,
-          {
-            style: {
-              background: "#EF4444",
-              color: "#fff",
-              padding: "16px",
-              borderRadius: "8px",
-            },
-            iconTheme: {
-              primary: "#fff",
-              secondary: "#EF4444",
-            },
-          }
+          `Gagal mengevaluasi ${failedCount} dari ${selectedRows.length} laporan`
         );
       }
       setIsBulkEvalModalOpen(false);
@@ -490,35 +456,13 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
       setSelectedRows([]);
       setSelectAll(false);
     } catch (error) {
-      toast.error("Gagal mengevaluasi laporan: Terjadi kesalahan tak terduga", {
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-          padding: "16px",
-          borderRadius: "8px",
-        },
-        iconTheme: {
-          primary: "#fff",
-          secondary: "#EF4444",
-        },
-      });
+      toast.error("Gagal mengevaluasi laporan: Terjadi kesalahan tak terduga");
     }
   };
 
   const handleAssessment = async (data: AssessmentFormData) => {
     if (!id) {
-      toast.error("ID mahasiswa tidak ditemukan", {
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-          padding: "16px",
-          borderRadius: "8px",
-        },
-        iconTheme: {
-          primary: "#fff",
-          secondary: "#EF4444",
-        },
-      });
+      toast.error("ID mahasiswa tidak ditemukan");
       return;
     }
     try {
@@ -842,7 +786,6 @@ const PembimbingInstansiKerjaPraktikMahasiswaDetailPage = () => {
 
   return (
     <>
-      <Toaster position="top-right" />
       <div className="min-h-screen p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
         <div className="flex items-center mb-6">
           <Button

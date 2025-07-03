@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { motion, AnimatePresence } from "framer-motion";
 import APIKerjaPraktik from "@/services/api/mahasiswa/daily-report.service";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 
 interface EditDetailAgendaModalProps {
   isOpen: boolean;
@@ -144,7 +144,7 @@ const EditDetailAgendaModal = ({
     <AnimatePresence>
       {isOpen && (
         <>
-          <Toaster position="top-right" />
+  
           <motion.div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
             initial="hidden"

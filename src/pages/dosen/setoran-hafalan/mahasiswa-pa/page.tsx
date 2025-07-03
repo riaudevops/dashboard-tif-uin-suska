@@ -71,10 +71,31 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
     setPdfUrl(url);
     setPdfName(pdfName);
     setShowModal(true);
-    setOpenModalRekapMurojaah(false);
+    setOpenModalRekapMurojaah(true);
   };
 
-  const handeDownloadPDF = async () => {
+  const handleCetakKartuMurojaahMobile = async (bulan: string, tahun: string) => {
+    setIsLoadingCetakKartuMurojaah(true);
+    const response = await APISetoran.getKartuRekapanMurojaahPASaya(
+      bulan,
+      tahun
+    );    
+    const pdfName = response.headers["content-disposition"]
+    .split("filename=")[1]
+    .replaceAll('"', "");
+    const blob = new Blob([response.data], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.href = url || "";
+    link.download = pdfName || "";
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
+    setIsLoadingCetakKartuMurojaah(false);
+  };
+
+  const handleDownloadPDF = async () => {
     const link = document.createElement("a");
     link.href = pdfUrl || "";
     link.download = pdfName || "";
@@ -99,7 +120,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
               <Button
                 variant={"default"}
                 className="bg-yellow-700 active:bg-yellow-700 hover:bg-yellow-800 justify-center flex h-full hover:scale-95 active:scale-100"
-                onClick={handeDownloadPDF}
+                onClick={handleDownloadPDF}
               >
                 <DownloadIcon width={50} height={50} color="white" />
               </Button>
@@ -128,7 +149,10 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
           setIsOpen={setOpenModalRekapMurojaah}
           handleButtonNext={(bulan: string, tahun: string) => {
             handleCetakRekapanMurojaah(bulan, tahun);
-            setOpenModalRekapMurojaah(false);
+            // setOpenModalRekapMurojaah(false);
+          }}
+          handleButtonNextMobile={(bulan: string, tahun: string) => {
+            handleCetakKartuMurojaahMobile(bulan, tahun);
           }}
           buttonLoading={isLoadingCetakKartuMurojaah}
         />
@@ -147,7 +171,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
               <div>
                 <Button
                   variant="default"
-                  className="rounded-md text-white hover:bg-[#0B2B55] hover:active:scale-95 bg-[#0B2B55] dark:bg-[#16509d] flex items-center justify-center gap-1.5"
+                  className="flex rounded-md text-white hover:bg-[#0B2B55] hover:active:scale-95 bg-[#0B2B55] dark:bg-[#16509d] items-center justify-center gap-2"
                   onClick={() => {
                     setOpenModalRekapMurojaah(true);
                   }}
@@ -155,13 +179,13 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
                   {isLoadingCetakKartuMurojaah && (
                     <Loader2 className="mr-1 animate-spin" />
                   )}
-                  <ClipboardList className="w-4 h-4 mr-1.5" />
-                  Rekap Muroja'ah
+                  <ClipboardList className="w-4 h-4" />
+                  <span className="hidden md:block">Rekap Muroja'ah</span>
                 </Button>
               </div>
             </div>
             <div className="flex bg-[#86A7FC] px-4 py-2 relative rounded-lg">
-              <div className="flex flex-col text-black gap-1 py-10 w-[72%]">
+              <div className="flex flex-col text-black gap-1 py-10 md:pl-3 w-[72%]">
                 <div className="font-bold md:text-3xl text-2xl">
                   Halo, Dosen PA!
                 </div>
@@ -180,7 +204,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
 
               <div>
                 <div className="absolute bottom-0 right-0">
-                  <Icon_Dosenpa_Page />
+                  <Icon_Dosenpa_Page className='md:w-[180px] w-[145px]' />
                 </div>
               </div>
             </div>

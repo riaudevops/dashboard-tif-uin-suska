@@ -8,7 +8,7 @@ import { CheckCircle2, ExternalLink, LayoutGridIcon } from "lucide-react";
 import Status from "../status";
 import { Label } from "@/components/ui/label";
 import InfoCard from "../informasi-seminar";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
 import {
   AlertDialog,
@@ -201,9 +201,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
     },
     onSuccess: (response, newIdPengajuan) => {
       console.log("ID Pengajuan berhasil dikirim:", response);
-      toast({
-        title: "👌 Berhasil",
-        description: `ID Pengajuan berhasil dikirim`,
+      toast.success("ID Pengajuan berhasil dikirim", {
         duration: 3000,
       });
       setLastSubmittedId(newIdPengajuan); // Simpan ID yang dikirim
@@ -211,9 +209,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
       queryClient.invalidateQueries({ queryKey: ["seminar-kp-step2"] });
     },
     onError: (error: any) => {
-      toast({
-        title: "❌ Gagal",
-        description: `Gagal mengirim ID Pengajuan: ${error.message}`,
+      toast.error(`${error.response.data.message}`, {
         duration: 3000,
       });
     },
@@ -256,7 +252,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
           kontakPembimbing:
             data.data.pendaftaran_kp[0]?.dosen_pembimbing?.no_hp ||
             "Belum diisi",
-          lamaKerjaPraktek: `${
+          lamaKerjaPraktik: `${
             data.data.pendaftaran_kp[0]?.tanggal_mulai
               ? new Date(
                   data.data.pendaftaran_kp[0].tanggal_mulai
@@ -283,7 +279,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
 
   const informasiSeminarFields = [
     "lokasi",
-    "lamaKerjaPraktek",
+    "lamaKerjaPraktik",
     "dosenPembimbing",
     "kontakPembimbing",
     "judul",
@@ -356,9 +352,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
       console.log(`Sending ID Pengajuan: ${idPengajuan}`);
       mutation.mutate(idPengajuan);
     } else {
-      toast({
-        title: "⚠️ Peringatan",
-        description: "Harap masukkan ID Pengajuan terlebih dahulu!",
+      toast.error("Harap masukkan ID Pengajuan terlebih dahulu!", {
         duration: 3000,
       });
     }
@@ -370,11 +364,10 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
       return <div>Loading...</div>;
     }
     if (isError) {
-      toast({
-        title: "❌ Gagal",
-        description: `Gagal mengambil data: ${error.message}`,
+      toast.error(`Gagal mengambil data: ${error.message}`, {
         duration: 3000,
       });
+
       return <div>Error: {error.message}</div>;
     }
     return (

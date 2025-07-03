@@ -32,6 +32,11 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
       label: "Kerja Praktik",
       menus: [
         {
+          title: "Pengajuan",
+          url: "/mahasiswa/kerja-praktik/daftar-kp/permohonan",
+          icon: CalendarCheck2Icon,
+        },
+        {
           title: "Daily Report",
           url: "/mahasiswa/kerja-praktik/daily-report",
           icon: BookOpen,
@@ -84,7 +89,27 @@ export const SideBarNavMenuItems: SideBarNavMenuItemsProps = {
           title: "Monitoring Progres",
           url: "/koordinator-kp/kerja-praktik/daily-report",
           isActive: true,
-          icon: LayoutGridIcon,          
+          icon: LayoutGridIcon,
+        },
+        {
+          title: "Pengajuan",
+          url: "/koordinator-kp/kerja-praktik/permohonan",
+          isActive: true,
+          icon: CalendarCheck2Icon,
+          items: [
+            {
+              title: "Setup Tanggal",
+              url: "/koordinator-kp/option",
+            },
+            {
+              title: "Validasi Pemberkasan",
+              url: "/koordinator-kp/kerja-praktik/permohonan",
+            },
+            {
+              title: "Instansi",
+              url: "/koordinator-kp/kerja-praktik/instansi",
+            },
+          ]
         },
         {
           title: "Seminar",

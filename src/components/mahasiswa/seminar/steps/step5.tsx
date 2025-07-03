@@ -7,7 +7,7 @@ import { LayoutGridIcon, RefreshCw } from "lucide-react";
 import Status from "../status";
 import { Textarea } from "@/components/ui/textarea";
 import DocumentCard from "../formulir-dokumen";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
 import {
   AlertDialog,
@@ -235,21 +235,36 @@ const Step5: FC<Step5Props> = ({ activeStep }) => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: APISeminarKP.postLinkDokumen,
-    onSuccess: (response) => {
+    onSuccess: (response, variables) => {
+      // variables contains the data sent to mutate, including doc info
       console.log("Response from API:", response);
-      toast({
-        title: "👌 Berhasil",
-        description: `Dokumen berhasil dikirim`,
-        duration: 3000,
-      });
+      toast.success(
+        `Berhasil mengirim link dokumen "${
+          variables?.url
+            ? Object.keys(DOCUMENT_URLS).find(
+                (key) => DOCUMENT_URLS[key] === variables.url
+              )
+            : ""
+        }"`,
+        {
+          duration: 3000,
+        }
+      );
       queryClient.invalidateQueries({ queryKey: ["seminar-kp-step5"] });
     },
-    onError: (error: any) => {
-      toast({
-        title: "❌ Gagal",
-        description: `Gagal mengirim dokumen: ${error.message}`,
-        duration: 3000,
-      });
+    onError: (error: any, variables) => {
+      toast.error(
+        `Gagal mengirim link dokumen "${
+          variables?.url
+            ? Object.keys(DOCUMENT_URLS).find(
+                (key) => DOCUMENT_URLS[key] === variables.url
+              )
+            : ""
+        }" ${error.response.data.message}`,
+        {
+          duration: 3000,
+        }
+      );
     },
   });
 
@@ -369,9 +384,7 @@ const Step5: FC<Step5Props> = ({ activeStep }) => {
       return doc;
     });
     setFormDocuments(resetDocs);
-    toast({
-      title: "✅ Berhasil",
-      description: "Formulir berhasil dikosongkan untuk status default/ditolak",
+    toast.success("Formulir berhasil dikosongkan", {
       duration: 3000,
     });
   };
@@ -395,21 +408,17 @@ const Step5: FC<Step5Props> = ({ activeStep }) => {
     );
 
     if (missingMandatory.length > 0) {
-      toast({
-        title: "⚠️ Peringatan",
-        description: `Harap lengkapi dokumen wajib berikut: ${missingMandatory.join(
-          ", "
-        )}`,
-        duration: 3000,
-      });
+      toast.error(
+        `Harap lengkapi dokumen wajib berikut: ${missingMandatory.join(", ")}`,
+        {
+          duration: 3000,
+        }
+      );
       return;
     }
 
     if (documentsToSubmit.length === 0) {
-      toast({
-        title: "⚠️ Peringatan",
-        description:
-          "Harap isi setidaknya satu link dokumen untuk status default/ditolak!",
+      toast.error(`Formulir belum diisi`, {
         duration: 3000,
       });
       return;
@@ -432,11 +441,10 @@ const Step5: FC<Step5Props> = ({ activeStep }) => {
       documentsToSubmit.forEach((doc) => {
         const url = DOCUMENT_URLS[doc.title];
         if (!url) {
-          toast({
-            title: "⚠️ Peringatan",
-            description: `URL untuk dokumen "${doc.title}" tidak ditemukan!`,
+          toast.error(`URL untuk dokumen "${doc.title}" tidak ditemukan!`, {
             duration: 3000,
           });
+
           return;
         }
 
@@ -456,9 +464,7 @@ const Step5: FC<Step5Props> = ({ activeStep }) => {
       return <div>Loading...</div>;
     }
     if (isError) {
-      toast({
-        title: "❌ Gagal",
-        description: `Gagal mengambil data: ${error.message}`,
+      toast.error(`Gagal mengambil data: ${error.message}`, {
         duration: 3000,
       });
       return <div>Error: {error.message}</div>;

@@ -1,4 +1,3 @@
-import { SearchX } from "lucide-react";
 import { useMemo } from "react";
 
 // --- Helper Functions & Components ---
@@ -340,35 +339,6 @@ const TimelineItem = ({ item }: { item: LogDataProps }) => {
 		</div>
 	);
 };
-
-const EmptyLogState = () => (
-  <div className="relative flex flex-col items-center justify-center rounded-lg p-8 text-center min-h-[50vh] overflow-hidden">
-    {/* Animated Background - Still visible through the glass */}
-    <div className="absolute inset-0 bg-slate-900 z-0">
-      <div className="absolute inset-0 stars-bg"></div>
-      <div className="absolute inset-0 twinkling-bg"></div>
-    </div>
-
-    {/* Content with new animations and simplified icon */}
-    <div className="relative z-10 flex flex-col items-center animate-fade-in-up">
-      <div className="relative w-28 h-28 flex items-center justify-center animate-pulse-deep">
-        {/* The pulsing glow now has more color */}
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/80 via-slate-800 to-purple-900/80 rounded-full blur-2xl opacity-90"></div>
-        {/* Simplified (polos) icon background */}
-        <div className="relative w-24 h-24 grid place-items-center bg-transparent rounded-full">
-          <SearchX className="w-12 h-12 text-slate-400" />
-        </div>
-      </div>
-
-      <h2 className="mt-8 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-slate-300 via-slate-400 to-slate-300 animate-text-shimmer bg-[200%_auto]">
-        Belum Ada Catatan Log
-      </h2>
-      <p className="mt-3 max-w-sm text-slate-400">
-        Semua catatan aktivitas yang relevan akan ditampilkan di panel ini.
-      </p>
-    </div>
-  </div>
-);
 
 // --- Main App Component ---
 export default function LogAktivitas({ logData }: { logData: LogDataProps[] }) {

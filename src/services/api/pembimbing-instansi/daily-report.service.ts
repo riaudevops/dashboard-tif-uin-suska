@@ -1,6 +1,16 @@
 import { api } from "@/lib/axios-instance";
 
 export default class APIKerjaPraktik {
+  public static async putAktivasiAkun(id: string) {
+    const axios = api();
+    const request = await axios.put(
+      `${
+        import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
+      }/pembimbing-instansi/aktivasi-akun/${id}`
+    );
+    return request.data;
+  }
+
   public static async getMahasiswaInstansiSaya(id: string) {
     const axios = api();
     const response = await axios.get(

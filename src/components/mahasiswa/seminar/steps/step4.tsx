@@ -6,7 +6,7 @@ import Stepper from "@/components/mahasiswa/seminar/stepper";
 import InfoCard from "../informasi-seminar";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
 
 // Types
@@ -350,7 +350,7 @@ const Step4: FC<Step4Props> = ({ activeStep }) => {
       dosenPenguji:
         data.data.pendaftaran_kp?.[0]?.dosen_penguji?.nama || "Belum diisi",
       lokasi: data.data.pendaftaran_kp?.[0]?.instansi?.nama || "Belum diisi",
-      lamaKerjaPraktek: `${
+      lamaKerjaPraktik: `${
         data.data.pendaftaran_kp?.[0]?.tanggal_mulai
           ? new Date(
               data.data.pendaftaran_kp[0].tanggal_mulai
@@ -387,16 +387,14 @@ const Step4: FC<Step4Props> = ({ activeStep }) => {
     "dosenPembimbing",
     "dosenPenguji",
     "lokasi",
-    "lamaKerjaPraktek",
+    "lamaKerjaPraktik",
     "kontakPembimbing",
     "kontakPenguji",
   ];
 
   // Penanganan error fetching
   if (isError) {
-    toast({
-      title: "❌ Gagal",
-      description: `Gagal mengambil data: ${error.message}`,
+    toast.error(`Gagal mengambil data: ${error.message}`, {
       duration: 3000,
     });
   }

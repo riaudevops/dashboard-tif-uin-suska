@@ -300,7 +300,7 @@ const PembimbingInstansiKerjaPraktikMahasiswaPage = () => {
 							Silakan aktifkan akun untuk melanjutkan akses dashboard.
 						</DialogDescription>
 					</DialogHeader>
-					<div className="flex flex-col gap-4 mt-6">
+					<div className="flex flex-col gap-4 mt-1">
 						<Button
 							className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition"
 							onClick={handleAktivasiAkun}

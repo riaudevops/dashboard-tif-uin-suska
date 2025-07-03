@@ -34,12 +34,10 @@ export default class APISetoran {
   public static async getKartuMurojaahMahasiswaByNIM(nim: string) {
     const axios = api();
     const response = await axios.get(
-      `${
-        import.meta.env.VITE_BASE_URL_SETORAN_HAFALAN
-      }/mahasiswa/kartu-murojaah/${nim}`
+      `${import.meta.env.VITE_BASE_URL_SETORAN_HAFALAN}/mahasiswa/kartu-murojaah/${nim}`,
+      { responseType: "arraybuffer" }
     );
-    const data = response.data;
-    return data;
+    return response;
   }
 
   public static async postSetoranSurah({

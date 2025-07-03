@@ -189,14 +189,7 @@ const ValidasiPendaftaranSeminarModal: FC<
 
     try {
       await Promise.all([...validationPromises, ...rejectionPromises]);
-      toast(
-        <span>
-          Permohonan <b>{student?.name}</b> berhasil dikonfirmasi
-        </span>,
-        {
-          duration: 3000,
-        }
-      );
+      toast.success(`Permohonan ${student?.name} berhasil dikonfirmasi`);
       queryClient.invalidateQueries({
         queryKey: ["koordinator-seminar-kp-detail", student?.nim],
       });
@@ -205,9 +198,7 @@ const ValidasiPendaftaranSeminarModal: FC<
       });
       onClose(); // Tutup modal setelah berhasil
     } catch (error) {
-      toast.error(`Terjadi kesalahan: ${(error as Error).message}`, {
-        duration: 3000,
-      });
+      toast.error(`Terjadi kesalahan: ${(error as Error).message}`);
     }
   };
 

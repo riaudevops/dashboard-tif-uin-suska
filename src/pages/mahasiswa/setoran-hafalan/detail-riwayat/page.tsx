@@ -6,14 +6,12 @@ import {
   ChartSpline,
   Clock,
   DownloadIcon,
-  FileDigit,
   GraduationCap,
   Hash,
   History,
   Loader2,
   Printer,
   Rocket,
-  User,
   X,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -226,99 +224,124 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
           </div>
 
 {/* statistik && user info desktop */}
-          <div className="md:flex hidden gap-4 rounded-lg">
-            
-            <div className="dark:bg-muted/40 bg-yellow-300/10 border rounded-xl p-2 flex justify-center items-center flex-col">
-              <div className="text-base text-orange-700 dark:text-orange-200 inline-block tracking-tight dark:bg-orange-700/20 bg-orange-800/10 rounded-md whitespace-nowrap px-2 font-medium">
-                Progres Keseluruhan
-              </div>
-              <ShinyProgressChart
-                loading={isFetching}
-                targetProgress={dataRingkasan?.setoran.info_dasar.persentase_progres_setor}
-              />
-              <div className="dark:bg-pink-700/20 bg-pink-800/20 text-pink-800 dark:text-pink-200 text-sm tracking-tight inline-block opacity-75 rounded-md whitespace-nowrap px-2">
-                <div>
-                  {dataRingkasan?.setoran.info_dasar.total_sudah_setor} dari{" "}
-                  {dataRingkasan?.setoran.info_dasar.total_wajib_setor} selesai
+          <div className="md:flex hidden gap-6 rounded-2xl">
+            <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 dark:from-orange-900/20 dark:via-yellow-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-800 rounded-2xl p-6 flex flex-col items-center justify-center min-w-[200px] shadow-lg">
+              <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-orange-400 to-red-400 rounded-full opacity-20 blur-xl"></div>
+              <div className="relative z-10 text-center">
+                <div className="inline-block px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl text-sm font-semibold mb-4 shadow-lg">
+                  Progres Keseluruhan
+                </div>
+                <div className="mb-4">
+                  <ShinyProgressChart
+                    loading={isFetching}
+                    targetProgress={
+                      dataRingkasan?.setoran.info_dasar
+                        .persentase_progres_setor
+                    }
+                  />
+                </div>
+                <div className="px-3 py-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 rounded-lg text-sm font-medium">
+                  {isLoading ? (
+                    <Skeleton className="h-4 w-24" />
+                  ) : (
+                    `${dataRingkasan?.setoran.info_dasar.total_sudah_setor} dari ${dataRingkasan?.setoran.info_dasar.total_wajib_setor} selesai`
+                  )}
                 </div>
               </div>
             </div>
-
-            <div className="flex dark:bg-muted/40 bg-yellow-300/10 border rounded-xl py-2 px-8 flex-col gap-2 h-full justify-center">
-              <div className="flex items-center">
-                {/* Bagian kiri */}
-                <div className="flex items-center gap-1 min-w-44">
-                  <User size={19} />
-                  <span className="font-medium">Nama Lengkap</span>
+            <div className="flex-1 relative overflow-hidden bg-gradient-to-br from-violet-50 via-purple-50 to-pink-50 dark:from-violet-900/20 dark:via-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800 rounded-2xl my-auto mx-auto shadow-lg py-11 px-8">
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full opacity-10 blur-xl"></div>
+              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full opacity-10 blur-xl"></div>
+              <div className="relative z-10 flex items-start gap-4 mb-6">
+                <div className="relative">
+                  {isLoading ? (
+                    <Skeleton className="w-16 h-16 rounded-2xl" />
+                  ) : (
+                    <img
+                      src={`https://api.dicebear.com/8.x/micah/svg?seed=${encodeURIComponent(
+                        dataRingkasan?.info.nama || "default"
+                      )}&radius=15&backgroundType=gradientLinear&backgroundColor=b6e3f4,c0aede,d1d4f9`}
+                      alt={`Avatar of ${dataRingkasan?.info.nama}`}
+                      className="w-16 h-16 rounded-2xl object-cover shadow-lg"
+                    />
+                  )}
                 </div>
-
-                {/* Titik dua dan nilai */}
-                <div className="flex items-center gap-2">
-                  <span>:</span>
-                  {isLoading && <Skeleton className="h-4 w-24" />}
-                  <span className="">{dataRingkasan?.info.nama}</span>
-                </div>
-              </div>
-              <div className="flex items-center">
-                {/* Bagian kiri */}
-                <div className="flex items-center gap-1 min-w-44">
-                  <FileDigit size={19} />
-                  <span className="font-medium">NIM</span>
-                </div>
-
-                {/* Titik dua dan nilai */}
-                <div className="flex items-center gap-2">
-                  <span>:</span>
-                  {isLoading && <Skeleton className="h-4 w-24" />}
-                  <span className="">{dataRingkasan?.info.nim}</span>
-                </div>
-              </div>
-              <div className="flex items-center">
-                {/* Bagian kiri */}
-                <div className="flex items-center gap-1 min-w-44">
-                  <Rocket size={19} />
-                  <span className="font-medium">Semester</span>
-                </div>
-
-                {/* Titik dua dan nilai */}
-                <div className="flex items-center gap-2">
-                  <span>:</span>
-                  {isLoading && <Skeleton className="h-4 w-24" />}
-                  <span className="">{dataRingkasan?.info.semester}</span>
-                </div>
-              </div>
-              <div className="flex items-center">
-                {/* Bagian kiri */}
-                <div className="flex items-center gap-1 min-w-44">
-                  <GraduationCap size={19} />
-                  <span className="font-medium">Dosen PA</span>
-                </div>
-
-                {/* Titik dua dan nilai */}
-                <div className="flex items-center gap-2">
-                  <span>:</span>
-                  {isLoading && <Skeleton className="h-4 w-24" />}
-                  <span className="">{dataRingkasan?.info.dosen_pa.nama}</span>
+                <div className="flex-1">
+                  {isLoading ? (
+                    <div className="space-y-2">
+                      <Skeleton className="h-7 w-64" />
+                      <Skeleton className="h-5 w-48" />
+                      <div className="flex gap-2 mt-2">
+                        <Skeleton className="h-6 w-24 rounded-full" />
+                        <Skeleton className="h-6 w-28 rounded-full" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between">
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                          {dataRingkasan?.info.nama}
+                        </h2>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm font-mono mb-2">
+                          {dataRingkasan?.info.nim}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-medium flex items-center gap-1.5">
+                            <Rocket size={14} />
+                            Semester {dataRingkasan?.info.semester}
+                          </span>
+                          <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium flex items-center gap-1.5">
+                            <Hash size={14} />
+                            Angkatan {dataRingkasan?.info.angkatan}
+                          </span>
+                        </div>
+                      </div>
+                      
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className="flex items-center">
-                {/* Bagian kiri */}
-                <div className="flex items-center gap-1 min-w-44">
-                  <Calendar size={19} />
-                  <span className="font-medium">Terakhir Muroja'ah</span>
+              <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="group p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-purple-200/50 dark:border-purple-700/50 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
+                      <GraduationCap className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                        Dosen Pembimbing
+                      </p>
+                      {isLoading ? (
+                        <Skeleton className="h-5 w-40 mt-1" />
+                      ) : (
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {dataRingkasan?.info.dosen_pa.nama}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
-
-                {/* Titik dua dan nilai */}
-                <div className="flex items-center gap-2">
-                  <span>:</span>
-                  {isLoading && <Skeleton className="h-4 w-24" />}
-                  <span className="">
-                    {dataRingkasan?.setoran.info_dasar.terakhir_setor}
-                  </span>
+                <div className="group p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-purple-200/50 dark:border-purple-700/50 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
+                      <Calendar className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                        Terakhir Muroja'ah
+                      </p>
+                      {isLoading ? (
+                        <Skeleton className="h-5 w-32 mt-1" />
+                      ) : (
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {dataRingkasan?.setoran.info_dasar.terakhir_setor}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-
           </div>
 
           {/* For Mobile View User Info */}

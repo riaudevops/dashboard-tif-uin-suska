@@ -190,6 +190,7 @@ export default function MahasiswaKerjapraktikDaftarKpPermohonanPage() {
 			</Card>
 		);
 	}
+	
 
 	return (
 		<DashboardLayout>

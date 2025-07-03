@@ -9,7 +9,10 @@ import {
   GetTahunAjaranService,
   TanggalPendaftaranKPInterface,
 } from "@/interfaces/service/api/daftar-kp/all.interface";
-import { unggahBerkasPendafataranKPInterface } from "@/interfaces/service/api/daftar-kp/mahasiswa-service.interface";
+import {
+  PembimbingInstansiInterface,
+  unggahBerkasPendafataranKPInterface,
+} from "@/interfaces/service/api/daftar-kp/mahasiswa-service.interface";
 
 export default class APIDaftarKP {
   static async updatePendaftaranMahasiswa({
@@ -24,6 +27,41 @@ export default class APIDaftarKP {
       {
         judul_kp,
         kelas_kp,
+      }
+    );
+    const data = response.data;
+    return data;
+  }
+
+  static async getPembimbingInstansi(): Promise<
+    CommonResponse & { data: PembimbingInstansiInterface[] }
+  > {
+    const axios = api();
+    const response = await axios.get(
+      `${
+        import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
+      }/mahasiswa/daftar-kp/pembimbing-instansi`
+    );
+    const data = response.data;
+    return data;
+  }
+
+  static async createPembimbingInstansi({
+    nama,
+    no_hp,
+    email_pembimbing_instansi,
+    jabatan,
+  }: PembimbingInstansiInterface) {
+    const axios = api();
+    const response = await axios.post(
+      `${
+        import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
+      }/mahasiswa/daftar-kp/pembimbing-instansi`,
+      {
+        nama,
+        no_hp,
+        email_pembimbing_instansi,
+        jabatan,
       }
     );
     const data = response.data;
@@ -59,10 +97,9 @@ export default class APIDaftarKP {
     data,
     tanggalMulai,
     tanggalSelesai,
+    email_pembimbing_instansi,
   }: unggahBerkasPendafataranKPInterface): Promise<CommonResponse> {
     const axios = api();
-    console.log(tanggalMulai);
-    console.log(tanggalSelesai);
     const response = await axios.patch(
       `${
         import.meta.env.VITE_BASE_URL_KERJA_PRAKTIK
@@ -72,6 +109,7 @@ export default class APIDaftarKP {
         data,
         tanggalMulai: new Date(tanggalMulai as unknown as string),
         tanggalSelesai: new Date(tanggalSelesai as unknown as string),
+        email_pembimbing_instansi,
       }
     );
 

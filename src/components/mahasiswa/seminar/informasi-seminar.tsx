@@ -68,7 +68,7 @@ const InfoCard: React.FC<InfoCardProps> = React.memo(
     // Map of titles for each info item
     const titleMap: Record<string, string> = {
       judul: "Judul Laporan",
-      lokasi: "Lokasi Kerja Praktik",
+      lokasi: "Instansi Kerja Praktik",
       lamaKerjaPraktik: "Lama Kerja Praktik",
       dosenPembimbing: "Dosen Pembimbing",
       kontakPembimbing: "Kontak Pembimbing",

@@ -421,7 +421,7 @@ export default function KartuRekapanMurojaahPAPage() {
 									<hr className="border-slate-200/80 dark:border-slate-700/60" />
 
 									{/* --- Stats Overview Section --- */}
-									<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+									<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
 										<StatsCard
 											icon={<Users className="w-6 h-6 text-white" />}
 											title="Total Mahasiswa"
@@ -450,7 +450,7 @@ export default function KartuRekapanMurojaahPAPage() {
 							</div>
 
 							{/* Students Data Section */}
-							<div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl shadow-lg overflow-hidden py-2">
+							<div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl shadow-lg overflow-hidden py-2 mb-5">
 								<div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3">
 									<div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg">
 										<ClipboardList className="w-8 h-8 text-white" />
@@ -466,7 +466,7 @@ export default function KartuRekapanMurojaahPAPage() {
 								</div>
 
 								{/* Desktop Table */}
-								<div className="hidden lg:block">
+								<div className="hidden lg:block px-5">
 									<Table>
 										<TableHeader>
 											<TableRow>

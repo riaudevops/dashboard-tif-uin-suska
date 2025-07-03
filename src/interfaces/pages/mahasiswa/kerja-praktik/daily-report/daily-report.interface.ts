@@ -22,6 +22,7 @@ interface PembimbingInstansi {
   id: string;
   nama: string;
   jabatan: string;
+  status: string;
   instansi: Instansi;
 }
 

@@ -103,7 +103,7 @@ function ModalBoxRekapMurojaah({
 							<Button
 								onClick={handleNext}
 								disabled={!monthYear.bulan || !monthYear.tahun || buttonLoading}
-								className="w-full bg-green-600 hover:bg-green-700 text-white dark:bg-green-500 hidden md:flex"
+								className="w-full bg-green-600 hover:bg-green-700 text-white hidden md:flex"
 							>
 								{buttonLoading && <Loader2 className="mr-1 animate-spin" />}
 								<PrinterIcon />
@@ -112,7 +112,7 @@ function ModalBoxRekapMurojaah({
 							<Button
 								onClick={handleNextButton}
 								disabled={!monthYear.bulan || !monthYear.tahun || buttonLoading}
-								className="w-full bg-green-600 hover:bg-green-700 text-white dark:bg-green-500 md:hidden"
+								className="w-full bg-green-600 hover:bg-green-700 text-white md:hidden"
 							>
 								{buttonLoading && <Loader2 className="mr-1 animate-spin" />}
 								<PrinterIcon />

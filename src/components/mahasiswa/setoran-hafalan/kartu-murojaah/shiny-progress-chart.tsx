@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 // Props
 interface ShinyProgressChartProps {
+	className?: string;
 	targetProgress: number;
 	loading: boolean;
 	size?: number;
@@ -10,6 +11,7 @@ interface ShinyProgressChartProps {
 
 // Komponen utama yang telah disederhanakan
 const ShinyProgressChart = ({
+	className,
 	targetProgress,
 	loading,
 	size = 150, // Ukuran diperkecil
@@ -50,8 +52,8 @@ const ShinyProgressChart = ({
 		: circumference - (currentProgress / 100) * circumference;
 
 	return (
-		<div
-			className="relative flex items-center justify-center my-4 mx-3"
+		<div			
+			className={`relative flex items-center justify-center my-4 mx-3 ${className}`}
 			style={{ width: size, height: size }}
 		>
 			<svg

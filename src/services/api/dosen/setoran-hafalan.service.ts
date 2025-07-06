@@ -2,7 +2,7 @@ import { DataSetoran } from "@/interfaces/service/api/setoran-hafalan/dosen-serv
 import { api } from "@/lib/axios-instance";
 
 export default class APISetoran {
-  public static async getKartuRekapanMurojaahPASaya(bulan: string, tahun: string) {
+  public static async getKartuRekapanMurojaahPASaya(bulan: number, tahun: number) {
     const axios = api();
     const response = await axios.get(
       `${import.meta.env.VITE_BASE_URL_SETORAN_HAFALAN}/dosen/kartu-rekapan-murojaah-pa-saya?bulan=${bulan}&tahun=${tahun}`,

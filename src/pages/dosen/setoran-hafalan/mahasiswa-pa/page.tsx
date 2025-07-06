@@ -55,7 +55,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
       "semua"
     );
 
-  const handleCetakRekapanMurojaah = async (bulan: string, tahun: string) => {
+  const handleCetakRekapanMurojaah = async (bulan: number, tahun: number) => {
     setIsLoadingCetakKartuMurojaah(true);
     const response = await APISetoran.getKartuRekapanMurojaahPASaya(
       bulan,
@@ -74,7 +74,7 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
     setOpenModalRekapMurojaah(true);
   };
 
-  const handleCetakKartuMurojaahMobile = async (bulan: string, tahun: string) => {
+  const handleCetakKartuMurojaahMobile = async (bulan: number, tahun: number) => {
     setIsLoadingCetakKartuMurojaah(true);
     const response = await APISetoran.getKartuRekapanMurojaahPASaya(
       bulan,
@@ -147,11 +147,11 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
         <ModalBoxRekap
           isOpen={openModalRekapMurojaah}
           setIsOpen={setOpenModalRekapMurojaah}
-          handleButtonNext={(bulan: string, tahun: string) => {
+          handleButtonNext={(bulan: number, tahun: number) => {
             handleCetakRekapanMurojaah(bulan, tahun);
             // setOpenModalRekapMurojaah(false);
           }}
-          handleButtonNextMobile={(bulan: string, tahun: string) => {
+          handleButtonNextMobile={(bulan: number, tahun: number) => {
             handleCetakKartuMurojaahMobile(bulan, tahun);
           }}
           buttonLoading={isLoadingCetakKartuMurojaah}
@@ -170,8 +170,8 @@ export default function DosenSetoranHafalanMahasiswaPAPage() {
 
               <div>
                 <Button
-                  variant="default"
-                  className="flex rounded-md text-white hover:bg-[#0B2B55] hover:active:scale-95 bg-[#0B2B55] dark:bg-[#16509d] items-center justify-center gap-2"
+                  variant="outline"
+                  className="flex text-white bg-gradient-to-tr from-violet-600/80 to-pink-600/80 dark:from-violet-600/30 dark:to-pink-600/30 hover:bg-gradient-to-bl hover:scale-95 hover:text-white active:scale-100 transition-all duration-300 rounded-md items-center justify-center gap-2"
                   onClick={() => {
                     setOpenModalRekapMurojaah(true);
                   }}

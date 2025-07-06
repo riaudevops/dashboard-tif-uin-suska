@@ -432,22 +432,15 @@ function DetailMahasiswaSetoran() {
 					{/* statistik && user info desktop */}
 					<div className="md:flex hidden gap-6 rounded-2xl -mt-1.5 -mb-2.5">
 						<div className="w-full flex gap-6 overflow-hidden bg-transparent dark:bg-gradient-to-br dark:from-violet-800/10 dark:to-slate-900/5 border border-slate-300 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/80 transition-colors duration-300 rounded-2xl my-auto mx-auto p-6">
-							<div className="border-r-2 pr-3 -ml-1.5">
+							<div className="flex justify-center items-center border-r-2 pr-3 -ml-1.5">
 								<ShinyProgressChart
-									className="hover:scale-95 cursor-pointer transition-all duration-150 active:scale-100"
+									className="hover:scale-95 cursor-pointer mx-2.5 transition-all duration-150 active:scale-100"
 									loading={isFetching}
+                  title={`${dataInfoSetoran?.setoran.info_dasar.total_sudah_setor || 0} dari ${dataInfoSetoran?.setoran.info_dasar.total_wajib_setor || 37}`}
 									targetProgress={
 										dataInfoSetoran?.setoran.info_dasar.persentase_progres_setor
 									}
 								/>
-
-								{/* <div className="inline-block px-3 py-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 rounded-lg text-sm font-medium">
-                    {isLoading ? (
-                      <Skeleton className="h-4 w-24" />
-                    ) : (
-                      `${dataInfoSetoran?.setoran.info_dasar.total_sudah_setor} dari ${dataInfoSetoran?.setoran.info_dasar.total_wajib_setor} selesai`
-                    )}
-                  </div> */}
 							</div>
 
 							<div className="w-full">

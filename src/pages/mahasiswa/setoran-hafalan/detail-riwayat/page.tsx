@@ -223,126 +223,157 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
             </div>
           </div>
 
-{/* statistik && user info desktop */}
-          <div className="md:flex hidden gap-6 rounded-2xl">
-            <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 dark:from-orange-900/20 dark:via-yellow-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-800 rounded-2xl p-6 flex flex-col items-center justify-center min-w-[200px] shadow-lg">
-              <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-orange-400 to-red-400 rounded-full opacity-20 blur-xl"></div>
-              <div className="relative z-10 text-center">
-                <div className="inline-block px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl text-sm font-semibold mb-4 shadow-lg">
-                  Progres Keseluruhan
-                </div>
-                <div className="mb-4">
-                  <ShinyProgressChart
-                    loading={isFetching}
-                    targetProgress={
-                      dataRingkasan?.setoran.info_dasar
-                        .persentase_progres_setor
-                    }
-                  />
-                </div>
-                <div className="px-3 py-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 rounded-lg text-sm font-medium">
-                  {isLoading ? (
-                    <Skeleton className="h-4 w-24" />
-                  ) : (
-                    `${dataRingkasan?.setoran.info_dasar.total_sudah_setor} dari ${dataRingkasan?.setoran.info_dasar.total_wajib_setor} selesai`
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="flex-1 relative overflow-hidden bg-gradient-to-br from-violet-50 via-purple-50 to-pink-50 dark:from-violet-900/20 dark:via-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800 rounded-2xl my-auto mx-auto shadow-lg py-11 px-8">
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full opacity-10 blur-xl"></div>
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full opacity-10 blur-xl"></div>
-              <div className="relative z-10 flex items-start gap-4 mb-6">
-                <div className="relative">
-                  {isLoading ? (
-                    <Skeleton className="w-16 h-16 rounded-2xl" />
-                  ) : (
-                    <img
-                      src={`https://api.dicebear.com/8.x/micah/svg?seed=${encodeURIComponent(
-                        dataRingkasan?.info.nama || "default"
-                      )}&radius=15&backgroundType=gradientLinear&backgroundColor=b6e3f4,c0aede,d1d4f9`}
-                      alt={`Avatar of ${dataRingkasan?.info.nama}`}
-                      className="w-16 h-16 rounded-2xl object-cover shadow-lg"
-                    />
-                  )}
-                </div>
-                <div className="flex-1">
-                  {isLoading ? (
-                    <div className="space-y-2">
-                      <Skeleton className="h-7 w-64" />
-                      <Skeleton className="h-5 w-48" />
-                      <div className="flex gap-2 mt-2">
-                        <Skeleton className="h-6 w-24 rounded-full" />
-                        <Skeleton className="h-6 w-28 rounded-full" />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex justify-between">
-                      <div>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                          {dataRingkasan?.info.nama}
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm font-mono mb-2">
-                          {dataRingkasan?.info.nim}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-medium flex items-center gap-1.5">
-                            <Rocket size={14} />
-                            Semester {dataRingkasan?.info.semester}
-                          </span>
-                          <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium flex items-center gap-1.5">
-                            <Hash size={14} />
-                            Angkatan {dataRingkasan?.info.angkatan}
-                          </span>
-                        </div>
-                      </div>
-                      
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="group p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-purple-200/50 dark:border-purple-700/50 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
-                      <GraduationCap className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                        Dosen Pembimbing
-                      </p>
-                      {isLoading ? (
-                        <Skeleton className="h-5 w-40 mt-1" />
-                      ) : (
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                          {dataRingkasan?.info.dosen_pa.nama}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="group p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-purple-200/50 dark:border-purple-700/50 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
-                      <Calendar className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                        Terakhir Muroja'ah
-                      </p>
-                      {isLoading ? (
-                        <Skeleton className="h-5 w-32 mt-1" />
-                      ) : (
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                          {dataRingkasan?.setoran.info_dasar.terakhir_setor}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* statistik && user info desktop */}
+					<div className="md:flex hidden gap-6 rounded-2xl -mt-1.5 -mb-2.5">
+						<div className="w-full flex gap-6 overflow-hidden bg-transparent dark:bg-gradient-to-br dark:from-violet-800/10 dark:to-slate-900/5 border border-slate-300 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/80 transition-colors duration-300 rounded-2xl my-auto mx-auto p-6">
+							<div className="flex justify-center items-center border-r-2 pr-3 -ml-1.5">
+								<ShinyProgressChart
+									className="hover:scale-95 cursor-pointer mx-2.5 transition-all duration-150 active:scale-100"
+									loading={isFetching}
+                  title={`${dataRingkasan?.setoran.info_dasar.total_sudah_setor || 0} dari ${dataRingkasan?.setoran.info_dasar.total_wajib_setor || 37}`}
+									targetProgress={
+										dataRingkasan?.setoran.info_dasar.persentase_progres_setor
+									}
+								/>
+							</div>
+
+							<div className="w-full">
+								<div className="w-full z-10 flex items-start gap-3 mb-6">
+									<div className="w-24">
+										{isLoading ? (
+											<Skeleton className="w-20 h-20 rounded-2xl" />
+										) : (
+											<img
+												src={`https://api.dicebear.com/8.x/micah/svg?seed=${encodeURIComponent(
+													dataRingkasan?.info.nama || "default"
+												)}&radius=15&backgroundType=gradientLinear&backgroundColor=b6e3f4,c0aede,d1d4f9`}
+												alt={`Avatar of ${dataRingkasan?.info.nama}`}
+												className="w-20 h-20 rounded-2xl object-cover shadow-lg"
+											/>
+										)}
+									</div>
+									<div className="w-full">
+										{isLoading ? (
+											<div className="space-y-2.5">
+												<Skeleton className="h-7 w-64" />
+												<Skeleton className="h-5 w-48" />
+												<div className="flex gap-2 mt-2">
+													<Skeleton className="h-4 w-24 rounded-full" />
+													<Skeleton className="h-4 w-28 rounded-full" />
+												</div>
+											</div>
+										) : (
+											<div className="w-full flex justify-between">
+												<div>
+													<h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+														{dataRingkasan?.info.nama}
+													</h2>
+													<p className="text-gray-600 dark:text-gray-300 text-md font-mono -mt-0.5 mb-1">
+														{dataRingkasan?.info.nim}
+													</p>
+													<div className="flex items-center gap-2">
+														<span className="px-2.5 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs font-medium flex items-center gap-1.5">
+															<Rocket size={14} />
+															Semester {dataRingkasan?.info.semester}
+														</span>
+														<span className="px-2.5 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium flex items-center gap-1.5">
+															<Hash size={14} />
+															Angkatan {dataRingkasan?.info.angkatan}
+														</span>
+													</div>
+												</div>
+												<div>
+													<Button
+														onClick={handleCetakKartuMurojaah}
+														disabled={isLoadingCetakKartuMurojaah}
+														title="Cetak Kartu Muroja'ah"
+														className=" bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-blue-200 dark:border-blue-700/50 text-blue-600 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 !p-2.5"
+													>
+														{
+															<>
+																{isLoadingCetakKartuMurojaah && (
+																	<Loader2 className="animate-spin" size={18} />
+																)}
+																<DownloadIcon size={18} />
+																<span>Cetak Kartu Muroja'ah</span>
+															</>
+														}
+													</Button>
+												</div>
+											</div>
+										)}
+									</div>
+								</div>
+								<div className="relative z-10 flex gap-4">
+									<div className="group p-4 pr-6 bg-gradient-to-tr from-emerald-400/10 to-blue-400/10 dark:from-emerald-700/5 dark:to-blue-700/5 backdrop-blur-sm rounded-xl border transition-all duration-300">
+										<div className="flex items-center gap-3">
+											<div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-300 shadow-md">
+												<GraduationCap className="w-5 h-5 text-white" />
+											</div>
+											<div>
+												<p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+													Dosen Penasehat Akademik
+												</p>
+												{isLoading ? (
+													<Skeleton className="h-5 w-40 mt-1" />
+												) : (
+													<div className="flex items-center text-sm divide-x-2 divide-gray-300 dark:divide-gray-600">
+														{/* Nama Dosen */}
+														<p
+															className="pr-2.5 font-semibold text-gray-900 dark:text-white truncate"
+															title={dataRingkasan?.info.dosen_pa?.nama}
+														>
+															{dataRingkasan?.info.dosen_pa.nama || "N/A"}
+														</p>
+
+														{/* NIP Dosen */}
+														<p
+															className="hidden 2xl:flex px-2.5 text-gray-600 dark:text-gray-400 truncate"
+															title={dataRingkasan?.info.dosen_pa.nip}
+														>
+															{dataRingkasan?.info.dosen_pa.nip || "N/A"}
+														</p>
+
+														{/* Email Dosen */}
+														<p
+															className="hidden xl:flex pl-2.5 text-gray-500 dark:text-gray-400 truncate"
+															title={dataRingkasan?.info.dosen_pa.email}
+														>
+															<a
+																href={`mailto:${dataRingkasan?.info.dosen_pa.email}`}
+																className="hover:underline hover:text-blue-600"
+															>
+																{dataRingkasan?.info.dosen_pa.email || "N/A"}
+															</a>
+														</p>
+													</div>
+												)}
+											</div>
+										</div>
+									</div>
+									<div className="group flex-1 p-4 bg-gradient-to-tr from-orange-400/15 to-pink-400/10 dark:from-orange-800/5 dark:to-violet-800/10 backdrop-blur-sm rounded-xl border transition-all duration-300">
+										<div className="flex items-center gap-3">
+											<div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-300 shadow-md">
+												<Calendar className="w-5 h-5 text-white" />
+											</div>
+											<div>
+												<p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+													Terakhir Muroja'ah
+												</p>
+												{isLoading ? (
+													<Skeleton className="h-5 w-32 mt-1" />
+												) : (
+													<p className="text-sm font-semibold text-gray-900 dark:text-white">
+														{dataRingkasan?.setoran.info_dasar.terakhir_setor}
+													</p>
+												)}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 
           {/* For Mobile View User Info */}
           <div className="-mt-1.5 -mb-2 md:hidden w-full h-full flex flex-col bg-transparent dark:bg-gradient-to-br dark:from-violet-800/10 dark:to-slate-900/5 border border-slate-300 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/80 transition-colors duration-300 py-3 px-4 rounded-xl items-center">
@@ -528,18 +559,6 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                 </Button>
                 <Button
                   variant={"default"}
-                  className="hidden md:flex bg-blue-500 text-white hover:bg-blue-700 active:scale-95"
-                  onClick={handleCetakKartuMurojaah}
-                  disabled={isLoadingCetakKartuMurojaah}
-                >
-                  {isLoadingCetakKartuMurojaah && (
-                    <Loader2 className="mr-1 animate-spin" />
-                  )}
-                  <Printer />
-                  Cetak Kartu Muroja'ah
-                </Button>
-                <Button
-                  variant={"default"}
                   className="md:hidden flex bg-blue-500 text-white hover:bg-blue-700 active:scale-95"
                   onClick={handleCetakKartuMurojaahMobile}
                   disabled={isLoadingCetakKartuMurojaah}
@@ -630,7 +649,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                     <TableCell className="flex gap-2 justify-center items-center text-center whitespace-nowrap">
                       <span>
                         {surah.nama}{" "}
-                        {surah.nama_arab && ` - ${surah.nama_arab}`}
+                        <span className="font-amiri">{surah.nama_arab && ` - ${surah.nama_arab}`}</span>
                       </span>
                       <div onClick={(e) => {
                         e.stopPropagation();

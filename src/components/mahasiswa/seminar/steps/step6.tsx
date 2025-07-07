@@ -17,7 +17,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Stepper from "@/components/mahasiswa/seminar/stepper";
 import Status from "../status";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 // Define the detailed score components
 interface ScoreDetails {
@@ -50,7 +50,7 @@ interface InfoData {
   lokasi?: string;
   dosenPembimbing?: string;
   dosenPenguji?: string;
-  lamaKerjaPraktek?: string;
+  lamaKerjaPraktik?: string;
   kontakPembimbing?: string;
   kontakPenguji?: string;
   jadwal?: string;
@@ -78,7 +78,7 @@ const InfoCard: FC<InfoCardProps> = React.memo(
     const iconMap: Record<string, React.ReactNode> = {
       judul: <Book className="size-4 text-emerald-500 dark:text-emerald-400" />,
       lokasi: <Map className="size-4 text-emerald-500 dark:text-emerald-400" />,
-      lamaKerjaPraktek: (
+      lamaKerjaPraktik: (
         <Clock className="size-4 text-emerald-500 dark:text-emerald-400" />
       ),
       dosenPembimbing: (
@@ -106,8 +106,8 @@ const InfoCard: FC<InfoCardProps> = React.memo(
 
     const titleMap: Record<string, string> = {
       judul: "Judul Laporan",
-      lokasi: "Lokasi Kerja Praktik",
-      lamaKerjaPraktek: "Lama Kerja Praktik",
+      lokasi: "Instansi Kerja Praktik",
+      lamaKerjaPraktik: "Lama Kerja Praktik",
       dosenPembimbing: "Dosen Pembimbing",
       kontakPembimbing: "Kontak Pembimbing",
       dosenPenguji: "Dosen Penguji",
@@ -335,7 +335,7 @@ const InfoCard: FC<InfoCardProps> = React.memo(
                           </h3>
                         </div>
                         <div className="p-4 text-center">
-                          {data.nilai_instansi ? (
+                          {data.nilai_instansi !== "-" ? (
                             <>
                               <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-1">
                                 {data.nilai_instansi}
@@ -373,7 +373,7 @@ const InfoCard: FC<InfoCardProps> = React.memo(
                           </h3>
                         </div>
                         <div className="p-4 text-center">
-                          {data.nilai_pembimbing ? (
+                          {data.nilai_pembimbing !== "-" ? (
                             <>
                               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
                                 {data.nilai_pembimbing}
@@ -411,7 +411,7 @@ const InfoCard: FC<InfoCardProps> = React.memo(
                           </h3>
                         </div>
                         <div className="p-4 text-center">
-                          {data.nilai_penguji ? (
+                          {data.nilai_penguji !== "-" ? (
                             <>
                               <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-1">
                                 {data.nilai_penguji}
@@ -469,7 +469,7 @@ export default function Step6({ activeStep }: Step6Props) {
     "judul",
     "nilai",
     "lokasi",
-    "lamaKerjaPraktek",
+    "lamaKerjaPraktik",
     "dosenPembimbing",
     "dosenPenguji",
     "kontakPembimbing",
@@ -495,7 +495,7 @@ export default function Step6({ activeStep }: Step6Props) {
     toast.error(errorMessage);
   }
 
-  const status = apiData?.data?.nilai[0]?.validasi_nilai.is_approve ? "validasi" : "belum";
+  const status = apiData?.data?.nilai[0]?.validasi_nilai?.is_approve ? "validasi" : "belum";
 
   const infoData: InfoData = apiData?.data
     ? {
@@ -511,7 +511,7 @@ export default function Step6({ activeStep }: Step6Props) {
           "Belum diisi",
         kontakPenguji:
           apiData.data.pendaftaran_kp[0]?.dosen_penguji?.no_hp || "Belum diisi",
-        lamaKerjaPraktek: (() => {
+        lamaKerjaPraktik: (() => {
           const start = apiData.data.pendaftaran_kp[0]?.tanggal_mulai
             ? new Date(apiData.data.pendaftaran_kp[0].tanggal_mulai)
             : null;

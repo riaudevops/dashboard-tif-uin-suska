@@ -11,8 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
-import { Toaster } from "react-hot-toast";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import EditJadwalSeminarModal from "@/components/koordinator-kp/seminar/edit-jadwal-modal";
 import LogJadwalModal from "@/components/koordinator-kp/seminar/log-jadwal-modal";
 import ScheduleTable from "@/components/koordinator-kp/seminar/ScheduleTable";
@@ -402,9 +401,7 @@ const KoordinatorJadwalSeminarPage: FC = () => {
         queryKey: ["koordinator-jadwal-seminar", selectedTahunAjaranId],
       });
     } catch (error) {
-      toast({
-        title: "❌ Gagal",
-        description: "Gagal memperbarui jadwal seminar.",
+      toast.error(`Gagal memperbarui jadwal seminar`, {
         duration: 3000,
       });
     } finally {
@@ -433,9 +430,7 @@ const KoordinatorJadwalSeminarPage: FC = () => {
   }
 
   if (isError) {
-    toast({
-      title: "❌ Gagal",
-      description: `Gagal mengambil data jadwal: ${(error as Error).message}`,
+    toast.error(`Gagal mengambil data jadwal: ${error.message}`, {
       duration: 3000,
     });
     return (
@@ -451,7 +446,6 @@ const KoordinatorJadwalSeminarPage: FC = () => {
 
   return (
     <DashboardLayout>
-      <Toaster position="top-right" />
       <div className="space-y-4">
         <div className="flex justify-between items-center mb-3.5">
           <div className="flex">

@@ -133,12 +133,12 @@ const QariSelector = ({ selectedQari, setSelectedQari }: QariSelectorProps) => {
 
 const AyatNumberIcon = ({ number }: { number: number }) => {
 	return (
-		<span className="-mt-6 relative inline-flex items-center justify-center w-12 h-12 align-middle">
+		<span className="-mt-6 relative inline-flex items-center justify-center w-10 h-10 md:w-[2.7rem] md:h-[2.7rem] align-middle">
 			<div
 				className="absolute w-full h-full bg-purple-500/25 dark:bg-purple-400/25"
 			>
 			</div>
-			<span className={`relative dark:text-violet-200 text-violet-800 font-bold text-xl font-["Amiri"]`}>
+			<span className={`relative -top-1 dark:text-violet-200 text-violet-800 font-bold text-xl font-amiri`}>
 				{number}
 			</span>
 		</span>
@@ -197,10 +197,12 @@ const AyatItem = React.forwardRef<HTMLDivElement, AyatItemProps>(
 				className={`py-8 ${jumlahAyat !== ayat.nomorAyat && "border-b"} border-gray-200 dark:border-gray-700 scroll-mt-40`}
 			>
 				<div
-					className={`flex font-["Amiri"] justify-between items-center text-right text-3xl md:text-4xl mt-0 text-gray-800 dark:text-gray-100 mb-3`}
+					className={`flex font-amiri justify-between items-center text-right text-[2.2rem] md:text-[2.7rem] mt-0 text-gray-900 dark:text-gray-100 mb-3`}
 					dir="rtl"
 				>
-					<span className="flex-grow md:max-w-2xl max-w-[16rem] leading-[2.3] tracking-wider">{ayat.teksArab}</span>
+					<span className="flex-grow md:max-w-2xl max-w-[15rem] leading-[2.3]">
+						{ayat.teksArab}
+					</span>
 					<AyatNumberIcon number={ayat.nomorAyat} />
 				</div>
 				<p className="text-purple-600 dark:text-purple-400 text-xl mb-2">
@@ -311,13 +313,13 @@ const QuranReader = ({ surahData }: QuranReaderProps) => {
 	const [isSelectorVisible, setIsSelectorVisible] = useState(false);
 
 	return (
-		<div className="bg-gray-50 rounded-xl dark:bg-gray-900/50 h-full text-gray-800 dark:text-gray-100 font-sans transition-colors duration-300 flex flex-col">
-			<header className="rounded-t-xl flex-shrink-0 z-10 bg-gradient-to-l from-violet-300/30 to-pink-300/30 dark:from-violet-900/40 dark:to-pink-900/40 backdrop-blur-sm py-7 border-b border-gray-200 dark:border-gray-800 px-4 md:px-8">
+		<div className="bg-gradient-to-tr from-slate-100/70 via-amber-50/70 to-gray-100/70 rounded-xl dark:from-slate-900/60 dark:via-pink-800/5 dark:to-black/60 h-full text-gray-800 dark:text-gray-100 font-sans transition-colors duration-300 flex flex-col">
+			<header className="rounded-t-xl flex-shrink-0 z-10 bg-gradient-to-l from-violet-300/40 to-pink-300/40 dark:from-violet-900/40 dark:to-pink-900/40 backdrop-blur-sm py-7 border-b border-gray-200 dark:border-gray-800 px-4 md:px-8">
 				<div className="rounded-xl max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
 					<div className="w-full md:w-auto flex justify-between">						
 						<div className="flex-1">
 							<h1 className="text-xl md:text-2xl font-bold text-purple-700 dark:text-purple-300">
-								{surahData.namaLatin} - <span className="font-[Amiri]">{surahData.nama}</span> <span className="text-base italic font-medium">(QS.{surahData.nomor})</span>
+								{surahData.namaLatin} - <span className="font-amiri">{surahData.nama}</span> <span className="text-base italic font-medium">(QS.{surahData.nomor})</span>
 							</h1>
 							<p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
 								{surahData.arti} &bull; {surahData.jumlahAyat} Ayat &bull;{" "}
@@ -405,10 +407,6 @@ export function ModalBoxQuran({
 					className="max-w-4xl bg-card w-full rounded-xl h-[80vh] p-0 border-0"
 					onClick={(e) => e.stopPropagation()}
 				>
-					<style>
-                        @import
-                            url('https://fonts.googleapis.com/css2?family=Amiri&display=swap');
-					</style>
 					<QuranReader surahData={dataSurah} />
 				</div>
 			</div>

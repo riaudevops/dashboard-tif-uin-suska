@@ -18,7 +18,7 @@ interface InfoData {
   lokasi?: string;
   dosenPembimbing?: string;
   dosenPenguji?: string;
-  lamaKerjaPraktek?: string;
+  lamaKerjaPraktik?: string;
   kontakPembimbing?: string;
   kontakPenguji?: string;
   jadwal?: string;
@@ -39,7 +39,7 @@ const InfoCard: React.FC<InfoCardProps> = React.memo(
     const iconMap: Record<string, React.ReactNode> = {
       judul: <Book className="size-4 text-emerald-500 dark:text-emerald-400" />,
       lokasi: <Map className="size-4 text-emerald-500 dark:text-emerald-400" />,
-      lamaKerjaPraktek: (
+      lamaKerjaPraktik: (
         <Clock className="size-4 text-emerald-500 dark:text-emerald-400" />
       ),
       dosenPembimbing: (
@@ -68,8 +68,8 @@ const InfoCard: React.FC<InfoCardProps> = React.memo(
     // Map of titles for each info item
     const titleMap: Record<string, string> = {
       judul: "Judul Laporan",
-      lokasi: "Lokasi Kerja Praktik",
-      lamaKerjaPraktek: "Lama Kerja Praktik",
+      lokasi: "Instansi Kerja Praktik",
+      lamaKerjaPraktik: "Lama Kerja Praktik",
       dosenPembimbing: "Dosen Pembimbing",
       kontakPembimbing: "Kontak Pembimbing",
       dosenPenguji: "Dosen Penguji",

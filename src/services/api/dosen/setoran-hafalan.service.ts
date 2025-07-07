@@ -2,10 +2,10 @@ import { DataSetoran } from "@/interfaces/service/api/setoran-hafalan/dosen-serv
 import { api } from "@/lib/axios-instance";
 
 export default class APISetoran {
-  public static async getKartuRekapanMurojaahPASaya(bulan: string, tahun: string) {
+  public static async getKartuRekapanMurojaahPASaya(bulan: number, tahun: number) {
     const axios = api();
     const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL_SETORAN_HAFALAN}/dosen/kartu-murojaah-saya?bulan=${bulan}&tahun=${tahun}`,
+      `${import.meta.env.VITE_BASE_URL_SETORAN_HAFALAN}/dosen/kartu-rekapan-murojaah-pa-saya?bulan=${bulan}&tahun=${tahun}`,
       { responseType: "arraybuffer" }
     );
     return response;
@@ -34,12 +34,10 @@ export default class APISetoran {
   public static async getKartuMurojaahMahasiswaByNIM(nim: string) {
     const axios = api();
     const response = await axios.get(
-      `${
-        import.meta.env.VITE_BASE_URL_SETORAN_HAFALAN
-      }/mahasiswa/kartu-murojaah/${nim}`
+      `${import.meta.env.VITE_BASE_URL_SETORAN_HAFALAN}/mahasiswa/kartu-murojaah/${nim}`,
+      { responseType: "arraybuffer" }
     );
-    const data = response.data;
-    return data;
+    return response;
   }
 
   public static async postSetoranSurah({
@@ -84,4 +82,5 @@ export default class APISetoran {
     );
     return request.data;
   }
+
 }

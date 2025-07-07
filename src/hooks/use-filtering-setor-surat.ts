@@ -54,7 +54,7 @@ export function useFilteringSetoranSurat(
             (tabState === "default" ||
               (tabState === "belum_setor" && item.sudah_setor === false) ||
               (tabState === "sudah_setor" && item.sudah_setor === true)) &&
-            item.nama.toLowerCase().includes(search.toLowerCase())
+            normalizeText(item.nama).includes(normalizeText(search))
         )
       );
     }
@@ -62,3 +62,25 @@ export function useFilteringSetoranSurat(
 
   return { dataCurrent, setTabState, tabState, setSearch, search };
 }
+
+/**
+ * Membersihkan dan menyederhanakan string untuk perbandingan.
+ * - Mengubah ke huruf kecil
+ * - Menghapus spasi, tanda hubung (-), dan apostrof (')
+ * - Mengganti huruf vokal ganda (aa, ii, uu) menjadi tunggal
+ * @param str String yang akan dinormalisasi
+ * @returns String yang sudah bersih
+ */
+const normalizeText = (str: string): string => {
+  if (!str) return '';
+
+  return str
+    .toLowerCase()                      // 1. Ubah ke huruf kecil semua
+    .replace(/['\- ]/g, '')             // 2. Hapus apostrof, tanda hubung, dan spasi
+    .replace(/a/g, '')                // 3. Ganti 'aa' menjadi 'a'
+    .replace(/i/g, '')                // 4. Ganti 'ii' menjadi 'i'
+    .replace(/u/g, '')
+    .replace(/y/g, '')
+    .replace(/ff/g, 'f')
+    .replace(/h/g, '');               // 5. Ganti 'uu' menjadi 'u'
+};

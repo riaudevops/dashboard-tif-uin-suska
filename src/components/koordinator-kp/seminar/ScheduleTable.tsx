@@ -23,7 +23,7 @@ import ScheduleTableContent from "./ScheduleTableContent";
 import DashboardJadwalCard from "@/components/dosen/seminar-kp/DashboardJadwalCard";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 interface Mahasiswa {
   nama: string;
@@ -71,9 +71,6 @@ interface JadwalResponse {
   tahun_ajaran: TahunAjaran;
 }
 
-interface Ruangan {
-  nama: string;
-}
 
 const ConvertToStringDateFormat = (dateStr: string) => {
   const date = new Date(dateStr);
@@ -181,7 +178,7 @@ const ScheduleTable: FC<{
       setSelectedRoomToDelete("");
       setIsDeleteRoomModalOpen(false);
     },
-    onError: (error, _, toastId) => {
+    onError: ( _, toastId) => {
       toast.error(`Tidak bisa menghapus ruangan '${selectedRoomToDelete}'`, {
         id: toastId,
         duration: 3000,

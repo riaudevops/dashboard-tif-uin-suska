@@ -2,15 +2,16 @@ import { Navigate } from "react-router-dom";
 import ProtectedRoute from "./protected.router";
 // import MahasiswaSetoranHafalanStatistikPage from "@/pages/mahasiswa/setoran-hafalan/statistik/page";
 import MahasiswaSetoranHafalanDetailRiwayatPage from "@/pages/mahasiswa/setoran-hafalan/detail-riwayat/page";
-import MahasiswaKerjaPraktekDaftarKpPermohonanPage from "@/pages/mahasiswa/kerja-praktik/administrasi/permohonan/page";
-import MahasiswaKerjaPraktekDaftarKpPermohonanFormPendaftaranPage from "@/pages/mahasiswa/kerja-praktik/administrasi/permohonan/form-pendaftaran/page";
-import MahasiswaKerjaPraktekDaftarKpKelengkapanBerkasPage from "@/pages/mahasiswa/kerja-praktik/administrasi/kelengkapan-berkas/page";
-import MahasiswaKerjaPraktekDaftarKpPermohonanFormDaftarInstansiPage from "@/pages/mahasiswa/kerja-praktik/administrasi/permohonan/form-daftar-instansi/page";
+import MahasiswaKerjapraktikDaftarKpPermohonanPage from "@/pages/mahasiswa/kerja-praktik/administrasi/permohonan/page";
+import MahasiswaKerjapraktikDaftarKpPermohonanFormPendaftaranPage from "@/pages/mahasiswa/kerja-praktik/administrasi/permohonan/form-pendaftaran/page";
+import MahasiswaKerjapraktikDaftarKpKelengkapanBerkasPage from "@/pages/mahasiswa/kerja-praktik/administrasi/kelengkapan-berkas/page";
+import MahasiswaKerjapraktikDaftarKpPermohonanFormDaftarInstansiPage from "@/pages/mahasiswa/kerja-praktik/administrasi/permohonan/form-daftar-instansi/page";
 import MahasiswaSeminarDaftarPage from "@/pages/mahasiswa/seminar/daftar-sem-kp/page";
 import MahasiswaSeminarValidasiBerkasPage from "@/pages/mahasiswa/seminar/validasi-berkas/page";
 import MahasiswaKerjaPraktikDailyReportPage from "@/pages/mahasiswa/kerja-praktik/daily-report/page";
 import MahasiswaKerjaPraktikDailyReportDetailPage from "@/pages/mahasiswa/kerja-praktik/daily-report/detail/page";
 import MahasiswaKerjaPraktikBimbinganPage from "@/pages/mahasiswa/kerja-praktik/bimbingan/page";
+import MahasiswaKerjapraktikDaftarKpPermohonanFormDaftarPembimbingInstansiPage from "@/pages/mahasiswa/kerja-praktik/administrasi/permohonan/form-daftar-pembimbing-instansi/page";
 
 export const mahasiswaRouter = [
   // {
@@ -37,7 +38,7 @@ export const mahasiswaRouter = [
     path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan",
     element: (
       <ProtectedRoute roles={["mahasiswa"]}>
-        <MahasiswaKerjaPraktekDaftarKpPermohonanPage />
+        <MahasiswaKerjapraktikDaftarKpPermohonanPage />
       </ProtectedRoute>
     ),
   },
@@ -45,7 +46,7 @@ export const mahasiswaRouter = [
     path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-pendaftaran",
     element: (
       <ProtectedRoute roles={["mahasiswa"]}>
-        <MahasiswaKerjaPraktekDaftarKpPermohonanFormPendaftaranPage />
+        <MahasiswaKerjapraktikDaftarKpPermohonanFormPendaftaranPage />
       </ProtectedRoute>
     ),
   },
@@ -53,7 +54,15 @@ export const mahasiswaRouter = [
     path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-daftar-instansi",
     element: (
       <ProtectedRoute roles={["mahasiswa"]}>
-        <MahasiswaKerjaPraktekDaftarKpPermohonanFormDaftarInstansiPage />
+        <MahasiswaKerjapraktikDaftarKpPermohonanFormDaftarInstansiPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/mahasiswa/kerja-praktik/daftar-kp/permohonan/form-daftar-pembimbing-instansi",
+    element: (
+      <ProtectedRoute roles={["mahasiswa"]}>
+        <MahasiswaKerjapraktikDaftarKpPermohonanFormDaftarPembimbingInstansiPage />
       </ProtectedRoute>
     ),
   },
@@ -61,7 +70,7 @@ export const mahasiswaRouter = [
     path: "/mahasiswa/kerja-praktik/daftar-kp/kelengkapan-berkas",
     element: (
       <ProtectedRoute roles={["mahasiswa"]}>
-        <MahasiswaKerjaPraktekDaftarKpKelengkapanBerkasPage />
+        <MahasiswaKerjapraktikDaftarKpKelengkapanBerkasPage />
       </ProtectedRoute>
     ),
   },

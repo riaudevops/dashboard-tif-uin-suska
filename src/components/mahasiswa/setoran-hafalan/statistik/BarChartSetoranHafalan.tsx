@@ -19,7 +19,7 @@ export default function BarChartSetoran({
       case "KP":
         return (
           <span>
-            Kerja Praktek{" "}
+            Kerja praktik{" "}
             <span className="italic font-semibold">
               {" "}
               ~ {persentase}
@@ -30,7 +30,7 @@ export default function BarChartSetoran({
       case "SEMKP":
         return (
           <span>
-            Seminar Kerja Praktek{" "}
+            Seminar Kerja praktik{" "}
             <span className="italic font-semibold">
               {" "}
               ~ {persentase}
@@ -74,23 +74,23 @@ export default function BarChartSetoran({
     }
   };
   return (
-
-      <div
-      className="bg-secondary whitespace-nowrap w-full h-full shadow-md rounded-xl">
-        <MagicCard gradientColor="dark:#262626 #D9D9D955" className="bg-secondary flex flex-col p-4 2xl:p-[1.4rem] w-full h-full justify-center">
-          <div className="flex justify-start text-primary">
-            {labelBerdasarkanKategori()}
-          </div>
-          <div className="flex w-full gap-1 items-center">
-            <Progress
-              value={persentase}
-              className={`h-4 w-full`}
-              color={colourfulProgress(persentase)}
-            />
-            <div>{`${telah_setor}/${wajib_setor}`}</div>{" "}
-          </div>
-
-        </MagicCard>
-      </div>
+    <div className="bg-secondary whitespace-nowrap w-full h-full shadow-md rounded-xl">
+      <MagicCard
+        gradientColor="dark:#262626 #D9D9D955"
+        className="bg-secondary flex flex-col p-4 2xl:p-[1.4rem] w-full h-full justify-center"
+      >
+        <div className="flex justify-start text-primary">
+          {labelBerdasarkanKategori()}
+        </div>
+        <div className="flex w-full gap-1 items-center">
+          <Progress
+            value={persentase}
+            className={`h-4 w-full`}
+            color={colourfulProgress(persentase)}
+          />
+          <div>{`${telah_setor}/${wajib_setor}`}</div>{" "}
+        </div>
+      </MagicCard>
+    </div>
   );
 }

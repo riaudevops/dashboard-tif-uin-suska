@@ -470,6 +470,9 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                     }`}
                   >
                     Semua
+                    <span className="flex justify-center items-center min-w-6 ml-2 px-[0.190rem] py-[0.110rem] text-xs rounded-full bg-yellow-600 text-white">
+                        {dataRingkasan?.setoran.info_dasar.total_wajib_setor || 0}
+                    </span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="tab2"
@@ -480,6 +483,9 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                     }`}
                   >
                     Selesai
+                    <span className="flex justify-center items-center min-w-6 ml-2 px-[0.190rem] py-[0.110rem] text-xs rounded-full bg-green-600 text-white">
+                        {dataRingkasan?.setoran.info_dasar.total_sudah_setor || 0}
+                    </span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="tab3"
@@ -490,6 +496,9 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                     }`}
                   >
                     Belum
+                    <span className="flex justify-center items-center min-w-6 ml-2 px-[0.190rem] py-[0.110rem] text-xs rounded-full bg-red-600 text-white">
+                        {dataRingkasan?.setoran.info_dasar.total_belum_setor || 0}
+                    </span>
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -509,6 +518,9 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                       }`}
                     >
                       Semua riwayat muroja'ah
+                      <span className="flex justify-center items-center min-w-6 ml-2 px-[0.190rem] py-[0.110rem] text-xs rounded-full bg-yellow-600 text-white">
+                        {dataRingkasan?.setoran.info_dasar.total_wajib_setor || 0}
+                      </span>
                     </TabsTrigger>
                     <TabsTrigger
                       value="tab2"
@@ -519,6 +531,9 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                       }`}
                     >
                       Selesai di-muroja'ah
+                      <span className="flex justify-center items-center min-w-6 ml-2 px-[0.190rem] py-[0.110rem] text-xs rounded-full bg-green-600 text-white">
+                        {dataRingkasan?.setoran.info_dasar.total_sudah_setor || 0}
+                      </span>
                     </TabsTrigger>
                     <TabsTrigger
                       value="tab3"
@@ -529,6 +544,9 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                       }`}
                     >
                       Belum di-muroja'ah
+                      <span className="flex justify-center items-center min-w-6 ml-2 px-[0.190rem] py-[0.110rem] text-xs rounded-full bg-red-600 text-white">
+                        {dataRingkasan?.setoran.info_dasar.total_belum_setor || 0}
+                      </span>
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>

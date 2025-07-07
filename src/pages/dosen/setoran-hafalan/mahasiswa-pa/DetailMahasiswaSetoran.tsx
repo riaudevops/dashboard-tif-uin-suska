@@ -29,6 +29,7 @@ import {
 	Hash,
 	History,
 	Loader2,
+	PrinterIcon,
 	Rocket,
 	X,
 } from "lucide-react";
@@ -217,7 +218,6 @@ function DetailMahasiswaSetoran() {
 	const handleCetakKartuMurojaah = async () => {
 		setIsLoadingCetakKartuMurojaah(true);
 		const response = await APISetoran.getKartuMurojaahMahasiswaByNIM(nim!);
-		console.log(response);
 		setIsLoadingCetakKartuMurojaah(false);
 
 		const pdfName = response.headers["content-disposition"]
@@ -673,7 +673,7 @@ function DetailMahasiswaSetoran() {
 											"hover:bg-blue-100 dark:hover:bg-background/20"
 										}`}
 									>
-										Semua
+										Semua                    
 									</TabsTrigger>
 									<TabsTrigger
 										value="tab2"
@@ -683,7 +683,7 @@ function DetailMahasiswaSetoran() {
 											"hover:bg-blue-100 dark:hover:bg-background/20"
 										}`}
 									>
-										Selesai
+										Selesai                    
 									</TabsTrigger>
 									<TabsTrigger
 										value="tab3"
@@ -693,7 +693,7 @@ function DetailMahasiswaSetoran() {
 											"hover:bg-blue-100 dark:hover:bg-background/20"
 										}`}
 									>
-										Belum
+										Belum                    
 									</TabsTrigger>
 								</TabsList>
 							</Tabs>
@@ -705,7 +705,7 @@ function DetailMahasiswaSetoran() {
 								{isLoadingCetakKartuMurojaah && (
 									<Loader2 className="mr-1 animate-spin" />
 								)}
-								<Download size={20} />
+								<PrinterIcon size={20} />
 								{/* <span className="">Unduh Kartu Muroja'ah</span> */}
 							</Button>
 						</div>
@@ -724,6 +724,9 @@ function DetailMahasiswaSetoran() {
 											}`}
 										>
 											Semua riwayat muroja'ah
+                      <span className="flex justify-center items-center min-w-6 ml-2 px-[0.190rem] py-[0.110rem] text-xs rounded-full bg-yellow-600 text-white">
+                        {dataInfoSetoran?.setoran.info_dasar.total_wajib_setor || 0}
+                      </span>
 										</TabsTrigger>
 										<TabsTrigger
 											value="tab2"
@@ -734,6 +737,9 @@ function DetailMahasiswaSetoran() {
 											}`}
 										>
 											Selesai di-muroja'ah
+                      <span className="flex justify-center items-center min-w-6 ml-2 px-[0.190rem] py-[0.110rem] text-xs rounded-full bg-green-600 text-white">
+                        {dataInfoSetoran?.setoran.info_dasar.total_sudah_setor || 0}
+                      </span>
 										</TabsTrigger>
 										<TabsTrigger
 											value="tab3"
@@ -744,6 +750,9 @@ function DetailMahasiswaSetoran() {
 											}`}
 										>
 											Belum di-muroja'ah
+                      <span className="flex justify-center items-center min-w-6 ml-2 px-[0.190rem] py-[0.110rem] text-xs rounded-full bg-red-600 text-white">
+                        {dataInfoSetoran?.setoran.info_dasar.total_belum_setor || 0}
+                      </span>
 										</TabsTrigger>
 									</TabsList>
 								</Tabs>

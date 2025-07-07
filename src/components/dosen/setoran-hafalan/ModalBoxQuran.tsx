@@ -200,7 +200,7 @@ const AyatItem = React.forwardRef<HTMLDivElement, AyatItemProps>(
 					className={`flex font-amiri justify-between items-center text-right text-[2.2rem] md:text-[2.7rem] mt-0 text-gray-900 dark:text-gray-100 mb-3`}
 					dir="rtl"
 				>
-					<span className="flex-grow md:max-w-2xl max-w-[16rem] leading-[2.3]">
+					<span className="flex-grow md:max-w-2xl max-w-[15rem] leading-[2.3]">
 						{ayat.teksArab}
 					</span>
 					<AyatNumberIcon number={ayat.nomorAyat} />

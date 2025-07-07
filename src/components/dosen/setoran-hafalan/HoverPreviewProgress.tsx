@@ -75,7 +75,7 @@ const HoverPreviewCard: React.FC<{ data: PreviewData; isFetching: boolean }> = (
 			{/* Kartu Pratinjau yang Muncul */}
 			{/* 2. Logika hover sekarang dikontrol oleh class 'group-hover' */}
 			<div
-				className={`absolute z-[9999] w-96 -top-4 left-full ml-3 p-4 bg-white dark:bg-slate-950/90 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl 
+				className={`absolute z-[9999] w-96 -top-4 left-full ml-3 p-4 bg-white/90 dark:bg-slate-950/90 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl 
                 transition-all duration-300 ease-in-out
                 opacity-0 invisible -translate-x-4 
                 group-hover:opacity-100 group-hover:visible group-hover:translate-x-0`}
@@ -115,7 +115,7 @@ const HoverPreviewCard: React.FC<{ data: PreviewData; isFetching: boolean }> = (
 					<div className="text-xs text-gray-500 dark:text-gray-400 mt-3 flex items-center justify-end">
 						<Clock className="w-3 h-3 mr-1.5" />
 						<span>
-							Muroja'ah terakhir: {info_dasar?.terakhir_setor}&nbsp;&nbsp;({formattedDate})
+							Muroja'ah terakhir: {info_dasar?.terakhir_setor}&nbsp;&nbsp;{info_dasar?.tgl_terakhir_setor && <span>({formattedDate})</span>}
 						</span>
 					</div>
 				</div>

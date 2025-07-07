@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 
 // Props
 interface ShinyProgressChartProps {
+	title?: string;
+	className?: string;
 	targetProgress: number;
 	loading: boolean;
 	size?: number;
@@ -10,6 +12,8 @@ interface ShinyProgressChartProps {
 
 // Komponen utama yang telah disederhanakan
 const ShinyProgressChart = ({
+	title = "PROGRES",
+	className = "my-4 mx-3",
 	targetProgress,
 	loading,
 	size = 150, // Ukuran diperkecil
@@ -49,20 +53,9 @@ const ShinyProgressChart = ({
 		? circumference
 		: circumference - (currentProgress / 100) * circumference;
 
-	const Skeleton = () => (
-		<div
-			className="relative flex items-center justify-center"
-			style={{ width: size, height: size }}
-		>
-			<div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
-		</div>
-	);
-
-	if (loading) return <Skeleton />;
-
 	return (
-		<div
-			className="relative flex items-center justify-center my-4 mx-3"
+		<div			
+			className={`relative flex items-center justify-center ${className}`}
 			style={{ width: size, height: size }}
 		>
 			<svg
@@ -118,8 +111,8 @@ const ShinyProgressChart = ({
 
 			{/* Teks di Tengah */}
 			<div className="absolute flex flex-col items-center justify-center">
-				<span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-					Progres
+				<span className="text-xs font-semibold text-gray-500 dark:text-gray-400 tracking-wider">
+					{ title }
 				</span>
 				<div
 					className="font-bold bg-clip-text text-transparent tracking-tighter leading-none"

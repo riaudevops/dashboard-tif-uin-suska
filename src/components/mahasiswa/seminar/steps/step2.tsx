@@ -8,7 +8,7 @@ import { CheckCircle2, ExternalLink, LayoutGridIcon } from "lucide-react";
 import Status from "../status";
 import { Label } from "@/components/ui/label";
 import InfoCard from "../informasi-seminar";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
 import {
   AlertDialog,
@@ -44,7 +44,13 @@ interface IDInputCardProps {
 
 // Komponen CardHeaderGradient
 const CardHeaderGradient: FC<CardHeaderProps> = ({ title, status }) => (
-  <div className={`bg-gradient-to-r ${status === "Ditolak" ? "from-red-600 to-rose-500" : "from-emerald-600 to-green-500"} px-6 py-4`}>
+  <div
+    className={`bg-gradient-to-r ${
+      status === "Ditolak"
+        ? "from-red-600 to-rose-500"
+        : "from-emerald-600 to-green-500"
+    } px-6 py-4`}
+  >
     <CardTitle className="text-white text-lg font-medium">{title}</CardTitle>
   </div>
 );
@@ -113,7 +119,10 @@ const IDInputCard: FC<IDInputCardProps> = ({
 
   return (
     <Card className="h-full overflow-hidden rounded-xl border shadow-none dark:border-none dark:bg-gray-900">
-      <CardHeaderGradient status={status} title="Silahkan Masukkan ID Pengajuan" />
+      <CardHeaderGradient
+        status={status}
+        title="Silahkan Masukkan ID Pengajuan"
+      />
       <CardContent className="flex flex-col h-[calc(100%-4rem)] gap-4 p-6">
         <div className="space-y-2">
           <Label
@@ -132,7 +141,13 @@ const IDInputCard: FC<IDInputCardProps> = ({
               }
               value={inputValue}
               onChange={handleInputChange}
-              className={`border-gray-200 dark:border-gray-700 ${status == "Terkirim" ? 'focus:border-yellow-500 focus:ring-yellow-500 dark:focus:border-yellow-400 dark:focus:ring-yellow-400' : status == "Ditolak" ? 'focus:border-red-500 focus:ring-red-500 dark:focus:border-red-400 dark:focus:ring-red-400' : 'focus:border-blue-500 focus:ring-blue-500 dark:focus:border-blue-400 dark:focus:ring-blue-400'} pl-3 pr-3 py-2`}
+              className={`border-gray-200 dark:border-gray-700 ${
+                status == "Terkirim"
+                  ? "focus:border-yellow-500 focus:ring-yellow-500 dark:focus:border-yellow-400 dark:focus:ring-yellow-400"
+                  : status == "Ditolak"
+                  ? "focus:border-red-500 focus:ring-red-500 dark:focus:border-red-400 dark:focus:ring-red-400"
+                  : "focus:border-blue-500 focus:ring-blue-500 dark:focus:border-blue-400 dark:focus:ring-blue-400"
+              } pl-3 pr-3 py-2`}
               readOnly={readOnly}
             />
           </div>
@@ -165,7 +180,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
 
   // Fetch data menggunakan TanStack Query
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["seminar-kp-dokumen-step2"],
+    queryKey: ["seminar-kp-step2"],
     queryFn: APISeminarKP.getDataMydokumen,
     staleTime: Infinity,
   });
@@ -186,19 +201,15 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
     },
     onSuccess: (response, newIdPengajuan) => {
       console.log("ID Pengajuan berhasil dikirim:", response);
-      toast({
-        title: "👌 Berhasil",
-        description: `ID Pengajuan berhasil dikirim`,
+      toast.success("ID Pengajuan berhasil dikirim", {
         duration: 3000,
       });
       setLastSubmittedId(newIdPengajuan); // Simpan ID yang dikirim
       setIdPengajuan(newIdPengajuan); // Perbarui idPengajuan
-      queryClient.invalidateQueries({ queryKey: ["seminar-kp-dokumen-step2"] });
+      queryClient.invalidateQueries({ queryKey: ["seminar-kp-step2"] });
     },
     onError: (error: any) => {
-      toast({
-        title: "❌ Gagal",
-        description: `Gagal mengirim ID Pengajuan: ${error.message}`,
+      toast.error(`${error.response.data.message}`, {
         duration: 3000,
       });
     },
@@ -241,7 +252,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
           kontakPembimbing:
             data.data.pendaftaran_kp[0]?.dosen_pembimbing?.no_hp ||
             "Belum diisi",
-          lamaKerjaPraktek: `${
+          lamaKerjaPraktik: `${
             data.data.pendaftaran_kp[0]?.tanggal_mulai
               ? new Date(
                   data.data.pendaftaran_kp[0].tanggal_mulai
@@ -251,7 +262,8 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
                   year: "numeric",
                 })
               : "Belum diisi"
-          } - ${data.data.pendaftaran_kp[0]?.tanggal_selesai
+          } - ${
+            data.data.pendaftaran_kp[0]?.tanggal_selesai
               ? new Date(
                   data.data.pendaftaran_kp[0].tanggal_selesai
                 ).toLocaleDateString("id-ID", {
@@ -267,7 +279,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
 
   const informasiSeminarFields = [
     "lokasi",
-    "lamaKerjaPraktek",
+    "lamaKerjaPraktik",
     "dosenPembimbing",
     "kontakPembimbing",
     "judul",
@@ -340,9 +352,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
       console.log(`Sending ID Pengajuan: ${idPengajuan}`);
       mutation.mutate(idPengajuan);
     } else {
-      toast({
-        title: "⚠️ Peringatan",
-        description: "Harap masukkan ID Pengajuan terlebih dahulu!",
+      toast.error("Harap masukkan ID Pengajuan terlebih dahulu!", {
         duration: 3000,
       });
     }
@@ -354,11 +364,10 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
       return <div>Loading...</div>;
     }
     if (isError) {
-      toast({
-        title: "❌ Gagal",
-        description: `Gagal mengambil data: ${error.message}`,
+      toast.error(`Gagal mengambil data: ${error.message}`, {
         duration: 3000,
       });
+
       return <div>Error: {error.message}</div>;
     }
     return (
@@ -378,7 +387,7 @@ const Step2: FC<Step2Props> = ({ activeStep }) => {
             className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
           />
           <LayoutGridIcon className="w-4 h-4 mr-1.5" />
-          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa            
+          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa
         </span>
       </div>
 

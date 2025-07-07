@@ -62,7 +62,7 @@ function ModalBoxBatalSetoran({
               />
               <label
                 htmlFor="terms"
-                className="text-sm leading-tight cursor-pointer font-light peer-disabled:cursor-not-allowed peer-disabled:opacity-70 select-none"
+                className="text-sm text-left leading-tight cursor-pointer font-light peer-disabled:cursor-not-allowed peer-disabled:opacity-70 select-none"
               >
                 Saya yakin akan membatalkan validasi muroja'ah dari
                 mahasiswa{" "}

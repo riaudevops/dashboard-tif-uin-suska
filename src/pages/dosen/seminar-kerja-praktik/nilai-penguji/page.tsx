@@ -34,7 +34,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import DashboardCards from "@/components/dosen/seminar-kp/DashboardCard";
-import { Toaster } from "react-hot-toast";
 
 // Type definitions
 interface Student {
@@ -104,33 +103,35 @@ const ConvertToStringDateFormat = (dateStr: string) => {
   const date = new Date(dateStr);
   // Opsi untuk Intl.DateTimeFormat
   const options: any = {
-    weekday: 'long', // "Jumat"
-    day: 'numeric',  // "13"
-    month: 'long',   // "Juni"
-    year: 'numeric'  // "2025"
+    weekday: "long", // "Jumat"
+    day: "numeric", // "13"
+    month: "long", // "Juni"
+    year: "numeric", // "2025"
   };
 
   // Membuat formatter untuk lokal "id-ID" (Indonesia)
-  const formatter = new Intl.DateTimeFormat('id-ID', options);
+  const formatter = new Intl.DateTimeFormat("id-ID", options);
 
   // Menggunakan formatter untuk mengubah tanggal dan mengganti "pukul" jika ada
-  return formatter.format(date).replace(/pukul.*/, '').trim();
-}
+  return formatter
+    .format(date)
+    .replace(/pukul.*/, "")
+    .trim();
+};
 
 const ConvertToStringTimeFormat = (dateTimeStr: string) => {
   if (!dateTimeStr.includes("T")) return dateTimeStr;
   const dateTime = new Date(dateTimeStr);
   return dateTime
-    ? dateTime.toLocaleTimeString(
-        "id-ID",
-        {
+    ? dateTime
+        .toLocaleTimeString("id-ID", {
           hour: "2-digit",
           minute: "2-digit",
           timeZone: "Asia/Jakarta",
-        }
-      ).replace(".", ":")
+        })
+        .replace(".", ":")
     : "Waktu belum ditentukan";
-}
+};
 
 const SkeletonDashboardCards: FC = () => {
   return (
@@ -475,9 +476,9 @@ const DosenPengujiNilaiPage: FC = () => {
   );
 
   const filteredStudents = students.filter((student) => {
-    const matchesSearch = student.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
+    const matchesSearch =
+      student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.nim.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTab =
       activeTab === "belum_dinilai"
         ? student.status === "Belum Dinilai"
@@ -506,7 +507,6 @@ const DosenPengujiNilaiPage: FC = () => {
 
   return (
     <DashboardLayout>
-      <Toaster position="top-right" />
       <div className="transition-colors duration-300">
         <div className="space-y-4">
           <div className="flex justify-between mb-4">
@@ -560,7 +560,7 @@ const DosenPengujiNilaiPage: FC = () => {
                   <span className="bg-gradient-to-br from-blue-600 to-violet-600 text-white p-1.5 rounded-lg mr-2">
                     <Calendar className="h-4 w-4" />
                   </span>
-                  Seminar Hari Ini
+                  Seminar Terdekat
                 </div>
               </div>
 
@@ -668,7 +668,7 @@ const DosenPengujiNilaiPage: FC = () => {
                   <Search className="h-4 w-4 absolute left-3 text-gray-400" />
                   <Input
                     type="text"
-                    placeholder="Cari nama mahasiswa..."
+                    placeholder="Cari mahasiswa berdasarkan nama atau NIM..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200 dark:placeholder:text-gray-400"

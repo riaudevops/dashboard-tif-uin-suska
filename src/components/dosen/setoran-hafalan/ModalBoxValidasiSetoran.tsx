@@ -65,7 +65,7 @@ function ModalBoxValidasiSetoran({
               <Input disabled className="bg-secondary" value={info?.nim} />
             </div>
             
-            <div className="flex flex-col gap-1">
+            <div className="text-left flex flex-col gap-1">
               <div>
                 Tanggal Muroja'ah{" "}
                 <span className="text-sm italic">
@@ -98,7 +98,7 @@ function ModalBoxValidasiSetoran({
               />
               <label
                 htmlFor="terms"
-                className="text-sm leading-tight cursor-pointer font-light peer-disabled:cursor-not-allowed peer-disabled:opacity-70 select-none"
+                className="text-sm text-left leading-tight cursor-pointer font-light peer-disabled:cursor-not-allowed peer-disabled:opacity-70 select-none"
               >
                 Saya yakin akan melakukan validasi muroja'ah dari mahasiswa{" "}
                 <span className="underline italic font-medium">

@@ -7,7 +7,7 @@ import { LayoutGridIcon, RefreshCw } from "lucide-react";
 import Status from "@/components/mahasiswa/seminar/status";
 import InfoCard from "../informasi-seminar";
 import DocumentCard from "../formulir-dokumen";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import APISeminarKP from "@/services/api/mahasiswa/seminar-kp.service";
 import {
   AlertDialog,
@@ -58,10 +58,6 @@ const DOCUMENT_URLS: Record<string, string> = {
   "Dokumen Surat Undangan Seminar Kerja Praktik":
     "/seminar-kp/dokumen/surat-undangan-seminar-kp",
 };
-
-// Regex untuk validasi Google Drive Link
-const gdriveLinkRegex =
-  /^https:\/\/drive\.google\.com\/(file\/d\/|drive\/folders\/|open\?id=)([a-zA-Z0-9_-]+)(\/?|\?usp=sharing|\&authuser=0)/;
 
 // Component for gradient card header
 const CardHeaderGradient: FC<CardHeaderProps> = ({ title }) => (
@@ -152,7 +148,7 @@ const Step3: FC<Step3Props> = ({ activeStep }) => {
 
   // Fetch data
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["seminar-kp-dokumen"],
+    queryKey: ["seminar-kp-step3"],
     queryFn: APISeminarKP.getDataMydokumen,
     staleTime: Infinity,
   });
@@ -162,9 +158,7 @@ const Step3: FC<Step3Props> = ({ activeStep }) => {
   const mutation = useMutation({
     mutationFn: APISeminarKP.postLinkDokumen,
     onError: (error: any) => {
-      toast({
-        title: "❌ Gagal",
-        description: `Gagal mengirim dokumen: ${error.message}`,
+      toast.error(`${error.response.data.message}`, {
         duration: 3000,
       });
     },
@@ -210,7 +204,7 @@ const Step3: FC<Step3Props> = ({ activeStep }) => {
             data.data.pendaftaran_kp[0]?.dosen_penguji?.nama || "Belum diisi",
           kontakPenguji:
             data.data.pendaftaran_kp[0]?.dosen_penguji?.no_hp || "Belum diisi",
-          lamaKerjaPraktek: `${
+          lamaKerjaPraktik: `${
             data.data.pendaftaran_kp[0]?.tanggal_mulai
               ? new Date(
                   data.data.pendaftaran_kp[0].tanggal_mulai
@@ -249,9 +243,7 @@ const Step3: FC<Step3Props> = ({ activeStep }) => {
       return doc;
     });
     setFormDocuments(resetDocs);
-    toast({
-      title: "✅ Berhasil",
-      description: "Formulir berhasil dikosongkan",
+    toast.success("Formulir berhasil dikosongkan", {
       duration: 3000,
     });
   };
@@ -272,25 +264,8 @@ const Step3: FC<Step3Props> = ({ activeStep }) => {
     );
 
     if (documentsToSubmit.length === 0) {
-      toast({
-        title: "⚠️ Peringatan",
-        description: "Harap isi setidaknya satu link dokumen",
+      toast.error(`Formulir belum diisi`, {
         duration: 3000,
-      });
-      return;
-    }
-
-    // Validasi link: periksa apakah ada link yang bukan Google Drive
-    const invalidDocs = documentsToSubmit.filter(
-      (doc) => !gdriveLinkRegex.test(doc.link!)
-    );
-
-    if (invalidDocs.length > 0) {
-      const invalidDocTitles = invalidDocs.map((doc) => doc.title).join(", ");
-      toast({
-        title: "❌ Gagal Mengirim",
-        description: `Link dokumen berikut bukan Google Drive yang valid: ${invalidDocTitles}`,
-        duration: 5000,
       });
       return;
     }
@@ -301,14 +276,6 @@ const Step3: FC<Step3Props> = ({ activeStep }) => {
     // Kirim semua dokumen secara paralel dan lacak yang berhasil
     const submissionPromises = documentsToSubmit.map((doc) => {
       const url = DOCUMENT_URLS[doc.title];
-      if (!url) {
-        toast({
-          title: "⚠️ Peringatan",
-          description: `URL untuk dokumen "${doc.title}" tidak ditemukan!`,
-          duration: 3000,
-        });
-        return Promise.resolve(null);
-      }
 
       console.log(`Mengirim link untuk "${doc.title}": ${doc.link}`);
       return mutation
@@ -330,15 +297,13 @@ const Step3: FC<Step3Props> = ({ activeStep }) => {
     // Tunggu semua pengiriman selesai
     await Promise.all(submissionPromises);
 
-    // Tampilkan toast dengan daftar dokumen yang berhasil dikirim
+    // Tampilkan toast dokumen berhasil dikirim
     if (successfullySubmittedDocs.length > 0) {
-      const docList = successfullySubmittedDocs.join(", ");
-      toast({
-        title: "✅ Berhasil",
-        description: `Berhasil mengirim link dokumen: ${docList}`,
+      toast.success("Berhasil mengirim link dokumen", {
         duration: 3000,
       });
-      queryClient.invalidateQueries({ queryKey: ["seminar-kp-dokumen"] });
+
+      queryClient.invalidateQueries({ queryKey: ["seminar-kp-step3"] });
     }
   };
 
@@ -382,9 +347,7 @@ const Step3: FC<Step3Props> = ({ activeStep }) => {
       return <div>Loading...</div>;
     }
     if (isError) {
-      toast({
-        title: "❌ Gagal",
-        description: `Gagal mengambil data: ${error.message}`,
+      toast.error(`Gagal mengambil data: ${error.message}`, {
         duration: 3000,
       });
       return <div>Error: {error.message}</div>;
@@ -441,7 +404,7 @@ const Step3: FC<Step3Props> = ({ activeStep }) => {
             className={`inline-block animate-pulse w-3 h-3 rounded-full mr-2 bg-yellow-400`}
           />
           <LayoutGridIcon className="w-4 h-4 mr-1.5" />
-          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa            
+          Validasi Kelengkapan Berkas Seminar Kerja Praktik Mahasiswa
         </span>
       </div>
 

@@ -11,7 +11,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -268,7 +268,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
   const { data: detailData, isLoading: isDetailLoading } =
     useQuery<MahasiswaDetailResponse>({
       queryKey: ["koordinator-seminar-kp-detail", selectedNim],
-      queryFn: () => APISeminarKP.getDataMahasiswaByEmail(selectedNim!),
+      queryFn: () => APISeminarKP.getDataMahasiswaByNIM(selectedNim!),
       enabled: !!selectedNim,
     });
 
@@ -361,9 +361,9 @@ const KoordinatorValidasiBerkasPage: FC = () => {
 
   const filteredStudents = useMemo(() => {
     return students.filter((student) => {
-      const matchesSearch = student.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
+      const matchesSearch =
+        student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        student.nim.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesTab = student.stage === activeTab;
       const isPending = ["Terkirim", "Ditolak"].includes(student.last_status);
 
@@ -541,13 +541,14 @@ const KoordinatorValidasiBerkasPage: FC = () => {
   };
 
   if (isTahunAjaranError) {
-    toast({
-      title: "❌ Gagal",
-      description: `Gagal mengambil daftar tahun ajaran: ${
+    toast.error(
+      `Gagal mengambil daftar tahun ajaran: ${
         (tahunAjaranError as Error).message
       }`,
-      duration: 3000,
-    });
+      {
+        duration: 3000,
+      }
+    );
     return (
       <DashboardLayout>
         <div className="text-center text-gray-600 dark:text-gray-300 py-10">
@@ -558,11 +559,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
   }
 
   if (isError) {
-    toast({
-      title: "❌ Gagal",
-      description: `Gagal mengambil data mahasiswa: ${
-        (error as Error).message
-      }`,
+    toast.error(`Gagal mengambil data mahasiswa: ${(error as Error).message}`, {
       duration: 3000,
     });
     return (
@@ -789,7 +786,7 @@ const KoordinatorValidasiBerkasPage: FC = () => {
                   <Search className="h-4 w-4 absolute left-3 text-gray-400" />
                   <Input
                     type="text"
-                    placeholder="Cari nama mahasiswa..."
+                    placeholder="Cari mahasiswa berdasarkan nama atau NIM..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200 dark:placeholder:text-gray-400"

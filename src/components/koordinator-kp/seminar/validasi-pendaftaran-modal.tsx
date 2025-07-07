@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import APISeminarKP from "@/services/api/koordinator-kp/mahasiswa.service";
 
 interface Dokumen {
@@ -65,40 +65,40 @@ const ValidasiPendaftaranSeminarModal: FC<
   // Mutasi untuk validasi dokumen
   const validateMutation = useMutation({
     mutationFn: (id: string) => APISeminarKP.postValidasiDokumen({ id }),
-    onSuccess: () => {
-      toast({
-        title: "✅ Berhasil",
-        description: "Dokumen berhasil divalidasi.",
-        duration: 3000,
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "❌ Gagal",
-        description: `Gagal memvalidasi dokumen: ${(error as Error).message}`,
-        duration: 3000,
-      });
-    },
+    // onSuccess: () => {
+    //   toast({
+    //     title: "✅ Berhasil",
+    //     description: "Dokumen berhasil divalidasi.",
+    //     duration: 3000,
+    //   });
+    // },
+    // onError: (error) => {
+    //   toast({
+    //     title: "❌ Gagal",
+    //     description: `Gagal memvalidasi dokumen: ${(error as Error).message}`,
+    //     duration: 3000,
+    //   });
+    // },
   });
 
   // Mutasi untuk menolak dokumen
   const rejectMutation = useMutation({
     mutationFn: ({ id, komentar }: { id: string; komentar: string }) =>
       APISeminarKP.postTolakDokumen({ id, komentar }),
-    onSuccess: () => {
-      toast({
-        title: "✅ Berhasil",
-        description: "Dokumen berhasil ditolak.",
-        duration: 3000,
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "❌ Gagal",
-        description: `Gagal menolak dokumen: ${(error as Error).message}`,
-        duration: 3000,
-      });
-    },
+    // onSuccess: () => {
+    //   toast({
+    //     title: "✅ Berhasil",
+    //     description: "Dokumen berhasil ditolak.",
+    //     duration: 3000,
+    //   });
+    // },
+    // onError: (error) => {
+    //   toast({
+    //     title: "❌ Gagal",
+    //     description: `Gagal menolak dokumen: ${(error as Error).message}`,
+    //     duration: 3000,
+    //   });
+    // },
   });
 
   useEffect(() => {
@@ -189,21 +189,16 @@ const ValidasiPendaftaranSeminarModal: FC<
 
     try {
       await Promise.all([...validationPromises, ...rejectionPromises]);
-      toast({
-        title: "✅ Berhasil",
-        description: "Semua perubahan telah dikonfirmasi.",
-        duration: 3000,
-      });
+      toast.success(`Permohonan ${student?.name} berhasil dikonfirmasi`);
       queryClient.invalidateQueries({
         queryKey: ["koordinator-seminar-kp-detail", student?.nim],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["koordinator-seminar-kp-dokumen"],
+      });
       onClose(); // Tutup modal setelah berhasil
     } catch (error) {
-      toast({
-        title: "❌ Gagal",
-        description: `Terjadi kesalahan: ${(error as Error).message}`,
-        duration: 3000,
-      });
+      toast.error(`Terjadi kesalahan: ${(error as Error).message}`);
     }
   };
 

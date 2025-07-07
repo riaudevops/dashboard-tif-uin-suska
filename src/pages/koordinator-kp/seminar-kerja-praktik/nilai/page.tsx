@@ -1,6 +1,6 @@
 import { useState, useEffect, type FC } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
 import {
   Search,
@@ -313,7 +313,6 @@ const KoordinatorNilaiPage: FC = () => {
         `Gagal memvalidasi nilai: ${error.message || "Terjadi kesalahan"}`,
         {
           duration: 4000,
-          position: "top-right",
         }
       );
     },
@@ -355,9 +354,9 @@ const KoordinatorNilaiPage: FC = () => {
     })) || [];
 
   const filteredStudents = students.filter((student) => {
-    const matchesSearch = student.nama
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
+    const matchesSearch =
+      student.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.nim.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus =
       statusFilter === "semua" ||
       (statusFilter === "nilaiBelumValid" &&
@@ -410,8 +409,7 @@ const KoordinatorNilaiPage: FC = () => {
       setSelectedStudents([]);
       setIsConfirmModalOpen(false);
       toast.success(`Berhasil memvalidasi ${idNilaiList.length} mahasiswa!`, {
-        duration: 4000,
-        position: "top-right",
+        duration: 3000,
       });
     } catch (error) {
       // Error handling is managed in onError of useMutation
@@ -670,7 +668,6 @@ const KoordinatorNilaiPage: FC = () => {
 
   return (
     <DashboardLayout>
-      <Toaster />
       <div className="transition-colors duration-300">
         <div className="space-y-4">
           <div className="flex justify-between items-center">
@@ -870,7 +867,7 @@ const KoordinatorNilaiPage: FC = () => {
                 <Search className="h-4 w-4 absolute left-3 text-gray-400" />
                 <Input
                   type="text"
-                  placeholder="Cari nama mahasiswa..."
+                  placeholder="Cari mahasiswa berdasarkan nama atau NIM..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200 dark:placeholder:text-gray-400"
@@ -974,9 +971,6 @@ const StudentTable: FC<{
               Status Nilai
             </TableHead>
             <TableHead className="text-center font-semibold dark:text-gray-200">
-              Status Konfirmasi
-            </TableHead>
-            <TableHead className="text-center font-semibold dark:text-gray-200">
               Aksi
             </TableHead>
           </TableRow>
@@ -998,23 +992,21 @@ const StudentTable: FC<{
                 className="dark:border-gray-700 dark:hover:bg-gray-700"
               >
                 <TableCell className="text-center">
-                  {student.status_nilai === "Nilai Approve" ? (
-                    student.validasi_nilai_is_approve === true ? (
-                      <span className="text-xs text-green-500 dark:text-green-400">
-                        ✓
-                      </span>
-                    ) : (
-                      <Checkbox
-                        checked={selectedStudents.includes(student.nim)}
-                        onCheckedChange={() => onCheckboxChange(student.nim)}
-                        className="h-4 w-4"
-                      />
-                    )
+                  {student.status_nilai === "Nilai Valid" ? (
+                    <Checkbox
+                      checked={selectedStudents.includes(student.nim)}
+                      onCheckedChange={() => onCheckboxChange(student.nim)}
+                      className="h-4 w-4"
+                    />
+                  ) : student.validasi_nilai_is_approve ? (
+                    <span className="text-xs text-green-500 dark:text-green-400">
+                      ✓
+                    </span>
                   ) : (
                     <Checkbox
                       disabled
                       className="h-4 w-4 opacity-100"
-                      title="Hanya nilai dengan status 'Nilai Approve' yang dapat dikonfirmasi"
+                      title="Hanya nilai dengan status 'Nilai Valid' yang dapat dikonfirmasi"
                     />
                   )}
                 </TableCell>
@@ -1084,16 +1076,6 @@ const StudentTable: FC<{
                   >
                     {student.status_nilai}
                   </span>
-                </TableCell>
-                <TableCell className="text-center">
-                  {student.status_nilai === "Nilai Approve" &&
-                  student.validasi_nilai_is_approve === true ? (
-                    <div className="inline-block px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/50">
-                      Selesai
-                    </div>
-                  ) : (
-                    <span className="text-gray-600 dark:text-gray-400">-</span>
-                  )}
                 </TableCell>
                 <TableCell className="text-center">
                   <Button

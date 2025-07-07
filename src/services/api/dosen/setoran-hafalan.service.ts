@@ -2,6 +2,15 @@ import { DataSetoran } from "@/interfaces/service/api/setoran-hafalan/dosen-serv
 import { api } from "@/lib/axios-instance";
 
 export default class APISetoran {
+  public static async getKartuRekapanMurojaahPASaya(bulan: number, tahun: number) {
+    const axios = api();
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_URL_SETORAN_HAFALAN}/dosen/kartu-rekapan-murojaah-pa-saya?bulan=${bulan}&tahun=${tahun}`,
+      { responseType: "arraybuffer" }
+    );
+    return response;
+  }
+
   public static async getDataMyMahasiswa() {
     const axios = api();
     const response = await axios.get(
@@ -10,7 +19,8 @@ export default class APISetoran {
     const data = response.data;
     return data;
   }
-  public static async getDataMahasiswaByEmail(nim: string) {
+
+  public static async getDataMahasiswaByNIM(nim: string) {
     const axios = api();
     const response = await axios.get(
       `${
@@ -20,6 +30,16 @@ export default class APISetoran {
     const data = response.data;
     return data;
   }
+
+  public static async getKartuMurojaahMahasiswaByNIM(nim: string) {
+    const axios = api();
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_URL_SETORAN_HAFALAN}/mahasiswa/kartu-murojaah/${nim}`,
+      { responseType: "arraybuffer" }
+    );
+    return response;
+  }
+
   public static async postSetoranSurah({
     nim,
     data_setoran,
@@ -41,6 +61,7 @@ export default class APISetoran {
     );
     return request.data;
   }
+
   public static async pembatalanSetoranSurah({
     nim,
     data_setoran,
@@ -61,4 +82,5 @@ export default class APISetoran {
     );
     return request.data;
   }
+
 }

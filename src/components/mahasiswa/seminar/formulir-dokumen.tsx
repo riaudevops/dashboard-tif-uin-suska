@@ -10,6 +10,17 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 
+const MANDATORY_DOCUMENTS = [
+  "Dokumen Surat Keterangan Selesai Kerja Praktik Dari Instansi",
+  "Menghadiri Seminar Kerja Praktik Mahasiswa Lain Minimal 5 Kali",
+  "Laporan Tambahan Tugas Kerja Praktik",
+  "Dokumen Surat Undangan Seminar Kerja Praktik",
+
+  "Berita Acara Seminar KP",
+  "Lembar Pengesahan KP",
+  "Daftar Hadir Seminar KP",
+];
+
 const DocumentCard = ({
   judulDokumen,
   status,
@@ -42,6 +53,9 @@ const DocumentCard = ({
 
   const isReadOnly = status === "Terkirim" || status === "Divalidasi";
 
+  // Cek apakah dokumen wajib
+  const isMandatory = MANDATORY_DOCUMENTS.includes(judulDokumen);
+
   const renderCard = () => {
     // Status "Divalidasi" → Badge "Diterima"
     if (status === "Divalidasi") {
@@ -72,16 +86,14 @@ const DocumentCard = ({
                   .toLowerCase()}`}
                 className="font-medium text-xs text-gray-700 dark:text-gray-300"
               >
-                Link GDrive
+                Link GDrive{" "}
+                {isMandatory && <span className="text-red-500">*</span>}
               </Label>
               <div className="relative">
                 <Input
                   type="text"
                   id={`link-${judulDokumen.replace(/\s+/g, "-").toLowerCase()}`}
-                  value={
-                    inputValue ||
-                    "https://drive.google.com/drive/folders/file.pdf"
-                  }
+                  value={inputValue}
                   readOnly={isReadOnly}
                   className="pl-9 bg-gray-50 dark:bg-gray-800 cursor-text select-all border-green-200 dark:border-green-800/40"
                 />
@@ -122,16 +134,14 @@ const DocumentCard = ({
                   .toLowerCase()}`}
                 className="font-medium text-xs text-gray-700 dark:text-gray-300"
               >
-                Link GDrive
+                Link GDrive{" "}
+                {isMandatory && <span className="text-red-500">*</span>}
               </Label>
               <div className="relative">
                 <Input
                   type="text"
                   id={`link-${judulDokumen.replace(/\s+/g, "-").toLowerCase()}`}
-                  value={
-                    inputValue ||
-                    "https://drive.google.com/drive/folders/file.pdf"
-                  }
+                  value={inputValue}
                   readOnly={isReadOnly}
                   className="pl-9 bg-gray-50 dark:bg-gray-800 cursor-text select-all"
                 />
@@ -172,13 +182,14 @@ const DocumentCard = ({
                   .toLowerCase()}`}
                 className="flex items-center gap-1 font-medium text-xs text-gray-700 dark:text-gray-300"
               >
-                Link GDrive <span className="text-red-500">*</span>
+                Link GDrive{" "}
+                {isMandatory && <span className="text-red-500">*</span>}
               </Label>
               <div className="relative">
                 <Input
                   type="text"
                   id={`link-${judulDokumen.replace(/\s+/g, "-").toLowerCase()}`}
-                  placeholder="https://drive.google.com/drive/folders/file.pdf"
+                  placeholder="https://drive.google.com/file/d/zzz/view?usp=sharing"
                   value={inputValue}
                   onChange={handleInputChange}
                   className="pl-9 border-gray-200 dark:border-gray-700 focus:border-red-500 focus:ring-1 focus:ring-red-500 dark:focus:border-red-500 dark:focus:ring-red-500/50"
@@ -227,13 +238,14 @@ const DocumentCard = ({
                 .toLowerCase()}`}
               className="flex items-center gap-1 font-medium text-xs text-gray-700 dark:text-gray-300"
             >
-              Link GDrive <span className="text-red-500">*</span>
+              Link GDrive{" "}
+              {isMandatory && <span className="text-red-500">*</span>}
             </Label>
             <div className="relative">
               <Input
                 type="text"
                 id={`link-${judulDokumen.replace(/\s+/g, "-").toLowerCase()}`}
-                placeholder="https://drive.google.com/drive/folders/file.pdf"
+                placeholder="https://drive.google.com/file/d/zzz/view?usp=sharing"
                 value={inputValue}
                 onChange={handleInputChange}
                 readOnly={isReadOnly}

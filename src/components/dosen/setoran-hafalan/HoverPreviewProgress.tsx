@@ -88,7 +88,7 @@ const HoverPreviewCard: React.FC<{ data: PreviewData; isFetching: boolean }> = (
 					<div className="flex justify-between items-center text-sm mb-1 text-gray-600 dark:text-gray-300">
 						<span>Progres Keseluruhan</span>
 						<span className="font-semibold text-gray-800 dark:text-gray-100">
-							{info_dasar?.persentase_progres_setor.toFixed(2)}%
+							{isNaN(info_dasar?.persentase_progres_setor) ? 0 : Number(info_dasar?.persentase_progres_setor).toFixed(info_dasar?.persentase_progres_setor % 1 ? 2 : 0)}%
 						</span>
 					</div>
 					<ProgressBar percentage={info_dasar?.persentase_progres_setor} />

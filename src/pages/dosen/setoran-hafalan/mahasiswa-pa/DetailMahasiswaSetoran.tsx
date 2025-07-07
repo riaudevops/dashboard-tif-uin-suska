@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/globals/layouts/dashboard-layout";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
 	Table,
 	TableBody,
@@ -48,7 +48,7 @@ import {
 	SurahData,
 } from "@/components/dosen/setoran-hafalan/ModalBoxQuran";
 import { toast } from "sonner";
-import ShinyProgressChart from "@/components/mahasiswa/setoran-hafalan/kartu-murojaah/shiny-progress-chart";
+import HoverPreviewCard from "@/components/dosen/setoran-hafalan/HoverPreviewProgress";
 
 function DetailMahasiswaSetoran() {
 	const { nim } = useParams<{ nim: string }>();
@@ -95,6 +95,14 @@ function DetailMahasiswaSetoran() {
 		queryFn: () =>
 			APISetoran.getDataMahasiswaByNIM(nim!).then((res) => res.data),
 	});
+
+  const formattedDate = useMemo(() => {
+    return new Date(dataInfoSetoran?.setoran.info_dasar?.tgl_terakhir_setor).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }, [dataInfoSetoran?.setoran.info_dasar?.tgl_terakhir_setor]);
 
 	useEffect(() => {
 		return () => {
@@ -431,16 +439,14 @@ function DetailMahasiswaSetoran() {
 
 					{/* statistik && user info desktop */}
 					<div className="md:flex hidden gap-6 rounded-2xl -mt-1.5 -mb-2.5">
-						<div className="w-full flex gap-6 overflow-hidden bg-transparent dark:bg-gradient-to-br dark:from-violet-800/10 dark:to-slate-900/5 border border-slate-300 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/80 transition-colors duration-300 rounded-2xl my-auto mx-auto p-6">
+						<div className="w-full flex gap-6 bg-transparent dark:bg-gradient-to-br dark:from-violet-800/10 dark:to-slate-900/5 border border-slate-300 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/80 transition-colors duration-300 rounded-2xl my-auto mx-auto p-6">
 							<div className="flex justify-center items-center border-r-2 pr-3 -ml-1.5">
-								<ShinyProgressChart
-									className="hover:scale-95 cursor-pointer mx-2.5 transition-all duration-150 active:scale-100"
-									loading={isFetching}
-                  title={`${dataInfoSetoran?.setoran.info_dasar.total_sudah_setor || 0} dari ${dataInfoSetoran?.setoran.info_dasar.total_wajib_setor || 37}`}
-									targetProgress={
-										dataInfoSetoran?.setoran.info_dasar.persentase_progres_setor
-									}
-								/>
+                <div>
+                  <HoverPreviewCard isFetching={isFetching} data={{
+                    info_dasar: dataInfoSetoran?.setoran.info_dasar,
+                    ringkasan: dataInfoSetoran?.setoran.ringkasan
+                  }} />
+                </div>
 							</div>
 
 							<div className="w-full">
@@ -570,7 +576,7 @@ function DetailMahasiswaSetoran() {
 													<Skeleton className="h-5 w-32 mt-1" />
 												) : (
 													<p className="text-sm font-semibold text-gray-900 dark:text-white">
-														{dataInfoSetoran?.setoran.info_dasar.terakhir_setor}
+														{dataInfoSetoran?.setoran.info_dasar.terakhir_setor}&nbsp;&nbsp;{dataInfoSetoran?.setoran.info_dasar.tgl_terakhir_setor && <span className="font-normal">({formattedDate})</span>}
 													</p>
 												)}
 											</div>
@@ -755,13 +761,12 @@ function DetailMahasiswaSetoran() {
 							<div className="flex gap-1.5 justify-center items-center">
 								<Button
 									variant={"default"}
-									className="bg-purple-500 text-white hover:bg-purple-700 active:scale-95 flex justify-center items-center gap-1.5"
+									className="md:hidden bg-purple-500 text-white hover:bg-purple-700 active:scale-95 flex justify-center items-center gap-1.5"
 									onClick={() => {
 										setModalStatistik(true);
 									}}
 								>
 									<ChartSpline size={20} />
-									<span className="hidden md:block">Lihat Statistik</span>
 								</Button>
 								<Button
 									variant={"default"}

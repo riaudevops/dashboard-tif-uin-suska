@@ -5,6 +5,7 @@ import {
   Calendar,
   ChartSpline,
   Clock,
+  Download,
   DownloadIcon,
   GraduationCap,
   Hash,
@@ -30,13 +31,13 @@ import { useFilteringSetoranSurat } from "@/hooks/use-filtering-setor-surat";
 import { colourLabelingCategory } from "@/helpers/colour-labeling-category";
 import { Skeleton } from "@/components/ui/skeleton";
 import ModalBoxDetailSetoran from "@/components/mahasiswa/setoran-hafalan/detail-riwayat/ModalBoxDetailSetoran";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import TableLoadingSkeleton from "@/components/globals/table-loading-skeleton";
 import { Input } from "@/components/ui/input";
 import { ModalBoxQuran, SurahData } from "@/components/dosen/setoran-hafalan/ModalBoxQuran";
 import ModalBoxLogs from "@/components/dosen/setoran-hafalan/ModalBoxLogs";
-import ShinyProgressChart from "@/components/mahasiswa/setoran-hafalan/kartu-murojaah/shiny-progress-chart";
 import ModalBoxStatistik from "@/components/dosen/setoran-hafalan/ModalBoxStatistik";
+import HoverPreviewCard from "@/components/dosen/setoran-hafalan/HoverPreviewProgress";
 
 export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 
@@ -80,6 +81,14 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
     queryFn: () => APISetoran.getDataMysetoran().then((data) => data.data),
     staleTime: Infinity,
   });
+
+  const formattedDate = useMemo(() => {
+    return new Date(dataRingkasan?.setoran.info_dasar?.tgl_terakhir_setor).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }, [dataRingkasan?.setoran.info_dasar?.tgl_terakhir_setor]);
 
   const { dataCurrent, setTabState, tabState, setSearch, search } =
     useFilteringSetoranSurat(dataRingkasan?.setoran.detail, "default");
@@ -223,18 +232,16 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
             </div>
           </div>
 
-          {/* statistik && user info desktop */}
+					{/* statistik && user info desktop */}
 					<div className="md:flex hidden gap-6 rounded-2xl -mt-1.5 -mb-2.5">
-						<div className="w-full flex gap-6 overflow-hidden bg-transparent dark:bg-gradient-to-br dark:from-violet-800/10 dark:to-slate-900/5 border border-slate-300 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/80 transition-colors duration-300 rounded-2xl my-auto mx-auto p-6">
+						<div className="w-full flex gap-6 bg-transparent dark:bg-gradient-to-br dark:from-violet-800/10 dark:to-slate-900/5 border border-slate-300 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/80 transition-colors duration-300 rounded-2xl my-auto mx-auto p-6">
 							<div className="flex justify-center items-center border-r-2 pr-3 -ml-1.5">
-								<ShinyProgressChart
-									className="hover:scale-95 cursor-pointer mx-2.5 transition-all duration-150 active:scale-100"
-									loading={isFetching}
-                  title={`${dataRingkasan?.setoran.info_dasar.total_sudah_setor || 0} dari ${dataRingkasan?.setoran.info_dasar.total_wajib_setor || 37}`}
-									targetProgress={
-										dataRingkasan?.setoran.info_dasar.persentase_progres_setor
-									}
-								/>
+                <div>
+                  <HoverPreviewCard isFetching={isFetching} data={{
+                    info_dasar: dataRingkasan?.setoran.info_dasar,
+                    ringkasan: dataRingkasan?.setoran.ringkasan
+                  }} />
+                </div>
 							</div>
 
 							<div className="w-full">
@@ -294,7 +301,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 																{isLoadingCetakKartuMurojaah && (
 																	<Loader2 className="animate-spin" size={18} />
 																)}
-																<DownloadIcon size={18} />
+																<Download size={18} />
 																<span>Cetak Kartu Muroja'ah</span>
 															</>
 														}
@@ -364,7 +371,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 													<Skeleton className="h-5 w-32 mt-1" />
 												) : (
 													<p className="text-sm font-semibold text-gray-900 dark:text-white">
-														{dataRingkasan?.setoran.info_dasar.terakhir_setor}
+														{dataRingkasan?.setoran.info_dasar.terakhir_setor}&nbsp;&nbsp;{dataRingkasan?.setoran.info_dasar.tgl_terakhir_setor && <span className="font-normal">({formattedDate})</span>}
 													</p>
 												)}
 											</div>
@@ -539,7 +546,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
               <div className="flex gap-1.5">
                 <Button
                   variant={"default"}
-                  className="bg-purple-500 text-white hover:bg-purple-700 active:scale-95 flex justify-center items-center gap-1.5"
+                  className="md:hidden bg-purple-500 text-white hover:bg-purple-700 active:scale-95 flex justify-center items-center gap-1.5"
                   onClick={() => {
                     setModalStatistik(true);
                   }}

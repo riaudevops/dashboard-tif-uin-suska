@@ -722,7 +722,7 @@ const LandingPage = () => {
                 <div className="flex flex-col items-center space-y-4 md:items-start">
                   <div className="flex items-center gap-2">
                     <PhoneCall className="w-5 h-5 " />
-                    <span className="">+62878-6868-5950</span>
+                    <a href="tel:+6281376177745" target="_blank">+62 813-7617-7745</a>
                   </div>
                   <div className="flex items-center gap-2">
                     <Mail className="w-5 h-5 " />
@@ -731,8 +731,14 @@ const LandingPage = () => {
                     </a>
                   </div>
                   <div className="flex items-start gap-2">
-                    <MapPin className="hidden w-5 h-5 md:block" />
-                    <p className="">Jl. HR. Soebrantas No.155 KM 18</p>
+                    <MapPin className="hidden mt-1 w-5 h-5 md:block flex-shrink-0" />
+                    <a
+                      target="_blank"
+                      href="https://maps.app.goo.gl/Qg5w1dKv5D4q657b9"
+                    >
+                      Jl. H.R. Soebrantas Km. 15, No. 155, Simpang Baru Panam,
+                      Kec. Tuah Madani, Kota Pekanbaru, Riau 28298
+                    </a>
                   </div>
                 </div>
               </div>

@@ -554,7 +554,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
 
               {/* Display at Mobile */}
               <Input
-                placeholder="Cari nama surah-nya..."
+                placeholder="Cari surah..."
                 onChange={(e) => {
                   setSearch(e.target.value);
                 }}
@@ -684,7 +684,7 @@ export default function MahasiswaSetoranHafalanDetailRiwayatPage() {
                         <BookOpenIcon className="w-3.5 h-3.5" />
                       </div>
                     </TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="text-center whitespace-nowrap">
                       {surah.sudah_setor ? (
                         <div>
                           <p>

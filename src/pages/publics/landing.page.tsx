@@ -338,19 +338,19 @@ const LandingPage = () => {
             <HashLink
               smooth
               to={"#kontributor"}
-              className="flex -mt-28 md:-mt-16 mb-12 justify-center"
+              className="flex justify-center mb-12 -mt-28 md:-mt-16"
             >
-              <div className="cursor-pointer inline-flex items-center gap-x-2 bg-background border border-foreground/30 text-xs text-foreground/80 p-2 px-3 rounded-full transition hover:border-foreground/70">
+              <div className="inline-flex items-center p-2 px-3 text-xs transition border rounded-full cursor-pointer gap-x-2 bg-background border-foreground/30 text-foreground/80 hover:border-foreground/70">
                 {" "}
                 🎉 Siapa saja sih dibalik web ini?{" "}
                 <div className="flex items-center gap-x-1">
-                  <span className="border-s border-foreground/60 text-green-600 ps-2">
+                  <span className="text-green-600 border-s border-foreground/60 ps-2">
                     {" "}
                     Lihat Kontributor{" "}
                   </span>
                   <span
                     data-v-08ea2e1e=""
-                    className="flex-shrink-0 size-4 text-green-600"
+                    className="flex-shrink-0 text-green-600 size-4"
                   >
                     <svg
                       data-v-08ea2e1e=""
@@ -389,7 +389,7 @@ const LandingPage = () => {
             >
               <SplitText
                 text="Administrasi Tanpa Ribet, Semua Disikat #SatSet!"
-                className="max-w-2xl px-2 mx-auto mb-8 text-md tracking-tight font-light text-foreground/60 md:text-2xl"
+                className="max-w-2xl px-2 mx-auto mb-8 font-light tracking-tight text-md text-foreground/60 md:text-2xl"
                 delay={55}
                 animationFrom={{
                   opacity: 0,
@@ -401,71 +401,70 @@ const LandingPage = () => {
               />
             </AnimatedContent>
 
-						<AnimatedContent
-							distance={50}
-							direction="vertical"
-							reverse={false}
-							config={{ tension: 80, friction: 20 }}
-							animateOpacity
-							threshold={0.2}
-							delay={1750}
-						>
-							<div className="flex text-white dark:text-pink-200 text-md md:text-2xl tracking-tighter items-center justify-center transition duration-300 hover:-translate-y-1">
-								{!auth.isAuthenticated ? (
-									<div
-										onClick={handleKeycloakAuth}
-										className="flex items-center justify-center px-4 md:px-5 py-2 gap-2 md:gap-3 bg-gradient-to-bl hover:bg-gradient-to-tl from-pink-600 dark:from-violet-800 to-orange-600 dark:to-pink-800 cursor-pointer border border-black rounded-3xl"
-									>
-										<FingerprintIcon />
-										<span>Mulai Sekarang</span>
-									</div>
-								) : (
-									<NavLink
-										to={dashboardURL}
-										className="flex items-center justify-center px-4 md:px-5 py-2 gap-3 bg-gradient-to-bl hover:bg-gradient-to-tl from-pink-600 dark:from-violet-800 to-orange-600 dark:to-pink-800 cursor-pointer border border-black rounded-3xl"
-									>
-										<CircleArrowOutUpRight />
-										<span>Pergi Ke Dashboard</span>
-									</NavLink>
-								)}
-							</div>
-						</AnimatedContent>
+            <AnimatedContent
+              distance={50}
+              direction="vertical"
+              reverse={false}
+              config={{ tension: 80, friction: 20 }}
+              animateOpacity
+              threshold={0.2}
+              delay={1750}
+            >
+              <div className="flex items-center justify-center tracking-tighter text-white transition duration-300 dark:text-pink-200 text-md md:text-2xl hover:-translate-y-1">
+                {!auth.isAuthenticated ? (
+                  <div
+                    onClick={handleKeycloakAuth}
+                    className="flex items-center justify-center gap-2 px-4 py-2 border border-black cursor-pointer md:px-5 md:gap-3 bg-gradient-to-bl hover:bg-gradient-to-tl from-pink-600 dark:from-violet-800 to-orange-600 dark:to-pink-800 rounded-3xl"
+                  >
+                    <FingerprintIcon />
+                    <span>Mulai Sekarang</span>
+                  </div>
+                ) : (
+                  <NavLink
+                    to={dashboardURL}
+                    className="flex items-center justify-center gap-3 px-4 py-2 border border-black cursor-pointer md:px-5 bg-gradient-to-bl hover:bg-gradient-to-tl from-pink-600 dark:from-violet-800 to-orange-600 dark:to-pink-800 rounded-3xl"
+                  >
+                    <CircleArrowOutUpRight />
+                    <span>Pergi Ke Dashboard</span>
+                  </NavLink>
+                )}
+              </div>
+            </AnimatedContent>
+          </div>
+        </div>
+        <div
+          id="fitur-kami"
+          className="flex items-center justify-center w-screen h-auto py-16 text-center"
+        >
+          <Particles
+            particleColors={[
+              "#A07CFE",
+              "#FE8FB5",
+              "#FFBE7B",
+              "#40ffaa",
+              "#4079ff",
+            ]}
+            particleCount={250}
+            particleSpread={10}
+            speed={0.2}
+            particleBaseSize={100}
+            moveParticlesOnHover={false}
+            alphaParticles={false}
+            disableRotation={false}
+          />
+          <div className="relative">
+            <div className="flex flex-col items-center w-full pb-10 leading-8 text-foreground bg-background sm:leading-10">
+              <span className="flex flex-col px-6 text-3xl font-semibold leading-8 tracking-tighter lg:inline md:text-5xl md:px-16 sm:leading-6">
+                <span>Apa saja sih </span>
+                <div className="relative -left-1.5 sm:left-0 text-center inline px-1.5">
+                  <div className="relative z-10 inline">
+                    Fitur Unggulan Kami?
+                  </div>
+                  <div className="absolute bottom-0 left-0 w-full bg-chart-5/50 mb-0.5 h-1/3"></div>
+                </div>
+              </span>
 
-					</div>
-				</div>
-				<div
-					id="fitur-kami"
-					className="flex items-center justify-center w-screen h-auto py-16 text-center"
-				>
-					<Particles
-						particleColors={[
-							"#A07CFE",
-							"#FE8FB5",
-							"#FFBE7B",
-							"#40ffaa",
-							"#4079ff",
-						]}
-						particleCount={250}
-						particleSpread={10}
-						speed={0.2}
-						particleBaseSize={100}
-						moveParticlesOnHover={false}
-						alphaParticles={false}
-						disableRotation={false}
-					/>
-					<div className="relative">
-						<div className="w-full text-foreground flex flex-col items-center pb-10 bg-background leading-8 sm:leading-10">
-							<span className="lg:inline flex flex-col tracking-tighter text-3xl md:text-5xl font-semibold px-6 md:px-16 leading-8 sm:leading-6">
-								<span>Apa saja sih </span>
-								<div className="relative -left-1.5 sm:left-0 text-center inline px-1.5">
-									<div className="relative z-10 inline">
-										Fitur Unggulan Kami?
-									</div>
-									<div className="absolute bottom-0 left-0 w-full bg-chart-5/50 mb-0.5 h-1/3"></div>
-								</div>
-							</span>
-
-              <span className="text-sm tracking-tight text-foreground/70 sm:text-lg pt-2 leading-6 sm:leading-8">
+              <span className="pt-2 text-sm leading-6 tracking-tight text-foreground/70 sm:text-lg sm:leading-8">
                 Dari kemudahan akses sampai efisiensi administrasi, semua
                 layanan kami integrasi biar kamu nggak perlu pusing lagi.
               </span>
@@ -486,7 +485,7 @@ const LandingPage = () => {
         </div>
         <div
           id="kontributor"
-          className="flex px-6 flex-col items-center justify-center w-screen h-screen pt-4"
+          className="flex flex-col items-center justify-center w-screen h-screen px-6 pt-4"
         >
           <Particles
             particleColors={[
@@ -521,8 +520,8 @@ const LandingPage = () => {
           >
             Kontributor
           </GradientText>
-          <div className="w-full z-30 text-center text-foreground flex flex-col items-center pt-7 bg-background leading-8 sm:leading-10">
-            <span className="lg:inline flex flex-col tracking-tighter text-3xl md:text-5xl font-semibold px-3 md:px-16 leading-8 sm:leading-6">
+          <div className="z-30 flex flex-col items-center w-full leading-8 text-center text-foreground pt-7 bg-background sm:leading-10">
+            <span className="flex flex-col px-3 text-3xl font-semibold leading-8 tracking-tighter lg:inline md:text-5xl md:px-16 sm:leading-6">
               <span>Siapa saja sih </span>
               <div className="relative -left-1.5 sm:left-0 text-center inline px-1.5">
                 <div className="relative z-10 inline">
@@ -532,7 +531,7 @@ const LandingPage = () => {
               </div>
             </span>
 
-            <span className="text-sm tracking-tight text-foreground/70 sm:text-lg pt-2 leading-5 sm:leading-8">
+            <span className="pt-2 text-sm leading-5 tracking-tight text-foreground/70 sm:text-lg sm:leading-8">
               Web ini kami bangun sepenuh hati sebagai bentuk kontribusi kami
               untuk efisiensi layanan administrasi.
             </span>
@@ -544,15 +543,15 @@ const LandingPage = () => {
                 <CarouselItem key={index} className="lg:basis-1/3 md:basis-1/2">
                   <div className="p-1">
                     <Card>
-                      <CardContent className="flex flex-col aspect-square items-center justify-center p-6">
-                        <div className="h-8/12 w-full">
+                      <CardContent className="flex flex-col items-center justify-center p-6 aspect-square">
+                        <div className="w-full h-8/12">
                           <img
-                            className="rounded-lg h-72 w-full object-cover"
+                            className="object-cover w-full rounded-lg h-72"
                             alt={contributor.name}
                             src={contributor.image}
                           />
                         </div>
-                        <div className="h-4/12 w-full flex flex-col pt-5 gap-4 justify-center items-center">
+                        <div className="flex flex-col items-center justify-center w-full gap-4 pt-5 h-4/12">
                           <div className="flex flex-col items-center">
                             <span className="text-base font-semibold tracking-tight">
                               {contributor.name}
@@ -636,8 +635,8 @@ const LandingPage = () => {
         </div>
         <WarpBackground id="faqs">
           <div className="flex flex-col items-center justify-center w-screen h-screen text-center">
-            <div className="w-full z-30 text-center text-foreground flex flex-col items-center bg-background leading-8 sm:leading-10">
-              <span className="inline tracking-tighter text-3xl md:text-5xl font-semibold px-6 md:px-16 leading-8 sm:leading-6">
+            <div className="z-30 flex flex-col items-center w-full leading-8 text-center text-foreground bg-background sm:leading-10">
+              <span className="inline px-6 text-3xl font-semibold leading-8 tracking-tighter md:text-5xl md:px-16 sm:leading-6">
                 <span>Our </span>
                 <div className="relative -left-1.5 sm:left-0 text-center inline px-1.5">
                   <div className="relative z-10 inline">FAQ's.</div>
@@ -645,7 +644,7 @@ const LandingPage = () => {
                 </div>
               </span>
 
-              <span className="text-sm tracking-tight text-foreground/70 sm:text-lg pt-2 px-4 leading-5 sm:leading-8">
+              <span className="px-4 pt-2 text-sm leading-5 tracking-tight text-foreground/70 sm:text-lg sm:leading-8">
                 Berikut adalah beberapa pertanyaan yang sering ditanyakan oleh
                 pengguna.
               </span>
@@ -653,7 +652,7 @@ const LandingPage = () => {
             <Accordion
               type="single"
               collapsible
-              className="w-full px-5 space-y-4 lg:w-2/3 mt-8"
+              className="w-full px-5 mt-8 space-y-4 lg:w-2/3"
             >
               {FaqListItems.map((faq, index) => (
                 <AccordionItem
@@ -718,22 +717,28 @@ const LandingPage = () => {
                 </ul>
               </div>
               {/* Contact Section */}
-              <div>
-                <div className="flex flex-col items-center space-y-4 md:items-start">
-                  <div className="flex items-center gap-2">
-                    <PhoneCall className="w-5 h-5 " />
-                    <span className="">+62878-6868-5950</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Mail className="w-5 h-5 " />
-                    <a target="_blank" href="mailto:tif@uin-suska.ac.id">
-                      tif@uin-suska.ac.id
-                    </a>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <MapPin className="hidden w-5 h-5 md:block" />
-                    <p className="">Jl. HR. Soebrantas No.155 KM 18</p>
-                  </div>
+              <div className="flex flex-col items-center space-y-4 md:items-start">
+                <div className="flex items-center gap-2">
+                  <PhoneCall className="flex-shrink-0 w-5 h-5" />
+                  <a target="_blank" href="https://wa.me/6287868685950">
+                    +62878-6868-5950
+                  </a>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="flex-shrink-0 w-5 h-5" />
+                  <a target="_blank" href="mailto:tif@uin-suska.ac.id">
+                    tif@uin-suska.ac.id
+                  </a>
+                </div>
+                <div className="flex items-start gap-2">
+                  <MapPin className="flex-shrink-0 hidden w-5 h-5 mt-1 md:block" />
+                  <a
+                    target="_blank"
+                    href="https://maps.app.goo.gl/Qg5w1dKv5D4q657b9"
+                  >
+                    Jl. H.R. Soebrantas Km. 15, No. 155, Simpang Baru Panam,
+                    Kec. Tuah Madani, Kota Pekanbaru, Riau 28298
+                  </a>
                 </div>
               </div>
             </div>

@@ -35,7 +35,7 @@ function ModalBoxDetailSetoran({
                 <div className="justify-center items-center mt-4">
                   ❌ Anda{" "}
                   <span className="italic font-medium underline">
-                    belum menyetorkan
+                    belum muroja'ah
                   </span>{" "}
                   surah tersebut.
                 </div>
@@ -61,12 +61,8 @@ function ModalBoxDetailSetoran({
                 </div>
                 <div className="text-center">{dosen_mengesahkan}</div>
               </div>
-              <div className="flex gap-1  mt-2 justify-center items-center">
-                ✅ Anda{" "}
-                <span className="italic font-medium underline">
-                  telah menyetorkan
-                </span>{" "}
-                surah tersebut.
+              <div className="md:text-center gap-1 mt-2 ">
+                ✅ Anda telah <i><u><b>muroja'ah</b></u></i> surah tersebut.
               </div>
             </div>
           )}

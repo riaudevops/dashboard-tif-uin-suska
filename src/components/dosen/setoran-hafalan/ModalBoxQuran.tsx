@@ -211,7 +211,7 @@ const AyatItem = React.forwardRef<HTMLDivElement, AyatItemProps>(
 				<p className="text-gray-600 dark:text-gray-300 text-base mb-4">
 					{ayat.teksIndonesia}
 				</p>
-				<div className="flex items-center gap-1 -ml-2">
+				<div className="flex items-center gap-1 -ml-2 -mb-4">
 					<button
 						onClick={onPlay}
 						className="p-2 rounded-full hover:bg-purple-100 dark:hover:bg-purple-900/20 transition-colors"

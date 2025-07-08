@@ -937,7 +937,7 @@ function DetailMahasiswaSetoran() {
 															<BookOpenIcon className="w-3.5 h-3.5" />
 														</div>
 													</TableCell>
-													<TableCell className="text-center">
+													<TableCell className="text-center whitespace-nowrap">
 														{surah.sudah_setor ? (
 															<div>
 																<p>
